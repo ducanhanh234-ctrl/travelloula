@@ -9,4 +9,7 @@ Route::get('/', function () {
 Route::get('/demo', function () {
     return view('demo');
 });
+Route::get('/trang_chu', function () {
+    return view('trang_chu.index');
+});
 

@@ -57,9 +57,9 @@ body{
     transition:.3s;
 }
 
-.btn-primary:hover{
+/* .btn-primary:hover{
     background:#0097a7;
-}
+} */
 
 .section{
     padding:90px 0;

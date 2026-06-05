@@ -43,7 +43,7 @@
                 <a href="{{ url('/register') }}" class="btn btn-primary">
                     Đăng ký
                 </a>
-                <a href="{{ url('/login') }}" class="btn btn-secondary">
+                <a href="{{ url('/login') }}" class="btn btn-primary">
                     Đăng nhập
                 </a>
             </div>

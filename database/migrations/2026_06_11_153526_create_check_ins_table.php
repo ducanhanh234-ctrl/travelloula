@@ -9,41 +9,41 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
-{
-    Schema::create('check_ins', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('check_ins', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('ma_chuyen_khoi_hanh')
-              ->constrained('chuyen_khoi_hanhs')
-              ->cascadeOnDelete();
+            $table->foreignId('ma_chuyen_khoi_hanh')
+                ->constrained('lich_khoi_hanh_tour')
+                ->cascadeOnDelete();
 
-        $table->foreignId('ma_hanh_khach')
-              ->constrained('hanh_khachs')
-              ->cascadeOnDelete();
+            $table->foreignId('ma_hanh_khach')
+                ->constrained('khach_tour')
+                ->cascadeOnDelete();
 
-        $table->foreignId('ma_dat_tour')
-              ->constrained('dat_tours')
-              ->cascadeOnDelete();
+            $table->foreignId('ma_dat_tour')
+                ->constrained('dat_tours')
+                ->cascadeOnDelete();
 
-        $table->foreignId('nguoi_diem_danh')
-              ->constrained('nguoi_dungs')
-              ->cascadeOnDelete();
+            $table->foreignId('nguoi_diem_danh')
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-        $table->timestamp('thoi_gian_check_in')->nullable();
-        $table->string('dia_diem_check_in')->nullable();
+            $table->timestamp('thoi_gian_check_in')->nullable();
+            $table->string('dia_diem_check_in')->nullable();
 
-        $table->enum('trang_thai', [
-            'chua_diem_danh',
-            'da_diem_danh',
-            'vang_mat'
-        ])->default('chua_diem_danh');
+            $table->enum('trang_thai', [
+                'chua_diem_danh',
+                'da_diem_danh',
+                'vang_mat'
+            ])->default('chua_diem_danh');
 
-        $table->text('ghi_chu')->nullable();
+            $table->text('ghi_chu')->nullable();
 
-        $table->timestamps();
-    });
-}
+            $table->timestamps();
+        });
+    }
 
 
     /**

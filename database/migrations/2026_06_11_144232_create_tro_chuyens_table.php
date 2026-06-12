@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('tro_chuyens', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('dat_cho_id');
+            $table->unsignedBigInteger('dat_tour_id');
             $table->timestamps();
             //khóa ngoại
-            $table->foreign('dat_cho_id')
+            $table->foreign('dat_tour_id')
                 ->references('id')
-                ->on('dat_chos')
+                ->on('dat_tours')
                 ->onDelete('cascade');
         });
     }

@@ -11,18 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nhat_ky_tour', function (Blueprint $table) {
+        Schema::create('van_hanh_tour', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('tour_id')
-                ->constrained('tour_du_lich')
+            $table->foreignId('lich_khoi_hanh_id')
+                ->constrained('lich_khoi_hanh_tour')
                 ->cascadeOnDelete();
 
-            $table->unsignedBigInteger('nguoi_thao_tac');
+            $table->string('phuong_tien');
+            $table->string('nguoi_dieu_hanh');
+            $table->string('so_dien_thoai_khan_cap');
 
-            $table->string('hanh_dong');
-            $table->text('du_lieu_cu')->nullable();
-            $table->text('du_lieu_moi')->nullable();
+            $table->dateTime('gio_khoi_hanh');
+            $table->string('dia_diem_tap_trung');
+
+            $table->text('ghi_chu')->nullable();
+
+            $table->string('trang_thai')->default('binh_thuong');
 
             $table->timestamps();
         });

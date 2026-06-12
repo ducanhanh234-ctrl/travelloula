@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('ma_chuyen_khoi_hanh')
-                ->constrained('lich_khoi_hanh_tour')
+                ->constrained('lich_khoi_hanh_tours')
                 ->cascadeOnDelete();
 
             $table->foreignId('ma_hanh_khach')
-                ->constrained('khach_tour')
+                ->constrained('khach_tours')
                 ->cascadeOnDelete();
 
             $table->foreignId('ma_dat_tour')

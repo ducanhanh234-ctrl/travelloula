@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('lich_trinh_tour', function (Blueprint $table) {
+        Schema::create('lich_trinh_tours', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('tour_id')
-                ->constrained('tour_du_lich')
+                ->constrained('tour_du_lichs')
                 ->cascadeOnDelete();
 
             $table->integer('ngay_thu');
@@ -33,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('lich_trinh_tour');
+        Schema::dropIfExists('lich_trinh_tours');
     }
 };

@@ -18,9 +18,9 @@ return new class extends Migration
                 ->constrained('huong_dan_viens')
                 ->cascadeOnDelete();
 
-            $table->foreignId('ma_tour')
-                ->constrained('tour_du_lich')
-                ->cascadeOnDelete();
+              $table->foreignId('ma_tour')
+                  ->constrained('tour_du_lichs')
+                  ->cascadeOnDelete();
 
             $table->date('ngay_bat_dau_tour');
             $table->date('ngay_ket_thuc_tour');

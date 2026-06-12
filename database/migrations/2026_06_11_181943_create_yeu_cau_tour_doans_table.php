@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('yeu_cau_tour_doan', function (Blueprint $table) {
+        Schema::create('yeu_cau_tour_doans', function (Blueprint $table) {
 
             $table->id();
 
@@ -64,6 +64,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('yeu_cau_tour_doan');
+        Schema::dropIfExists('yeu_cau_tour_doans');
     }
 };

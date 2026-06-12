@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('nhat_ky_tour', function (Blueprint $table) {
+        Schema::create('nhat_ky_tours', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('tour_id')
-                ->constrained('tour_du_lich')
+                ->constrained('tour_du_lichs')
                 ->cascadeOnDelete();
 
             $table->unsignedBigInteger('nguoi_thao_tac');
@@ -32,6 +32,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('nhat_ky_tour');
+        Schema::dropIfExists('nhat_ky_tours');
     }
 };

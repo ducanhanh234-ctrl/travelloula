@@ -10,11 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('canh_bao_van_hanh_tour', function (Blueprint $table) {
+        Schema::create('canh_bao_van_hanh_tours', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('van_hanh_tour_id')
-                ->constrained('van_hanh_tour')
+                ->constrained('van_hanh_tours')
                 ->cascadeOnDelete();
 
             $table->string('loai_canh_bao');
@@ -35,6 +35,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('canh_bao_van_hanh_tour');
+        Schema::dropIfExists('canh_bao_van_hanh_tours');
     }
 };

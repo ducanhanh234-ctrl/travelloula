@@ -10,10 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('hinh_anh_tour', function (Blueprint $table) {
+        Schema::create('hinh_anh_tours', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tour_id')
-                ->constrained('tour_du_lich')
+                ->constrained('tour_du_lichs')
                 ->cascadeOnDelete();
 
             $table->string('duong_dan_anh');
@@ -29,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('hinh_anh_tour');
+        Schema::dropIfExists('hinh_anh_tours');
     }
 };

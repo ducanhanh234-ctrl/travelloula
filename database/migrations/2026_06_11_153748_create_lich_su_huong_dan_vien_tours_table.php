@@ -19,7 +19,7 @@ return new class extends Migration
               ->cascadeOnDelete();
 
           $table->foreignId('ma_tour')
-              ->constrained('tour_du_lich')
+              ->constrained('tour_du_lichs')
               ->cascadeOnDelete();
 
         $table->date('ngay_bat_dau_tour');

@@ -11,32 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('thong_bao', function (Blueprint $table) {
+        Schema::create('danh_gias', function (Blueprint $table) {
 
             $table->id();
 
+            $table->unsignedBigInteger('tour_id');
+
+            $table->unsignedBigInteger('booking_id')
+                ->nullable();
+
+            $table->unsignedBigInteger('danh_gia_cha_id')
+                ->nullable();
+
             $table->unsignedBigInteger('user_id');
 
-            $table->string('tieu_de')
+            $table->integer('diem_danh_gia')
                 ->nullable();
 
             $table->text('noi_dung')
                 ->nullable();
 
-            $table->string('loai_thong_bao', 20)
-                ->default('he_thong');
+            $table->text('hinh_anh')
+                ->nullable();
 
             $table->string('trang_thai', 20)
-                ->default('chua_doc');
-
-            $table->string('loai_lien_quan')
-                ->nullable();
-
-            $table->unsignedBigInteger('id_lien_quan')
-                ->nullable();
-
-            $table->json('du_lieu')
-                ->nullable();
+                ->default('hien_thi');
 
             $table->timestamps();
         });
@@ -47,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('thong_bao');
+        Schema::dropIfExists('danh_gias');
     }
 };

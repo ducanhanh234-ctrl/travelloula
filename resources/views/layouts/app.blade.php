@@ -21,10 +21,10 @@
         <div class="container">
 
             <div class="logo">
-                <i class="fas fa-compass" style="font-size: 40px; color: #0f4db8;"></i>
+                <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}" width="100" alt="Travelloula">
                 <div>
-                    <h1>Travelloula</h1>
-                    <span>Khởi đầu mọi hành trình</span>
+                    {{-- <h1>Travelloula</h1> --}}
+
                 </div>
             </div>
 

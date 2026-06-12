@@ -1,3 +1,4 @@
+/* RESET */
 *{
     margin:0;
     padding:0;
@@ -11,15 +12,17 @@ body{
 
 .container{
     width:90%;
-    max-width:1200px;
+    max-width:1400px;
     margin:auto;
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+========================= */
 
 .header{
     background:#fff;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    box-shadow:0 2px 15px rgba(0,0,0,.08);
     position:sticky;
     top:0;
     z-index:1000;
@@ -27,51 +30,86 @@ body{
 
 .header .container{
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:15px 0;
+    justify-content:space-between;
+    min-height:90px;
+    gap:40px;
 }
+
+/* LOGO */
 
 .logo{
     display:flex;
     align-items:center;
-    gap:15px;
+    flex-shrink:0;
 }
 
 .logo img{
-    width:65px;
+    height:120px;
+    width:auto;
+    display:block;
 }
 
-.logo h1{
-    color:#0f4db8;
-    font-size:32px;
-}
+/* Slogan */
 
 .logo span{
-    color:#555;
     font-size:14px;
+    color:#666;
+    margin-left:10px;
+    white-space:nowrap;
 }
+
+/* MENU */
 
 .menu{
     display:flex;
-    gap:30px;
+    align-items:center;
+    justify-content:center;
+    gap:32px;
+    flex:1;
 }
 
 .menu a{
     text-decoration:none;
     color:#333;
+    font-size:16px;
     font-weight:600;
     transition:.3s;
+    white-space:nowrap;
+    position:relative;
 }
 
 .menu a:hover{
     color:#0f4db8;
 }
 
+.menu a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-8px;
+    width:0;
+    height:2px;
+    background:#0f4db8;
+    transition:.3s;
+}
+
+.menu a:hover::after{
+    width:100%;
+}
+
+/* BUTTONS */
+
+.header-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-shrink:0;
+}
+
 .btn{
-    display:inline-block;
     text-decoration:none;
-    padding:12px 20px;
+    padding:10px 20px;
     border-radius:8px;
     font-weight:600;
     transition:.3s;
@@ -79,28 +117,35 @@ body{
 
 .btn-primary{
     background:#0f4db8;
-    color:#fff;
+    color:white;
+}
+
+.btn-primary:hover{
+    background:#0c3f97;
 }
 
 .btn-secondary{
-    background:#ff4d4f;
-    color:#fff;
-    border:2px solid #ff4d4f;
-    margin-left:12px;
+    border:2px solid #0f4db8;
+    color:#0f4db8;
+    background:white;
 }
 
-.btn-secondary:hover,
-.btn-primary:hover{
-    opacity:0.9;
+.btn-secondary:hover{
+    background:#0f4db8;
+    color:white;
 }
 
-/* HERO */
+/* =========================
+   HERO
+========================= */
 
 .hero{
-    height:500px;
+    height:550px;
     background:
-    linear-gradient(rgba(15,77,184,.7),
-    rgba(15,77,184,.7)),
+    linear-gradient(
+        rgba(15,77,184,.65),
+        rgba(15,77,184,.65)
+    ),
     url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e');
     background-size:cover;
     background-position:center;
@@ -109,31 +154,35 @@ body{
 }
 
 .hero-content{
-    width:1200px;
+    width:90%;
+    max-width:1200px;
     margin:auto;
     color:white;
 }
 
 .hero-content h2{
-    font-size:40px;
+    font-size:42px;
     font-weight:300;
 }
 
 .hero-content h1{
-    font-size:72px;
+    font-size:78px;
     margin:15px 0;
+    font-weight:700;
 }
 
 .hero-content p{
     font-size:22px;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
 
 .footer{
     background:#062b72;
     color:white;
-    padding-top:70px;
+    padding:70px 0 0;
 }
 
 .footer-grid{
@@ -150,11 +199,12 @@ body{
 }
 
 .footer-logo img{
-    width:60px;
+    width:70px;
+    height:auto;
 }
 
 .footer h2{
-    font-size:32px;
+    font-size:28px;
 }
 
 .footer h3{
@@ -178,32 +228,57 @@ body{
     text-decoration:none;
 }
 
+.footer a:hover{
+    color:#8fc3ff;
+}
+
 .copyright{
-    text-align:center;
-    border-top:1px solid rgba(255,255,255,.15);
     margin-top:50px;
+    border-top:1px solid rgba(255,255,255,.15);
+    text-align:center;
     padding:20px;
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
 
-@media(max-width:768px){
+@media(max-width:992px){
 
     .header .container{
         flex-direction:column;
-        gap:20px;
+        padding:20px 0;
     }
 
     .menu{
         flex-wrap:wrap;
-        justify-content:center;
+        gap:15px;
+    }
+
+    .header-right{
+        margin-top:10px;
     }
 
     .footer-grid{
         grid-template-columns:1fr;
     }
+}
+
+@media(max-width:768px){
+
+    .logo img{
+        height:60px;
+    }
 
     .hero-content h1{
         font-size:48px;
+    }
+
+    .hero-content h2{
+        font-size:30px;
+    }
+
+    .hero-content p{
+        font-size:18px;
     }
 }

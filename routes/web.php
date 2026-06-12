@@ -1,10 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TourController;
 
 Route::get('/', function () {
     return view('trang_chu.index');
 });
+
+Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
+
 
 
 Route::get('/demo', function () {
@@ -24,4 +29,5 @@ Route::get('/danh_sach_tour_yeu_thich', function () {
 Route::get('/dieu_khoan', function () {
     return view('dieu_khoan.index');
 });
+
 

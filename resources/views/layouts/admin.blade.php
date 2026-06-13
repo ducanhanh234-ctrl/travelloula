@@ -885,12 +885,12 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
+            <a href="" class="sidebar-logo">
                 <div class="logo-icon">
                     <i class="fas fa-plane"></i>
                 </div>
                 <div class="logo-text">
-                    <span class="logo-title">Tour365</span>
+                    <span class="logo-title">Travelloula</span>
                     <span class="logo-subtitle">Admin</span>
                 </div>
             </a>
@@ -901,8 +901,8 @@
             <div class="nav-section">
                 <div class="nav-section-title">Tổng quan</div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.dashboard') }}"
-                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </div>
@@ -915,8 +915,8 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Tours</div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.tours.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.tours.index') || request()->routeIs('admin.tours.manage') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
@@ -924,8 +924,8 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.departures.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.departures.*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
@@ -933,7 +933,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.guides.index') }}"
+                    <a href=""
                         class="nav-link {{ request()->routeIs('admin.guides*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-user-tie"></i>
@@ -942,7 +942,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.vehicles.index') }}"
+                    <a href=""
                         class="nav-link {{ request()->routeIs('admin.vehicles*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>
@@ -953,7 +953,7 @@
             </div>
 
             <div class="nav-item">
-                <a href="{{ route('admin.tour-logs.index') }}"
+                <a href=""
                     class="nav-link {{ request()->routeIs('admin.tour-logs.*') ? 'active' : '' }}">
                     <div class="nav-icon">
                         <i class="fas fa-map-marked-alt"></i>
@@ -966,7 +966,7 @@
             <div class="nav-section">
                 <div class="nav-section-title">Đặt tour & Vận hành</div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.bookings') }}"
+                    <a href=""
                         class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-check"></i>
@@ -975,7 +975,7 @@
                     </a>
                 </div>
                 {{-- <div class="nav-item">
-                    <a href="{{ route('admin.check-in-out.index') }}"
+                    <a href=""
                         class="nav-link {{ request()->routeIs('admin.check-in-out*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-clock"></i>
@@ -994,7 +994,7 @@
 
                 <!-- Bookings Management -->
                 {{-- <div class="nav-item">
-                <a href="{{ route('admin.bookings') }}"
+                <a href="   "
                     class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-check"></i>
                     <span class="nav-text">Quản lý Đặt tour</span>
@@ -1005,7 +1005,7 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Quản lý Người dùng</div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.users.index') }}"
+                        <a href="   "
                             class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
@@ -1016,7 +1016,7 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('admin.customer.index') }}"
+                        <a href=""
                             class="nav-link {{ request()->routeIs('admin.customer.*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
@@ -1028,8 +1028,8 @@
 
                 <!-- Banners Management -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.banners') }}"
-                        class="nav-link {{ request()->routeIs('admin.banners*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
                         <i class="fas fa-image"></i>
                         <span class="nav-text">Quản lý Banner</span>
                     </a>
@@ -1037,8 +1037,8 @@
 
                 <!-- Categories Management -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.categories') }}"
-                        class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.categories*') ? 'active' : '' }}">
                         <i class="fas fa-tags"></i>
                         <span class="nav-text">Quản lý Danh mục</span>
                     </a>
@@ -1046,8 +1046,8 @@
 
                 {{-- Đặt tour theo đoàn --}}
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.group-requests.*') ? 'active' : '' }}"
-                        href="{{ route('admin.group-requests.index') }}">
+                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}"
+                        href="">
                         <i class="fas fa-users-cog"></i>
                         <span>Yêu cầu Tour đoàn</span>
                     </a>
@@ -1055,8 +1055,8 @@
 
                 <!-- Reviews Management -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.reviews') }}"
-                        class="nav-link {{ request()->routeIs('admin.reviews*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
                         <i class="fas fa-star"></i>
                         <span class="nav-text">Quản lý Đánh giá</span>
                     </a>
@@ -1064,8 +1064,8 @@
 
                 <!-- Payments Management -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.payments') }}"
-                        class="nav-link {{ request()->routeIs('admin.payments*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.payments*') ? 'active' : '' }}">
                         <i class="fas fa-credit-card"></i>
                         <span class="nav-text">Quản lý Thanh toán</span>
                     </a>
@@ -1076,8 +1076,8 @@
 
                 <!-- Reports -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.reports') }}"
-                        class="nav-link {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
                         <i class="fas fa-chart-bar"></i>
                         <span class="nav-text">Báo cáo & Thống kê</span>
                     </a>
@@ -1085,8 +1085,8 @@
 
                 <!-- Notifications -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.notifications') }}"
-                        class="nav-link {{ request()->routeIs('admin.notifications*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
                         <i class="fas fa-bell"></i>
                         <span class="nav-text">Thông báo</span>
                         <span class="badge badge-admin bg-danger ms-auto">3</span>
@@ -1095,8 +1095,8 @@
 
                 <!-- Support Tickets -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.support') }}"
-                        class="nav-link {{ request()->routeIs('admin.support*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
                         <i class="fas fa-headset"></i>
                         <span class="nav-text">Hỗ trợ khách hàng</span>
                         <span class="badge badge-admin bg-warning ms-auto">5</span>
@@ -1105,8 +1105,8 @@
 
                 <!-- Settings -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.settings') }}"
-                        class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
                         <i class="fas fa-cog"></i>
                         <span class="nav-text">Cài đặt hệ thống</span>
                     </a>
@@ -1118,8 +1118,8 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Hỗ trợ</div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.reviews') }}"
-                            class="nav-link {{ request()->routeIs('admin.reviews*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-star"></i>
                             </div>
@@ -1127,8 +1127,8 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.support') }}"
-                            class="nav-link {{ request()->routeIs('admin.support*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-headset"></i>
                             </div>
@@ -1136,8 +1136,8 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.notifications') }}"
-                            class="nav-link {{ request()->routeIs('admin.notifications*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-bell"></i>
                             </div>
@@ -1150,8 +1150,8 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Hệ thống</div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.reports') }}"
-                            class="nav-link {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
@@ -1159,8 +1159,8 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('admin.settings') }}"
-                            class="nav-link {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-cog"></i>
                             </div>
@@ -1181,7 +1181,7 @@
                 </button>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Admin</a></li>
+                        <li class="breadcrumb-item"><a href=""></a></li>
                         @yield('breadcrumb')
                     </ol>
                 </nav>

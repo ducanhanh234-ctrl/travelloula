@@ -51,8 +51,8 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
 
     Route::resource('users', UserController::class);
-    Route::resource('vai-tros', VaiTroController::class);
-    Route::resource('quyen-hans', QuyenHanController::class);
+    // Route::resource('vai-tros', VaiTroController::class);
+    // Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
 });

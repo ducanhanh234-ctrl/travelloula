@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BannerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 
@@ -15,8 +16,8 @@ Route::get('/{id}/bai_viet', function(){
 })->name('bai_viet.detail');
 
 
-Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
-Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
+// Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+// Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
 
 
 
@@ -38,5 +39,14 @@ Route::get('/dieu_khoan', function () {
     return view('dieu_khoan.index');
 });
 
+Route::prefix('admin')
+->name('admin.')
+->group(function(){
 
+
+    Route::resource(
+        'banners',
+        BannerController::class
+    );
+});
 

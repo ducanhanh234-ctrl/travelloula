@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DanhMucController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 
@@ -15,8 +16,8 @@ Route::get('/{id}/bai_viet', function(){
 })->name('bai_viet.detail');
 
 
-Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
-Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
+// Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+// Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
 
 
 
@@ -40,3 +41,15 @@ Route::get('/dieu_khoan', function () {
 
 
 
+Route::prefix('admin')
+->name('admin.')
+->group(function(){
+
+
+    Route::resource(
+        'danh_mucs',
+        DanhMucController::class
+    );
+
+
+});

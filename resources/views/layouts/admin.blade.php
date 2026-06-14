@@ -1002,7 +1002,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="" class="nav-link ">
+                        <a href="{{ route('khach-hang-dat-tours.index') }}" class="nav-link ">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>

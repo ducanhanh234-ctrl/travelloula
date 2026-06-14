@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KhachHangDatTourController;
+use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\QuyenHanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
@@ -53,6 +54,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('vai-tros', VaiTroController::class);
     Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
+    Route::resource('huong-dan-viens', HuongDanVienController::class);
 });
 
 Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {

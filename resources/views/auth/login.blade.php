@@ -149,7 +149,7 @@
 
                 <!-- LOGO DỌC -->
                 <div class="flex justify-center mt-0 mb-4">
-                    <img src="{{ asset('images/logo/logo_doc.png') }}"
+                    <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}"
                         class="w-36 md:w-44 drop-shadow-lg hover:scale-105 hover:rotate-1 transition duration-300">
                 </div>
 

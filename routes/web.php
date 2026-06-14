@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\ThanhToanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
@@ -14,6 +15,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
         Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
         Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('/danh_gias')->name('danh_gias.')->group(function () {
+        Route::get('/', [DanhGiaController::class, 'index'])->name('index');
+        Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
+        Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
     });
 });
 Route::get('/bai_viet', function () {

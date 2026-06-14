@@ -22,4 +22,8 @@ class Tour extends Model
     {
         return $this->hasMany(DatTour::class, 'tour_id');
     }
+    public function danhGias()
+    {
+        return $this->hasMany(DanhGia::class, 'tour_id');
+    }
 }

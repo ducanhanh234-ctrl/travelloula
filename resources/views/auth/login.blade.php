@@ -1,228 +1,268 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="vi">
 
-@section('content')
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Travelloula</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-body{
-    font-family:'Poppins',sans-serif;
-    overflow:hidden;
-}
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-.login-page{
-    min-height:100vh;
-    display:flex;
-    background:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e')
-    center center/cover no-repeat;
-    position:relative;
-}
+    <style>
+        /* FIX AUTOFILL CHROME (EMAIL + PASSWORD + TEXT) */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset !important;
+            box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.15) inset !important;
 
-.login-page::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,.45);
-}
+            -webkit-text-fill-color: #ffffff !important;
+            caret-color: white;
 
-.left-side{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    position:relative;
-    z-index:2;
-}
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
 
-.brand{
-    max-width:600px;
-    padding:40px;
-}
+            transition: background-color 9999s ease-in-out 0s;
+        }
 
-.brand h1{
-    font-size:70px;
-    font-weight:800;
-    margin-bottom:15px;
-    letter-spacing:2px;
-}
+        .glass input:focus {
+            outline: none;
+            border-color: #22d3ee;
+            box-shadow:
+                0 0 0 2px rgba(34, 211, 238, 0.3),
+                0 0 20px rgba(34, 211, 238, 0.2);
+        }
 
-.brand p{
-    font-size:22px;
-    opacity:.9;
-}
+        @keyframes floatBg {
+            0% {
+                transform: translateY(0px) scale(1);
+            }
 
-.right-side{
-    width:500px;
-    background:rgba(255,255,255,.12);
-    backdrop-filter:blur(20px);
-    border-left:1px solid rgba(255,255,255,.15);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    z-index:2;
-}
+            50% {
+                transform: translateY(-20px) scale(1.05);
+            }
 
-.login-card{
-    width:100%;
-    padding:50px;
-}
+            100% {
+                transform: translateY(0px) scale(1);
+            }
+        }
 
-.login-title{
-    color:#fff;
-    font-size:35px;
-    font-weight:700;
-    margin-bottom:10px;
-}
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-.login-subtitle{
-    color:rgba(255,255,255,.8);
-    margin-bottom:35px;
-}
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-.form-group{
-    margin-bottom:20px;
-}
+        @keyframes glowPulse {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.3));
+            }
 
-.form-label{
-    display:block;
-    color:#fff;
-    margin-bottom:8px;
-    font-weight:500;
-}
+            50% {
+                filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.7));
+            }
 
-.form-control{
-    width:100%;
-    height:55px;
-    border:none;
-    border-radius:12px;
-    padding:0 20px;
-    background:rgba(255,255,255,.15);
-    color:#fff;
-    font-size:15px;
-}
+            100% {
+                filter: drop-shadow(0 0 5px rgba(34, 211, 238, 0.3));
+            }
+        }
 
-.form-control::placeholder{
-    color:rgba(255,255,255,.7);
-}
+        .logo-glow {
+            animation: glowPulse 3s ease-in-out infinite;
+        }
 
-.form-control:focus{
-    outline:none;
-    background:rgba(255,255,255,.22);
-    box-shadow:0 0 0 3px rgba(255,255,255,.15);
-}
+        .animate-float {
+            animation: floatBg 12s ease-in-out infinite;
+        }
 
-.btn-login{
-    width:100%;
-    height:55px;
-    border:none;
-    border-radius:12px;
-    background:#fbbf24;
-    color:#111827;
-    font-size:16px;
-    font-weight:700;
-    cursor:pointer;
-    transition:.3s;
-}
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
 
-.btn-login:hover{
-    transform:translateY(-3px);
-    box-shadow:0 15px 30px rgba(251,191,36,.4);
-}
+        .glass {
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.15),
+                    rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
 
-.text-danger{
-    color:#fecaca;
-    font-size:13px;
-    margin-top:5px;
-}
+<body class="h-screen overflow-hidden relative">
 
-@media(max-width:991px){
+    <!-- BACKGROUND -->
+    <div class="absolute inset-0">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+            class="w-full h-full object-cover animate-float scale-110">
+    </div>
 
-    .left-side{
-        display:none;
-    }
+    <!-- ✅ UPGRADE BACKGROUND -->
+    <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70"></div>
 
-    .right-side{
-        width:100%;
-    }
-}
-</style>
+    <!-- LOGO TOP LEFT (GIỮ NGUYÊN) -->
+    <div class="absolute top-10 left-10 z-20">
+        <!-- glow nền -->
+        <div class="absolute -inset-2 bg-cyan-400/20 blur-xl rounded-full"></div>
 
-<div class="login-page">
+        <!-- logo -->
+        <img src="{{ asset('images/logo/logo_ngang.png') }}"
+            class="relative h-22 md:h-14 object-contain
+               logo-glow
+               drop-shadow-xl drop-shadow-[0_0_15px_rgba(34,211,238,0.5)]
+               hover:scale-105 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.9)]
+               transition duration-300">
+    </div>
 
-    <div class="left-side">
-        <div class="brand">
-            <h1>TravelLoula</h1>
-            <p>
-                Khám phá thế giới cùng những hành trình
-                đẳng cấp và trải nghiệm đáng nhớ.
-            </p>
+    <!-- MAIN -->
+    <div class="relative z-10 flex items-center justify-center h-full px-6">
+
+        <div class="w-full max-w-5xl grid md:grid-cols-2 gap-10 items-center">
+
+            <!-- LEFT -->
+            <div class="text-white hidden md:block fade-in">
+                <h1 class="text-5xl font-bold leading-tight mb-4">
+                    Khám phá thế giới<br> dễ hơn bao giờ hết
+                </h1>
+
+                <p class="text-white/80 text-lg mb-6">
+                    Đặt vé, khách sạn và tour du lịch chỉ trong vài giây.
+                </p>
+
+                <div class="flex gap-4 text-white/70 text-sm">
+                    <span>✈️ Flights</span>
+                    <span>🏨 Hotels</span>
+                    <span>🧭 Tours</span>
+                </div>
+            </div>
+
+            <!-- LOGIN CARD -->
+            <div
+                class="glass rounded-3xl p-8 md:p-10 shadow-2xl fade-in hover:shadow-cyan-400/20 hover:shadow-2xl transition">
+
+                <!-- LOGO DỌC -->
+                <div class="flex justify-center mt-0 mb-4">
+                    <img src="{{ asset('images/logo/logo_doc.png') }}"
+                        class="w-36 md:w-44 drop-shadow-lg hover:scale-105 hover:rotate-1 transition duration-300">
+                </div>
+
+                <h2 class="text-2xl font-bold text-center text-white mb-2">
+                    Đăng nhập
+                </h2>
+
+                <!-- LINE DECOR -->
+                <div class="w-16 h-1 bg-gradient-to-r from-blue-500 to-cyan-400 mx-auto mb-4 rounded-full"></div>
+
+                <!-- ERROR -->
+                @if ($errors->any())
+                    <div class="mb-4 p-3 rounded-xl bg-red-500/20 text-red-200 text-sm border border-red-400/30">
+                        <div class="font-semibold mb-1">Đăng nhập thất bại</div>
+                        <div>{{ $errors->first() }}</div>
+                    </div>
+                @endif
+
+                <!-- FORM -->
+                <form method="POST" action="{{ route('login') }}" id="loginForm" autocomplete="off">
+                    @csrf
+
+                    <!-- EMAIL -->
+                    <div class="mb-4 relative">
+                        <label class="text-sm text-white/80">Email</label>
+                        <i class="fa-solid fa-envelope absolute left-3 top-10 text-white/50"></i>
+
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Nhập email..."
+                            class="w-full pl-10 pr-4 py-3 mt-1 rounded-xl bg-white/10 text-white
+                        border border-white/20
+                        focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400
+                        focus:bg-white/20 hover:bg-white/20
+                        transition duration-300
+                        @error('email') border-red-400 ring-red-400 @enderror">
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="mb-4 relative">
+                        <label class="text-sm text-white/80">Mật khẩu</label>
+                        <i class="fa-solid fa-lock absolute left-3 top-10 text-white/50"></i>
+
+                        <input type="password" name="password" id="password" placeholder="Nhập mật khẩu..."
+                            class="w-full pl-10 pr-10 py-3 mt-1 rounded-xl bg-white/10 text-white
+                        border border-white/20
+                        focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400
+                        focus:bg-white/20 hover:bg-white/20
+                        transition duration-300
+                        @error('password') border-red-400 ring-red-400 @enderror">
+
+                        <i class="fa-solid fa-eye absolute right-3 top-10 text-white/50 cursor-pointer"
+                            onclick="togglePassword()"></i>
+                    </div>
+
+                    <!-- OPTIONS -->
+                    <div class="flex justify-between text-sm text-white/70 mb-6">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" name="remember" class="accent-cyan-400">
+                            Ghi nhớ đăng nhập
+                        </label>
+
+                        <a href="#" class="hover:text-white">
+                            Quên mật khẩu?
+                        </a>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <button type="submit" id="loginBtn"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400
+                    text-white font-semibold
+                    hover:scale-[1.03] hover:shadow-lg hover:shadow-cyan-400/30
+                    active:scale-95
+                    transition duration-300 flex justify-center items-center gap-2">
+
+                        <span id="btnText">Đăng nhập</span>
+
+                        <svg id="spinner" class="hidden animate-spin h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <p class="mt-6 text-center text-sm text-white/70">
+                    Chưa có tài khoản?
+                    <a href="/register" class="text-cyan-300 hover:underline">
+                        Đăng ký ngay
+                    </a>
+                </p>
+            </div>
         </div>
     </div>
 
-    <div class="right-side">
+    <script>
+        function togglePassword() {
+            const input = document.getElementById("password");
+            input.type = input.type === "password" ? "text" : "password";
+        }
 
-        <div class="login-card">
+        const form = document.getElementById("loginForm");
+        const btn = document.getElementById("loginBtn");
+        const spinner = document.getElementById("spinner");
+        const text = document.getElementById("btnText");
 
-            <div class="login-title">
-                Đăng nhập
-            </div>
+        form.addEventListener("submit", function() {
+            btn.disabled = true;
+            btn.classList.add("opacity-70", "cursor-not-allowed");
+            spinner.classList.remove("hidden");
+            text.innerText = "Đang đăng nhập...";
+        });
+    </script>
 
-            <div class="login-subtitle">
-                Hệ thống quản trị TravelLoula
-            </div>
+</body>
 
-            @if ($errors->any())
-                <div class="alert alert-danger" style="margin-bottom:20px;">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
-
-            <form method="POST" action="{{ route('login.perform') }}">
-                @csrf
-
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        placeholder="Nhập email"
-                        value="{{ old('email') }}"
-                    >
-                    <div class="text-danger">
-                        {{ $errors->first('email') }}
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Mật khẩu</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                        placeholder="Nhập mật khẩu"
-                    >
-                    <div class="text-danger">
-                        {{ $errors->first('password') }}
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-login">
-                    ĐĂNG NHẬP
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-</div>
-@endsection
+</html>

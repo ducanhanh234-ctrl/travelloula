@@ -57,7 +57,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('huong-dan-viens', HuongDanVienController::class);
 });
 
-Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
+Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
     Route::get('/', function () {
         return view('Layouts.guide');
     })->name('dashboard');

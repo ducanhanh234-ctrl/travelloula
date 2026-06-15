@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\ThanhToanController;
+use App\Http\Controllers\ThongKeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 
@@ -20,6 +21,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [DanhGiaController::class, 'index'])->name('index');
         Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
         Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('/thong_ke')->name('thong_ke.')->group(function () {
+        Route::get('/', [ThongKeController::class, 'index'])->name('index');
+        Route::get('/export', [ThongKeController::class, 'export'])->name('export');
     });
 });
 Route::get('/bai_viet', function () {

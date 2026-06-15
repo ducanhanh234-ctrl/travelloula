@@ -15,8 +15,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -33,6 +32,7 @@
     <link href="{{ asset('css/admin-tables.css') }}" rel="stylesheet">
     <link href="{{ asset('css/admin-tables-fixed.css') }}" rel="stylesheet">
     <link href="{{ asset('css/admin-icons.css') }}" rel="stylesheet">
+    @stack('scripts')
     <style>
         :root {
             /* Primary Colors */
@@ -876,6 +876,7 @@
         .sidebar::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.5);
         }
+
     </style>
 
     @yield('styles')
@@ -901,8 +902,7 @@
             <div class="nav-section">
                 <div class="nav-section-title">Tổng quan</div>
                 <div class="nav-item">
-                    <a href="{{ route('admin.thanh_toans.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </div>
@@ -915,17 +915,15 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Tours</div>
                 <div class="nav-item">
-                     <a href="{{ route('admin.thanh_toans.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.tours.index') || request()->routeIs('admin.tours.manage') ? 'active' : '' }}"> 
+                    <a href="{{ route('admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('admin.tours.index') || request()->routeIs('admin.tours.manage') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <span class="nav-text">Danh sách Tours</span>
-                     </a> 
+                    </a>
                 </div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+                    <a href="" class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
@@ -933,8 +931,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+                    <a href="" class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-user-tie"></i>
                         </div>
@@ -942,8 +939,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+                    <a href="" class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>
                         </div>
@@ -953,8 +949,7 @@
             </div>
 
             <div class="nav-item">
-                <a href=""
-                    class="nav-link ">
+                <a href="" class="nav-link ">
                     <div class="nav-icon">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
@@ -966,8 +961,7 @@
             <div class="nav-section">
                 <div class="nav-section-title">Đặt tour & Vận hành</div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+                    <a href="" class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
@@ -976,198 +970,182 @@
                 </div>
                 {{-- <div class="nav-item">
                     <a href="{{ route('admin.check-in-out.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.check-in-out*') ? 'active' : '' }}">
-                        <div class="nav-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <span class="nav-text">Check-in/Check-out</span>
-                    </a>
-                </div> --}}
+                class="nav-link {{ request()->routeIs('admin.check-in-out*') ? 'active' : '' }}">
+                <div class="nav-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <span class="nav-text">Check-in/Check-out</span>
+                </a>
+            </div> --}}
 
-                {{-- <div class="nav-item">
+            {{-- <div class="nav-item">
                 <a href="#"
                     class="nav-link {{ request()->routeIs('admin.guides*') ? 'active' : '' }}">
-                    <i class="fas fa-user-tie"></i>
-                    <span class="nav-text">Quản lý HDV</span>
-                </a>
+            <i class="fas fa-user-tie"></i>
+            <span class="nav-text">Quản lý HDV</span>
+            </a>
             </div> --}}
 
-                <!-- Bookings Management -->
-                {{-- <div class="nav-item">
+            <!-- Bookings Management -->
+            {{-- <div class="nav-item">
                 <a href="{{ route('admin.bookings') }}"
-                    class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
-                    <span class="nav-text">Quản lý Đặt tour</span>
-                </a>
+            class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
+            <i class="fas fa-calendar-check"></i>
+            <span class="nav-text">Quản lý Đặt tour</span>
+            </a>
             </div> --}}
 
-                <!-- Users Management -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Quản lý Người dùng</div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <span class="nav-text">Người dùng</span>
-                        </a>
+            <!-- Users Management -->
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý Người dùng</div>
+                <div class="nav-item">
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Người dùng</span>
+                    </a>
 
-                    </div>
-
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <span class="nav-text">Quản lý Khách hàng</span>
-                        </a>
-                    </div>
                 </div>
 
-                <!-- Banners Management -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-image"></i>
-                        <span class="nav-text">Quản lý Banner</span>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khách hàng</span>
                     </a>
                 </div>
+            </div>
 
-                <!-- Categories Management -->
+            <!-- Banners Management -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-image"></i>
+                    <span class="nav-text">Quản lý Banner</span>
+                </a>
+            </div>
+
+            <!-- Categories Management -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-tags"></i>
+                    <span class="nav-text">Quản lý Danh mục</span>
+                </a>
+            </div>
+
+            {{-- Đặt tour theo đoàn --}}
+            <li class="nav-item">
+                <a class="nav-link " href="">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Yêu cầu Tour đoàn</span>
+                </a>
+            </li>
+
+            <!-- Reviews Management -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-star"></i>
+                    <span class="nav-text">Quản lý Đánh giá</span>
+                </a>
+            </div>
+
+            <!-- Payments Management -->
+            <div class="nav-item">
+                <a href="{{ route('admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('admin.thanh_toans*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="nav-text">Quản lý Thanh toán</span>
+                </a>
+            </div>
+
+
+
+
+            <!-- Reports -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="nav-text">Báo cáo & Thống kê</span>
+                </a>
+            </div>
+
+            <!-- Notifications -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-text">Thông báo</span>
+                    <span class="badge badge-admin bg-danger ms-auto">3</span>
+                </a>
+            </div>
+
+            <!-- Support Tickets -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-headset"></i>
+                    <span class="nav-text">Hỗ trợ khách hàng</span>
+                    <span class="badge badge-admin bg-warning ms-auto">5</span>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Cài đặt hệ thống</span>
+                </a>
+            </div>
+
+
+
+            <!-- Reviews & Support -->
+            <div class="nav-section">
+                <div class="nav-section-title">Hỗ trợ</div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-tags"></i>
-                        <span class="nav-text">Quản lý Danh mục</span>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="nav-text">Đánh giá</span>
                     </a>
                 </div>
-
-                {{-- Đặt tour theo đoàn --}}
-                <li class="nav-item">
-                    <a class="nav-link "
-                        href="">
-                        <i class="fas fa-users-cog"></i>
-                        <span>Yêu cầu Tour đoàn</span>
-                    </a>
-                </li>
-
-                <!-- Reviews Management -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-star"></i>
-                        <span class="nav-text">Quản lý Đánh giá</span>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <span class="nav-text">Hỗ trợ</span>
                     </a>
                 </div>
-
-                <!-- Payments Management -->
                 <div class="nav-item">
-                    <a href="{{ route('admin.thanh_toans.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.thanh_toans*') ? 'active' : '' }}">
-                        <i class="fas fa-credit-card"></i>
-                        <span class="nav-text">Quản lý Thanh toán</span>
-                    </a>
-                </div>
-
-
-
-
-                <!-- Reports -->
-                <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-chart-bar"></i>
-                        <span class="nav-text">Báo cáo & Thống kê</span>
-                    </a>
-                </div>
-
-                <!-- Notifications -->
-                <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-bell"></i>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
                         <span class="nav-text">Thông báo</span>
-                        <span class="badge badge-admin bg-danger ms-auto">3</span>
                     </a>
                 </div>
+            </div>
 
-                <!-- Support Tickets -->
+            <!-- Reports & Settings -->
+            <div class="nav-section">
+                <div class="nav-section-title">Hệ thống</div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-headset"></i>
-                        <span class="nav-text">Hỗ trợ khách hàng</span>
-                        <span class="badge badge-admin bg-warning ms-auto">5</span>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <span class="nav-text">Báo cáo</span>
                     </a>
                 </div>
-
-                <!-- Settings -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <i class="fas fa-cog"></i>
-                        <span class="nav-text">Cài đặt hệ thống</span>
+                    <a href="" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <span class="nav-text">Cài đặt</span>
                     </a>
                 </div>
-
-
-
-                <!-- Reviews & Support -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Hỗ trợ</div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <span class="nav-text">Đánh giá</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-headset"></i>
-                            </div>
-                            <span class="nav-text">Hỗ trợ</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-bell"></i>
-                            </div>
-                            <span class="nav-text">Thông báo</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Reports & Settings -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Hệ thống</div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <span class="nav-text">Báo cáo</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-cog"></i>
-                            </div>
-                            <span class="nav-text">Cài đặt</span>
-                        </a>
-                    </div>
-                </div>
+            </div>
         </nav>
     </aside>
 
@@ -1225,7 +1203,6 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <!-- Custom Admin JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1261,6 +1238,7 @@
             // Implement user menu dropdown
             console.log('Toggle user menu');
         }
+
     </script>
 
     @yield('scripts')
@@ -1423,7 +1401,9 @@
         .fab {
             font-family: "bootstrap-icons", "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
         }
+
     </style>
+    @stack('scripts')
 </body>
 
 </html>

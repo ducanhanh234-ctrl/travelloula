@@ -930,7 +930,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="" class="nav-link ">
+                    <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link ">
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>
                         </div>

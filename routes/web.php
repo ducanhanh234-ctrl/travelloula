@@ -39,6 +39,8 @@ Route::get('/dieu_khoan', function () {
 });
 // Auth routes
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PhuongTienController;
+
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -55,6 +57,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
+    Route::resource('phuong-tiens', PhuongTienController::class);
 });
 
 Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {

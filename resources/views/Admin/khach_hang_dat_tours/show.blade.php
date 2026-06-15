@@ -288,7 +288,7 @@
 
     <div class="detail-header">
         <div>
-            <a href="{{ route('khach-hang-dat-tours.index') }}" class="back-btn">
+            <a href="{{ route('Admin.khach-hang.index') }}" class="back-btn">
                 ← Quay lại danh sách
             </a>
 
@@ -301,7 +301,7 @@
             </div>
         </div>
 
-        <a href="{{ route('khach-hang-dat-tours.edit', $khachHang->id) }}" class="edit-btn">
+        <a href="{{ route('Admin.khach-hang.edit', $khachHang->id) }}" class="edit-btn">
             ✏ Chỉnh sửa
         </a>
     </div>

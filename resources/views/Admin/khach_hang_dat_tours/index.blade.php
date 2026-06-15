@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 @section('content')
 
-
 <style>
     .kh-page {
         background: #f8fafc;
@@ -296,12 +295,12 @@
             </div>
         </div>
 
-        <a href="{{ route('khach-hang-dat-tours.create') }}" class="kh-add-btn">
+        <a href="{{ route('Admin.khach-hang.create') }}" class="kh-add-btn">
             ▷ Thêm khách hàng
         </a>
     </div>
 
-    <form method="GET" action="{{ route('khach-hang-dat-tours.index') }}" class="kh-filter-card">
+    <form method="GET" action="{{ route('Admin.khach-hang.index') }}" class="kh-filter-card">
         <div class="kh-filter-grid">
             <div>
                 <label class="kh-label">Tìm kiếm</label>
@@ -411,7 +410,7 @@
                         <td>
                             <div class="kh-actions">
                                 <a
-                                    href="{{ route('khach-hang-dat-tours.show', $khachHang->id) }}"
+                                    href="{{ route('Admin.khach-hang.show', $khachHang->id) }}"
                                     class="kh-action kh-view"
                                     title="Xem chi tiết"
                                 >
@@ -419,7 +418,7 @@
                                 </a>
 
                                 <a
-                                    href="{{ route('khach-hang-dat-tours.edit', $khachHang->id) }}"
+                                    href="{{ route('Admin.khach-hang.edit', $khachHang->id) }}"
                                     class="kh-action kh-edit"
                                     title="Chỉnh sửa"
                                 >
@@ -427,7 +426,7 @@
                                 </a>
 
                                 <form
-                                    action="{{ route('khach-hang-dat-tours.destroy', $khachHang->id) }}"
+                                    action="{{ route('Admin.khach-hang.destroy', $khachHang->id) }}"
                                     method="POST"
                                     onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này?')"
                                 >
@@ -462,4 +461,3 @@
 </div>
 
 @endsection
-

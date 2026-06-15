@@ -63,16 +63,3 @@ Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
 });
 
-// khach hang dat tour routes
-Route::prefix('admin/khach-hang-dat-tours')
-    ->name('khach-hang-dat-tours.')
-    ->group(function () {
-        Route::get('/', [KhachHangDatTourController::class, 'index'])->name('index');
-        Route::get('/create', [KhachHangDatTourController::class, 'create'])->name('create');
-        Route::post('/', [KhachHangDatTourController::class, 'store'])->name('store');
-        Route::get('/{id}', [KhachHangDatTourController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [KhachHangDatTourController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [KhachHangDatTourController::class, 'update'])->name('update');
-        Route::delete('/{id}', [KhachHangDatTourController::class, 'destroy'])->name('destroy');
-        
-    });

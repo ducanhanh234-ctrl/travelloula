@@ -26,7 +26,7 @@
         </div>
 
         <div>
-            <a href="{{ route('admin.thong_ke.export') }}" class="btn btn-primary">
+            <a href="{{ route('Admin.thong_ke.export') }}" class="btn btn-primary">
                 <i class="fas fa-file-export"></i>
                 Xuất báo cáo
             </a>

@@ -75,7 +75,7 @@
 
         <div class="card-body">
 
-            <form method="GET" action="{{ route('admin.thanh_toans.index') }}">
+            <form method="GET" action="{{ route('Admin.thanh_toans.index') }}">
 
                 <div class="row g-3">
 
@@ -118,7 +118,7 @@
 
                         </button>
 
-                        <a href="{{ route('admin.thanh_toans.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
 
                             <i class="fas fa-rotate-right"></i>
 
@@ -207,13 +207,13 @@
                             <td>
                                 <div class="d-flex gap-1">
 
-                                    <a href="{{ route('admin.thanh_toans.show', $thanh_toan->id) }}" class="btn btn-sm btn-outline-primary" title="Chi tiết">
+                                    <a href="{{ route('Admin.thanh_toans.show', $thanh_toan->id) }}" class="btn btn-sm btn-outline-primary" title="Chi tiết">
 
                                         <i class="fas fa-eye"></i>
 
                                     </a>
 
-                                    <a href="{{ route('admin.thanh_toans.edit_status', $thanh_toan->id) }}" class="btn btn-sm btn-warning" title="Cập nhật trạng thái">
+                                    <a href="{{ route('Admin.thanh_toans.edit_status', $thanh_toan->id) }}" class="btn btn-sm btn-warning" title="Cập nhật trạng thái">
 
                                         <i class="fas fa-edit"></i>
 

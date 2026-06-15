@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('admin.thanh_toans.index') }}">
+    <a href="{{ route('Admin.thanh_toans.index') }}">
         Quản lý Thanh toán
     </a>
 </li>
@@ -30,7 +30,7 @@
             </p>
         </div>
 
-        <a href="{{ route('admin.thanh_toans.index') }}" class="btn btn-secondary">
+        <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i>
             Quay lại
         </a>
@@ -129,7 +129,7 @@
 
                 <div class="card-body">
 
-                    <form action="{{ route('admin.thanh_toans.update_status', $thanhToan->id) }}" method="POST">
+                    <form action="{{ route('Admin.thanh_toans.update_status', $thanhToan->id) }}" method="POST">
 
                         @csrf
                         @method('PUT')
@@ -195,7 +195,7 @@
                                 Lưu thay đổi
                             </button>
 
-                            <a href="{{ route('admin.thanh_toans.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
 
                                 Hủy
 

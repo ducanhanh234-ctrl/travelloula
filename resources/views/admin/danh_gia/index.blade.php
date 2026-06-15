@@ -211,13 +211,13 @@
 
                                 <div class="d-flex gap-1">
 
-                                    <a href="{{ route('admin.danh_gias.show',$danh_gia->id) }}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ route('Admin.danh_gias.show',$danh_gia->id) }}" class="btn btn-sm btn-outline-primary">
 
                                         <i class="fas fa-eye"></i>
 
                                     </a>
 
-                                    <form action="{{ route('admin.danh_gias.destroy',$danh_gia->id) }}" method="POST">
+                                    <form action="{{ route('Admin.danh_gias.destroy',$danh_gia->id) }}" method="POST">
 
                                         @csrf
                                         @method('DELETE')

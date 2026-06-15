@@ -1,12 +1,15 @@
 <?php
 
+
 namespace App\Models;
+
 
 use Illuminate\Database\Eloquent\Model;
 
 class KhachHangDatTour extends Model
 {
     protected $table = 'khach_hang_dat_tours';
+
 
     protected $fillable = [
         'dat_tour_id',

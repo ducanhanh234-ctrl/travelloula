@@ -4,7 +4,7 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('admin.danh_gias.index') }}">
+    <a href="{{ route('Admin.danh_gias.index') }}">
         Quản lý Đánh giá
     </a>
 </li>
@@ -30,7 +30,7 @@
             </p>
         </div>
 
-        <a href="{{ route('admin.danh_gias.index') }}" class="btn btn-secondary">
+        <a href="{{ route('Admin.danh_gias.index') }}" class="btn btn-secondary">
 
             <i class="fas fa-arrow-left"></i>
             Quay lại
@@ -227,14 +227,14 @@
 
                 <div class="card-body">
 
-                    <a href="{{ route('admin.danh_gias.index') }}" class="btn btn-secondary w-100 mb-2">
+                    <a href="{{ route('Admin.danh_gias.index') }}" class="btn btn-secondary w-100 mb-2">
 
                         <i class="fas fa-arrow-left"></i>
                         Quay lại danh sách
 
                     </a>
 
-                    <form action="{{ route('admin.danh_gias.destroy', $danh_gia->id) }}" method="POST">
+                    <form action="{{ route('Admin.danh_gias.destroy', $danh_gia->id) }}" method="POST">
 
                         @csrf
                         @method('DELETE')

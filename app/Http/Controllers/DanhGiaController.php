@@ -39,18 +39,18 @@ class DanhGiaController extends Controller
         }
         $danh_gias = $query->latest()->paginate(10)->withQueryString();
 
-        return view('admin.danh_gia.index', compact('danh_gias', 'tongDanhGia', 'danhGia5Sao',  'diemTrungBinh'));
+        return view('Admin.danh_gia.index', compact('danh_gias', 'tongDanhGia', 'danhGia5Sao',  'diemTrungBinh'));
     }
     public function show($id)
     {
         $danh_gia = DanhGia::query()->findOrFail($id);
-        return view('admin.danh_gia.show', compact('danh_gia'));
+        return view('Admin.danh_gia.show', compact('danh_gia'));
     }
     public function destroy($id)
     {
         $danh_gia = DanhGia::findOrFail($id);
         $danh_gia->delete();
 
-        return redirect()->route('admin.danh_gias.index')->with('success', 'Đánh giá đã được xóa thành công.');
+        return redirect()->route('Admin.danh_gias.index')->with('success', 'Đánh giá đã được xóa thành công.');
     }
 }

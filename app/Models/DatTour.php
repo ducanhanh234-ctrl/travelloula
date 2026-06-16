@@ -11,6 +11,7 @@ class DatTour extends Model
     protected $fillable = [
         'nguoi_dung_id',
         'tour_id',
+
         'lich_khoi_hanh_id',
         'khuyen_mai_id',
         'ma_dat_tour',
@@ -50,3 +51,4 @@ class DatTour extends Model
         return $this->belongsTo(User::class, 'nguoi_dung_id');
     }
 }
+

@@ -110,8 +110,13 @@
     <div class="absolute top-10 left-10 z-20">
         <div class="absolute -inset-2 bg-cyan-400/20 blur-xl rounded-full"></div>
         <a href="/">
+<<<<<<< HEAD
             <img src="{{ asset('images/logo/logo_ngang.png') }}"
                 class="relative h-12 md:h-12 lg:h-16 object-contain 
+=======
+            <img src="{{ asset('images/Logo_ngang.png') }}"
+                class="relative h-12 md:h-12 lg:h-16 object-contain
+>>>>>>> Admin_HDV
                 logo-glow
                 hover:scale-105 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.9)]
                 transition duration-300">

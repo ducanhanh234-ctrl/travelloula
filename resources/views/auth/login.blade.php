@@ -149,7 +149,11 @@
 
                 <!-- LOGO DỌC -->
                 <div class="flex justify-center mt-0 mb-4">
+<<<<<<< HEAD
                     <img src="{{ asset('images/logo/logo_doc.png') }}"
+=======
+                    <img src="{{ asset('images/Logo_dọc.png') }}"
+>>>>>>> Admin_HDV
                         class="w-36 md:w-44 drop-shadow-lg hover:scale-105 hover:rotate-1 transition duration-300">
                 </div>
 

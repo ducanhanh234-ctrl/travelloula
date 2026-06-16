@@ -1,0 +1,149 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\HuongDanVien;
+use App\Models\User;
+use App\Models\VaiTro;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+
+class HuongDanVienController extends Controller
+{
+    public function index()
+    {
+        $guides = HuongDanVien::latest()->paginate(12);
+        return view('Admin.huong_dan_viens.index', compact('guides'));
+    }
+
+    public function create()
+    {
+        return view('Admin.huong_dan_viens.create');
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'ho_ten' => 'required|string|max:255',
+            'email' => 'required|email|unique:huong_dan_viens,email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'so_dien_thoai' => 'nullable|string|max:20',
+            'ngay_sinh' => 'nullable|date',
+            'gioi_tinh' => 'nullable|in:nam,nu,khac',
+            'dia_chi' => 'nullable|string|max:500',
+            'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
+            'mo_ta' => 'nullable|string',
+            'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
+        ]);
+
+        if ($request->hasFile('anh_dai_dien')) {
+            $data['anh_dai_dien'] = $request->file('anh_dai_dien')->store('huong-dan-viens', 'public');
+        }
+
+        $user = User::create([
+            'name' => $data['ho_ten'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'phone' => $data['so_dien_thoai'] ?? null,
+            'address' => $data['dia_chi'] ?? null,
+            'is_active' => 2,
+        ]);
+
+        unset($data['password']);
+
+        $guide = HuongDanVien::create(array_merge($data, [
+            'user_id' => $user->id
+        ]));
+
+        $role = VaiTro::firstOrCreate(
+            ['ten_vai_tro' => 'guide'],
+            ['mo_ta' => 'Hướng dẫn viên']
+        );
+
+        $user->vaiTros()->syncWithoutDetaching([$role->id]);
+
+        return redirect()
+            ->route('Admin.huong-dan-viens.index')
+            ->with('success', 'Đã tạo hướng dẫn viên và tài khoản đăng nhập.');
+    }
+
+    public function show(HuongDanVien $huongDanVien)
+    {
+        return view('Admin.huong_dan_viens.show', compact('huongDanVien'));
+    }
+
+    public function edit(HuongDanVien $huongDanVien)
+    {
+        return view('Admin.huong_dan_viens.edit', compact('huongDanVien'));
+    }
+
+    public function update(Request $request, HuongDanVien $huongDanVien)
+    {
+        $data = $request->validate([
+            'ho_ten' => 'required|string|max:255',
+            'email' => 'required|email|unique:huong_dan_viens,email,' . $huongDanVien->id . '|unique:users,email,' . optional($huongDanVien->user)->id,
+            'password' => 'nullable|string|min:6',
+            'so_dien_thoai' => 'nullable|string|max:20',
+            'ngay_sinh' => 'nullable|date',
+            'gioi_tinh' => 'nullable|in:nam,nu,khac',
+            'dia_chi' => 'nullable|string|max:500',
+            'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
+            'mo_ta' => 'nullable|string',
+            'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
+        ]);
+
+        if ($request->hasFile('anh_dai_dien')) {
+            if ($huongDanVien->anh_dai_dien && Storage::disk('public')->exists($huongDanVien->anh_dai_dien)) {
+                Storage::disk('public')->delete($huongDanVien->anh_dai_dien);
+            }
+
+            $data['anh_dai_dien'] = $request->file('anh_dai_dien')->store('huong-dan-viens', 'public');
+        } else {
+            unset($data['anh_dai_dien']);
+        }
+
+        $password = $data['password'] ?? null;
+        unset($data['password']);
+
+        $huongDanVien->update($data);
+
+        if ($huongDanVien->user) {
+            $userData = [
+                'name' => $data['ho_ten'],
+                'email' => $data['email'],
+                'phone' => $data['so_dien_thoai'] ?? null,
+                'address' => $data['dia_chi'] ?? null,
+            ];
+
+            if (!empty($password)) {
+                $userData['password'] = Hash::make($password);
+            }
+
+            $huongDanVien->user->update($userData);
+        }
+
+        return redirect()
+            ->route('Admin.huong-dan-viens.index')
+            ->with('success', 'Đã cập nhật hướng dẫn viên.');
+    }
+
+    public function destroy(HuongDanVien $huongDanVien)
+    {
+        if ($huongDanVien->anh_dai_dien && Storage::disk('public')->exists($huongDanVien->anh_dai_dien)) {
+            Storage::disk('public')->delete($huongDanVien->anh_dai_dien);
+        }
+
+        if ($huongDanVien->user) {
+            $huongDanVien->user->delete();
+        }
+
+        $huongDanVien->delete();
+
+        return redirect()
+            ->route('Admin.huong-dan-viens.index')
+            ->with('success', 'Đã xóa hướng dẫn viên và tài khoản liên quan.');
+    }
+}

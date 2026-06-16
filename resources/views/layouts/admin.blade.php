@@ -885,7 +885,9 @@
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
+
             <a href="" class="sidebar-logo">
+
                 <div class="logo-icon">
                     <i class="fas fa-plane"></i>
                 </div>
@@ -937,7 +939,9 @@
                 </div>
                 <div class="nav-item">
 
-                    <a href="" class="nav-link ">
+
+                    <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link ">
+
 
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>
@@ -977,7 +981,9 @@
                     <div class="nav-section-title">Quản lý Người dùng</div>
                     <div class="nav-item">
 
-                        <a href="   " class="nav-link ">
+
+                                <a href="{{ route('Admin.users.index')}}" class="nav-link ">
+
 
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
@@ -996,7 +1002,10 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="" class="nav-link ">
+
+
+                        <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
+
 
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
@@ -1009,7 +1018,9 @@
                 <!-- Banners Management -->
                 <div class="nav-item">
 
+ 
                     <a href="{{route('Admin.banners.index')}}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+
 
                         <i class="fas fa-image"></i>
                         <span class="nav-text">Quản lý Banner</span>
@@ -1019,7 +1030,9 @@
                 <!-- Categories Management -->
                 <div class="nav-item">
 
+
                     <a href="{{route('Admin.danh_mucs.index')}}" class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+
 
                         <i class="fas fa-tags"></i>
                         <span class="nav-text">Quản lý Danh mục</span>
@@ -1050,7 +1063,10 @@
                 <!-- Payments Management -->
                 <div class="nav-item">
 
-                    <a href="" class="nav-link {{ request()->routeIs('Admin.payments*') ? 'active' : '' }}">
+
+                    <a href="{{ route('admin.thanh_toans.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.thanh_toans*') ? 'active' : '' }}">
+
 
                         <i class="fas fa-credit-card"></i>
                         <span class="nav-text">Quản lý Thanh toán</span>

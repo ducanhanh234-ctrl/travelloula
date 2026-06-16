@@ -1029,7 +1029,8 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="" class="nav-link ">
+
+                        <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
 
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>

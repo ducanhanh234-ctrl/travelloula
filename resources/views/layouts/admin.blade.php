@@ -926,7 +926,7 @@
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <span class="nav-text">Danh sách Tours</span>
-                     </a> 
+                    </a>
                 </div>
                 <div class="nav-item">
 
@@ -979,7 +979,7 @@
                     </a>
                 </div>
 
-                
+
 
 
                 <div class="nav-section">
@@ -988,7 +988,7 @@
 
 
 
-                                <a href="{{ route('Admin.users.index')}}" class="nav-link ">
+                        <a href="{{ route('Admin.users.index')}}" class="nav-link ">
 
 
 
@@ -1026,7 +1026,7 @@
                 <div class="nav-item">
 
 
- 
+
                     <a href="{{route('Admin.banners.index')}}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
 
 
@@ -1137,9 +1137,7 @@
                 <li class="nav-item">
 
 
-                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}"
-
-                        href="">
+                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}" href="">
 
                         <i class="fas fa-users-cog"></i>
                         <span>Yêu cầu Tour đoàn</span>
@@ -1160,8 +1158,7 @@
 
 
 
-                    <a href="{{ route('admin.thanh_toans.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.thanh_toans*') ? 'active' : '' }}">
+                    <a href="{{ route('Admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}">
 
 
 
@@ -1186,9 +1183,7 @@
                 <!-- Notifications -->
                 <div class="nav-item">
 
-                    <a href=""
-
-                        class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
 
                         <i class="fas fa-bell"></i>
@@ -1227,9 +1222,7 @@
                     <div class="nav-section-title">Hỗ trợ</div>
                     <div class="nav-item">
 
-                        <a href=""
-
-                            class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+                        <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1240,9 +1233,7 @@
                     </div>
                     <div class="nav-item">
 
-                        <a href=""
-
-                            class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
+                        <a href="" class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
 
                             <div class="nav-icon">
                                 <i class="fas fa-headset"></i>
@@ -1252,9 +1243,7 @@
                     </div>
                     <div class="nav-item">
 
-                        <a href=""
-
-                            class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+                        <a href="" class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1270,9 +1259,7 @@
                     <div class="nav-section-title">Hệ thống</div>
                     <div class="nav-item">
 
-                        <a href=""
-
-                            class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+                        <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1283,9 +1270,7 @@
                     </div>
                     <div class="nav-item">
 
-                        <a href=""
-
-                            class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
+                        <a href="" class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">

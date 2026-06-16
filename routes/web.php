@@ -59,6 +59,8 @@ Route::get('/dieu_khoan', function () {
 });
 // Auth routes
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DatTourController;
+
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -69,12 +71,21 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/', function () {
         return view('Layouts.admin');
     })->name('dashboard');
-// Admin routes
+    // Admin routes
     Route::resource('users', UserController::class);
     // Route::resource('vai-tros', VaiTroController::class);
     // Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
+    Route::get('/dat_tours', [DatTourController::class, 'index'])
+    ->name('dat_tours');
+
+Route::get('/dat_tours/create', [DatTourController::class, 'create'])
+    ->name('dat_tours.create');
+
+Route::patch('/dat_tours/{booking}/update-status', [DatTourController::class, 'updateStatus'])
+    ->name('dat_tours.update-status');
+
 });
 
 
@@ -83,7 +94,6 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     Route::get('/', function () {
         return view('Layouts.guide');
     })->name('dashboard');
-//Guide routes
+    //Guide routes
 });
-
 

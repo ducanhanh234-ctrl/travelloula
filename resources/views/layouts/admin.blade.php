@@ -925,7 +925,7 @@
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <span class="nav-text">Danh sách Tours</span>
-                     </a> 
+                     </a>
                 </div>
                 <div class="nav-item">
 
@@ -975,7 +975,7 @@
                 <div class="nav-section-title">Đặt tour & Vận hành</div>
                 <div class="nav-item">
 
-                    <a href="" class="nav-link ">
+                    <a href="{{ route('Admin.dat_tours') }}" class="nav-link ">
 
                         <div class="nav-icon">
                             <i class="fas fa-calendar-check"></i>

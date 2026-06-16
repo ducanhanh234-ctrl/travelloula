@@ -4,7 +4,9 @@
 
 @section('breadcrumb')
 <li class="breadcrumb-item">
+
     <a href="{{ route('Admin.thanh_toans.index') }}">
+
         Quản lý Thanh toán
     </a>
 </li>
@@ -34,12 +36,16 @@
 
 
 
+
             <a href="{{ route('Admin.thanh_toans.edit_status', $thanh_toan->id) }}" class="btn btn-success">
+
                 <i class="fas fa-edit"></i>
                 Cập Nhật Trạng Thái
             </a>
 
+
             <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
+
                 <i class="fas fa-arrow-left"></i>
                 Quay lại
             </a>

@@ -19,6 +19,8 @@
             </p>
         </div>
 
+
+
     </div>
 
     {{-- Thống kê --}}
@@ -75,7 +77,9 @@
 
         <div class="card-body">
 
+
             <form method="GET" action="{{ route('Admin.thanh_toans.index') }}">
+
 
                 <div class="row g-3">
 
@@ -118,7 +122,9 @@
 
                         </button>
 
+
                         <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
+
 
                             <i class="fas fa-rotate-right"></i>
 
@@ -207,13 +213,17 @@
                             <td>
                                 <div class="d-flex gap-1">
 
+
                                     <a href="{{ route('Admin.thanh_toans.show', $thanh_toan->id) }}" class="btn btn-sm btn-outline-primary" title="Chi tiết">
+
 
                                         <i class="fas fa-eye"></i>
 
                                     </a>
 
+
                                     <a href="{{ route('Admin.thanh_toans.edit_status', $thanh_toan->id) }}" class="btn btn-sm btn-warning" title="Cập nhật trạng thái">
+
 
                                         <i class="fas fa-edit"></i>
 

@@ -44,21 +44,27 @@ class ThanhToanController extends Controller
         $thanh_toans = $query->latest()->paginate(10)->withQueryString();
 
         return view(
+
             'Admin.thanh_toan.index',
+
             compact('thanh_toans', 'tongDoanhThu', 'daThanhToan', 'dangXuLy', 'hoanTien')
         );
     }
     public function show($id)
     {
         $thanh_toan = ThanhToan::query()->findOrFail($id);
+
         return view('Admin.thanh_toan.show', compact('thanh_toan'));
+
     }
     public function editStatus($id)
     {
         $thanhToan = ThanhToan::findOrFail($id);
 
         return view(
+
             'Admin.thanh_toan.edit_status',
+
             compact('thanhToan')
         );
     }
@@ -78,13 +84,17 @@ class ThanhToanController extends Controller
         ]);
 
         return redirect()
+
             ->route('Admin.thanh_toans.show', $thanhToan->id)
+
             ->with('success', 'Cập nhật trạng thái thành công');
     }
     public function destroy($id)
     {
         $thanh_toan = ThanhToan::query()->findOrFail($id);
         $thanh_toan->delete();
+
         return redirect()->route('Admin.thanh_toans.index')->with('success', 'Xóa thành công');
+
     }
 }

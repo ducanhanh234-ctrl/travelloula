@@ -11,6 +11,7 @@ class DatTour extends Model
     protected $fillable = [
         'nguoi_dung_id',
         'tour_id',
+
         'so_nguoi',
         'ngay_khoi_hanh',
         'trang_thai',
@@ -29,4 +30,28 @@ class DatTour extends Model
     {
         return $this->hasMany(ThanhToan::class, 'dat_tour_id');
     }
+
+
+
+    protected $casts = [
+        'ngay_dat' => 'datetime',
+        'tong_tien' => 'decimal:2',
+        'so_tien_da_thanh_toan' => 'decimal:2',
+    ];
+
+    public function khachHangs()
+    {
+        return $this->hasMany(KhachHangDatTour::class, 'dat_tour_id');
+    }
+
+    
+
+    public function lichKhoiHanh()
+    {
+        return $this->belongsTo(LichKhoiHanhTour::class, 'lich_khoi_hanh_id');
+    }
+
+    
 }
+
+

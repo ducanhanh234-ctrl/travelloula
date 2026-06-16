@@ -1,10 +1,14 @@
 <?php
 
+
+use App\Http\Controllers\ThanhToanController;
+
 use App\Http\Controllers\KhachHangDatTourController;
 use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\QuyenHanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 // Client routes
@@ -12,12 +16,28 @@ Route::get('/', function () {
     return view('Client.trang_chu.index');
 });
 
-Route::get('/bai_viet', function(){
-    return view('Client.bai_viet.index');
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('/thanh_toans')->name('thanh_toans.')->group(function () {
+        Route::get('/', [ThanhToanController::class, 'index'])->name('index');
+        Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
+        Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
+        Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
+    });
 });
-Route::get('/{id}/bai_viet', function(){
-    return view('Client.bai_viet.detail');
+Route::get('/bai_viet', function () {
+    return view('bai_viet.index');
+});
+
+Route::get('/{id}/bai_viet', function () {
+    return view('bai_viet.detail');
 })->name('bai_viet.detail');
+
+
+//Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
+//Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
+
+
 
 
 Route::get('/demo', function () {
@@ -57,6 +77,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('huong-dan-viens', HuongDanVienController::class);
 });
 
+
 // Login Guide
 Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
     Route::get('/', function () {
@@ -64,4 +85,5 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
 //Guide routes
 });
+
 

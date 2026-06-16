@@ -939,17 +939,7 @@
                 </div>
                 <div class="nav-item">
 
-                    <a href=""
-                        class="nav-link ">
-                        <div class="nav-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <span class="nav-text">Quản lý HDV</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+                    <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link ">
 
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>

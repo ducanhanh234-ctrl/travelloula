@@ -1,6 +1,10 @@
 <?php
 
 
+use App\Http\Controllers\DanhGiaController;
+
+use App\Http\Controllers\ThongKeController;
+
 
 
 use App\Http\Controllers\BannerController;
@@ -9,6 +13,7 @@ use App\Http\Controllers\DanhMucController;
 
 
 use App\Http\Controllers\ThanhToanController;
+
 
 
 use App\Http\Controllers\KhachHangDatTourController;
@@ -24,22 +29,18 @@ Route::get('/', function () {
     return view('Client.trang_chu.index');
 });
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::prefix('/thanh_toans')->name('thanh_toans.')->group(function () {
-        Route::get('/', [ThanhToanController::class, 'index'])->name('index');
-        Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
-        Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
-        Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
-        Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
-    });
-});
+
+
 Route::get('/bai_viet', function () {
     return view('bai_viet.index');
 });
 
 Route::get('/{id}/bai_viet', function () {
     return view('bai_viet.detail');
+
 })->name('bai_viet.detail');
+
+
 
 
 
@@ -64,7 +65,9 @@ Route::get('/dieu_khoan', function () {
 });
 // Auth routes
 use App\Http\Controllers\AuthController;
+
 use App\Http\Controllers\PhuongTienController;
+
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
@@ -83,7 +86,23 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
 
-    Route::resource(
+    Route::prefix('/thanh_toans')->name('thanh_toans.')->group(function () {
+        Route::get('/', [ThanhToanController::class, 'index'])->name('index');
+        Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
+        Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
+        Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('/danh_gias')->name('danh_gias.')->group(function () {
+        Route::get('/', [DanhGiaController::class, 'index'])->name('index');
+        Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
+        Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
+    });
+    Route::prefix('/thong_ke')->name('thong_ke.')->group(function () {
+        Route::get('/', [ThongKeController::class, 'index'])->name('index');
+        Route::get('/export', [ThongKeController::class, 'export'])->name('export');
+    });
+  Route::resource(
         'banners',
         BannerController::class
     );
@@ -92,7 +111,14 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
+
 });
+
+
+
+
+
+    
 
 
 
@@ -108,6 +134,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
 
 // Login Guide
 Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
+
 
     Route::get('/', function () {
         return view('Layouts.guide');

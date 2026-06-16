@@ -1,10 +1,16 @@
 <?php
+
+
 namespace App\Models;
+
+
 use Illuminate\Database\Eloquent\Model;
 
 class KhachHangDatTour extends Model
 {
     protected $table = 'khach_hang_dat_tours';
+
+
 
     protected $fillable = [
         'dat_tour_id',
@@ -24,6 +30,7 @@ class KhachHangDatTour extends Model
         'yeu_cau_dac_biet',
         'so_phong',
         'loai_phong',
+
         'nguoi_cung_phong_id',
         'da_check_in',
         'thoi_gian_da_check_in',
@@ -36,6 +43,7 @@ class KhachHangDatTour extends Model
         'da_check_in' => 'boolean',
         'so_tien_da_thanh_toan' => 'decimal:2',
         'tong_tien' => 'decimal:2',
+
     ];
 
     public function datTour()

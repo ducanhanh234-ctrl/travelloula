@@ -12,18 +12,26 @@ class DatTour extends Model
         'nguoi_dung_id',
         'tour_id',
 
-        'lich_khoi_hanh_id',
-        'khuyen_mai_id',
-        'ma_dat_tour',
-        'so_nguoi_lon',
-        'so_tre_em',
-        'so_em_be',
-        'tong_tien',
-        'so_tien_da_thanh_toan',
+        'so_nguoi',
+        'ngay_khoi_hanh',
         'trang_thai',
         'ghi_chu',
-        'ngay_dat',
     ];
+
+    public function nguoiDung()
+    {
+        return $this->belongsTo(User::class, 'nguoi_dung_id');
+    }
+    public function tour()
+    {
+        return $this->belongsTo(Tour::class, 'tour_id');
+    }
+    public function thanhToans()
+    {
+        return $this->hasMany(ThanhToan::class, 'dat_tour_id');
+    }
+
+
 
     protected $casts = [
         'ngay_dat' => 'datetime',
@@ -36,19 +44,14 @@ class DatTour extends Model
         return $this->hasMany(KhachHangDatTour::class, 'dat_tour_id');
     }
 
-    public function tour()
-    {
-        return $this->belongsTo(DanhSachTour::class, 'tour_id');
-    }
+    
 
     public function lichKhoiHanh()
     {
         return $this->belongsTo(LichKhoiHanhTour::class, 'lich_khoi_hanh_id');
     }
 
-    public function nguoiDung()
-    {
-        return $this->belongsTo(User::class, 'nguoi_dung_id');
-    }
+    
 }
+
 

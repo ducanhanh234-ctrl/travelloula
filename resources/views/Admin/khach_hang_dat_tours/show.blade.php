@@ -429,7 +429,8 @@
                         </td>
 
                         <td>
-                            {{ optional($item->datTour?->ngay_dat)->format('d/m/Y') ?? '-' }}
+                            {{-- {{ optional($item->datTour?->ngay_dat)->format('d/m/Y') ?? '-' }} --}}
+                            {{ optional($item->created_at)->format('d/m/Y') ?? '-' }}
                         </td>
 
                         <td class="money">

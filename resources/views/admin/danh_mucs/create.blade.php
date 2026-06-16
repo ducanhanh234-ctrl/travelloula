@@ -11,13 +11,13 @@
 
 <form method="POST"
 
-action="{{route('admin.danh_mucs.store')}}">
+action="{{route('Admin.danh_mucs.store')}}">
 
 
 @csrf
 
 
-@include('admin.danh_mucs.form')
+@include('Admin.danh_mucs.form')
 
 
 <button class="btn btn-primary">

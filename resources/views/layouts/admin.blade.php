@@ -890,7 +890,7 @@
                     <i class="fas fa-plane"></i>
                 </div>
                 <div class="logo-text">
-                    <span class="logo-title">Tour365</span>
+                    <span class="logo-title">Travelloula</span>
                     <span class="logo-subtitle">Admin</span>
                 </div>
             </a>
@@ -901,8 +901,9 @@
             <div class="nav-section">
                 <div class="nav-section-title">Tổng quan</div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link">
+
                         <div class="nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </div>
@@ -915,8 +916,9 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Tours</div>
                 <div class="nav-item">
-                     <a href=""
-                        class="nav-link "> 
+
+                    <a href="" class="nav-link">
+
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
@@ -924,8 +926,9 @@
                      </a> 
                 </div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link ">
+
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
@@ -933,17 +936,9 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
-                        <div class="nav-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <span class="nav-text">Quản lý HDV</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link ">
+
                         <div class="nav-icon">
                             <i class="fas fa-bus"></i>
                         </div>
@@ -953,8 +948,9 @@
             </div>
 
             <div class="nav-item">
-                <a href=""
-                    class="nav-link ">
+
+                <a href="" class="nav-link ">
+
                     <div class="nav-icon">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
@@ -966,47 +962,23 @@
             <div class="nav-section">
                 <div class="nav-section-title">Đặt tour & Vận hành</div>
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link ">
+
                         <div class="nav-icon">
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <span class="nav-text">Quản lý Đặt tour</span>
                     </a>
                 </div>
-                {{-- <div class="nav-item">
-                    <a href="{{ route('admin.check-in-out.index') }}"
-                        class="nav-link {{ request()->routeIs('admin.check-in-out*') ? 'active' : '' }}">
-                        <div class="nav-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <span class="nav-text">Check-in/Check-out</span>
-                    </a>
-                </div> --}}
+                
 
-                {{-- <div class="nav-item">
-                <a href="#"
-                    class="nav-link {{ request()->routeIs('admin.guides*') ? 'active' : '' }}">
-                    <i class="fas fa-user-tie"></i>
-                    <span class="nav-text">Quản lý HDV</span>
-                </a>
-            </div> --}}
-
-                <!-- Bookings Management -->
-                {{-- <div class="nav-item">
-                <a href="{{ route('admin.bookings') }}"
-                    class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
-                    <span class="nav-text">Quản lý Đặt tour</span>
-                </a>
-            </div> --}}
-
-                <!-- Users Management -->
                 <div class="nav-section">
                     <div class="nav-section-title">Quản lý Người dùng</div>
                     <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
+
+                        <a href="   " class="nav-link ">
+
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>
@@ -1014,10 +986,18 @@
                         </a>
 
                     </div>
-
                     <div class="nav-item">
-                        <a href=""
-                            class="nav-link ">
+
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="nav-text">Quản lý HDV</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="" class="nav-link ">
+
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>
@@ -1028,8 +1008,9 @@
 
                 <!-- Banners Management -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="{{route('Admin.banners.index')}}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+
                         <i class="fas fa-image"></i>
                         <span class="nav-text">Quản lý Banner</span>
                     </a>
@@ -1037,8 +1018,9 @@
 
                 <!-- Categories Management -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="{{route('Admin.danh_mucs.index')}}" class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+
                         <i class="fas fa-tags"></i>
                         <span class="nav-text">Quản lý Danh mục</span>
                     </a>
@@ -1046,7 +1028,9 @@
 
                 {{-- Đặt tour theo đoàn --}}
                 <li class="nav-item">
-                    <a class="nav-link "
+
+                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}"
+
                         href="">
                         <i class="fas fa-users-cog"></i>
                         <span>Yêu cầu Tour đoàn</span>
@@ -1055,8 +1039,9 @@
 
                 <!-- Reviews Management -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+
                         <i class="fas fa-star"></i>
                         <span class="nav-text">Quản lý Đánh giá</span>
                     </a>
@@ -1064,9 +1049,8 @@
 
                 <!-- Payments Management -->
                 <div class="nav-item">
-                    <a href=""
 
-                        class="nav-link ">
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.payments*') ? 'active' : '' }}">
 
                         <i class="fas fa-credit-card"></i>
                         <span class="nav-text">Quản lý Thanh toán</span>
@@ -1078,8 +1062,9 @@
 
                 <!-- Reports -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+
                         <i class="fas fa-chart-bar"></i>
                         <span class="nav-text">Báo cáo & Thống kê</span>
                     </a>
@@ -1088,7 +1073,9 @@
                 <!-- Notifications -->
                 <div class="nav-item">
                     <a href=""
-                        class="nav-link ">
+
+                        class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+
                         <i class="fas fa-bell"></i>
                         <span class="nav-text">Thông báo</span>
                         <span class="badge badge-admin bg-danger ms-auto">3</span>
@@ -1097,8 +1084,9 @@
 
                 <!-- Support Tickets -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
+
                         <i class="fas fa-headset"></i>
                         <span class="nav-text">Hỗ trợ khách hàng</span>
                         <span class="badge badge-admin bg-warning ms-auto">5</span>
@@ -1107,8 +1095,9 @@
 
                 <!-- Settings -->
                 <div class="nav-item">
-                    <a href=""
-                        class="nav-link ">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
+
                         <i class="fas fa-cog"></i>
                         <span class="nav-text">Cài đặt hệ thống</span>
                     </a>
@@ -1121,7 +1110,9 @@
                     <div class="nav-section-title">Hỗ trợ</div>
                     <div class="nav-item">
                         <a href=""
-                            class="nav-link ">
+
+                            class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-star"></i>
                             </div>
@@ -1130,7 +1121,9 @@
                     </div>
                     <div class="nav-item">
                         <a href=""
-                            class="nav-link ">
+
+                            class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-headset"></i>
                             </div>
@@ -1139,7 +1132,9 @@
                     </div>
                     <div class="nav-item">
                         <a href=""
-                            class="nav-link ">
+
+                            class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-bell"></i>
                             </div>
@@ -1153,7 +1148,9 @@
                     <div class="nav-section-title">Hệ thống</div>
                     <div class="nav-item">
                         <a href=""
-                            class="nav-link ">
+
+                            class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
@@ -1162,7 +1159,9 @@
                     </div>
                     <div class="nav-item">
                         <a href=""
-                            class="nav-link ">
+
+                            class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-cog"></i>
                             </div>
@@ -1183,7 +1182,9 @@
                 </button>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="">Admin</a></li>
+
+                        <li class="breadcrumb-item"><a href=""></a></li>
+
                         @yield('breadcrumb')
                     </ol>
                 </nav>
@@ -1209,10 +1210,63 @@
                     </button>
                 </div>
 
-                <div class="user-menu">
-                    <div class="user-avatar" onclick="toggleUserMenu()">
-                        {{ Auth::user() ? substr(Auth::user()->name, 0, 1) : 'A' }}
-                    </div>
+                <div class="user-menu dropdown">
+                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+
+                        @if (Auth::check() && Auth::user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="user-avatar-img">
+                        @else
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            </div>
+                        @endif
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                        <li class="px-3 py-2">
+                            <div class="fw-bold">
+                                {{ Auth::user()->name ?? 'Administrator' }}
+                            </div>
+
+                            <small class="text-muted">
+                                {{ Auth::user()->email ?? '' }}
+                            </small>
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item" href="">
+                                <i class="fas fa-user me-2"></i>
+                                Hồ sơ cá nhân
+                            </a>
+                        </li>
+
+                        {{-- <li>
+                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li> --}}
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i>
+                                    Đăng xuất
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </header>
@@ -1269,6 +1323,49 @@
 
     <!-- Check-in/Check-out specific CSS -->
     <style>
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-avatar-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .dropdown-menu {
+            min-width: 250px;
+            border-radius: 12px;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
         /* Form elements styling for check-in/check-out */
         .form-control,
         .form-select {

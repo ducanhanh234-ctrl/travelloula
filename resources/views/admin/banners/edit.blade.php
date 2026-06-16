@@ -11,7 +11,7 @@
 
 <form method="POST"
 
-action="{{route('admin.banners.update',$banner)}}">
+action="{{route('Admin.banners.update',$banner)}}">
 
 
 @csrf
@@ -19,7 +19,7 @@ action="{{route('admin.banners.update',$banner)}}">
 @method('PUT')
 
 
-@include('admin.banners.form')
+@include('Admin.banners.form')
 
 
 <button class="btn btn-success">

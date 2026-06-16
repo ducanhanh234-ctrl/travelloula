@@ -31,7 +31,7 @@ class BannerController extends Controller
 
 
         return view(
-            'admin.banners.index',
+            'Admin.banners.index',
             compact('banners','keyword')
         );
 
@@ -43,7 +43,7 @@ class BannerController extends Controller
     public function create()
     {
 
-        return view('admin.banners.create');
+        return view('Admin.banners.create');
 
     }
 
@@ -76,7 +76,7 @@ class BannerController extends Controller
 
         return redirect()
 
-        ->route('admin.banners.index')
+        ->route('Admin.banners.index')
 
         ->with('success','Thêm banner thành công');
 
@@ -93,7 +93,7 @@ class BannerController extends Controller
 
 
         return view(
-            'admin.banners.show',
+            'Admin.banners.show',
             compact('banner')
         );
 
@@ -109,7 +109,7 @@ class BannerController extends Controller
 
 
         return view(
-            'admin.banners.edit',
+            'Admin.banners.edit',
             compact('banner')
         );
 
@@ -141,7 +141,7 @@ class BannerController extends Controller
 
         return redirect()
 
-        ->route('admin.banners.index')
+        ->route('Admin.banners.index')
 
         ->with('success','Cập nhật thành công');
 

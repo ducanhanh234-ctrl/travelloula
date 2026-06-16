@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
+@section('title','Quản lý Danh Mục')
 
 @section('content')
-
 
 <div class="container-fluid">
 
@@ -23,7 +23,7 @@ Quản lý danh mục
 
 
 
-<a href="{{route('admin.danh_mucs.create')}}"
+<a href="{{route('Admin.danh_mucs.create')}}"
 
 class="btn btn-light text-primary fw-bold">
 
@@ -292,7 +292,7 @@ Hoạt động
 
 <a
 
-href="{{route('admin.danh_mucs.show',$item)}}"
+href="{{route('Admin.danh_mucs.show',$item)}}"
 
 class="btn btn-info btn-sm text-white">
 
@@ -310,7 +310,7 @@ Xem
 
 <a
 
-href="{{route('admin.danh_mucs.edit',$item)}}"
+href="{{route('Admin.danh_mucs.edit',$item)}}"
 
 class="btn btn-warning btn-sm text-white">
 
@@ -334,7 +334,7 @@ style="display:inline"
 
 method="POST"
 
-action="{{route('admin.danh_mucs.destroy',$item)}}">
+action="{{route('Admin.danh_mucs.destroy',$item)}}">
 
 
 @csrf

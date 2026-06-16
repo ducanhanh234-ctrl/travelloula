@@ -177,7 +177,7 @@ Ngừng hoạt động
 <div class="mt-4">
 
 
-<a href="{{route('admin.danh_mucs.index')}}"
+<a href="{{route('Admin.danh_mucs.index')}}"
 
 class="btn btn-secondary">
 
@@ -191,7 +191,7 @@ Quay lại
 
 
 
-<a href="{{route('admin.danh_mucs.edit',$danhMuc)}}"
+<a href="{{route('Admin.danh_mucs.edit',$danhMuc)}}"
 
 class="btn btn-warning text-white">
 

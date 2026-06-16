@@ -11,7 +11,7 @@
 
 <form method="POST"
 
-action="{{route('admin.danh_mucs.update',$danhMuc)}}">
+action="{{route('Admin.danh_mucs.update',$danhMuc)}}">
 
 
 @csrf
@@ -19,7 +19,7 @@ action="{{route('admin.danh_mucs.update',$danhMuc)}}">
 @method('PUT')
 
 
-@include('admin.danh_mucs.form')
+@include('Admin.danh_mucs.form')
 
 
 <button class="btn btn-success">

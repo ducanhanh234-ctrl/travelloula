@@ -16,7 +16,7 @@ Quản lý Banner
 </h4>
 
 
-<a href="{{route('admin.banners.create')}}"
+<a href="{{route('Admin.banners.create')}}"
 class="btn btn-primary">
 
 <i class="fa fa-plus"></i>
@@ -125,7 +125,7 @@ Hoạt động
 
 <a class="btn btn-info btn-sm"
 
-href="{{route('admin.banners.show',$item)}}">
+href="{{route('Admin.banners.show',$item)}}">
 
 Xem
 
@@ -135,7 +135,7 @@ Xem
 
 <a class="btn btn-warning btn-sm"
 
-href="{{route('admin.banners.edit',$item)}}">
+href="{{route('Admin.banners.edit',$item)}}">
 
 Sửa
 
@@ -149,7 +149,7 @@ style="display:inline"
 
 method="POST"
 
-action="{{route('admin.banners.destroy',$item)}}">
+action="{{route('Admin.banners.destroy',$item)}}">
 
 
 @csrf

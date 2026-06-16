@@ -44,7 +44,7 @@ class DanhMucController extends Controller
 
         return view(
 
-            'admin.danh_mucs.index',
+            'Admin.danh_mucs.index',
 
             compact(
                 'danhMucs',
@@ -65,7 +65,7 @@ class DanhMucController extends Controller
 
 
         return view(
-            'admin.danh_mucs.create'
+            'Admin.danh_mucs.create'
         );
 
 
@@ -102,7 +102,7 @@ class DanhMucController extends Controller
 
         return redirect()
 
-        ->route('admin.danh_mucs.index')
+        ->route('Admin.danh_mucs.index')
 
         ->with(
             'success',
@@ -125,7 +125,7 @@ class DanhMucController extends Controller
 
         return view(
 
-            'admin.danh_mucs.show',
+            'Admin.danh_mucs.show',
 
             [
                 'danhMuc'=>$danh_muc
@@ -149,7 +149,7 @@ class DanhMucController extends Controller
 
         return view(
 
-            'admin.danh_mucs.edit',
+            'Admin.danh_mucs.edit',
     compact('danhMuc')
 
         );
@@ -192,7 +192,7 @@ class DanhMucController extends Controller
 
         return redirect()
 
-        ->route('admin.danh_mucs.index')
+        ->route('Admin.danh_mucs.index')
 
         ->with(
             'success',

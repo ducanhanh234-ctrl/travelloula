@@ -11,13 +11,13 @@
 
 <form method="POST"
 
-action="{{route('admin.banners.store')}}">
+action="{{route('Admin.banners.store')}}">
 
 
 @csrf
 
 
-@include('admin.banners.form')
+@include('Admin.banners.form')
 
 
 <button class="btn btn-primary">

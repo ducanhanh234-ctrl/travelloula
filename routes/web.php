@@ -1,7 +1,15 @@
 <?php
 
 
+
+
+use App\Http\Controllers\BannerController;
+
+use App\Http\Controllers\DanhMucController;
+ 
+
 use App\Http\Controllers\ThanhToanController;
+
 
 use App\Http\Controllers\KhachHangDatTourController;
 use App\Http\Controllers\HuongDanVienController;
@@ -33,9 +41,6 @@ Route::get('/{id}/bai_viet', function () {
     return view('bai_viet.detail');
 })->name('bai_viet.detail');
 
-
-//Route::get('/tours', [TourController::class, 'index'])->name('tours.index');
-//Route::get('/tours/{tour}', [TourController::class, 'show'])->name('tours.show');
 
 
 
@@ -77,12 +82,32 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     // Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
+
+    Route::resource(
+        'banners',
+        BannerController::class
+    );
+    Route::resource(
+        'danh_mucs',
+        DanhMucController::class
+    );
+});
+
+
+
+
+
+
+
+Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
+
     Route::resource('phuong-tiens', PhuongTienController::class);
 });
 
 
 // Login Guide
 Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
+
     Route::get('/', function () {
         return view('Layouts.guide');
     })->name('dashboard');

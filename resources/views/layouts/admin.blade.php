@@ -1065,7 +1065,9 @@
                 <!-- Payments Management -->
                 <div class="nav-item">
                     <a href=""
-                        class="nav-link">
+
+                        class="nav-link ">
+
                         <i class="fas fa-credit-card"></i>
                         <span class="nav-text">Quản lý Thanh toán</span>
                     </a>

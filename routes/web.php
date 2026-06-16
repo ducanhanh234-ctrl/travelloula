@@ -1,6 +1,10 @@
 <?php
 
+ quanlybanner
+use App\Http\Controllers\BannerController;
+
 use App\Http\Controllers\DanhMucController;
+ quanlydanhmuc
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 
@@ -39,6 +43,17 @@ Route::get('/dieu_khoan', function () {
     return view('dieu_khoan.index');
 });
 
+Route::prefix('admin')
+->name('admin.')
+->group(function(){
+
+
+ quanlybanner
+    Route::resource(
+        'banners',
+        BannerController::class
+    );
+});
 
 
 Route::prefix('admin')
@@ -53,3 +68,4 @@ Route::prefix('admin')
 
 
 });
+

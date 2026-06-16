@@ -1,10 +1,10 @@
 <?php
 
- quanlybanner
+
 use App\Http\Controllers\BannerController;
 
 use App\Http\Controllers\DanhMucController;
- quanlydanhmuc
+ 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 
@@ -48,24 +48,17 @@ Route::prefix('admin')
 ->group(function(){
 
 
- quanlybanner
+
     Route::resource(
         'banners',
         BannerController::class
     );
-});
-
-
-Route::prefix('admin')
-->name('admin.')
-->group(function(){
-
-
     Route::resource(
         'danh_mucs',
         DanhMucController::class
     );
-
-
 });
+
+
+
 

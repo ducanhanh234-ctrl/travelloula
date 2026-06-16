@@ -985,7 +985,7 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Quản lý Người dùng</div>
                     <div class="nav-item">
-                        <a href="   " class="nav-link ">
+                                <a href="{{ route('Admin.users.index')}}" class="nav-link ">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>

@@ -43,7 +43,7 @@ class AuthController extends Controller
         }
 
         if ($user->isGuide()) {
-            return redirect()->intended(route('guide.dashboard'));
+            return redirect()->intended(route('Guide.dashboard'));
         }
 
         return redirect()->intended('/trang_chu');

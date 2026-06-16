@@ -6,7 +6,7 @@
 use App\Http\Controllers\BannerController;
 
 use App\Http\Controllers\DanhMucController;
- 
+
 
 use App\Http\Controllers\ThanhToanController;
 
@@ -76,7 +76,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/', function () {
         return view('Layouts.admin');
     })->name('dashboard');
-// Admin routes
+    // Admin routes
     Route::resource('users', UserController::class);
     // Route::resource('vai-tros', VaiTroController::class);
     // Route::resource('quyen-hans', QuyenHanController::class);
@@ -91,18 +91,19 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'danh_mucs',
         DanhMucController::class
     );
-});
-
-
-
-
-
-
-
-Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
-
     Route::resource('phuong-tiens', PhuongTienController::class);
 });
+
+
+
+
+
+
+
+// Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
+
+
+// });
 
 
 // Login Guide
@@ -111,7 +112,6 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     Route::get('/', function () {
         return view('Layouts.guide');
     })->name('dashboard');
-//Guide routes
+    //Guide routes
+    Route::resource('phuong-tiens', PhuongTienController::class);
 });
-
-

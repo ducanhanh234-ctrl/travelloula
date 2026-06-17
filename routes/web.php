@@ -35,7 +35,7 @@ use App\Http\Controllers\Admin\NhatKyTourController;
 
 
 
-use App\Http\Controllers\TourController;
+// use App\Http\Controllers\TourController;
 // Client routes
 
 Route::get('/', function () {
@@ -115,7 +115,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         Route::get('/', [ThongKeController::class, 'index'])->name('index');
         Route::get('/export', [ThongKeController::class, 'export'])->name('export');
     });
-  Route::resource(
+    Route::resource(
         'banners',
         BannerController::class
     );
@@ -124,20 +124,20 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
-     Route::resource('tours', TourController::class);
+    Route::resource('tours', TourController::class);
 
-        Route::resource(
-            'lich_trinh_tours',
-            LichTrinhTourController::class
-        );
+    Route::resource(
+        'lich_trinh_tours',
+        LichTrinhTourController::class
+    );
 
-        Route::resource(
-            'nhat_ky_tours',
-            NhatKyTourController::class
-        )->only([
-            'index',
-            'show'
-        ]);
+    Route::resource(
+        'nhat_ky_tours',
+        NhatKyTourController::class
+    )->only([
+        'index',
+        'show'
+    ]);
 });
 
 
@@ -145,7 +145,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
 
 
 
-    
+
 
 
 

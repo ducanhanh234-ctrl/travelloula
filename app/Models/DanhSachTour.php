@@ -24,16 +24,11 @@ class DanhSachTour extends Model
         'tong_quan_lich_trinh',
         'dich_vu_bao_gom',
         'dich_vu_khong_bao_gom',
+
         'trang_thai'
     ];
 
-    public function danhMuc()
-    {
-        return $this->belongsTo(
-            DanhMuc::class,
-            'danh_muc_id'
-        );
-    }
+    
 
     // public function lichTrinhs()
     // {
@@ -49,4 +44,33 @@ class DanhSachTour extends Model
     // {
     //     return $this->hasMany(DatTour::class,'tour_id');
     // }
+
+public function danhMuc()
+    {
+        return $this->belongsTo(
+            DanhMuc::class,
+            'danh_muc_id'
+        );
+    }
+    protected $casts = [
+        'gia_tour' => 'decimal:2',
+        'so_khach_toi_da' => 'integer',
+    ];
+
+    public function lichKhoiHanhs()
+    {
+        return $this->hasMany(
+            LichKhoiHanhTour::class,
+            'tour_id'
+        );
+    }
+
+    public function datTours()
+    {
+        return $this->hasMany(
+            DatTour::class,
+            'tour_id'
+        );
+    }
+
 }

@@ -914,11 +914,21 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Tours</div>
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Admin.tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <span class="nav-text">Danh sách Tours</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.lich_trinh_tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span class="nav-text">Quản lý lịch trình</span>
                     </a>
                 </div>
                 <div class="nav-item">
@@ -938,9 +948,8 @@
                     </a>
                 </div>
             </div>
-
             <div class="nav-item">
-                <a href="" class="nav-link ">
+                <a href="{{ route('Admin.nhat_ky_tours.index') }}" class="nav-link ">
                     <div class="nav-icon">
                         <i class="fas fa-map-marked-alt"></i>
                     </div>
@@ -994,7 +1003,8 @@
 
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>

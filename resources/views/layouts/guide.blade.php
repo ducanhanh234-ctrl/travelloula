@@ -504,7 +504,7 @@
                 </button>
 
                 <div class="page-title">
-                    @yield('page-title', 'Trang hướng dẫn viên')
+                    @yield('guide', 'Trang hướng dẫn viên')
                 </div>
             </div>
 

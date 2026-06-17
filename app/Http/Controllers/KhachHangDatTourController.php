@@ -88,7 +88,7 @@ class KhachHangDatTourController extends Controller
             'so_giay_to' => 'nullable|max:50',
             'loai_giay_to' => 'nullable|max:20',
             'loai_hanh_khach' => 'required|max:20',
-            'trang_thai_thanh_toan' => 'required|max:20',
+            'trang_thai_thanh_toan' => 'required|in:chua_thanh_toan,da_coc,thanh_toan_mot_phan,da_thanh_toan,hoan_tien,that_bai',
             'trang_thai_check_in' => 'required|in:chua_check_in,da_check_in',
             'so_tien_da_thanh_toan' => 'required|numeric|min:0',
             'tong_tien' => 'required|numeric|min:0',
@@ -108,7 +108,7 @@ class KhachHangDatTourController extends Controller
         $khachHang->update($data);
 
         return redirect()
-            ->route('khach-hang-dat-tours.index')
+            ->route('Admin.khach-hang.index')
             ->with('success', 'Cập nhật khách hàng thành công');
     }
 
@@ -118,7 +118,7 @@ class KhachHangDatTourController extends Controller
         $khachHang->delete();
 
         return redirect()
-            ->route('khach-hang-dat-tours.index')
+            ->route('Admin.khach-hang.index')
             ->with('success', 'Xóa khách hàng thành công');
     }
     public function create()
@@ -140,7 +140,7 @@ public function store(Request $request)
         'so_giay_to' => 'nullable|max:50',
         'loai_giay_to' => 'nullable|max:20',
         'loai_hanh_khach' => 'required|max:20',
-        'trang_thai_thanh_toan' => 'required|max:20',
+        'trang_thai_thanh_toan' => 'required|in:chua_thanh_toan,da_coc,thanh_toan_mot_phan,da_thanh_toan,hoan_tien,that_bai',
         'trang_thai_check_in' => 'required|in:chua_check_in,da_check_in',
         'so_tien_da_thanh_toan' => 'required|numeric|min:0',
         'tong_tien' => 'required|numeric|min:0',
@@ -160,7 +160,7 @@ public function store(Request $request)
     KhachHangDatTour::create($data);
 
     return redirect()
-        ->route('khach-hang-dat-tours.index')
+        ->route('Admin.khach-hang.index')
         ->with('success', 'Thêm khách hàng thành công');
 }
 }

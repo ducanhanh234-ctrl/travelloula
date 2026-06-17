@@ -209,6 +209,7 @@
                 <div class="row">
                     <div class="col-md-12 mb-4">
                         <label class="form-label">Chọn đơn đặt tour *</label>
+
                         <select name="dat_tour_id" class="input-control" required>
                             <option value="">-- Chọn đơn đặt tour --</option>
 
@@ -309,20 +310,51 @@
 
             <div class="form-card-body">
                 <div class="row">
+
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Trạng thái thanh toán</label>
-                        <input type="text"
-                               name="trang_thai_thanh_toan"
-                               class="input-control"
-                               value="{{ old('trang_thai_thanh_toan', 'pending') }}">
+
+                        <select name="trang_thai_thanh_toan" class="input-control">
+                            <option value="chua_thanh_toan"
+                                @selected(old('trang_thai_thanh_toan', 'chua_thanh_toan') == 'chua_thanh_toan')>
+                                Chưa thanh toán
+                            </option>
+
+                            <option value="da_coc"
+                                @selected(old('trang_thai_thanh_toan') == 'da_coc')>
+                                Đã đặt cọc
+                            </option>
+
+                            <option value="thanh_toan_mot_phan"
+                                @selected(old('trang_thai_thanh_toan') == 'thanh_toan_mot_phan')>
+                                Thanh toán một phần
+                            </option>
+
+                            <option value="da_thanh_toan"
+                                @selected(old('trang_thai_thanh_toan') == 'da_thanh_toan')>
+                                Đã thanh toán
+                            </option>
+
+                            <option value="hoan_tien"
+                                @selected(old('trang_thai_thanh_toan') == 'hoan_tien')>
+                                Đã hoàn tiền
+                            </option>
+
+                            <option value="that_bai"
+                                @selected(old('trang_thai_thanh_toan') == 'that_bai')>
+                                Thanh toán thất bại
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Trạng thái check-in</label>
+
                         <select name="trang_thai_check_in" class="input-control">
-                            <option value="chua_check_in" @selected(old('trang_thai_check_in') == 'chua_check_in')>
+                            <option value="chua_check_in" @selected(old('trang_thai_check_in', 'chua_check_in') == 'chua_check_in')>
                                 Chưa check-in
                             </option>
+
                             <option value="da_check_in" @selected(old('trang_thai_check_in') == 'da_check_in')>
                                 Đã check-in
                             </option>

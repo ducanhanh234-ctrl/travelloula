@@ -14,7 +14,7 @@ class DanhSachTourSeeder extends Seeder
             [
                 'danh_muc_id' => 1,
                 'ten_tour' => 'Tour Đà Nẵng 3N2Đ',
-                'duong_dan' => Str::slug('Tour Đà Nẵng 3N2Đ'),
+                'duong_dan' => Str::slug('tour-da-nang-3n2d'),
                 'gia_tour' => 3500000,
                 'thoi_luong' => '3 ngày 2 đêm',
                 'dia_diem_khoi_hanh' => 'Hà Nội',
@@ -28,23 +28,8 @@ class DanhSachTourSeeder extends Seeder
 
             [
                 'danh_muc_id' => 1,
-                'ten_tour' => 'Tour Nha Trang',
-                'duong_dan' => Str::slug('Tour Nha Trang'),
-                'gia_tour' => 4200000,
-                'thoi_luong' => '4 ngày 3 đêm',
-                'dia_diem_khoi_hanh' => 'Hà Nội',
-                'diem_den' => 'Nha Trang',
-                'so_khach_toi_da' => 40,
-                'phuong_tien' => 'Máy bay',
-                'trang_thai' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            [
-                'danh_muc_id' => 1,
                 'ten_tour' => 'Tour Phú Quốc',
-                'duong_dan' => Str::slug('Tour Phú Quốc'),
+                'duong_dan' => Str::slug('tour-phu-quoc'),
                 'gia_tour' => 5500000,
                 'thoi_luong' => '4 ngày 3 đêm',
                 'dia_diem_khoi_hanh' => 'Hà Nội',

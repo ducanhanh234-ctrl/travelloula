@@ -1,0 +1,68 @@
+/* Pagination */
+.pagination {
+    margin-bottom: 0;
+}
+
+.pagination .page-link {
+    min-width: 34px;
+    height: 34px;
+    line-height: 22px;
+    text-align: center;
+    font-size: 13px;
+    padding: 4px 8px;
+}
+
+/* Badge trạng thái */
+.badge {
+    font-size: 12px;
+}
+
+/* Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+}
+
+/* .btn-action {
+    height: 48px;
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    white-space: nowrap;
+} */
+
+.input-group-text {
+    border-right: none;
+}
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+}
+
+.form-control,
+.input-group-text {
+    height: 40px;
+}
+
+.btn-action {
+    width: 120px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}

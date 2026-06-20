@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KhachHangDatTourController;
 use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\Admin\LichKhoiHanhController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -73,7 +75,10 @@ Route::prefix('Admin')
         Route::resource('users', UserController::class);
         Route::resource('khach-hang', KhachHangDatTourController::class);
         Route::resource('huong-dan-viens', HuongDanVienController::class);
+        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
     });
+
+
 
 /*
 |--------------------------------------------------------------------------

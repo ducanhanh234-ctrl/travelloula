@@ -877,9 +877,10 @@
             background: rgba(255, 255, 255, 0.5);
         }
     </style>
-
+    @stack('styles')
     @yield('styles')
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
     <!-- Sidebar -->
@@ -922,7 +923,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="" class="nav-link ">
+                    <a href="{{ route('Admin.lich-khoi-hanh.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
@@ -985,7 +986,7 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Quản lý Người dùng</div>
                     <div class="nav-item">
-                                <a href="{{ route('Admin.users.index')}}" class="nav-link ">
+                        <a href="{{ route('Admin.users.index') }}" class="nav-link ">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>
@@ -994,7 +995,8 @@
 
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>
@@ -1262,8 +1264,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('adminSidebar');
-            const main = document.getElementById('adminMain');
+            const sidebar = document.getElementById('sidebar');
+            const main = document.querySelector('.main-content');
 
             if (sidebarToggle && sidebar && main) {
                 sidebarToggle.addEventListener('click', function() {

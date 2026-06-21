@@ -930,8 +930,8 @@
                     </a>
                 </div>
                 <div class="nav-item">
-
-                    <a href="{{ route('Admin.lich_trinh_tours.index') }}"
+{{-- {{ route('Admin.lich_trinh_tours.index') }} --}}
+                    <a href=""
                         class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-alt"></i>
@@ -1019,6 +1019,30 @@
                                 <i class="fas fa-users"></i>
                             </div>
                             <span class="nav-text">Quản lý Khách hàng</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.vai-tros.index') }}" class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-user-tag"></i>
+                            </div>
+                            <span class="nav-text">Vai trò</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.quyen-hans.index') }}" class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-key"></i>
+                            </div>
+                            <span class="nav-text">Quyền</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.role-permissions.matrix') }}" class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-th"></i>
+                            </div>
+                            <span class="nav-text">Phân quyền</span>
                         </a>
                     </div>
 

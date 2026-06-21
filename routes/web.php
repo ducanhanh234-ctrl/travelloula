@@ -21,6 +21,7 @@ use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\QuyenHanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
+use App\Http\Controllers\RolePermissionController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -31,11 +32,6 @@ use App\Http\Controllers\Admin\HinhAnhTourController;
 
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
-
-
-
-use App\Http\Controllers\TourController;
 // Client routes
 
 Route::get('/', function () {
@@ -88,84 +84,68 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 // Login ADMIN
-Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
-    Route::get('/', function () {
-        return view('Layouts.admin');
-    })->name('dashboard');
-    // Admin routes
-    Route::resource('users', UserController::class);
-    // Route::resource('vai-tros', VaiTroController::class);
-    // Route::resource('quyen-hans', QuyenHanController::class);
-    Route::resource('khach-hang', KhachHangDatTourController::class);
-    Route::resource('huong-dan-viens', HuongDanVienController::class);
+Route::prefix('Admin')
+    ->name('Admin.')
+    ->middleware(['auth', 'permission:vao_admin'])
+    ->group(function () {
 
-    Route::prefix('/thanh_toans')->name('thanh_toans.')->group(function () {
-        Route::get('/', [ThanhToanController::class, 'index'])->name('index');
-        Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
-        Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
-        Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
-        Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
-    });
-    Route::prefix('/danh_gias')->name('danh_gias.')->group(function () {
-        Route::get('/', [DanhGiaController::class, 'index'])->name('index');
-        Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
-        Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
-    });
-    Route::prefix('/thong_ke')->name('thong_ke.')->group(function () {
-        Route::get('/', [ThongKeController::class, 'index'])->name('index');
-        Route::get('/export', [ThongKeController::class, 'export'])->name('export');
-    });
-  Route::resource(
-        'banners',
-        BannerController::class
-    );
-    Route::resource(
-        'danh_mucs',
-        DanhMucController::class
-    );
-    Route::resource('phuong-tiens', PhuongTienController::class);
-     Route::resource('tours', TourController::class);
+        Route::get('/', function () {
+            return view('layouts.admin');
+        })->name('dashboard');
 
-        Route::resource(
-            'lich_trinh_tours',
-            LichTrinhTourController::class
-        );
+        Route::resource('users', UserController::class);
+        Route::resource('vai-tros', VaiTroController::class);
+        Route::resource('quyen-hans', QuyenHanController::class);
 
-        Route::resource(
-            'nhat_ky_tours',
-            NhatKyTourController::class
-        )->only([
+        Route::get('role-permissions/matrix', [RolePermissionController::class, 'matrix'])
+            ->name('role-permissions.matrix');
+
+        Route::post('role-permissions/update-matrix', [RolePermissionController::class, 'updateMatrix'])
+            ->name('role-permissions.update-matrix');
+
+        Route::resource('khach-hang', KhachHangDatTourController::class);
+        Route::resource('huong-dan-viens', HuongDanVienController::class);
+
+        Route::prefix('thanh_toans')->name('thanh_toans.')->group(function () {
+            Route::get('/', [ThanhToanController::class, 'index'])->name('index');
+            Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
+            Route::get('/{id}/edit_status', [ThanhToanController::class, 'editStatus'])->name('edit_status');
+            Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
+            Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('danh_gias')->name('danh_gias.')->group(function () {
+            Route::get('/', [DanhGiaController::class, 'index'])->name('index');
+            Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
+            Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('thong_ke')->name('thong_ke.')->group(function () {
+            Route::get('/', [ThongKeController::class, 'index'])->name('index');
+            Route::get('/export', [ThongKeController::class, 'export'])->name('export');
+        });
+
+        Route::resource('banners', BannerController::class);
+        Route::resource('danh_mucs', DanhMucController::class);
+        Route::resource('phuong-tiens', PhuongTienController::class);
+        Route::resource('tours', TourController::class);
+
+        Route::resource('nhat_ky_tours', NhatKyTourController::class)->only([
             'index',
             'show'
         ]);
-});
+    });
 
 
+// Login GUIDE
+Route::prefix('Guide')
+    ->name('Guide.')
+    ->middleware(['auth', 'permission:vao_guide'])
+    ->group(function () {
 
+        Route::get('/', function () {
+            return view('layouts.guide');
+        })->name('dashboard');
 
-
-
-    
-
-
-
-
-
-
-
-// Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
-
-
-// });
-
-
-// Login Guide
-Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
-
-
-    Route::get('/', function () {
-        return view('Layouts.guide');
-    })->name('dashboard');
-    //Guide routes
-    Route::resource('phuong-tiens', PhuongTienController::class);
-});
+        Route::resource('phuong-tiens', PhuongTienController::class);
+    });

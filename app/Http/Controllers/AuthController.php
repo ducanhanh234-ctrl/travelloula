@@ -36,13 +36,14 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        if ($user->isAdmin()) {
+        if ($user && $user->hasPermission('vao_admin')) {
             return redirect()->intended(route('Admin.dashboard'));
         }
 
-        if ($user->isGuide()) {
+        if ($user && $user->hasPermission('vao_guide')) {
             return redirect()->intended(route('Guide.dashboard'));
         }
 

@@ -9,9 +9,12 @@
         </div>
 
         <div class="guide-actions">
-            <a href="{{ route('Admin.huong-dan-viens.edit', $huongDanVien->id) }}" class="btn-edit">
-                <i class="fas fa-edit"></i> Sửa
-            </a>
+            @php $currentUser = auth()->user(); @endphp
+            @if($currentUser && $currentUser->hasPermission('guides.edit'))
+                <a href="{{ route('Admin.huong-dan-viens.edit', $huongDanVien->id) }}" class="btn-edit">
+                    <i class="fas fa-edit"></i> Sửa
+                </a>
+            @endif
 
             <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Quay lại

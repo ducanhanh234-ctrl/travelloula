@@ -3,13 +3,16 @@
 @section('content')
     <div class="container">
 
+        @php $currentUser = auth()->user(); @endphp
         <div class="d-flex justify-content-between mb-3">
 
             <h3>Quản lý Tour</h3>
 
-            <a href="{{ route('Admin.tours.create') }}" class="btn btn-primary">
-                Thêm Tour
-            </a>
+            @if($currentUser && $currentUser->hasPermission('tours.create'))
+                <a href="{{ route('Admin.tours.create') }}" class="btn btn-primary">
+                    Thêm Tour
+                </a>
+            @endif
 
         </div>
         <div class="card mb-3">
@@ -185,23 +188,28 @@
 
                             </a>
 
-                            <a href="{{ route('Admin.tours.edit', $tour) }}" class="btn btn-warning btn-sm">
+                            @if($currentUser && $currentUser->hasPermission('tours.edit'))
+                                <a href="{{ route('Admin.tours.edit', $tour) }}" class="btn btn-warning btn-sm">
 
-                                Sửa
+                                    Sửa
 
-                            </a>
+                                </a>
+                            @endif
 
-                            <form action="{{ route('Admin.tours.destroy', $tour) }}" method="POST" class="d-inline">
+                            @if($currentUser && $currentUser->hasPermission('tours.delete'))
+                                <form action="{{ route('Admin.tours.destroy', $tour) }}" method="POST" class="d-inline">
 
-                                @csrf
-                                @method('DELETE')
+                                    @csrf
+                                    @method('DELETE')
 
-                                <button onclick="return confirm('Xóa?')" class="btn btn-danger btn-sm">
+                                    <button onclick="return confirm('Xóa?')" class="btn btn-danger btn-sm">
 
-                                    Xóa
+                                        Xóa
 
-                                </button>
+                                    </button>
 
+                                </form>
+                            @endif
                             </form>
 
                         </td>

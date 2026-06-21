@@ -1,9 +1,12 @@
 @extends('layouts.admin')
 @section('content')
+@php $currentUser = auth()->user(); @endphp
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3>Quản lý hướng dẫn viên</h3>
-            <a href="{{ route('Admin.huong-dan-viens.create') }}" class="btn btn-primary">Thêm hướng dẫn viên</a>
+            @if($currentUser && $currentUser->hasPermission('guides.create'))
+                <a href="{{ route('Admin.huong-dan-viens.create') }}" class="btn btn-primary">Thêm hướng dẫn viên</a>
+            @endif
         </div>
 
         @if (session('success'))
@@ -44,13 +47,17 @@
                             <td>
                                 <a href="{{ route('Admin.huong-dan-viens.show', $guide->id) }}"
                                     class="btn btn-sm btn-info">Xem</a>
-                                <a href="{{ route('Admin.huong-dan-viens.edit', $guide->id) }}"
-                                    class="btn btn-sm btn-secondary">Sửa</a>
-                                <form action="{{ route('Admin.huong-dan-viens.destroy', $guide->id) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('Xóa hướng dẫn viên này?');">
-                                    @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger">Xóa</button>
-                                </form>
+                                @if($currentUser && $currentUser->hasPermission('guides.edit'))
+                                    <a href="{{ route('Admin.huong-dan-viens.edit', $guide->id) }}"
+                                        class="btn btn-sm btn-secondary">Sửa</a>
+                                @endif
+                                @if($currentUser && $currentUser->hasPermission('guides.delete'))
+                                    <form action="{{ route('Admin.huong-dan-viens.destroy', $guide->id) }}" method="POST"
+                                        class="d-inline" onsubmit="return confirm('Xóa hướng dẫn viên này?');">
+                                        @csrf @method('DELETE')
+                                        <button class="btn btn-sm btn-danger">Xóa</button>
+                                    </form>
+                                @endif
                             </td>
                         </tr>
                     @empty

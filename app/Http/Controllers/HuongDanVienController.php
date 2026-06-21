@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\Storage;
 
 class HuongDanVienController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:guides.view')->only(['index', 'show']);
+        $this->middleware('permission:guides.create')->only(['create', 'store']);
+        $this->middleware('permission:guides.edit')->only(['edit', 'update']);
+        $this->middleware('permission:guides.delete')->only(['destroy']);
+    }
+
     public function index()
     {
         $guides = HuongDanVien::latest()->paginate(12);
@@ -48,7 +56,7 @@ class HuongDanVienController extends Controller
             'password' => Hash::make($data['password']),
             'phone' => $data['so_dien_thoai'] ?? null,
             'address' => $data['dia_chi'] ?? null,
-            'is_active' => 2,
+            'is_active' => true,
         ]);
 
         unset($data['password']);

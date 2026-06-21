@@ -94,7 +94,7 @@ class KhachHangDatTourController extends Controller
             'tong_tien' => 'required|numeric|min:0',
             'yeu_cau_dac_biet' => 'nullable|string',
             'so_phong' => 'nullable|max:255',
-            'loai_phong' => 'nullable|max:255',
+            'loai_phong' => 'nullable|in:phong_don,phong_doi,phong_twin,phong_ba,phong_gia_dinh,phong_deluxe,phong_suite,phong_vip',
             'ghi_chu' => 'nullable|string',
         ]);
 
@@ -146,7 +146,7 @@ public function store(Request $request)
         'tong_tien' => 'required|numeric|min:0',
         'yeu_cau_dac_biet' => 'nullable|string',
         'so_phong' => 'nullable|max:255',
-        'loai_phong' => 'nullable|max:255',
+        'loai_phong' => 'nullable|in:phong_don,phong_doi,phong_twin,phong_ba,phong_gia_dinh,phong_deluxe,phong_suite,phong_vip',
         'ghi_chu' => 'nullable|string',
     ]);
 

@@ -2,190 +2,216 @@
 
 @section('content')
 <style>
-    .vehicle-edit-wrap {
-        max-width: 1380px;
-        margin: 0 auto;
-        padding: 32px 32px 48px;
+.vehicle-edit-page{
+    background:#f8fafc;
+    min-height:100vh;
+    padding:20px 12px 40px;
+    color:#0f172a;
+    width:100%;
+}
+
+.vehicle-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:24px;
+}
+
+.back-link{
+    color:#64748b;
+    text-decoration:none;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:12px;
+}
+
+.back-link:hover{
+    color:#2563eb;
+}
+
+.page-title{
+    font-size:32px;
+    font-weight:800;
+    margin:0 0 6px;
+    color:#0f172a;
+}
+
+.page-subtitle{
+    color:#64748b;
+    font-size:15px;
+}
+
+.form-card{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    overflow:hidden;
+    margin-bottom:24px;
+    box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+
+.form-card-header{
+    padding:18px 24px;
+    border-bottom:1px solid #e2e8f0;
+    background:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:18px;
+    font-weight:800;
+    color:#0f172a;
+}
+
+.form-card-badge{
+    background:#eef2ff;
+    color:#4f46e5;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:800;
+}
+
+.form-card-body{
+    padding:24px 24px 8px;
+}
+
+.form-label{
+    display:block;
+    font-weight:700;
+    color:#0f172a;
+    margin-bottom:8px;
+    font-size:15px;
+}
+
+.input-control,
+.textarea-control{
+    width:100%;
+    border:1px solid #d1d5db;
+    border-radius:9px;
+    padding:0 16px;
+    font-size:15px;
+    color:#0f172a;
+    background:#fff;
+    transition:.2s;
+}
+
+.input-control{
+    height:50px;
+}
+
+.textarea-control{
+    min-height:120px;
+    padding:14px 16px;
+    resize:vertical;
+}
+
+.input-control:focus,
+.textarea-control:focus{
+    outline:none;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 3px rgba(59,130,246,.15);
+}
+
+.alert-custom{
+    background:#fee2e2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+    padding:14px 18px;
+    border-radius:10px;
+    margin-bottom:20px;
+    font-weight:700;
+}
+
+.actions-bar{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:18px 24px;
+    display:flex;
+    justify-content:flex-end;
+    gap:12px;
+    box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+
+.btn-cancel{
+    padding:11px 24px;
+    border-radius:9px;
+    background:#fff;
+    border:1px solid #cbd5e1;
+    text-decoration:none;
+    color:#334155;
+    font-weight:800;
+    transition:.2s;
+}
+
+.btn-cancel:hover{
+    background:#f8fafc;
+    color:#0f172a;
+}
+
+.btn-submit{
+    padding:11px 26px;
+    border:none;
+    border-radius:9px;
+    background:#3b82f6;
+    color:#fff;
+    font-weight:800;
+    box-shadow:0 6px 14px rgba(59,130,246,.22);
+    transition:.2s;
+}
+
+.btn-submit:hover{
+    background:#2563eb;
+    transform:translateY(-1px);
+}
+
+@media(max-width:1100px){
+    .vehicle-edit-page{
+        padding:20px 10px 32px;
     }
 
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #64748b;
-        text-decoration: none;
-        font-weight: 600;
-        margin-bottom: 14px;
-        transition: .2s;
+    .vehicle-header{
+        flex-direction:column;
+        gap:18px;
+    }
+}
+
+@media(max-width:768px){
+    .page-title{
+        font-size:26px;
     }
 
-    .back-link:hover {
-        color: #2563eb;
+    .actions-bar{
+        flex-direction:column-reverse;
     }
 
-    .page-title {
-        font-size: 32px;
-        font-weight: 800;
-        color: #0f172a;
-        margin: 0 0 6px;
+    .btn-cancel,
+    .btn-submit{
+        width:100%;
+        text-align:center;
     }
-
-    .page-subtitle {
-        color: #64748b;
-        font-size: 15px;
-        margin-bottom: 28px;
-    }
-
-    .form-card {
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 22px;
-        box-shadow: 0 2px 8px rgba(15, 23, 42, .04);
-    }
-
-    .form-card-header {
-        padding: 16px 24px;
-        border-bottom: 1px solid #e5e7eb;
-        background: #fff;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: 800;
-        color: #0f172a;
-    }
-
-    .form-card-badge {
-        background: #3b82f6;
-        color: #fff;
-        padding: 5px 14px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-    }
-
-    .form-card-body {
-        padding: 26px 24px 14px;
-    }
-
-    .form-label {
-        font-weight: 700;
-        color: #0f172a;
-        margin-bottom: 8px;
-        font-size: 15px;
-    }
-
-    .input-control,
-    .textarea-control {
-        width: 100%;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 15px;
-        color: #0f172a;
-        background: #fff;
-        transition: .2s;
-    }
-
-    .input-control {
-        height: 44px;
-    }
-
-    .textarea-control {
-        min-height: 110px;
-        resize: vertical;
-    }
-
-    .input-control:focus,
-    .textarea-control:focus {
-        outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
-    }
-
-    .alert-custom {
-        background: #fee2e2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-        padding: 14px 18px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        font-weight: 700;
-    }
-
-    .actions-bar {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 24px;
-    }
-
-    .btn-cancel {
-        padding: 10px 22px;
-        border-radius: 8px;
-        background: #fff;
-        border: 1px solid #cbd5e1;
-        text-decoration: none;
-        color: #334155;
-        font-weight: 800;
-        transition: .2s;
-    }
-
-    .btn-cancel:hover {
-        background: #f8fafc;
-        color: #0f172a;
-    }
-
-    .btn-submit {
-        padding: 10px 24px;
-        border: none;
-        border-radius: 8px;
-        background: #3b82f6;
-        color: #fff;
-        font-weight: 800;
-        box-shadow: 0 8px 18px rgba(59, 130, 246, .22);
-        transition: .2s;
-    }
-
-    .btn-submit:hover {
-        background: #2563eb;
-    }
-
-    @media (max-width: 768px) {
-        .vehicle-edit-wrap {
-            padding: 24px 16px;
-        }
-
-        .page-title {
-            font-size: 26px;
-        }
-
-        .actions-bar {
-            flex-direction: column-reverse;
-        }
-
-        .btn-cancel,
-        .btn-submit {
-            width: 100%;
-            text-align: center;
-        }
-    }
+}
 </style>
 
-<div class="vehicle-edit-wrap">
+<div class="vehicle-edit-page">
 
-    <a href="{{ route('Admin.phuong-tiens.index') }}" class="back-link">
-        <i class="fa fa-arrow-left"></i>
-        Quay lại danh sách
-    </a>
+    <div class="vehicle-header">
+        <div>
+            <a href="{{ route('Admin.phuong-tiens.index') }}" class="back-link">
+                <i class="fa fa-arrow-left"></i>
+                Quay lại danh sách
+            </a>
 
-    <h1 class="page-title">
-        Chỉnh sửa xe
-    </h1>
+            <h1 class="page-title">
+                Chỉnh sửa xe
+            </h1>
 
-    <div class="page-subtitle">
-        {{ $phuongTien->bien_so_xe }} - {{ $phuongTien->hang_xe }}
+            <div class="page-subtitle">
+                {{ $phuongTien->bien_so_xe }} - {{ $phuongTien->hang_xe }}
+            </div>
+        </div>
     </div>
 
     @if($errors->any())
@@ -200,7 +226,7 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>Thông tin cơ bản</span>
+                <span>🚐 Thông tin cơ bản</span>
                 <span class="form-card-badge">CHỈNH SỬA</span>
             </div>
 
@@ -263,7 +289,7 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>Thông tin tài xế</span>
+                <span>👤 Thông tin tài xế</span>
             </div>
 
             <div class="form-card-body">
@@ -289,12 +315,12 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>Ghi chú</span>
+                <span>📝 Ghi chú</span>
             </div>
 
             <div class="form-card-body">
                 <div class="row">
-                    <div class="col-md-12 mb-3">
+                    <div class="col-md-12 mb-4">
                         <label class="form-label">Ghi chú về xe</label>
                         <textarea name="ghi_chu"
                                   class="textarea-control"

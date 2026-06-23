@@ -920,12 +920,23 @@
                 <div class="nav-section-title">Quản lý Tours</div>
                 <div class="nav-item">
 
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Admin.tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}">
 
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
                         <span class="nav-text">Danh sách Tours</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+
+                    <a href="{{ route('Admin.lich_trinh_tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span class="nav-text">Quản lý lịch trình</span>
                     </a>
                 </div>
                 <div class="nav-item">
@@ -953,10 +964,9 @@
                     </a>
                 </div>
             </div>
-
             <div class="nav-item">
 
-                <a href="" class="nav-link ">
+                <a href="{{ route('Admin.nhat_ky_tours.index') }}" class="nav-link ">
 
                     <div class="nav-icon">
                         <i class="fas fa-map-marked-alt"></i>
@@ -970,6 +980,7 @@
 
                 <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
                     class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}">
+
 
                     <div class="nav-icon">
                         <i class="fas fa-calendar-check"></i>
@@ -992,6 +1003,18 @@
 
                     <a href="{{ route('Admin.users.index')}}" class="nav-link ">
 
+
+
+
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="nav-text">Quản lý HDV</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
 
 
                         <div class="nav-icon">
@@ -1024,6 +1047,7 @@
                     </a>
                 </div>
 
+
             </div>
 
             <div class="nav-item">
@@ -1032,32 +1056,29 @@
 
                 <a href="{{route('Admin.banners.index')}}"
                     class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+ main
 
-
-
-                    <i class="fas fa-image"></i>
-                    <span class="nav-text">Quản lý Banner</span>
-
-                </a>
             </div>
-            </div>
+
 
             <!-- Banners Management -->
             <div class="nav-item">
-                <a href="" class="nav-link ">
-                    <i class="fas fa-image"></i>
-                    <span class="nav-text">Quản lý Banner</span>
-                </a>
-            </div>
+                    <a href="{{ route('Admin.banners.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+                        <i class="fas fa-image"></i>
+                        <span class="nav-text">Quản lý Banner</span>
+
+                    </a>
+                </div>
 
             <!-- Categories Management -->
-            <div class="nav-item">
-                <a href="" class="nav-link ">
-                    <i class="fas fa-tags"></i>
-                    <span class="nav-text">Quản lý Danh mục</span>
-                </a>
-            </div>
-
+                <div class="nav-item">
+                    <a href="{{ route('Admin.danh_mucs.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+                        <i class="fas fa-tags"></i>
+                        <span class="nav-text">Quản lý Danh mục</span>
+                    </a>
+                </div>
             {{-- Đặt tour theo đoàn --}}
             <li class="nav-item">
                 <a class="nav-link " href="">
@@ -1083,10 +1104,6 @@
                     <span class="nav-text">Quản lý Thanh toán</span>
                 </a>
             </div>
-
-
-
-
             <!-- Reports -->
             <div class="nav-item">
                 <a href="{{ route('Admin.thong_ke.index') }}"
@@ -1104,6 +1121,7 @@
                     <span class="badge badge-admin bg-danger ms-auto">3</span>
                 </a>
             </div>
+
 
             <!-- Support Tickets -->
             <div class="nav-item">
@@ -1202,6 +1220,7 @@
                 </div>
             </div>
 
+
             <!-- Reports & Settings -->
             <div class="nav-section">
                 <div class="nav-section-title">Hệ thống</div>
@@ -1231,7 +1250,8 @@
                     <div class="nav-section-title">Hỗ trợ</div>
                     <div class="nav-item">
 
-                        <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1242,7 +1262,8 @@
                     </div>
                     <div class="nav-item">
 
-                        <a href="" class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
 
                             <div class="nav-icon">
                                 <i class="fas fa-headset"></i>
@@ -1250,9 +1271,10 @@
                             <span class="nav-text">Hỗ trợ</span>
                         </a>
                     </div>
-                    <div class="nav-item">
+                    {{-- <div class="nav-item">
 
-                        <a href="" class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1260,7 +1282,7 @@
                             </div>
                             <span class="nav-text">Thông báo</span>
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <!-- Reports & Settings -->
@@ -1268,7 +1290,8 @@
                     <div class="nav-section-title">Hệ thống</div>
                     <div class="nav-item">
 
-                        <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1279,7 +1302,8 @@
                     </div>
                     <div class="nav-item">
 
-                        <a href="" class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
 
 
                             <div class="nav-icon">
@@ -1437,7 +1461,6 @@
             // Implement user menu dropdown
             console.log('Toggle user menu');
         }
-
     </script>
 
     @yield('scripts')

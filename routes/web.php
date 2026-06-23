@@ -24,20 +24,33 @@ use App\Http\Controllers\VaiTroController;
 use App\Http\Controllers\QuanLyDatTourController;
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TourController;
+
+use App\Http\Controllers\Admin\TourController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\LichTrinhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+
+use App\Http\Controllers\Admin\DatTourController;
+use App\Http\Controllers\Admin\NhatKyTourController;
+
+
+
+
+// use App\Http\Controllers\TourController;
 // Client routes
+
 Route::get('/', function () {
     return view('Client.trang_chu.index');
 });
 
 
-
 Route::get('/bai_viet', function () {
-    return view('bai_viet.index');
+    return view('Client.bai_viet.index');
 });
-
 Route::get('/{id}/bai_viet', function () {
-    return view('bai_viet.detail');
+
+    return view('Client.bai_viet.detail');
+
 })->name('bai_viet.detail');
 
 
@@ -74,6 +87,9 @@ Route::post('/register', [AuthController::class, 'register'])->name('register.pe
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+
 // Login ADMIN
 Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
     Route::get('/', function () {
@@ -164,7 +180,25 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
+
+
+    Route::resource('tours', TourController::class);
+
+    Route::resource(
+        'lich_trinh_tours',
+        LichTrinhTourController::class
+    );
+
+    Route::resource(
+        'nhat_ky_tours',
+        NhatKyTourController::class
+    )->only([
+        'index',
+        'show'
+    ]);
 });
+
+
 
 
 

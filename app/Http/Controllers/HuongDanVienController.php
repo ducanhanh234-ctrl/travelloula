@@ -19,9 +19,38 @@ class HuongDanVienController extends Controller
         $this->middleware('permission:guides.delete')->only(['destroy']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $guides = HuongDanVien::latest()->paginate(12);
+        $query = HuongDanVien::query();
+
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('ho_ten', 'like', '%' . $keyword . '%')
+                    ->orWhere('email', 'like', '%' . $keyword . '%')
+                    ->orWhere('so_dien_thoai', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        if ($request->filled('kinh_nghiem')) {
+            if ($request->kinh_nghiem == '0_1') {
+                $query->whereBetween('so_nam_kinh_nghiem', [0, 1]);
+            } elseif ($request->kinh_nghiem == '2_5') {
+                $query->whereBetween('so_nam_kinh_nghiem', [2, 5]);
+            } elseif ($request->kinh_nghiem == '6_plus') {
+                $query->where('so_nam_kinh_nghiem', '>=', 6);
+            }
+        }
+
+        $guides = $query->latest()
+            ->paginate(12)
+            ->withQueryString();
+
         return view('Admin.huong_dan_viens.index', compact('guides'));
     }
 

@@ -146,6 +146,16 @@
             accent-color: #0d6efd;
         }
 
+        .pagination-wrapper {
+            padding: 0 24px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination-wrapper .pagination {
+            margin-bottom: 0;
+        }
+
         .matrix-footer {
             padding: 18px 24px;
             background: #f8fafc;
@@ -263,13 +273,17 @@
         </div>
 
         <form method="POST" action="{{ route('Admin.role-permissions.update-matrix') }}">
-            @csrf
+
+            @foreach($quyenHans as $permission)
+                <input type="hidden" name="visible_permission_ids[]" value="{{ $permission->id }}">
+            @endforeach
 
             <div class="table-wrapper">
                 <table class="permission-matrix">
                     <thead>
                         <tr>
                             <th>Quyền hạn</th>
+
                             @foreach($vaiTros as $vaiTro)
                                 <th>
                                     <div class="role-header">
@@ -281,7 +295,7 @@
                     </thead>
 
                     <tbody>
-                        @foreach($quyenHans->groupBy('mo_dun') as $module => $permissions)
+                        @forelse($quyenHans->getCollection()->groupBy('mo_dun') as $module => $permissions)
                             @foreach($permissions as $permission)
                                 <tr>
                                     <td>
@@ -312,9 +326,19 @@
                                     @endforeach
                                 </tr>
                             @endforeach
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="{{ count($vaiTros) + 1 }}">
+                                    Chưa có quyền hạn nào.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="pagination-wrapper">
+                {{ $quyenHans->withQueryString()->links() }}
             </div>
 
             <div class="matrix-footer">
@@ -325,8 +349,13 @@
                     </div>
 
                     <div class="stat-item">
-                        <div class="stat-icon">{{ count($quyenHans) }}</div>
+                        <div class="stat-icon">{{ $quyenHans->total() }}</div>
                         <span>Quyền</span>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-icon">{{ $quyenHans->currentPage() }}/{{ $quyenHans->lastPage() }}</div>
+                        <span>Trang</span>
                     </div>
                 </div>
 

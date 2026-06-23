@@ -17,11 +17,33 @@ class UserController extends Controller
         $this->middleware('permission:users.delete')->only(['destroy']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('vaiTros')->latest()->paginate(10);
+        $query = User::with('vaiTros');
 
-        return view('Admin.users.index', compact('users'));
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('name', 'like', '%' . $keyword . '%')
+                    ->orWhere('email', 'like', '%' . $keyword . '%')
+                    ->orWhere('phone', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if ($request->filled('vai_tro_id')) {
+            $query->whereHas('vaiTros', function ($q) use ($request) {
+                $q->where('vai_tros.id', $request->vai_tro_id);
+            });
+        }
+
+        $users = $query->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $vaiTros = VaiTro::orderBy('ten_vai_tro')->get();
+
+        return view('Admin.users.index', compact('users', 'vaiTros'));
     }
 
     public function create()

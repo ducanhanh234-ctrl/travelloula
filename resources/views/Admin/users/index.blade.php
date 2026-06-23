@@ -30,6 +30,42 @@
             background: #fff;
         }
 
+        .filter-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: 1fr 240px auto auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .filter-form label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .filter-form .form-control,
+        .filter-form .form-select {
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 40px;
+        }
+
+        .filter-form .btn {
+            min-height: 40px;
+            border-radius: 8px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
         .table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -144,9 +180,25 @@
             margin-bottom: 0;
         }
 
+        .empty-row {
+            padding: 28px 12px !important;
+            color: #64748b !important;
+            font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             .user-card-body {
                 padding: 16px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
             }
 
             .user-table {
@@ -168,8 +220,49 @@
                     </div>
                 @endif
 
-@php $currentUser = auth()->user(); @endphp
-        <div class="table-wrapper">
+                <div class="filter-box">
+                    <form method="GET" action="{{ route('Admin.users.index') }}" class="filter-form">
+                        <div>
+                            <label for="keyword">Tìm kiếm</label>
+                            <input
+                                type="text"
+                                id="keyword"
+                                name="keyword"
+                                class="form-control"
+                                value="{{ request('keyword') }}"
+                                placeholder="Nhập tên, email hoặc số điện thoại..."
+                            >
+                        </div>
+
+                        <div>
+                            <label for="vai_tro_id">Vai trò</label>
+                            <select name="vai_tro_id" id="vai_tro_id" class="form-select">
+                                <option value="">Tất cả vai trò</option>
+
+                                @foreach ($vaiTros as $vaiTro)
+                                    <option
+                                        value="{{ $vaiTro->id }}"
+                                        {{ request('vai_tro_id') == $vaiTro->id ? 'selected' : '' }}
+                                    >
+                                        {{ $vaiTro->ten_vai_tro }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Lọc
+                        </button>
+
+                        <a href="{{ route('Admin.users.index') }}" class="btn btn-secondary">
+                            Đặt lại
+                        </a>
+                    </form>
+                </div>
+
+                @php $currentUser = auth()->user(); @endphp
+
+                <div class="table-wrapper">
                     <table class="table user-table">
                         <thead>
                             <tr>
@@ -183,7 +276,7 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($users as $user)
+                            @forelse ($users as $user)
                                 <tr>
                                     <td>
                                         <strong>{{ $user->id }}</strong>
@@ -198,7 +291,7 @@
                                     </td>
 
                                     <td>
-                                        {{ $user->phone }}
+                                        {{ $user->phone ?: '---' }}
                                     </td>
 
                                     <td>
@@ -235,12 +328,18 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="empty-row">
+                                        Không tìm thấy người dùng phù hợp.
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
 
-                {{ $users->links() }}
+                {{ $users->withQueryString()->links() }}
             </div>
         </div>
     </div>

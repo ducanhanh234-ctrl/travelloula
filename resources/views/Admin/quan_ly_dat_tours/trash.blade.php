@@ -1,5 +1,4 @@
 @extends('layouts.admin')
-
 @section('content')
 
 <style>
@@ -62,7 +61,6 @@
 </style>
 
 <div class="container-fluid">
-
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show">
             {{ session('success') }}
@@ -101,7 +99,6 @@
 
     <div class="table-card">
         <table class="table table-hover mb-0">
-
             <thead>
                 <tr>
                     <th>MÃ BOOKING</th>
@@ -114,11 +111,8 @@
             </thead>
 
             <tbody>
-
                 @forelse($bookings as $booking)
-
                     <tr>
-
                         <td>
                             <div class="booking-code">
                                 {{ $booking->ma_dat_tour }}
@@ -148,51 +142,34 @@
                         </td>
 
                         <td>
-
                             <div class="d-flex gap-2">
-
                                 {{-- Khôi phục --}}
                                 <form action="{{ route('Admin.dat_tours.restore',$booking->id) }}"
                                     method="POST">
-
                                     @csrf
-
                                     <button type="submit"
                                         class="btn btn-success btn-sm btn-action">
-
                                         <i class="fas fa-undo"></i>
                                         Khôi phục
-
                                     </button>
-
                                 </form>
 
                                 {{-- Xóa vĩnh viễn --}}
                                 <form action="{{ route('Admin.dat_tours.forceDelete',$booking->id) }}"
                                     method="POST"
                                     onsubmit="return confirm('Xóa vĩnh viễn booking này?')">
-
                                     @csrf
                                     @method('DELETE')
-
                                     <button type="submit"
                                         class="btn btn-danger btn-sm btn-action">
-
                                         <i class="fas fa-trash-alt"></i>
                                         Xóa
-
                                     </button>
-
                                 </form>
-
                             </div>
-
                         </td>
-
                     </tr>
-
                 @empty
-
                     <tr>
                         <td colspan="6">
                             <div class="empty-data">
@@ -200,11 +177,8 @@
                             </div>
                         </td>
                     </tr>
-
                 @endforelse
-
             </tbody>
-
         </table>
 
         @if($bookings->hasPages())
@@ -212,9 +186,6 @@
                 {{ $bookings->links() }}
             </div>
         @endif
-
     </div>
-
 </div>
-
 @endsection

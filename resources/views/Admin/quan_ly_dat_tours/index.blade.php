@@ -1,5 +1,4 @@
 @extends('layouts.admin')
-
 @section('content')
 
     <style>
@@ -196,9 +195,7 @@
                     <i class="fas fa-trash"></i>
                     Thùng rác
                 </a>
-
             </div>
-
         </div>
 
         <!-- Thống kê -->
@@ -362,7 +359,6 @@
                                                 <i class="fas fa-times"></i>
                                             </button>
                                         </form> --}}
-
                                     </div>
                                 </td>
                             </tr>

@@ -2,26 +2,38 @@
 @section('content')
 
 <div class="container-fluid">
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h2 class="fw-bold">Chi tiết đặt tour</h2>
-        <p class="text-muted">
-            Mã booking: {{ $booking->ma_dat_tour }}
-        </p>
+
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                Chi tiết đặt tour
+            </h2>
+            <p class="text-muted mb-0">
+                Mã booking: {{ $booking->ma_dat_tour }}
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('Admin.dat_tours.edit', $booking->id) }}"
+               class="btn btn-warning">
+                <i class="fas fa-edit me-1"></i>
+                Sửa
+            </a>
+            <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
+               class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>
+                Quay lại
+            </a>
+        </div>
     </div>
 
-    <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
-       class="btn btn-secondary">
-        <i class="fas fa-arrow-left"></i>
-        Quay lại
-    </a>
-</div>
-
-<div class="card shadow-sm">
+<div class="card shadow border-0"></div>
     <div class="card-body">
+
         {{-- Thông tin người đặt --}}
-        <h4 class="mb-3">
-            Thông tin người đặt
+        <h4 class="mb-3 text-primary">
+            <i class="fas fa-user me-2"></i>
+                Thông tin người đặt
         </h4>
         @if($booking->nguoiDung)
             <div class="row mb-4">
@@ -46,7 +58,6 @@
 
         @else
             <div class="row mb-4">
-
                 <div class="col-md-4">
                     <strong>Họ tên:</strong>
                     <br>
@@ -66,17 +77,15 @@
                 </div>
             </div>
         @endif
-        <hr>
-
-        <hr>
+    <hr>
 
         {{-- Thông tin tour --}}
-        <h4 class="mb-3">
-            Thông tin tour
+        <h4 class="mb-3 text-success">
+            <i class="fas fa-map-marked-alt me-2"></i>
+                Thông tin tour
         </h4>
 
         <div class="row mb-4">
-
             <div class="col-md-4">
                 <strong>Tên tour:</strong>
                 <br>
@@ -97,7 +106,6 @@
         </div>
 
         <div class="row mb-4">
-
             <div class="col-md-4">
                 <strong>Ngày khởi hành:</strong>
                 <br>
@@ -113,13 +121,14 @@
         </div>
 
         <hr>
+
         {{-- Thông tin đoàn --}}
-        <h4 class="mb-3">
-            Thông tin đoàn
+        <h4 class="mb-3 text-info">
+            <i class="fas fa-users me-2"></i>
+                Thông tin đoàn
         </h4>
 
         <div class="row mb-4">
-
             <div class="col-md-4">
                 <strong>Người lớn:</strong>
                 <br>
@@ -141,12 +150,14 @@
         <hr>
 
         {{-- Danh sách hành khách --}}
-        <h4 class="mb-3">
-            Danh sách hành khách
+        <h4 class="mb-3 text-warning">
+            <i class="fas fa-id-card me-2"></i>
+                Danh sách hành khách
         </h4>
+
         <div class="table-responsive">
-            <table class="table table-bordered align-middle">
-                <thead class="table-light">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-primary">
                     <tr>
                         <th width="60">#</th>
                         <th>Họ tên</th>
@@ -191,37 +202,50 @@
         <hr>
 
         {{-- Thanh toán --}}
-        <h4 class="mb-3">
-            Thanh toán
+        <h4 class="mb-3 text-danger">
+            <i class="fas fa-money-bill-wave me-2"></i>
+                Thanh toán
         </h4>
 
-        <div class="row">
+        <div class="row g-3">
             <div class="col-md-3">
-                <strong>Tổng tiền:</strong>
-                <br>
-                {{ number_format($booking->tong_tien, 0, ',', '.') }} đ
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                <h6>Tổng tiền</h6>
+                <h5 class="text-primary">
+                    {{ number_format($booking->tong_tien,0,',','.') }} đ
+                </h5>
             </div>
+        </div>
+    </div>
 
-            <div class="col-md-3">
-                <strong>Đã thanh toán:</strong>
-                <br>
-                {{ number_format($booking->so_tien_da_thanh_toan, 0, ',', '.') }} đ
+    <div class="col-md-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <h6>Đã thanh toán</h6>
+                <h5 class="text-success">
+                    {{ number_format($booking->so_tien_da_thanh_toan,0,',','.') }} đ
+                </h5>
             </div>
+        </div>
+    </div>
 
-            <div class="col-md-3">
-                <strong>Còn lại:</strong>
-                <br>
-                {{ number_format(
-                    $booking->tong_tien - $booking->so_tien_da_thanh_toan,
-                    0,
-                    ',',
-                    '.'
-                ) }} đ
-
+    <div class="col-md-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <h6>Còn lại</h6>
+                <h5 class="text-warning">
+                    {{ number_format($booking->tong_tien - $booking->so_tien_da_thanh_toan,0,',','.') }} đ
+                </h5>
             </div>
-            <div class="col-md-3">
-                <strong>Trạng thái:</strong>
-                <br>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <h6>Trạng thái</h6>
+
                 @if($booking->trang_thai == 'cho_xac_nhan')
                     <span class="badge bg-warning">
                         Chờ xác nhận
@@ -238,21 +262,9 @@
                     <span class="badge bg-danger">
                         Đã hủy
                     </span>
-                @elseif($booking->trang_thai == 'hoan_thanh')
-                    <span class="badge bg-primary">
-                        Hoàn thành
-                    </span>
                 @endif
             </div>
         </div>
-        @if($booking->ghi_chu)
-            <hr>
-            <h4>Ghi chú</h4>
-            <p>
-                {{ $booking->ghi_chu }}
-            </p>
-        @endif
     </div>
-</div>
 </div>
 @endsection

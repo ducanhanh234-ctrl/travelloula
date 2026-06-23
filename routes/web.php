@@ -94,6 +94,13 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
         ->name('dat_tours.show');
 
+        //sửa
+    Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
+        ->name('dat_tours.edit');
+
+    Route::put('/dat-tours/{id}', [QuanLyDatTourController::class, 'update'])
+        ->name('dat_tours.update');
+
     //xóa mềm
     Route::delete(
         '/quan-ly-dat-tour/{id}',

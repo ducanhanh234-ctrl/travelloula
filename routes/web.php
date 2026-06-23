@@ -21,6 +21,7 @@ use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\QuyenHanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
+use App\Http\Controllers\QuanLyDatTourController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -47,7 +48,9 @@ Route::get('/bai_viet', function () {
     return view('Client.bai_viet.index');
 });
 Route::get('/{id}/bai_viet', function () {
+
     return view('Client.bai_viet.detail');
+
 })->name('bai_viet.detail');
 
 
@@ -98,6 +101,59 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     // Route::resource('quyen-hans', QuyenHanController::class);
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
+    Route::get('/quan-ly-dat-tour', [QuanLyDatTourController::class, 'index'])->name('quan_ly_dat_tour.index');
+    // thêm booking thủ công
+
+    Route::get('/dat-tours/create', [QuanLyDatTourController::class, 'create'])
+        ->name('dat-tours.create');
+
+    Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
+        ->name('dat_tours.show');
+
+        //sửa
+    Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
+        ->name('dat_tours.edit');
+
+    Route::put('/dat-tours/{id}', [QuanLyDatTourController::class, 'update'])
+        ->name('dat_tours.update');
+
+    //xóa mềm
+    Route::delete(
+        '/quan-ly-dat-tour/{id}',
+        [QuanLyDatTourController::class, 'destroy']
+    )->name('dat_tours.destroy');
+
+    // xóa cứng
+    Route::delete(
+        '/quan-ly-dat-tour/{id}/force-delete',
+        [QuanLyDatTourController::class, 'forceDelete']
+    )->name('dat_tours.forceDelete');
+
+    // khôi phục
+    Route::post(
+        '/dat-tours/{id}/restore',
+        [QuanLyDatTourController::class, 'restore']
+    )->name('dat_tours.restore');
+
+    //thùng rác
+    Route::get(
+        '/dat-tours-trash',
+        [QuanLyDatTourController::class, 'trash']
+    )->name('dat_tours.trash');
+
+    Route::post(
+        '/dat-tours',
+        [QuanLyDatTourController::class, 'store']
+    )
+        ->name('dat-tours.store');
+
+    //lich khởi hành theo tour
+    Route::get(
+        '/tour/{tourId}/lich-khoi-hanh',
+        [QuanLyDatTourController::class, 'getLichKhoiHanhByTour']
+    )->name('dat-tours.lich-khoi-hanh');
+
+    Route::put('/quan-ly-dat-tour/{id}/update-status', [QuanLyDatTourController::class, 'updateStatus'])->name('dat_tours.update-status');
 
     Route::prefix('/thanh_toans')->name('thanh_toans.')->group(function () {
         Route::get('/', [ThanhToanController::class, 'index'])->name('index');
@@ -124,6 +180,8 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
+
+
     Route::resource('tours', TourController::class);
 
     Route::resource(
@@ -139,6 +197,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'show'
     ]);
 });
+
 
 
 

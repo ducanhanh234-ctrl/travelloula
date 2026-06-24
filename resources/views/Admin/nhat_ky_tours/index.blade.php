@@ -1,4 +1,4 @@
-@extends('Layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('title', 'Nhật ký tour')
 

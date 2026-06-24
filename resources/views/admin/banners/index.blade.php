@@ -1,194 +1,179 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 
 @section('title','Quản lý Banner')
 
+@section('vendor-style')
+@vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
+@endsection
 
+@section('vendor-script')
+@vite('resources/assets/vendor/libs/apex-charts/apexcharts.js')
+@endsection
+
+@section('page-script')
+@vite('resources/assets/js/dashboards-analytics.js')
+@endsection
 @section('content')
 
 
 <div class="card">
 
-<div class="card-header">
+    <div class="card-header">
 
-<h4>
-Quản lý Banner
-</h4>
+        <h4>
+            Quản lý Banner
+        </h4>
 
 
-<a href="{{route('Admin.banners.create')}}"
-class="btn btn-primary">
+        <a href="{{route('Admin.banners.create')}}" class="btn btn-primary">
 
-<i class="fa fa-plus"></i>
-Thêm banner
+            <i class="fa fa-plus"></i>
+            Thêm banner
 
-</a>
+        </a>
 
 
-</div>
+    </div>
 
 
 
-<div class="card-body">
+    <div class="card-body">
 
 
 
-<form>
+        <form>
 
-<input
+            <input name="keyword" value="{{$keyword}}" class="form-control" placeholder="Tìm kiếm tiêu đề...">
 
-name="keyword"
 
-value="{{$keyword}}"
+        </form>
 
-class="form-control"
 
-placeholder="Tìm kiếm tiêu đề...">
 
 
-</form>
+        <table class="table mt-3">
 
 
+            <tr>
 
+                <th>ID</th>
 
-<table class="table mt-3">
+                <th>Ảnh</th>
 
+                <th>Tiêu đề</th>
 
-<tr>
+                <th>Loại</th>
 
-<th>ID</th>
+                <th>Trạng thái</th>
 
-<th>Ảnh</th>
+                <th>Action</th>
 
-<th>Tiêu đề</th>
+            </tr>
 
-<th>Loại</th>
 
-<th>Trạng thái</th>
 
-<th>Action</th>
+            @foreach($banners as $item)
 
-</tr>
 
+            <tr>
 
 
-@foreach($banners as $item)
+                <td>{{$item->id}}</td>
 
 
-<tr>
+                <td>
 
+                    <img src="{{$item->hinh_anh}}" width="100">
 
-<td>{{$item->id}}</td>
+                </td>
 
 
-<td>
+                <td>{{$item->tieu_de}}</td>
 
-<img src="{{$item->hinh_anh}}"
 
-width="100">
+                <td>{{$item->loai_banner}}</td>
 
-</td>
 
+                <td>
 
-<td>{{$item->tieu_de}}</td>
+                    @if($item->trang_thai_hoat_dong)
 
+                    <span class="badge bg-success">
 
-<td>{{$item->loai_banner}}</td>
+                        Hoạt động
 
+                    </span>
 
-<td>
+                    @else
 
-@if($item->trang_thai_hoat_dong)
+                    <span class="badge bg-danger">
 
-<span class="badge bg-success">
+                        Ẩn
 
-Hoạt động
+                    </span>
 
-</span>
+                    @endif
 
-@else
+                </td>
 
-<span class="badge bg-danger">
 
-Ẩn
 
-</span>
+                <td>
 
-@endif
 
-</td>
+                    <a class="btn btn-info btn-sm" href="{{route('Admin.banners.show',$item)}}">
 
+                        Xem
 
+                    </a>
 
-<td>
 
 
-<a class="btn btn-info btn-sm"
+                    <a class="btn btn-warning btn-sm" href="{{route('Admin.banners.edit',$item)}}">
 
-href="{{route('Admin.banners.show',$item)}}">
+                        Sửa
 
-Xem
+                    </a>
 
-</a>
 
 
+                    <form style="display:inline" method="POST" action="{{route('Admin.banners.destroy',$item)}}">
 
-<a class="btn btn-warning btn-sm"
 
-href="{{route('Admin.banners.edit',$item)}}">
+                        @csrf
 
-Sửa
+                        @method('DELETE')
 
-</a>
 
+                        <button onclick="return confirm('Xóa?')" class="btn btn-danger btn-sm">
 
+                            Xóa
 
-<form
+                        </button>
 
-style="display:inline"
 
-method="POST"
+                    </form>
 
-action="{{route('Admin.banners.destroy',$item)}}">
 
+                </td>
 
-@csrf
 
-@method('DELETE')
+            </tr>
 
 
-<button
+            @endforeach
 
-onclick="return confirm('Xóa?')"
 
-class="btn btn-danger btn-sm">
+        </table>
 
-Xóa
 
-</button>
 
+        {{$banners->links()}}
 
-</form>
 
 
-</td>
-
-
-</tr>
-
-
-@endforeach
-
-
-</table>
-
-
-
-{{$banners->links()}}
-
-
-
-</div>
+    </div>
 
 
 </div>

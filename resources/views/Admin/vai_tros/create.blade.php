@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts/admin_pro')
 @section('content')
 <div class="container">
     <h3>Thêm mới</h3>

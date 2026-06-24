@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('content')
 <style>
@@ -153,6 +153,7 @@
             min-width: 950px;
         }
     }
+
 </style>
 
 <div class="container user-management">
@@ -163,9 +164,9 @@
 
         <div class="user-card-body">
             @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
             @endif
 
             <div class="table-wrapper">
@@ -183,54 +184,50 @@
 
                     <tbody>
                         @foreach($users as $user)
-                            <tr>
-                                <td>
-                                    <strong>{{ $user->id }}</strong>
-                                </td>
+                        <tr>
+                            <td>
+                                <strong>{{ $user->id }}</strong>
+                            </td>
 
-                                <td>
-                                    <strong>{{ $user->name }}</strong>
-                                </td>
+                            <td>
+                                <strong>{{ $user->name }}</strong>
+                            </td>
 
-                                <td title="{{ $user->email }}">
-                                    {{ $user->email }}
-                                </td>
+                            <td title="{{ $user->email }}">
+                                {{ $user->email }}
+                            </td>
 
-                                <td>
-                                    {{ $user->phone }}
-                                </td>
+                            <td>
+                                {{ $user->phone }}
+                            </td>
 
-                                <td>
-                                    <span class="role-badge">
-                                        {{ $user->roleType() }}
-                                    </span>
-                                </td>
+                            <td>
+                                <span class="role-badge">
+                                    {{ $user->roleType() }}
+                                </span>
+                            </td>
 
-                                <td>
-                                    <div class="action-btns">
-                                        <a class="btn btn-sm btn-info text-white"
-                                           href="{{ route('Admin.users.show', $user->id) }}">
-                                            Xem
-                                        </a>
+                            <td>
+                                <div class="action-btns">
+                                    <a class="btn btn-sm btn-info text-white" href="{{ route('Admin.users.show', $user->id) }}">
+                                        Xem
+                                    </a>
 
-                                        <a class="btn btn-sm btn-secondary"
-                                           href="{{ route('Admin.users.edit', $user->id) }}">
-                                            Sửa
-                                        </a>
+                                    <a class="btn btn-sm btn-secondary" href="{{ route('Admin.users.edit', $user->id) }}">
+                                        Sửa
+                                    </a>
 
-                                        <form action="{{ route('Admin.users.destroy', $user->id) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('Xóa tài khoản này?')">
-                                            @csrf
-                                            @method('DELETE')
+                                    <form action="{{ route('Admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Xóa tài khoản này?')">
+                                        @csrf
+                                        @method('DELETE')
 
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                Xóa
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>

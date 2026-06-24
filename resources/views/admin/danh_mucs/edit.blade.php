@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 
 @section('content')
@@ -6,33 +6,31 @@
 
 <div class="card">
 
-<div class="card-body">
+    <div class="card-body">
 
 
-<form method="POST"
-
-action="{{route('Admin.danh_mucs.update',$danhMuc)}}">
+        <form method="POST" action="{{route('Admin.danh_mucs.update',$danhMuc)}}">
 
 
-@csrf
+            @csrf
 
-@method('PUT')
-
-
-@include('Admin.danh_mucs.form')
+            @method('PUT')
 
 
-<button class="btn btn-success">
-
-Cập nhật
-
-</button>
+            @include('Admin.danh_mucs.form')
 
 
-</form>
+            <button class="btn btn-success">
+
+                Cập nhật
+
+            </button>
 
 
-</div>
+        </form>
+
+
+    </div>
 
 </div>
 

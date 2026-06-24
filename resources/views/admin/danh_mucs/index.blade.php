@@ -1,414 +1,392 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
-@section('title','Quản lý Danh Mục')
+@section('title', 'Quản lý danh mục')
+
+@section('vendor-style')
+@vite('resources/assets/vendor/libs/apex-charts/apex-charts.scss')
+@endsection
+
+@section('vendor-script')
+@vite('resources/assets/vendor/libs/apex-charts/apexcharts.js')
+@endsection
+
+@section('page-script')
+@vite('resources/assets/js/dashboards-analytics.js')
+@endsection
 
 @section('content')
 
 <div class="container-fluid">
 
 
-<div class="card shadow border-0 rounded-4">
+    <div class="card shadow border-0 rounded-4">
 
 
-<div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
 
 
-<h4 class="mb-0">
+            <h4 class="mb-0">
 
-<i class="fa fa-folder"></i>
+                <i class="fa fa-folder"></i>
 
-Quản lý danh mục
+                Quản lý danh mục
 
-</h4>
+            </h4>
 
 
 
-<a href="{{route('Admin.danh_mucs.create')}}"
+            <a href="{{route('Admin.danh_mucs.create')}}" class="btn btn-light text-primary fw-bold">
 
-class="btn btn-light text-primary fw-bold">
 
+                <i class="fa fa-plus"></i>
 
-<i class="fa fa-plus"></i>
+                Thêm danh mục
 
-Thêm danh mục
 
+            </a>
 
-</a>
 
+        </div>
 
-</div>
 
 
 
 
+        <div class="card-body p-4">
 
-<div class="card-body p-4">
 
 
 
 
+            <form method="GET" class="mb-4">
 
-<form method="GET"
 
-class="mb-4">
+                <div class="row">
 
 
-<div class="row">
+                    <div class="col-md-6">
 
 
-<div class="col-md-6">
+                        <div class="input-group">
 
 
-<div class="input-group">
+                            <input class="form-control" name="keyword" value="{{$keyword}}" placeholder="🔍 Tìm kiếm danh mục...">
 
 
-<input
 
-class="form-control"
+                            <button class="btn btn-primary" type="submit">
 
-name="keyword"
 
-value="{{$keyword}}"
+                                Tìm kiếm
 
-placeholder="🔍 Tìm kiếm danh mục...">
 
+                            </button>
 
 
-<button
+                        </div>
 
-class="btn btn-primary"
 
-type="submit">
+                    </div>
 
 
-Tìm kiếm
+                </div>
 
 
-</button>
 
+            </form>
 
-</div>
 
 
-</div>
 
 
-</div>
 
 
+            <div class="table-responsive">
 
-</form>
 
+                <table class="table table-hover align-middle">
 
 
+                    <thead class="table-light">
 
 
+                        <tr>
 
 
-<div class="table-responsive">
+                            <th width="80">
 
+                                ID
 
-<table class="table table-hover align-middle">
+                            </th>
 
 
-<thead class="table-light">
+                            <th>
 
+                                Tên danh mục
 
-<tr>
+                            </th>
 
 
-<th width="80">
+                            <th>
 
-ID
+                                Mô tả
 
-</th>
+                            </th>
 
 
-<th>
+                            <th>
 
-Tên danh mục
+                                Trạng thái
 
-</th>
+                            </th>
 
 
-<th>
+                            <th width="250">
 
-Mô tả
+                                Thao tác
 
-</th>
+                            </th>
 
 
-<th>
+                        </tr>
 
-Trạng thái
 
-</th>
+                    </thead>
 
 
-<th width="250">
 
-Thao tác
 
-</th>
 
+                    <tbody>
 
-</tr>
 
 
-</thead>
+                        @foreach($danhMucs as $item)
 
 
 
+                        <tr>
 
 
-<tbody>
 
+                            <td>
 
 
-@foreach($danhMucs as $item)
+                                <span class="badge bg-secondary">
 
+                                    {{$item->id}}
 
+                                </span>
 
-<tr>
 
+                            </td>
 
 
-<td>
 
 
-<span class="badge bg-secondary">
 
-{{$item->id}}
+                            <td>
 
-</span>
 
+                                <h6 class="mb-0 text-primary">
 
-</td>
 
+                                    {{$item->ten_danh_muc}}
 
 
+                                </h6>
 
 
-<td>
+                            </td>
 
 
-<h6 class="mb-0 text-primary">
 
 
-{{$item->ten_danh_muc}}
 
 
-</h6>
 
+                            <td>
 
-</td>
 
+                                @if($item->mo_ta)
 
 
+                                {{$item->mo_ta}}
 
 
+                                @else
 
 
-<td>
+                                <span class="text-muted">
 
+                                    Không có mô tả
 
-@if($item->mo_ta)
+                                </span>
 
 
-{{$item->mo_ta}}
+                                @endif
 
 
-@else
 
+                            </td>
 
-<span class="text-muted">
 
-Không có mô tả
 
-</span>
 
 
-@endif
 
 
+                            <td>
 
-</td>
 
 
+                                @if($item->trang_thai == 'active')
 
 
+                                <span class="badge bg-success px-3 py-2">
 
 
+                                    <i class="fa fa-check"></i>
 
-<td>
+                                    Hoạt động
 
 
+                                </span>
 
-@if($item->trang_thai == 'active')
 
+                                @else
 
-<span class="badge bg-success px-3 py-2">
 
+                                <span class="badge bg-danger px-3 py-2">
 
-<i class="fa fa-check"></i>
 
-Hoạt động
+                                    <i class="fa fa-lock"></i>
 
+                                    Ẩn
 
-</span>
 
+                                </span>
 
-@else
 
+                                @endif
 
-<span class="badge bg-danger px-3 py-2">
 
 
-<i class="fa fa-lock"></i>
+                            </td>
 
-Ẩn
 
 
-</span>
 
 
-@endif
 
 
 
-</td>
 
+                            <td>
 
 
 
+                                <a href="{{route('Admin.danh_mucs.show',$item)}}" class="btn btn-info btn-sm text-white">
 
 
+                                    <i class="fa fa-eye"></i>
 
+                                    Xem
 
 
-<td>
+                                </a>
 
 
 
-<a
 
-href="{{route('Admin.danh_mucs.show',$item)}}"
 
-class="btn btn-info btn-sm text-white">
+                                <a href="{{route('Admin.danh_mucs.edit',$item)}}" class="btn btn-warning btn-sm text-white">
 
 
-<i class="fa fa-eye"></i>
+                                    <i class="fa fa-edit"></i>
 
-Xem
+                                    Sửa
 
 
-</a>
+                                </a>
 
 
 
 
 
-<a
 
-href="{{route('Admin.danh_mucs.edit',$item)}}"
 
-class="btn btn-warning btn-sm text-white">
+                                <form style="display:inline" method="POST" action="{{route('Admin.danh_mucs.destroy',$item)}}">
 
 
-<i class="fa fa-edit"></i>
+                                    @csrf
 
-Sửa
+                                    @method('DELETE')
 
 
-</a>
 
+                                    <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-danger btn-sm">
 
 
+                                        <i class="fa fa-trash"></i>
 
+                                        Xóa
 
 
+                                    </button>
 
-<form
 
-style="display:inline"
+                                </form>
 
-method="POST"
 
-action="{{route('Admin.danh_mucs.destroy',$item)}}">
 
 
-@csrf
+                            </td>
 
-@method('DELETE')
 
 
+                        </tr>
 
-<button
 
-onclick="return confirm('Bạn có chắc muốn xóa?')"
 
-class="btn btn-danger btn-sm">
+                        @endforeach
 
 
-<i class="fa fa-trash"></i>
 
-Xóa
 
+                    </tbody>
 
-</button>
 
 
-</form>
+                </table>
 
 
 
+            </div>
 
-</td>
 
 
 
-</tr>
 
 
+            <div class="mt-3">
 
-@endforeach
 
+                {{$danhMucs->links()}}
 
 
+            </div>
 
-</tbody>
 
 
 
-</table>
 
 
+        </div>
 
-</div>
 
 
-
-
-
-
-<div class="mt-3">
-
-
-{{$danhMucs->links()}}
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-</div>
+    </div>
 
 
 

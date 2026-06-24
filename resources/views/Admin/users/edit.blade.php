@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('content')
 <style>
@@ -10,7 +10,7 @@
         border: none;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 4px 18px rgba(0,0,0,.08);
+        box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
     }
 
     .edit-user-header {
@@ -46,7 +46,7 @@
     .form-control:focus,
     .form-select:focus {
         border-color: #0d6efd;
-        box-shadow: 0 0 0 .15rem rgba(13,110,253,.15);
+        box-shadow: 0 0 0 .15rem rgba(13, 110, 253, .15);
     }
 
     .text-danger {
@@ -85,6 +85,7 @@
             width: 100%;
         }
     }
+
 </style>
 
 <div class="container edit-user-page">
@@ -101,33 +102,19 @@
 
                 <div class="mb-3">
                     <label class="form-label">Tên người dùng</label>
-                    <input
-                        type="text"
-                        name="name"
-                        class="form-control"
-                        value="{{ old('name', $user->name) }}"
-                    >
+                    <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}">
                     <div class="text-danger">{{ $errors->first('name') }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control"
-                        value="{{ old('email', $user->email) }}"
-                    >
+                    <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}">
                     <div class="text-danger">{{ $errors->first('email') }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Mật khẩu mới</label>
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control"
-                    >
+                    <input type="password" name="password" class="form-control">
                     <div class="password-note">
                         Để trống nếu không muốn thay đổi mật khẩu.
                     </div>
@@ -136,41 +123,28 @@
 
                 <div class="mb-3">
                     <label class="form-label">Điện thoại</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        class="form-control"
-                        value="{{ old('phone', $user->phone) }}"
-                    >
+                    <input type="text" name="phone" class="form-control" value="{{ old('phone', $user->phone) }}">
                     <div class="text-danger">{{ $errors->first('phone') }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Địa chỉ</label>
-                    <input
-                        type="text"
-                        name="address"
-                        class="form-control"
-                        value="{{ old('address', $user->address) }}"
-                    >
+                    <input type="text" name="address" class="form-control" value="{{ old('address', $user->address) }}">
                     <div class="text-danger">{{ $errors->first('address') }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Loại tài khoản</label>
                     <select name="is_active" class="form-select">
-                        <option value="1"
-                            {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>
+                        <option value="1" {{ old('is_active', $user->is_active) == 1 ? 'selected' : '' }}>
                             Client
                         </option>
 
-                        <option value="2"
-                            {{ old('is_active', $user->is_active) == 2 ? 'selected' : '' }}>
+                        <option value="2" {{ old('is_active', $user->is_active) == 2 ? 'selected' : '' }}>
                             Hướng dẫn viên
                         </option>
 
-                        <option value="3"
-                            {{ old('is_active', $user->is_active) == 3 ? 'selected' : '' }}>
+                        <option value="3" {{ old('is_active', $user->is_active) == 3 ? 'selected' : '' }}>
                             Admin
                         </option>
                     </select>
@@ -185,8 +159,7 @@
                         Cập nhật
                     </button>
 
-                    <a class="btn btn-secondary"
-                        href="{{ route('Admin.users.index') }}">
+                    <a class="btn btn-secondary" href="{{ route('Admin.users.index') }}">
                         Hủy
                     </a>
                 </div>

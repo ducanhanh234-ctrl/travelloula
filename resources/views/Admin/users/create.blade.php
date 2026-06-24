@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 @section('content')
 <div class="container">
     <h3>Tạo tài khoản</h3>
@@ -31,10 +31,10 @@
             <label class="form-label">Vai trò</label>
             <div>
                 @foreach($vaiTros as $v)
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="vai_tro_ids[]" value="{{ $v->id }}" id="vai{{ $v->id }}">
-                        <label class="form-check-label" for="vai{{ $v->id }}">{{ $v->ten_vai_tro }}</label>
-                    </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="vai_tro_ids[]" value="{{ $v->id }}" id="vai{{ $v->id }}">
+                    <label class="form-check-label" for="vai{{ $v->id }}">{{ $v->ten_vai_tro }}</label>
+                </div>
                 @endforeach
             </div>
         </div>
@@ -52,4 +52,3 @@
     </form>
 </div>
 @endsection
-

@@ -1,0 +1,114 @@
+{
+    "menu": [
+        {
+            "name": "Dashboard",
+            "icon": "menu-icon tf-icons bx bx-home",
+            "slug": "Admin.dashboard",
+            "url": "/Admin"
+        },
+
+        {
+            "name": "Quản lý Tour",
+            "icon": "menu-icon tf-icons bx bx-map",
+            "slug": ["Admin.tours", "Admin.danh_mucs", "Admin.banners"],
+            "submenu": [
+                {
+                    "url": "/Admin/tours",
+                    "name": "Tour",
+                    "slug": "Admin.tours.index",
+
+                    "badge": ["label-primary fs-tiny", "Pro"]
+                },
+                {
+                    "url": "/Admin/danh_mucs",
+                    "name": "Danh mục",
+                    "slug": "Admin.danh_mucs.index"
+                },
+                {
+                    "url": "/Admin/banners",
+                    "name": "Banner",
+                    "slug": "Admin.banners.index"
+                },
+                {
+                    "url": "",
+                    "name": "Lịch Trình",
+                    "slug": ""
+                },
+                {
+                    "url": "",
+                    "name": "Nhật Ký Tour",
+                    "slug": ""
+                }
+            ]
+        },
+
+        {
+            "name": "Điều hành",
+            "icon": "menu-icon tf-icons bx bx-briefcase",
+            "slug": [
+                "Admin.quan_ly_dat_tour",
+                "Admin.khach-hang",
+                "Admin.thanh_toans"
+            ],
+            "submenu": [
+                {
+                    "url": "/Admin/quan-ly-dat-tour",
+                    "name": "Đặt Tour",
+                    "slug": "Admin.quan_ly_dat_tour"
+                },
+                {
+                    "url": "/Admin/khach-hang",
+                    "name": "Khách hàng",
+                    "slug": "Admin.khach-hang"
+                },
+                {
+                    "url": "/Admin/phuong-tiens",
+                    "name": "Phương tiện",
+                    "slug": "Admin.phuong-tiens"
+                },
+                {
+                    "url": "/Admin/thanh_toans",
+                    "name": "Thanh toán",
+                    "slug": "Admin.thanh_toans"
+                },
+                {
+                    "url": "/Admin/danh_gias",
+                    "name": "Đánh giá",
+                    "slug": "Admin.danh_gias"
+                },
+                {
+                    "url": "",
+                    "name": "Lịch Khởi Hành",
+                    "slug": ""
+                }
+            ]
+        },
+        {
+            "name": "Quản Lý Tài Khoản",
+            "icon": "menu-icon tf-icons bx bx-user",
+            "slug": ["Admin.users", "Admin.roles", "Admin.permissions"],
+            "submenu": [
+                {
+                    "url": "/Admin/users",
+                    "name": "Người dùng",
+                    "slug": "Admin.users"
+                },
+                {
+                    "url": "/Admin/huong-dan-viens",
+                    "name": "Hướng dẫn viên",
+                    "slug": "Admin.huong-dan-viens"
+                },
+                {
+                    "url": "/Admin/roles",
+                    "name": "Vai trò",
+                    "slug": "Admin.roles"
+                },
+                {
+                    "url": "/Admin/permissions",
+                    "name": "Quyền hạn",
+                    "slug": "Admin.permissions"
+                }
+            ]
+        }
+    ]
+}

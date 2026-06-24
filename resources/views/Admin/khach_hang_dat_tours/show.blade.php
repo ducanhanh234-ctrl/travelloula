@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 @section('content')
 <style>
@@ -282,6 +282,7 @@
             min-width: 1000px;
         }
     }
+
 </style>
 
 <div class="customer-detail-page">
@@ -358,7 +359,7 @@
                     <div>
                         {{ $khachHang->loai_giay_to ?? '-' }}
                         @if($khachHang->so_giay_to)
-                            - {{ $khachHang->so_giay_to }}
+                        - {{ $khachHang->so_giay_to }}
                         @endif
                     </div>
                 </div>
@@ -388,11 +389,10 @@
                 {{ $khachHang->email ?? 'Chưa có email' }}
             </div>
 
-            @if($tongSoTour <= 1)
-                <span class="badge-status badge-new">Khách mới</span>
-            @else
+            @if($tongSoTour <= 1) <span class="badge-status badge-new">Khách mới</span>
+                @else
                 <span class="badge-status badge-active">Đang hoạt động</span>
-            @endif
+                @endif
         </div>
     </div>
 
@@ -415,48 +415,48 @@
 
             <tbody>
                 @forelse($lichSuDatTours as $item)
-                    <tr>
-                        <td>{{ $item->datTour->ma_dat_tour ?? '-' }}</td>
+                <tr>
+                    <td>{{ $item->datTour->ma_dat_tour ?? '-' }}</td>
 
-                        <td>
-                            <div class="tour-name">
-                                {{ $item->datTour->tour->ten_tour ?? '-' }}
-                            </div>
-                        </td>
+                    <td>
+                        <div class="tour-name">
+                            {{ $item->datTour->tour->ten_tour ?? '-' }}
+                        </div>
+                    </td>
 
-                        <td>
-                            {{ optional($item->datTour->lichKhoiHanh?->ngay_khoi_hanh)->format('d/m/Y') ?? '-' }}
-                        </td>
+                    <td>
+                        {{ optional($item->datTour->lichKhoiHanh?->ngay_khoi_hanh)->format('d/m/Y') ?? '-' }}
+                    </td>
 
-                        <td>
-                            {{-- {{ optional($item->datTour?->ngay_dat)->format('d/m/Y') ?? '-' }} --}}
-                            {{ optional($item->created_at)->format('d/m/Y') ?? '-' }}
-                        </td>
+                    <td>
+                        {{-- {{ optional($item->datTour?->ngay_dat)->format('d/m/Y') ?? '-' }} --}}
+                        {{ optional($item->created_at)->format('d/m/Y') ?? '-' }}
+                    </td>
 
-                        <td class="money">
-                            {{ number_format($item->tong_tien) }}đ
-                        </td>
+                    <td class="money">
+                        {{ number_format($item->tong_tien) }}đ
+                    </td>
 
-                        <td>
-                            {{ $item->trang_thai_thanh_toan }}
-                        </td>
+                    <td>
+                        {{ $item->trang_thai_thanh_toan }}
+                    </td>
 
-                        <td>
-                            @if($item->da_check_in)
-                                <span class="badge badge-success-custom">Đã check-in</span>
-                            @else
-                                <span class="badge badge-secondary-custom">Chưa check-in</span>
-                            @endif
-                        </td>
+                    <td>
+                        @if($item->da_check_in)
+                        <span class="badge badge-success-custom">Đã check-in</span>
+                        @else
+                        <span class="badge badge-secondary-custom">Chưa check-in</span>
+                        @endif
+                    </td>
 
-                        <td>{{ $item->datTour->trang_thai ?? '-' }}</td>
-                    </tr>
+                    <td>{{ $item->datTour->trang_thai ?? '-' }}</td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="8" class="empty-row">
-                            Chưa có lịch sử đặt tour.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="8" class="empty-row">
+                        Chưa có lịch sử đặt tour.
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

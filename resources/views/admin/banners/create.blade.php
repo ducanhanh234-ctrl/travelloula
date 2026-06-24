@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 
 @section('content')
@@ -6,31 +6,29 @@
 
 <div class="card">
 
-<div class="card-body">
+    <div class="card-body">
 
 
-<form method="POST"
-
-action="{{route('Admin.banners.store')}}">
+        <form method="POST" action="{{route('Admin.banners.store')}}">
 
 
-@csrf
+            @csrf
 
 
-@include('Admin.banners.form')
+            @include('Admin.banners.form')
 
 
-<button class="btn btn-primary">
+            <button class="btn btn-primary">
 
-Lưu
+                Lưu
 
-</button>
-
-
-</form>
+            </button>
 
 
-</div>
+        </form>
+
+
+    </div>
 
 </div>
 

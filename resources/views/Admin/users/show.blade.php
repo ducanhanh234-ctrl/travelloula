@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('content')
 <style>
@@ -100,6 +100,7 @@
             width: 100%;
         }
     }
+
 </style>
 
 <div class="container user-detail-page">

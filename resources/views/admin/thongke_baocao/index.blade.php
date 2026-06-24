@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('title', 'Báo cáo & Thống kê')
 

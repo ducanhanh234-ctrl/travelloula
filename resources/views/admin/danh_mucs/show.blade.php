@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 
 @section('content')
@@ -7,220 +7,201 @@
 <div class="container-fluid">
 
 
-<div class="row justify-content-center">
+    <div class="row justify-content-center">
 
 
-<div class="col-md-8">
+        <div class="col-md-8">
 
 
 
-<div class="card shadow-lg border-0 rounded-4">
+            <div class="card shadow-lg border-0 rounded-4">
 
 
 
-<div class="card-header bg-primary text-white rounded-top-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
 
 
-<h4 class="mb-0">
+                    <h4 class="mb-0">
 
-<i class="fa fa-folder-open"></i>
+                        <i class="fa fa-folder-open"></i>
 
-Chi tiết danh mục
+                        Chi tiết danh mục
 
-</h4>
+                    </h4>
 
 
-</div>
+                </div>
 
 
 
 
-<div class="card-body p-4">
+                <div class="card-body p-4">
 
 
 
-<div class="text-center mb-4">
+                    <div class="text-center mb-4">
 
 
-@if($danhMuc->hinh_anh)
+                        @if($danhMuc->hinh_anh)
 
-<img 
+                        <img src="{{$danhMuc->hinh_anh}}" class="img-fluid rounded-3 shadow" style="width:250px;height:180px;object-fit:cover;" alt="Hình ảnh danh mục">
 
-src="{{$danhMuc->hinh_anh}}"
 
-class="img-fluid rounded-3 shadow"
+                        @else
 
-style="width:250px;height:180px;object-fit:cover;"
 
-alt="Hình ảnh danh mục">
+                        <img src="https://via.placeholder.com/250" class="img-fluid rounded-3 shadow">
 
 
-@else
+                        @endif
 
 
-<img 
 
-src="https://via.placeholder.com/250"
+                    </div>
 
-class="img-fluid rounded-3 shadow"
 
 
->
 
 
-@endif
+                    <div class="mb-3">
 
 
+                        <label class="fw-bold text-secondary">
 
-</div>
+                            Tên danh mục
 
+                        </label>
 
 
+                        <div class="fs-4 fw-semibold text-primary">
 
+                            {{$danhMuc->ten_danh_muc}}
 
-<div class="mb-3">
+                        </div>
 
 
-<label class="fw-bold text-secondary">
+                    </div>
 
-Tên danh mục
 
-</label>
 
 
-<div class="fs-4 fw-semibold text-primary">
 
-{{$danhMuc->ten_danh_muc}}
 
-</div>
 
+                    <div class="mb-3">
 
-</div>
 
+                        <label class="fw-bold text-secondary">
 
+                            Mô tả
 
+                        </label>
 
 
+                        <p class="text-muted">
 
+                            {{$danhMuc->mo_ta ?? 'Không có mô tả'}}
 
-<div class="mb-3">
+                        </p>
 
 
-<label class="fw-bold text-secondary">
+                    </div>
 
-Mô tả
 
-</label>
 
 
-<p class="text-muted">
 
-{{$danhMuc->mo_ta ?? 'Không có mô tả'}}
 
-</p>
 
+                    <div class="mb-3">
 
-</div>
 
+                        <label class="fw-bold text-secondary">
 
+                            Trạng thái
 
+                        </label>
 
 
+                        <br>
 
 
-<div class="mb-3">
+                        @if($danhMuc->trang_thai == 'active')
 
 
-<label class="fw-bold text-secondary">
+                        <span class="badge bg-success px-3 py-2">
 
-Trạng thái
+                            <i class="fa fa-check"></i>
 
-</label>
+                            Đang hoạt động
 
+                        </span>
 
-<br>
 
+                        @else
 
-@if($danhMuc->trang_thai == 'active')
 
+                        <span class="badge bg-danger px-3 py-2">
 
-<span class="badge bg-success px-3 py-2">
+                            <i class="fa fa-lock"></i>
 
-<i class="fa fa-check"></i>
+                            Ngừng hoạt động
 
-Đang hoạt động
+                        </span>
 
-</span>
 
+                        @endif
 
-@else
 
 
-<span class="badge bg-danger px-3 py-2">
+                    </div>
 
-<i class="fa fa-lock"></i>
 
-Ngừng hoạt động
 
-</span>
 
+                    <div class="mt-4">
 
-@endif
 
+                        <a href="{{route('Admin.danh_mucs.index')}}" class="btn btn-secondary">
 
 
-</div>
+                            <i class="fa fa-arrow-left"></i>
 
+                            Quay lại
 
 
+                        </a>
 
-<div class="mt-4">
 
 
-<a href="{{route('Admin.danh_mucs.index')}}"
+                        <a href="{{route('Admin.danh_mucs.edit',$danhMuc)}}" class="btn btn-warning text-white">
 
-class="btn btn-secondary">
 
+                            <i class="fa fa-edit"></i>
 
-<i class="fa fa-arrow-left"></i>
+                            Chỉnh sửa
 
-Quay lại
 
+                        </a>
 
-</a>
 
 
+                    </div>
 
-<a href="{{route('Admin.danh_mucs.edit',$danhMuc)}}"
 
-class="btn btn-warning text-white">
 
 
-<i class="fa fa-edit"></i>
+                </div>
 
-Chỉnh sửa
 
+            </div>
 
-</a>
 
 
+        </div>
 
-</div>
 
-
-
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
+    </div>
 
 
 </div>

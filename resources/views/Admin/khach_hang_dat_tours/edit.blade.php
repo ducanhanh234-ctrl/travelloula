@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 @section('content')
 <style>
@@ -173,6 +173,7 @@
             text-align: center;
         }
     }
+
 </style>
 
 <div class="customer-edit-wrap">
@@ -191,9 +192,9 @@
     </div>
 
     @if($errors->any())
-        <div class="alert-custom">
-            Vui lòng kiểm tra lại dữ liệu.
-        </div>
+    <div class="alert-custom">
+        Vui lòng kiểm tra lại dữ liệu.
+    </div>
     @endif
 
     <form action="{{ route('Admin.khach-hang.update', $khachHang->id) }}" method="POST">
@@ -210,26 +211,17 @@
                 <div class="row">
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Họ tên *</label>
-                        <input type="text"
-                               name="ho_ten"
-                               class="input-control"
-                               value="{{ old('ho_ten', $khachHang->ho_ten) }}">
+                        <input type="text" name="ho_ten" class="input-control" value="{{ old('ho_ten', $khachHang->ho_ten) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Email</label>
-                        <input type="email"
-                               name="email"
-                               class="input-control"
-                               value="{{ old('email', $khachHang->email) }}">
+                        <input type="email" name="email" class="input-control" value="{{ old('email', $khachHang->email) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Số điện thoại</label>
-                        <input type="text"
-                               name="so_dien_thoai"
-                               class="input-control"
-                               value="{{ old('so_dien_thoai', $khachHang->so_dien_thoai) }}">
+                        <input type="text" name="so_dien_thoai" class="input-control" value="{{ old('so_dien_thoai', $khachHang->so_dien_thoai) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -244,10 +236,7 @@
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Năm sinh</label>
-                        <input type="number"
-                               name="nam_sinh"
-                               class="input-control"
-                               value="{{ old('nam_sinh', $khachHang->nam_sinh) }}">
+                        <input type="number" name="nam_sinh" class="input-control" value="{{ old('nam_sinh', $khachHang->nam_sinh) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -261,18 +250,12 @@
 
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Loại giấy tờ</label>
-                        <input type="text"
-                               name="loai_giay_to"
-                               class="input-control"
-                               value="{{ old('loai_giay_to', $khachHang->loai_giay_to) }}">
+                        <input type="text" name="loai_giay_to" class="input-control" value="{{ old('loai_giay_to', $khachHang->loai_giay_to) }}">
                     </div>
 
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Số giấy tờ</label>
-                        <input type="text"
-                               name="so_giay_to"
-                               class="input-control"
-                               value="{{ old('so_giay_to', $khachHang->so_giay_to) }}">
+                        <input type="text" name="so_giay_to" class="input-control" value="{{ old('so_giay_to', $khachHang->so_giay_to) }}">
                     </div>
                 </div>
             </div>
@@ -285,38 +268,32 @@
 
             <div class="form-card-body">
                 <div class="row">
-                  
+
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Trạng thái thanh toán</label>
 
                         <select name="trang_thai_thanh_toan" class="input-control">
-                            <option value="chua_thanh_toan"
-                                @selected(old('trang_thai_thanh_toan', 'chua_thanh_toan') == 'chua_thanh_toan')>
+                            <option value="chua_thanh_toan" @selected(old('trang_thai_thanh_toan', 'chua_thanh_toan' )=='chua_thanh_toan' )>
                                 Chưa thanh toán
                             </option>
 
-                            <option value="da_coc"
-                                @selected(old('trang_thai_thanh_toan') == 'da_coc')>
+                            <option value="da_coc" @selected(old('trang_thai_thanh_toan')=='da_coc' )>
                                 Đã đặt cọc
                             </option>
 
-                            <option value="thanh_toan_mot_phan"
-                                @selected(old('trang_thai_thanh_toan') == 'thanh_toan_mot_phan')>
+                            <option value="thanh_toan_mot_phan" @selected(old('trang_thai_thanh_toan')=='thanh_toan_mot_phan' )>
                                 Thanh toán một phần
                             </option>
 
-                            <option value="da_thanh_toan"
-                                @selected(old('trang_thai_thanh_toan') == 'da_thanh_toan')>
+                            <option value="da_thanh_toan" @selected(old('trang_thai_thanh_toan')=='da_thanh_toan' )>
                                 Đã thanh toán
                             </option>
 
-                            <option value="hoan_tien"
-                                @selected(old('trang_thai_thanh_toan') == 'hoan_tien')>
+                            <option value="hoan_tien" @selected(old('trang_thai_thanh_toan')=='hoan_tien' )>
                                 Đã hoàn tiền
                             </option>
 
-                            <option value="that_bai"
-                                @selected(old('trang_thai_thanh_toan') == 'that_bai')>
+                            <option value="that_bai" @selected(old('trang_thai_thanh_toan')=='that_bai' )>
                                 Thanh toán thất bại
                             </option>
                         </select>
@@ -336,34 +313,22 @@
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Số tiền đã thanh toán</label>
-                        <input type="number"
-                               name="so_tien_da_thanh_toan"
-                               class="input-control"
-                               value="{{ old('so_tien_da_thanh_toan', $khachHang->so_tien_da_thanh_toan) }}">
+                        <input type="number" name="so_tien_da_thanh_toan" class="input-control" value="{{ old('so_tien_da_thanh_toan', $khachHang->so_tien_da_thanh_toan) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Tổng tiền</label>
-                        <input type="number"
-                               name="tong_tien"
-                               class="input-control"
-                               value="{{ old('tong_tien', $khachHang->tong_tien) }}">
+                        <input type="number" name="tong_tien" class="input-control" value="{{ old('tong_tien', $khachHang->tong_tien) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Số phòng</label>
-                        <input type="text"
-                               name="so_phong"
-                               class="input-control"
-                               value="{{ old('so_phong', $khachHang->so_phong) }}">
+                        <input type="text" name="so_phong" class="input-control" value="{{ old('so_phong', $khachHang->so_phong) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Loại phòng</label>
-                        <input type="text"
-                               name="loai_phong"
-                               class="input-control"
-                               value="{{ old('loai_phong', $khachHang->loai_phong) }}">
+                        <input type="text" name="loai_phong" class="input-control" value="{{ old('loai_phong', $khachHang->loai_phong) }}">
                     </div>
                 </div>
             </div>
@@ -378,14 +343,12 @@
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Yêu cầu đặc biệt</label>
-                        <textarea name="yeu_cau_dac_biet"
-                                  class="textarea-control">{{ old('yeu_cau_dac_biet', $khachHang->yeu_cau_dac_biet) }}</textarea>
+                        <textarea name="yeu_cau_dac_biet" class="textarea-control">{{ old('yeu_cau_dac_biet', $khachHang->yeu_cau_dac_biet) }}</textarea>
                     </div>
 
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Ghi chú</label>
-                        <textarea name="ghi_chu"
-                                  class="textarea-control">{{ old('ghi_chu', $khachHang->ghi_chu) }}</textarea>
+                        <textarea name="ghi_chu" class="textarea-control">{{ old('ghi_chu', $khachHang->ghi_chu) }}</textarea>
                     </div>
                 </div>
             </div>

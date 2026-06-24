@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts/admin_pro')
 
 
 @section('content')
@@ -6,33 +6,31 @@
 
 <div class="card">
 
-<div class="card-body">
+    <div class="card-body">
 
 
-<form method="POST"
-
-action="{{route('Admin.banners.update',$banner)}}">
+        <form method="POST" action="{{route('Admin.banners.update',$banner)}}">
 
 
-@csrf
+            @csrf
 
-@method('PUT')
-
-
-@include('Admin.banners.form')
+            @method('PUT')
 
 
-<button class="btn btn-success">
-
-Cập nhật
-
-</button>
+            @include('Admin.banners.form')
 
 
-</form>
+            <button class="btn btn-success">
+
+                Cập nhật
+
+            </button>
 
 
-</div>
+        </form>
+
+
+    </div>
 
 </div>
 

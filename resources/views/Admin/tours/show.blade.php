@@ -1,4 +1,4 @@
-@extends('Layouts.admin')
+@extends('layouts/admin_pro')
 
 @section('content')
 
@@ -10,8 +10,7 @@
 
             <h4>Chi tiết Tour</h4>
 
-            <a href="{{ route('Admin.tours.index') }}"
-               class="btn btn-secondary">
+            <a href="{{ route('Admin.tours.index') }}" class="btn btn-secondary">
                 Quay lại
             </a>
 
@@ -25,15 +24,11 @@
 
                     @if($tour->anh_dai_dien)
 
-                        <img
-                            src="{{ asset('storage/'.$tour->anh_dai_dien) }}"
-                            class="img-fluid rounded border">
+                    <img src="{{ asset('storage/'.$tour->anh_dai_dien) }}" class="img-fluid rounded border">
 
                     @else
 
-                        <img
-                            src="https://via.placeholder.com/400x300"
-                            class="img-fluid rounded border">
+                    <img src="https://via.placeholder.com/400x300" class="img-fluid rounded border">
 
                     @endif
 
@@ -101,15 +96,15 @@
 
                                 @if($tour->trang_thai == 'active')
 
-                                    <span class="badge bg-success">
-                                        Hoạt động
-                                    </span>
+                                <span class="badge bg-success">
+                                    Hoạt động
+                                </span>
 
                                 @else
 
-                                    <span class="badge bg-danger">
-                                        Ngừng hoạt động
-                                    </span>
+                                <span class="badge bg-danger">
+                                    Ngừng hoạt động
+                                </span>
 
                                 @endif
 

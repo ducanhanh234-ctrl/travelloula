@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 @section('content')
 
 <style>
@@ -276,6 +276,7 @@
             min-width: 1050px;
         }
     }
+
 </style>
 
 <div class="kh-page">
@@ -304,26 +305,20 @@
         <div class="kh-filter-grid">
             <div>
                 <label class="kh-label">Tìm kiếm</label>
-                <input
-                    type="text"
-                    name="keyword"
-                    value="{{ request('keyword') }}"
-                    class="kh-input"
-                    placeholder="Tên, email hoặc số điện thoại"
-                >
+                <input type="text" name="keyword" value="{{ request('keyword') }}" class="kh-input" placeholder="Tên, email hoặc số điện thoại">
             </div>
 
             <div>
                 <label class="kh-label">Loại khách hàng</label>
                 <select name="loai_hanh_khach" class="kh-select">
                     <option value="">Tất cả</option>
-                    <option value="adult" @selected(request('loai_hanh_khach') == 'adult')>
+                    <option value="adult" @selected(request('loai_hanh_khach')=='adult' )>
                         Người lớn
                     </option>
-                    <option value="child" @selected(request('loai_hanh_khach') == 'child')>
+                    <option value="child" @selected(request('loai_hanh_khach')=='child' )>
                         Trẻ em
                     </option>
-                    <option value="baby" @selected(request('loai_hanh_khach') == 'baby')>
+                    <option value="baby" @selected(request('loai_hanh_khach')=='baby' )>
                         Em bé
                     </option>
                 </select>
@@ -338,9 +333,9 @@
     </form>
 
     @if(session('success'))
-        <div style="background:#dcfce7;color:#166534;padding:14px 18px;border-radius:8px;margin-bottom:20px;font-weight:700;">
-            {{ session('success') }}
-        </div>
+    <div style="background:#dcfce7;color:#166534;padding:14px 18px;border-radius:8px;margin-bottom:20px;font-weight:700;">
+        {{ session('success') }}
+    </div>
     @endif
 
     <div class="kh-table-card">
@@ -358,98 +353,80 @@
 
             <tbody>
                 @forelse($khachHangs as $khachHang)
-                    <tr>
-                        <td>
-                            <div class="kh-name">
-                                {{ $khachHang->ho_ten }}
-                            </div>
-                        </td>
+                <tr>
+                    <td>
+                        <div class="kh-name">
+                            {{ $khachHang->ho_ten }}
+                        </div>
+                    </td>
 
-                        <td>
-                            <div class="kh-contact-email">
-                                {{ $khachHang->email ?? '-' }}
-                            </div>
+                    <td>
+                        <div class="kh-contact-email">
+                            {{ $khachHang->email ?? '-' }}
+                        </div>
 
-                            <div class="kh-contact-phone">
-                                {{ $khachHang->so_dien_thoai ?? '-' }}
-                            </div>
-                        </td>
+                        <div class="kh-contact-phone">
+                            {{ $khachHang->so_dien_thoai ?? '-' }}
+                        </div>
+                    </td>
 
-                        <td>
-                            {{ $khachHang->so_lan_dat }} lần đặt
-                        </td>
+                    <td>
+                        {{ $khachHang->so_lan_dat }} lần đặt
+                    </td>
 
-                        <td>
-                            @if($khachHang->so_lan_dat <= 1)
-                                <span class="kh-badge kh-badge-new">
-                                    Khách mới
+                    <td>
+                        @if($khachHang->so_lan_dat <= 1) <span class="kh-badge kh-badge-new">
+                            Khách mới
+                            </span>
+                            @elseif($khachHang->so_lan_dat <= 3) <span class="kh-badge kh-badge-active">
+                                Đang hoạt động
                                 </span>
-                            @elseif($khachHang->so_lan_dat <= 3)
-                                <span class="kh-badge kh-badge-active">
-                                    Đang hoạt động
-                                </span>
-                            @else
+                                @else
                                 <span class="kh-badge kh-badge-vip">
                                     Khách thân thiết
                                 </span>
-                            @endif
-                        </td>
+                                @endif
+                    </td>
 
-                        <td>
-                            @if($khachHang->ngay_tham_gia)
-                                {{ \Carbon\Carbon::parse($khachHang->ngay_tham_gia)->format('d/m/Y') }}
+                    <td>
+                        @if($khachHang->ngay_tham_gia)
+                        {{ \Carbon\Carbon::parse($khachHang->ngay_tham_gia)->format('d/m/Y') }}
 
-                                <span class="kh-date-muted">
-                                    {{ \Carbon\Carbon::parse($khachHang->ngay_tham_gia)->diffForHumans() }}
-                                </span>
-                            @else
-                                — —
-                            @endif
-                        </td>
+                        <span class="kh-date-muted">
+                            {{ \Carbon\Carbon::parse($khachHang->ngay_tham_gia)->diffForHumans() }}
+                        </span>
+                        @else
+                        — —
+                        @endif
+                    </td>
 
-                        <td>
-                            <div class="kh-actions">
-                                <a
-                                    href="{{ route('Admin.khach-hang.show', $khachHang->id) }}"
-                                    class="kh-action kh-view"
-                                    title="Xem chi tiết"
-                                >
-                                    👁
-                                </a>
+                    <td>
+                        <div class="kh-actions">
+                            <a href="{{ route('Admin.khach-hang.show', $khachHang->id) }}" class="kh-action kh-view" title="Xem chi tiết">
+                                👁
+                            </a>
 
-                                <a
-                                    href="{{ route('Admin.khach-hang.edit', $khachHang->id) }}"
-                                    class="kh-action kh-edit"
-                                    title="Chỉnh sửa"
-                                >
-                                    ✏️
-                                </a>
+                            <a href="{{ route('Admin.khach-hang.edit', $khachHang->id) }}" class="kh-action kh-edit" title="Chỉnh sửa">
+                                ✏️
+                            </a>
 
-                                <form
-                                    action="{{ route('Admin.khach-hang.destroy', $khachHang->id) }}"
-                                    method="POST"
-                                    onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này?')"
-                                >
-                                    @csrf
-                                    @method('DELETE')
+                            <form action="{{ route('Admin.khach-hang.destroy', $khachHang->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa khách hàng này?')">
+                                @csrf
+                                @method('DELETE')
 
-                                    <button
-                                        type="submit"
-                                        class="kh-action kh-delete"
-                                        title="Xóa"
-                                    >
-                                        🧾
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                                <button type="submit" class="kh-action kh-delete" title="Xóa">
+                                    🧾
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="6" class="kh-empty">
-                            Chưa có khách hàng nào.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="kh-empty">
+                        Chưa có khách hàng nào.
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

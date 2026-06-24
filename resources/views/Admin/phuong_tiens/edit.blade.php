@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin_pro')
 
 @section('content')
 <style>
@@ -171,6 +171,7 @@
             text-align: center;
         }
     }
+
 </style>
 
 <div class="vehicle-edit-wrap">
@@ -189,9 +190,9 @@
     </div>
 
     @if($errors->any())
-        <div class="alert-custom">
-            Vui lòng kiểm tra lại dữ liệu.
-        </div>
+    <div class="alert-custom">
+        Vui lòng kiểm tra lại dữ liệu.
+    </div>
     @endif
 
     <form action="{{ route('Admin.phuong-tiens.update', $phuongTien->id) }}" method="POST">
@@ -208,52 +209,36 @@
                 <div class="row">
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Biển số xe *</label>
-                        <input type="text"
-                               name="bien_so_xe"
-                               class="input-control"
-                               value="{{ old('bien_so_xe', $phuongTien->bien_so_xe) }}">
+                        <input type="text" name="bien_so_xe" class="input-control" value="{{ old('bien_so_xe', $phuongTien->bien_so_xe) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Loại xe *</label>
-                        <input type="text"
-                               name="loai_phuong_tien"
-                               class="input-control"
-                               value="{{ old('loai_phuong_tien', $phuongTien->loai_phuong_tien) }}">
+                        <input type="text" name="loai_phuong_tien" class="input-control" value="{{ old('loai_phuong_tien', $phuongTien->loai_phuong_tien) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Hãng xe *</label>
-                        <input type="text"
-                               name="hang_xe"
-                               class="input-control"
-                               value="{{ old('hang_xe', $phuongTien->hang_xe) }}">
+                        <input type="text" name="hang_xe" class="input-control" value="{{ old('hang_xe', $phuongTien->hang_xe) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Năm sản xuất *</label>
-                        <input type="number"
-                               name="nam_san_xuat"
-                               class="input-control"
-                               value="{{ old('nam_san_xuat', $phuongTien->nam_san_xuat) }}">
+                        <input type="number" name="nam_san_xuat" class="input-control" value="{{ old('nam_san_xuat', $phuongTien->nam_san_xuat) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Màu xe *</label>
-                        <input type="text"
-                               name="mau_xe"
-                               class="input-control"
-                               value="{{ old('mau_xe', $phuongTien->mau_xe) }}">
+                        <input type="text" name="mau_xe" class="input-control" value="{{ old('mau_xe', $phuongTien->mau_xe) }}">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Trạng thái *</label>
                         <select name="trang_thai" class="input-control">
                             @foreach(\App\Models\PhuongTien::trangThaiList() as $key => $value)
-                                <option value="{{ $key }}"
-                                    @selected(old('trang_thai', $phuongTien->trang_thai) == $key)>
-                                    {{ $value }}
-                                </option>
+                            <option value="{{ $key }}" @selected(old('trang_thai', $phuongTien->trang_thai) == $key)>
+                                {{ $value }}
+                            </option>
                             @endforeach
                         </select>
                     </div>
@@ -270,18 +255,12 @@
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Tên tài xế *</label>
-                        <input type="text"
-                               name="ten_tai_xe"
-                               class="input-control"
-                               value="{{ old('ten_tai_xe', $phuongTien->ten_tai_xe) }}">
+                        <input type="text" name="ten_tai_xe" class="input-control" value="{{ old('ten_tai_xe', $phuongTien->ten_tai_xe) }}">
                     </div>
 
                     <div class="col-md-6 mb-4">
                         <label class="form-label">Số điện thoại tài xế *</label>
-                        <input type="text"
-                               name="so_dien_thoai_tai_xe"
-                               class="input-control"
-                               value="{{ old('so_dien_thoai_tai_xe', $phuongTien->so_dien_thoai_tai_xe) }}">
+                        <input type="text" name="so_dien_thoai_tai_xe" class="input-control" value="{{ old('so_dien_thoai_tai_xe', $phuongTien->so_dien_thoai_tai_xe) }}">
                     </div>
                 </div>
             </div>
@@ -296,9 +275,7 @@
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label class="form-label">Ghi chú về xe</label>
-                        <textarea name="ghi_chu"
-                                  class="textarea-control"
-                                  placeholder="Ghi chú về tình trạng xe, lịch bảo trì, lưu ý vận hành...">{{ old('ghi_chu', $phuongTien->ghi_chu) }}</textarea>
+                        <textarea name="ghi_chu" class="textarea-control" placeholder="Ghi chú về tình trạng xe, lịch bảo trì, lưu ý vận hành...">{{ old('ghi_chu', $phuongTien->ghi_chu) }}</textarea>
                     </div>
                 </div>
             </div>

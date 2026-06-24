@@ -50,7 +50,6 @@ Route::get('/bai_viet', function () {
 Route::get('/{id}/bai_viet', function () {
 
     return view('Client.bai_viet.detail');
-
 })->name('bai_viet.detail');
 
 
@@ -93,7 +92,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Login ADMIN
 Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
     Route::get('/', function () {
-        return view('Layouts.admin');
+        return view('Admin.dashboard.index');
     })->name('dashboard');
     // Admin routes
     Route::resource('users', UserController::class);
@@ -110,7 +109,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
         ->name('dat_tours.show');
 
-        //sửa
+    //sửa
     Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
         ->name('dat_tours.edit');
 

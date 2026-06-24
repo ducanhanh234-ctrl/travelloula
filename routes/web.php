@@ -32,9 +32,7 @@ use App\Http\Controllers\Admin\HinhAnhTourController;
 
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
-
-
+use App\Http\Controllers\TrangDieuKhoanClientController;
 
 // use App\Http\Controllers\TourController;
 // Client routes
@@ -73,14 +71,16 @@ Route::get('/ve_chung_toi', function () {
 Route::get('/danh_sach_tour_yeu_thich', function () {
     return view('Client.danh_sach_tour_yeu_thich.index');
 });
-Route::get('/dieu_khoan', function () {
-    return view('Client.dieu_khoan.index');
-});
+// Route::get('/dieu_khoan', function () {
+//     return view('Client.dieu_khoan.index');
+// });
+Route::get('/dieu_khoan', [TrangDieuKhoanClientController::class, 'index'])
+    ->name('Client.dieu_khoan.index');
 // Auth routes
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\PhuongTienController;
-
+use App\Http\Controllers\TrangDieuKhoanController;
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
@@ -110,7 +110,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
         ->name('dat_tours.show');
 
-        //sửa
+    //sửa
     Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
         ->name('dat_tours.edit');
 
@@ -146,6 +146,16 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         [QuanLyDatTourController::class, 'store']
     )
         ->name('dat-tours.store');
+
+    //  điều khoản
+    // điều khoản
+    Route::get('/trang_dieu_khoans/edit', [TrangDieuKhoanController::class, 'edit'])
+        ->name('trang_dieu_khoans.edit');
+
+    Route::put('/trang_dieu_khoans', [TrangDieuKhoanController::class, 'update'])
+        ->name('trang_dieu_khoans.update');
+
+
 
     //lich khởi hành theo tour
     Route::get(
@@ -193,9 +203,9 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-        'index',
-        'show'
-    ]);
+                'index',
+                'show'
+            ]);
 });
 
 

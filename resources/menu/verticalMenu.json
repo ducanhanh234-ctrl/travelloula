@@ -15,19 +15,19 @@
                 {
                     "url": "/Admin/tours",
                     "name": "Tour",
-                    "slug": "Admin.tours.index",
+                    "slug": "Admin.tours",
 
                     "badge": ["label-primary fs-tiny", "Pro"]
                 },
                 {
                     "url": "/Admin/danh_mucs",
                     "name": "Danh mục",
-                    "slug": "Admin.danh_mucs.index"
+                    "slug": "Admin.danh_mucs"
                 },
                 {
                     "url": "/Admin/banners",
                     "name": "Banner",
-                    "slug": "Admin.banners.index"
+                    "slug": "Admin.banners"
                 },
                 {
                     "url": "",
@@ -86,7 +86,7 @@
         {
             "name": "Quản Lý Tài Khoản",
             "icon": "menu-icon tf-icons bx bx-user",
-            "slug": ["Admin.users", "Admin.roles", "Admin.permissions"],
+            "slug": ["Admin.users", "Admin.roles", "Admin.permissions", "Admin.huong-dan-viens"],
             "submenu": [
                 {
                     "url": "/Admin/users",

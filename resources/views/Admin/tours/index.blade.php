@@ -13,217 +13,182 @@
 @vite('resources/assets/js/dashboards-analytics.js')
 @endsection
 @section('content')
-<div class="container">
+<div class="card">
 
-    <div class="d-flex justify-content-between mb-3">
-
-        <h3>Quản lý Tour</h3>
-
-        <a href="{{ route('Admin.tours.create') }}" class="btn btn-primary">
-            Thêm Tour
-        </a>
-
-    </div>
-    <div class="card mb-3">
-
-        <div class="card-body">
-
-            <form method="GET">
-
-                <div class="row">
-
-                    <div class="col-md-3">
-
-                        <input type="text" name="keyword" class="form-control" placeholder="Tên tour..." value="{{ request('keyword') }}">
-
-                    </div>
-
-                    <div class="col-md-3">
-
-                        <select name="danh_muc_id" class="form-control">
-
-                            <option value="">
-                                Tất cả danh mục
-                            </option>
-
-                            @foreach ($danhMucs as $item)
-                            <option value="{{ $item->id }}" {{ request('danh_muc_id') == $item->id ? 'selected' : '' }}>
-
-                                {{ $item->ten_danh_muc }}
-
-                            </option>
-                            @endforeach
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <select name="trang_thai" class="form-control">
-
-                            <option value="">
-                                Trạng thái
-                            </option>
-
-                            <option value="active" {{ request('trang_thai') == 'active' ? 'selected' : '' }}>
-
-                                Đang hoạt động
-
-                            </option>
-
-                            <option value="inactive" {{ request('trang_thai') == 'inactive' ? 'selected' : '' }}>
-
-                                Ngừng hoạt động
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <select name="sort_price" class="form-control">
-
-                            <option value="">
-                                Sắp xếp giá
-                            </option>
-
-                            <option value="asc" {{ request('sort_price') == 'asc' ? 'selected' : '' }}>
-
-                                Giá tăng dần
-
-                            </option>
-
-                            <option value="desc" {{ request('sort_price') == 'desc' ? 'selected' : '' }}>
-
-                                Giá giảm dần
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-md-2">
-
-                        <button class="btn btn-primary w-100">
-
-                            Tìm Kiếm
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </form>
-
+    ```
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="card-title mb-0">Quản lý Tour</h4>
+            <small class="text-muted">
+                Danh sách tất cả tour trong hệ thống
+            </small>
         </div>
 
+        <a href="{{ route('Admin.tours.create') }}" class="btn btn-primary">
+            <i class="bx bx-plus"></i>
+            Thêm Tour
+        </a>
     </div>
 
+    {{-- Bộ lọc --}}
+    <div class="card-body border-bottom">
+        <form method="GET">
+            <div class="row g-3">
 
-    <table class="table table-bordered">
+                <div class="col-md-3">
+                    <input type="text" name="keyword" class="form-control" placeholder="Tên tour..." value="{{ request('keyword') }}">
+                </div>
 
-        <thead>
+                <div class="col-md-3">
+                    <select name="danh_muc_id" class="form-select">
+                        <option value="">Tất cả danh mục</option>
 
-            <tr>
-                <th>ID</th>
-                <th>Ảnh</th>
-                <th>Tên Tour</th>
-                <th>Giá</th>
-                <th>Danh mục</th>
-                <th>Điểm đến</th>
-                <th>Trạng thái</th>
-                <th width="220">Thao tác</th>
-            </tr>
+                        @foreach ($danhMucs as $item)
+                        <option value="{{ $item->id }}" {{ request('danh_muc_id') == $item->id ? 'selected' : '' }}>
+                            {{ $item->ten_danh_muc }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        </thead>
+                <div class="col-md-2">
+                    <select name="trang_thai" class="form-select">
+                        <option value="">Trạng thái</option>
+                        <option value="active">Đang hoạt động</option>
+                        <option value="inactive">Ngừng hoạt động</option>
+                    </select>
+                </div>
 
-        <tbody>
+                <div class="col-md-2">
+                    <select name="sort_price" class="form-select">
+                        <option value="">Sắp xếp giá</option>
+                        <option value="asc">Giá tăng dần</option>
+                        <option value="desc">Giá giảm dần</option>
+                    </select>
+                </div>
 
-            @foreach ($tours as $tour)
-            <tr>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        <i class="bx bx-search"></i>
+                        Tìm kiếm
+                    </button>
+                </div>
 
-                <td>
-                    {{ ($tours->currentPage() - 1) * $tours->perPage() + $loop->iteration }}
-                </td>
+            </div>
+        </form>
+    </div>
 
-                <td>
+    {{-- Bảng --}}
+    <div class="table-responsive text-nowrap">
 
-                    @if ($tour->anh_dai_dien)
-                    <img src="{{ asset('storage/' . $tour->anh_dai_dien) }}" width="100">
-                    @endif
+        <table class="table table-hover align-middle mb-0">
 
-                </td>
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Ảnh</th>
+                    <th>Tên Tour</th>
+                    <th>Giá</th>
+                    <th>Danh mục</th>
+                    <th>Điểm đến</th>
+                    <th>Trạng thái</th>
+                    <th width="180">Thao tác</th>
+                </tr>
+            </thead>
 
-                <td>{{ $tour->ten_tour }}</td>
+            <tbody>
 
-                <td>
+                @forelse($tours as $tour)
 
-                    {{ number_format($tour->gia_tour) }} VNĐ
+                <tr>
 
-                </td>
-                <td>
-                    {{ $tour->danhMuc?->ten_danh_muc }}
-                </td>
-                <td>
+                    <td>
+                        {{ ($tours->currentPage()-1)*$tours->perPage()+$loop->iteration }}
+                    </td>
 
-                    {{ $tour->diem_den }}
+                    <td>
+                        @if($tour->anh_dai_dien)
+                        <img src="{{ asset('storage/'.$tour->anh_dai_dien) }}" class="rounded" width="90">
+                        @endif
+                    </td>
 
-                </td>
+                    <td>
+                        <strong>{{ $tour->ten_tour }}</strong>
+                    </td>
 
-                <td>
-                    @if ($tour->trang_thai == 'active')
-                    <span class="badge bg-success">
-                        Đang hoạt động
-                    </span>
-                    @else
-                    <span class="badge bg-danger">
-                        Ngừng hoạt động
-                    </span>
-                    @endif
-                </td>
+                    <td>
+                        {{ number_format($tour->gia_tour) }} đ
+                    </td>
 
-                <td>
+                    <td>
+                        {{ $tour->danhMuc?->ten_danh_muc }}
+                    </td>
 
-                    <a href="{{ route('Admin.tours.show', $tour) }}" class="btn btn-info btn-sm">
+                    <td>
+                        {{ $tour->diem_den }}
+                    </td>
 
-                        Xem
+                    <td>
+                        @if($tour->trang_thai == 'active')
+                        <span class="badge bg-label-success">
+                            Đang hoạt động
+                        </span>
+                        @else
+                        <span class="badge bg-label-danger">
+                            Ngừng hoạt động
+                        </span>
+                        @endif
+                    </td>
 
-                    </a>
+                    <td>
+                        <div class="d-flex gap-1">
 
-                    <a href="{{ route('Admin.tours.edit', $tour) }}" class="btn btn-warning btn-sm">
+                            <a href="{{ route('Admin.tours.show',$tour) }}" class="btn btn-icon btn-info">
+                                <i class="bx bx-show"></i>
+                            </a>
 
-                        Sửa
+                            <a href="{{ route('Admin.tours.edit',$tour) }}" class="btn btn-icon btn-warning">
+                                <i class="bx bx-edit"></i>
+                            </a>
 
-                    </a>
+                            <form action="{{ route('Admin.tours.destroy',$tour) }}" method="POST">
 
-                    <form action="{{ route('Admin.tours.destroy', $tour) }}" method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
 
-                        @csrf
-                        @method('DELETE')
+                                <button onclick="return confirm('Bạn có chắc muốn xóa?')" class="btn btn-icon btn-danger">
 
-                        <button onclick="return confirm('Xóa?')" class="btn btn-danger btn-sm">
+                                    <i class="bx bx-trash"></i>
 
-                            Xóa
+                                </button>
+                            </form>
 
-                        </button>
+                        </div>
+                    </td>
 
-                    </form>
+                </tr>
 
-                </td>
+                @empty
 
-            </tr>
-            @endforeach
+                <tr>
+                    <td colspan="8" class="text-center py-4">
+                        Không có dữ liệu
+                    </td>
+                </tr>
 
-        </tbody>
+                @endforelse
 
-    </table>
+            </tbody>
 
-    {{ $tours->appends(request()->query())->links() }}
+        </table>
+
+    </div>
+
+    <div class="card-footer">
+        {{ $tours->appends(request()->query())->links() }}
+    </div>
+    ```
 
 </div>
+
 @endsection

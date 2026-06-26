@@ -30,10 +30,13 @@ class DanhSachTour extends Model
 
     
 
-    // public function lichTrinhs()
-    // {
-    //     return $this->hasMany(LichTrinhTour::class,'tour_id');
-    // }
+    public function lichTrinhs()
+    {
+        return $this->hasMany(
+            LichTrinhTour::class,
+            'tour_id'
+        );
+    }
 
     // public function hinhAnhs()
     // {

@@ -58,7 +58,41 @@
 
                     <label>Thời lượng</label>
 
-                    <input type="text" name="thoi_luong" class="form-control">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <label class="form-label">Số ngày</label>
+
+                            <select name="so_ngay" class="form-select" required>
+
+                                <option value="">-- Chọn số ngày --</option>
+
+                                @for ($i = 1; $i <= 30; $i++)
+                                    <option value="{{ $i }}">
+                                        {{ $i }} ngày
+                                    </option>
+                                @endfor
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Số đêm</label>
+
+                            <select name="so_dem" class="form-select" required>
+
+                                <option value="">-- Chọn số đêm --</option>
+
+                                @for ($i = 0; $i <= 29; $i++)
+                                    <option value="{{ $i }}">
+                                        {{ $i }} đêm
+                                    </option>
+                                @endfor
+
+                            </select>
+                        </div>
+
+                    </div>
 
                 </div>
 

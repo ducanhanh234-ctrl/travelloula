@@ -130,14 +130,18 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'lich_trinh_tours',
         LichTrinhTourController::class
     );
+    Route::get(
+        'tour/{tour}/lich-trinh',
+        [LichTrinhTourController::class, 'indexByTour']
+    )->name('lich_trinh_tours.tour');
 
     Route::resource(
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-        'index',
-        'show'
-    ]);
+                'index',
+                'show'
+            ]);
 });
 
 

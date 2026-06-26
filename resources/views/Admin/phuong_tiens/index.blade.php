@@ -413,7 +413,7 @@
                             <div class="vehicle-color">{{ $phuongTien->mau_xe }}</div>
                         </td>
 
-                        <td>{{ $phuongTien->loai_phuong_tien }}</td>
+                       <td>{{ $phuongTien->loai_phuong_tien_text }}</td>
                         <td>{{ $phuongTien->hang_xe }}</td>
                         <td>{{ $phuongTien->nam_san_xuat }}</td>
 

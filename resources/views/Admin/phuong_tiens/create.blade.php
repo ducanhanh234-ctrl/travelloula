@@ -2,29 +2,20 @@
 
 @section('content')
 <style>
-.vehicle-create-page{
-    background:#f8fafc;
-    min-height:100vh;
-    padding:20px 12px 40px;
-    color:#0f172a;
-    width:100%;
-}
-
-.vehicle-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    margin-bottom:24px;
+.vehicle-form-page{
+    max-width:1380px;
+    margin:0 auto;
+    padding:32px 32px 48px;
 }
 
 .back-link{
-    color:#64748b;
-    text-decoration:none;
-    font-weight:600;
     display:inline-flex;
     align-items:center;
     gap:8px;
-    margin-bottom:12px;
+    color:#64748b;
+    text-decoration:none;
+    font-weight:600;
+    margin-bottom:14px;
 }
 
 .back-link:hover{
@@ -34,76 +25,68 @@
 .page-title{
     font-size:32px;
     font-weight:800;
-    margin:0 0 6px;
     color:#0f172a;
+    margin-bottom:6px;
 }
 
 .page-subtitle{
     color:#64748b;
-    font-size:15px;
+    margin-bottom:28px;
 }
 
 .form-card{
     background:#fff;
-    border:1px solid #e2e8f0;
-    border-radius:16px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
     overflow:hidden;
-    margin-bottom:24px;
-    box-shadow:0 1px 3px rgba(15,23,42,.06);
+    margin-bottom:22px;
+    box-shadow:0 2px 8px rgba(15,23,42,.04);
 }
 
 .form-card-header{
-    padding:18px 24px;
-    border-bottom:1px solid #e2e8f0;
-    background:#fff;
+    padding:16px 24px;
+    border-bottom:1px solid #e5e7eb;
+    font-weight:800;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    font-size:18px;
-    font-weight:800;
-    color:#0f172a;
 }
 
 .form-card-badge{
-    background:#ecfdf5;
-    color:#059669;
-    padding:6px 14px;
+    background:#10b981;
+    color:white;
+    padding:5px 14px;
     border-radius:999px;
-    font-size:13px;
+    font-size:12px;
     font-weight:800;
 }
 
 .form-card-body{
-    padding:24px 24px 8px;
+    padding:26px 24px 14px;
 }
 
 .form-label{
-    display:block;
     font-weight:700;
-    color:#0f172a;
     margin-bottom:8px;
-    font-size:15px;
+    color:#0f172a;
 }
 
 .input-control,
 .textarea-control{
     width:100%;
-    border:1px solid #d1d5db;
-    border-radius:9px;
-    padding:0 16px;
-    font-size:15px;
-    color:#0f172a;
-    background:#fff;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    padding:10px 14px;
     transition:.2s;
+    background:#fff;
 }
 
 .input-control{
-    height:50px;
+    height:44px;
 }
 
 .textarea-control{
     min-height:120px;
-    padding:14px 16px;
     resize:vertical;
 }
 
@@ -111,7 +94,7 @@
 .textarea-control:focus{
     outline:none;
     border-color:#3b82f6;
-    box-shadow:0 0 0 3px rgba(59,130,246,.15);
+    box-shadow:0 0 0 3px rgba(59,130,246,.12);
 }
 
 .alert-custom{
@@ -125,60 +108,41 @@
 }
 
 .actions-bar{
-    background:#fff;
-    border:1px solid #e2e8f0;
-    border-radius:16px;
-    padding:18px 24px;
     display:flex;
     justify-content:flex-end;
     gap:12px;
-    box-shadow:0 1px 3px rgba(15,23,42,.06);
+    margin-top:24px;
 }
 
 .btn-cancel{
-    padding:11px 24px;
-    border-radius:9px;
-    background:#fff;
+    padding:10px 22px;
+    border-radius:8px;
+    background:white;
     border:1px solid #cbd5e1;
     text-decoration:none;
     color:#334155;
-    font-weight:800;
-    transition:.2s;
-}
-
-.btn-cancel:hover{
-    background:#f8fafc;
-    color:#0f172a;
+    font-weight:700;
 }
 
 .btn-submit{
-    padding:11px 26px;
+    padding:10px 24px;
     border:none;
-    border-radius:9px;
+    border-radius:8px;
     background:#10b981;
-    color:#fff;
+    color:white;
     font-weight:800;
-    box-shadow:0 6px 14px rgba(16,185,129,.22);
-    transition:.2s;
+    box-shadow:0 8px 18px rgba(16,185,129,.25);
 }
 
 .btn-submit:hover{
     background:#059669;
-    transform:translateY(-1px);
-}
-
-@media(max-width:1100px){
-    .vehicle-create-page{
-        padding:20px 10px 32px;
-    }
-
-    .vehicle-header{
-        flex-direction:column;
-        gap:18px;
-    }
 }
 
 @media(max-width:768px){
+    .vehicle-form-page{
+        padding:20px;
+    }
+
     .page-title{
         font-size:26px;
     }
@@ -195,23 +159,17 @@
 }
 </style>
 
-<div class="vehicle-create-page">
+<div class="vehicle-form-page">
 
-    <div class="vehicle-header">
-        <div>
-            <a href="{{ route('Admin.phuong-tiens.index') }}" class="back-link">
-                <i class="fa fa-arrow-left"></i>
-                Quay lại danh sách
-            </a>
+    <a href="{{ route('Admin.phuong-tiens.index') }}" class="back-link">
+        <i class="fa fa-arrow-left"></i>
+        Quay lại danh sách
+    </a>
 
-            <h1 class="page-title">
-                Thêm xe mới
-            </h1>
+    <h1 class="page-title">Thêm xe mới</h1>
 
-            <div class="page-subtitle">
-                Thêm phương tiện và thông tin tài xế vận hành
-            </div>
-        </div>
+    <div class="page-subtitle">
+        Thêm phương tiện và thông tin tài xế vận hành
     </div>
 
     @if($errors->any())
@@ -225,7 +183,7 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>🚐 Thông tin phương tiện</span>
+                <span>Thông tin phương tiện</span>
                 <span class="form-card-badge">THÊM MỚI</span>
             </div>
 
@@ -237,16 +195,27 @@
                         <input type="text"
                                name="bien_so_xe"
                                class="input-control"
-                               value="{{ old('bien_so_xe') }}">
+                               value="{{ old('bien_so_xe') }}"
+                               placeholder="Ví dụ: 29B-12345">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Loại phương tiện *</label>
-                        <input type="text"
-                               name="loai_phuong_tien"
-                               class="input-control"
-                               placeholder="16 chỗ, 29 chỗ, 45 chỗ..."
-                               value="{{ old('loai_phuong_tien') }}">
+                        <select name="loai_phuong_tien" class="input-control">
+                            <option value="">-- Chọn loại phương tiện --</option>
+
+                            <option value="xe_16_cho" @selected(old('loai_phuong_tien') == 'xe_16_cho')>
+                                Xe 16 chỗ
+                            </option>
+
+                            <option value="xe_29_cho" @selected(old('loai_phuong_tien') == 'xe_29_cho')>
+                                Xe 29 chỗ
+                            </option>
+
+                            <option value="xe_45_cho" @selected(old('loai_phuong_tien') == 'xe_45_cho')>
+                                Xe 45 chỗ
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -254,7 +223,8 @@
                         <input type="text"
                                name="hang_xe"
                                class="input-control"
-                               value="{{ old('hang_xe') }}">
+                               value="{{ old('hang_xe') }}"
+                               placeholder="Ví dụ: Hyundai, Thaco, Samco...">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -262,7 +232,8 @@
                         <input type="number"
                                name="nam_san_xuat"
                                class="input-control"
-                               value="{{ old('nam_san_xuat') }}">
+                               value="{{ old('nam_san_xuat') }}"
+                               placeholder="Ví dụ: 2022">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -270,7 +241,8 @@
                         <input type="text"
                                name="mau_xe"
                                class="input-control"
-                               value="{{ old('mau_xe') }}">
+                               value="{{ old('mau_xe') }}"
+                               placeholder="Ví dụ: Trắng, Đen, Xanh...">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -290,7 +262,7 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>👤 Thông tin tài xế</span>
+                <span>Thông tin tài xế</span>
             </div>
 
             <div class="form-card-body">
@@ -301,7 +273,8 @@
                         <input type="text"
                                name="ten_tai_xe"
                                class="input-control"
-                               value="{{ old('ten_tai_xe') }}">
+                               value="{{ old('ten_tai_xe') }}"
+                               placeholder="Nhập tên tài xế">
                     </div>
 
                     <div class="col-md-6 mb-4">
@@ -309,7 +282,8 @@
                         <input type="text"
                                name="so_dien_thoai_tai_xe"
                                class="input-control"
-                               value="{{ old('so_dien_thoai_tai_xe') }}">
+                               value="{{ old('so_dien_thoai_tai_xe') }}"
+                               placeholder="Nhập số điện thoại">
                     </div>
 
                 </div>
@@ -318,12 +292,12 @@
 
         <div class="form-card">
             <div class="form-card-header">
-                <span>📝 Ghi chú</span>
+                <span>Ghi chú</span>
             </div>
 
             <div class="form-card-body">
                 <div class="row">
-                    <div class="col-md-12 mb-4">
+                    <div class="col-md-12 mb-3">
                         <label class="form-label">Ghi chú về xe</label>
                         <textarea name="ghi_chu"
                                   class="textarea-control"

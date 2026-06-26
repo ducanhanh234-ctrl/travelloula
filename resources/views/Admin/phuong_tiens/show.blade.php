@@ -246,7 +246,7 @@
 
                         <div class="info-row">
                             <div class="info-label">Loại xe</div>
-                            <div class="info-value">{{ $phuongTien->loai_phuong_tien }}</div>
+                            <div class="info-value">{{ $phuongTien->loai_phuong_tien_text }}</div>
                         </div>
 
                         <div class="info-row">

@@ -59,6 +59,11 @@
                         <td>
                             <a href="{{ route('Admin.nhat_ky_tours.show', $item->id) }}"
                                class="btn btn-info btn-sm">
+                            {{ strtotime($item->created_at) ? date('d/m/Y H:i:s', strtotime($item->created_at)) : 'N/A' }}
+                        </td>
+
+                        <td>
+                            <a href="{{ route('Admin.nhat_ky_tours.show', $item->id) }}" class="btn btn-info btn-sm">
                                 Chi tiết
                             </a>
                         </td>
@@ -78,5 +83,4 @@
     </div>
 
 </div>
-
 @endsection

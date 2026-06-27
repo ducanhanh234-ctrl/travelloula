@@ -12,11 +12,9 @@ class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+
         $this->call(PermissionSeeder::class);
 
         $adminRole = VaiTro::firstOrCreate(
@@ -51,5 +49,9 @@ class DatabaseSeeder extends Seeder
 
         $adminRole->quyenHans()->syncWithoutDetaching([$manageUsers->id, $manageRoles->id, $accessAdmin->id]);
         $guideRole->quyenHans()->syncWithoutDetaching([$accessGuide->id]);
+
+        // $this->call([
+        //     LichTrinhTourSeeder::class,
+        // ]);
     }
 }

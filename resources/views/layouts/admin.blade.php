@@ -930,8 +930,8 @@
                     </a>
                 </div>
                 <div class="nav-item">
-{{-- {{ route('Admin.lich_trinh_tours.index') }} --}}
-                    <a href=""
+
+                    <a href="{{ route('Admin.lich_trinh_tours.index') }}"
                         class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-calendar-alt"></i>
@@ -976,31 +976,22 @@
             </div>
 
             <!-- Bookings & Operations -->
-            <div class="nav-section">
-                <div class="nav-section-title">Đặt tour & Vận hành</div>
-                <div class="nav-item">
+            <div class="nav-item">
 
-                    <a href="" class="nav-link ">
+                <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}">
 
-                        <div class="nav-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <span class="nav-text">Quản lý Đặt tour</span>
-                    </a>
-                </div>
-                <div class="nav-section">
-                    <div class="nav-section-title">Quản lý Người dùng</div>
-                    <div class="nav-item">
-                        <a href="{{ route('Admin.users.index') }}" class="nav-link ">
-                            <div class="nav-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <span class="nav-text">Người dùng</span>
-                        </a>
 
+                    <div class="nav-icon">
+                        <i class="fas fa-calendar-check"></i>
                     </div>
-                    <div class="nav-item">
-
+                    <span class="nav-text">Quản lý Đặt tour</span>
+                </a>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý Người dùng</div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.users.index') }}" class="nav-link ">
                         <a href="{{ route('Admin.huong-dan-viens.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
                             <div class="nav-icon">
@@ -1008,66 +999,87 @@
                             </div>
                             <span class="nav-text">Quản lý HDV</span>
                         </a>
-                    </div>
-                    <div class="nav-item">
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.users.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Người dùng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
 
 
-                        <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
-
-
-                            <div class="nav-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <span class="nav-text">Quản lý Khách hàng</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="{{ route('Admin.vai-tros.index') }}" class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-user-tag"></i>
-                            </div>
-                            <span class="nav-text">Vai trò</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="{{ route('Admin.quyen-hans.index') }}" class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-key"></i>
-                            </div>
-                            <span class="nav-text">Quyền</span>
-                        </a>
-                    </div>
-                    <div class="nav-item">
-                        <a href="{{ route('Admin.role-permissions.matrix') }}" class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}">
-                            <div class="nav-icon">
-                                <i class="fas fa-th"></i>
-                            </div>
-                            <span class="nav-text">Phân quyền</span>
-                        </a>
-                    </div>
-
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khách hàng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.vai-tros.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <span class="nav-text">Vai trò</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.quyen-hans.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <span class="nav-text">Quyền</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.role-permissions.matrix') }}"
+                        class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-th"></i>
+                        </div>
+                        <span class="nav-text">Phân quyền</span>
+                    </a>
                 </div>
 
 
             </div>
 
+            <div class="nav-item">
+
+
+
+                <a href="{{ route('Admin.banners.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+                    Quản Lý Banner
+                </a>
+
+            </div>
+
+
             <!-- Banners Management -->
             <div class="nav-item">
-                    <a href="{{ route('Admin.banners.index') }}"
-                        class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
-                        <i class="fas fa-image"></i>
-                        <span class="nav-text">Quản lý Banner</span>
+                <a href="{{ route('Admin.banners.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+                    <i class="fas fa-image"></i>
+                    <span class="nav-text">Quản lý Banner</span>
 
-                    </a>
-                </div>
+                </a>
+            </div>
+
             <!-- Categories Management -->
-                <div class="nav-item">
-                    <a href="{{ route('Admin.danh_mucs.index') }}"
-                        class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
-                        <i class="fas fa-tags"></i>
-                        <span class="nav-text">Quản lý Danh mục</span>
-                    </a>
-                </div>
+            <div class="nav-item">
+                <a href="{{ route('Admin.danh_mucs.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span class="nav-text">Quản lý Danh mục</span>
+                </a>
+            </div>
             {{-- Đặt tour theo đoàn --}}
             <li class="nav-item">
                 <a class="nav-link " href="">
@@ -1110,6 +1122,107 @@
                     <span class="badge badge-admin bg-danger ms-auto">3</span>
                 </a>
             </div>
+
+
+            <!-- Support Tickets -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-headset"></i>
+                    <span class="nav-text">Hỗ trợ khách hàng</span>
+                    <span class="badge badge-admin bg-warning ms-auto">5</span>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Cài đặt hệ thống</span>
+                </a>
+            </div>
+
+
+
+            <!-- Reviews & Support -->
+            <div class="nav-section">
+                <div class="nav-section-title">Hỗ trợ</div>
+                <div class="nav-item">
+
+
+
+                    <a href="{{ route('Admin.danh_mucs.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+
+
+
+                        <i class="fas fa-tags"></i>
+                        <span class="nav-text">Quản lý Danh mục</span>
+                    </a>
+                </div>
+
+                {{-- Đặt tour theo đoàn --}}
+                <li class="nav-item">
+
+
+                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}"
+                        href="">
+
+                        <i class="fas fa-users-cog"></i>
+                        <span>Yêu cầu Tour đoàn</span>
+                    </a>
+                </li>
+
+                <!-- Reviews Management -->
+                <div class="nav-item">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+
+                        <i class="fas fa-star"></i>
+                        <span class="nav-text">Quản lý Đánh giá</span>
+
+                    </a>
+                </div>
+                <div class="nav-item">
+
+
+
+                    <a href="{{ route('Admin.thanh_toans.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}">
+
+
+
+                        <i class="fas fa-credit-card"></i>
+                        <span class="nav-text">Quản lý Thanh toán</span>
+                    </a>
+                </div>
+
+
+
+
+                <!-- Reports -->
+                <div class="nav-item">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="nav-text">Báo cáo & Thống kê</span>
+                    </a>
+                </div>
+
+                <!-- Notifications -->
+                <div class="nav-item">
+
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+
+
+                        <i class="fas fa-bell"></i>
+
+                        <span class="nav-text">Thông báo</span>
+                    </a>
+                </div>
+            </div>
+
 
             <!-- Reports & Settings -->
             <div class="nav-section">
@@ -1167,12 +1280,12 @@
                             class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
 
-                            <div class="nav-icon">
-                                <i class="fas fa-bell"></i>
-                            </div>
-                            <span class="nav-text">Thông báo</span>
-                        </a>
-                    </div> --}}
+                    <div class="nav-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <span class="nav-text">Thông báo</span>
+                    </a>
+                </div> --}}
                 </div>
 
                 <!-- Reports & Settings -->
@@ -1217,7 +1330,9 @@
                 </button>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
+
                         <li class="breadcrumb-item"><a href=""></a></li>
+
                         @yield('breadcrumb')
                     </ol>
                 </nav>

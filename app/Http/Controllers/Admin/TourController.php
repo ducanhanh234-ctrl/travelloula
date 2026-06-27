@@ -20,6 +20,7 @@ class TourController extends Controller
         $this->middleware('permission:tours.delete')->only(['destroy']);
     }
 
+
     public function index(Request $request)
     {
         $query = DanhSachTour::with('danhMuc');

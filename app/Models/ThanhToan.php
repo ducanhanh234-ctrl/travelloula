@@ -18,6 +18,11 @@ class ThanhToan extends Model
         'ghi_chu',
         'thoi_gian_thanh_toan',
     ];
+
+    protected $casts = [
+        'thoi_gian_thanh_toan' => 'datetime',
+        'so_tien' => 'decimal:2',
+    ];
     public function datTour()
     {
         return $this->belongsTo(DatTour::class, 'dat_tour_id');

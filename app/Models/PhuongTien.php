@@ -38,4 +38,8 @@ class PhuongTien extends Model
             'phuong_tien_id'
         );
     }
+    public function phanCongs()
+    {
+        return $this->hasMany(PhanCong::class);
+    }
 }

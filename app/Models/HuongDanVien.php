@@ -35,4 +35,8 @@ class HuongDanVien extends Model
         'ngay_sinh' => 'date',
         'so_nam_kinh_nghiem' => 'integer',
     ];
+    public function phanCongs()
+    {
+        return $this->hasMany(PhanCong::class);
+    }
 }

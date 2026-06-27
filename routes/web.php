@@ -50,7 +50,6 @@ Route::get('/bai_viet', function () {
 Route::get('/{id}/bai_viet', function () {
 
     return view('Client.bai_viet.detail');
-
 })->name('bai_viet.detail');
 
 
@@ -78,7 +77,7 @@ Route::get('/dieu_khoan', function () {
 });
 // Auth routes
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\PhanCongController;
 use App\Http\Controllers\PhuongTienController;
 
 
@@ -110,7 +109,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
         ->name('dat_tours.show');
 
-        //sửa
+    //sửa
     Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
         ->name('dat_tours.edit');
 
@@ -180,7 +179,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
-
+    Route::resource('phan-cong', PhanCongController::class);
 
     Route::resource('tours', TourController::class);
 

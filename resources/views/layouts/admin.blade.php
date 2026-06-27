@@ -988,6 +988,20 @@
                 </a>
 
             </div>
+            <div class="nav-item">
+
+                <a href="{{ route('Admin.phan-cong.index') }}" class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}">
+
+
+                    <div class="nav-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+
+                    <span class="nav-text">Quản lý Phân Công</span>
+
+                </a>
+
+            </div>
 
 
 
@@ -1017,28 +1031,28 @@
                         </div>
                         <span class="nav-text">Người dùng</span>
                     </a>
-            </div>
-            <div class="nav-item">
+                </div>
+                <div class="nav-item">
 
-                <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
-                    <div class="nav-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <span class="nav-text">Quản lý HDV</span>
-                </a>
-            </div>
-            <div class="nav-item">
-
-
-                <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
+                    <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý HDV</span>
+                    </a>
+                </div>
+                <div class="nav-item">
 
 
-                    <div class="nav-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <span class="nav-text">Quản lý Khách hàng</span>
-                </a>
-            </div>
+                    <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
+
+
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khách hàng</span>
+                    </a>
+                </div>
 
 
             </div>

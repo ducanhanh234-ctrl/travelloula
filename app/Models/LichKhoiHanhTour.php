@@ -57,4 +57,8 @@ class LichKhoiHanhTour extends Model
             'phuong_tien_id'
         );
     }
+    public function phanCong()
+    {
+        return $this->hasOne(PhanCong::class);
+    }
 }

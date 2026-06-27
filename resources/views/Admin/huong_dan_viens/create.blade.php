@@ -85,6 +85,62 @@
         </div>
 
         <div class="form-section-title mt-5">
+            <i class="fas fa-id-card"></i>
+            Thông tin CCCD/CMND
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <label class="form-label">Số CCCD/CMND</label>
+                <input type="text"
+                       name="so_cccd"
+                       class="form-control custom-input"
+                       value="{{ old('so_cccd') }}"
+                       placeholder="Nhập số CCCD/CMND">
+                <div class="text-danger small mt-1">{{ $errors->first('so_cccd') }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Ngày cấp CCCD</label>
+                <input type="date"
+                       name="ngay_cap_cccd"
+                       class="form-control custom-input"
+                       value="{{ old('ngay_cap_cccd') }}">
+                <div class="text-danger small mt-1">{{ $errors->first('ngay_cap_cccd') }}</div>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Nơi cấp CCCD</label>
+                <input type="text"
+                       name="noi_cap_cccd"
+                       class="form-control custom-input"
+                       value="{{ old('noi_cap_cccd') }}"
+                       placeholder="Ví dụ: Cục CSQLHC về TTXH">
+                <div class="text-danger small mt-1">{{ $errors->first('noi_cap_cccd') }}</div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Ảnh CCCD mặt trước</label>
+                <input type="file"
+                       name="anh_cccd_truoc"
+                       class="form-control custom-input"
+                       accept="image/*">
+                <div class="text-danger small mt-1">{{ $errors->first('anh_cccd_truoc') }}</div>
+                <small class="text-muted">Chọn ảnh JPG, PNG hoặc WEBP.</small>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Ảnh CCCD mặt sau</label>
+                <input type="file"
+                       name="anh_cccd_sau"
+                       class="form-control custom-input"
+                       accept="image/*">
+                <div class="text-danger small mt-1">{{ $errors->first('anh_cccd_sau') }}</div>
+                <small class="text-muted">Chọn ảnh JPG, PNG hoặc WEBP.</small>
+            </div>
+        </div>
+
+        <div class="form-section-title mt-5">
             <i class="fas fa-briefcase"></i>
             Thông tin công việc
         </div>
@@ -92,7 +148,7 @@
         <div class="row g-4">
             <div class="col-md-6">
                 <label class="form-label">Ảnh đại diện</label>
-                <input type="file" name="anh_dai_dien" class="form-control custom-input">
+                <input type="file" name="anh_dai_dien" class="form-control custom-input" accept="image/*">
                 <div class="text-danger small mt-1">{{ $errors->first('anh_dai_dien') }}</div>
                 <small class="text-muted">Chọn ảnh JPG, PNG hoặc WEBP.</small>
             </div>
@@ -103,6 +159,16 @@
                        value="{{ old('so_nam_kinh_nghiem', 0) }}"
                        min="0">
                 <div class="text-danger small mt-1">{{ $errors->first('so_nam_kinh_nghiem') }}</div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Ngôn ngữ thành thạo</label>
+                <input type="text"
+                       name="ngon_ngu_thanh_thao"
+                       class="form-control custom-input"
+                       value="{{ old('ngon_ngu_thanh_thao') }}"
+                       placeholder="Ví dụ: Tiếng Anh, Tiếng Trung, Tiếng Hàn">
+                <div class="text-danger small mt-1">{{ $errors->first('ngon_ngu_thanh_thao') }}</div>
             </div>
 
             <div class="col-md-6">

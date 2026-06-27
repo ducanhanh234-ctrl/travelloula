@@ -29,7 +29,9 @@ class HuongDanVienController extends Controller
             $query->where(function ($q) use ($keyword) {
                 $q->where('ho_ten', 'like', '%' . $keyword . '%')
                     ->orWhere('email', 'like', '%' . $keyword . '%')
-                    ->orWhere('so_dien_thoai', 'like', '%' . $keyword . '%');
+                    ->orWhere('so_dien_thoai', 'like', '%' . $keyword . '%')
+                    ->orWhere('so_cccd', 'like', '%' . $keyword . '%')
+                    ->orWhere('ngon_ngu_thanh_thao', 'like', '%' . $keyword . '%');
             });
         }
 
@@ -65,18 +67,37 @@ class HuongDanVienController extends Controller
             'ho_ten' => 'required|string|max:255',
             'email' => 'required|email|unique:huong_dan_viens,email|unique:users,email',
             'password' => 'required|string|min:6',
+
+            'so_cccd' => 'nullable|string|max:20',
+            'ngay_cap_cccd' => 'nullable|date',
+            'noi_cap_cccd' => 'nullable|string|max:255',
+            'anh_cccd_truoc' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'anh_cccd_sau' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+
             'so_dien_thoai' => 'nullable|string|max:20',
             'ngay_sinh' => 'nullable|date',
             'gioi_tinh' => 'nullable|in:nam,nu,khac',
             'dia_chi' => 'nullable|string|max:500',
             'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
+            'ngon_ngu_thanh_thao' => 'nullable|string|max:255',
             'mo_ta' => 'nullable|string',
             'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
         ]);
 
         if ($request->hasFile('anh_dai_dien')) {
-            $data['anh_dai_dien'] = $request->file('anh_dai_dien')->store('huong-dan-viens', 'public');
+            $data['anh_dai_dien'] = $request->file('anh_dai_dien')
+                ->store('huong-dan-viens/avatar', 'public');
+        }
+
+        if ($request->hasFile('anh_cccd_truoc')) {
+            $data['anh_cccd_truoc'] = $request->file('anh_cccd_truoc')
+                ->store('huong-dan-viens/cccd', 'public');
+        }
+
+        if ($request->hasFile('anh_cccd_sau')) {
+            $data['anh_cccd_sau'] = $request->file('anh_cccd_sau')
+                ->store('huong-dan-viens/cccd', 'public');
         }
 
         $user = User::create([
@@ -91,7 +112,7 @@ class HuongDanVienController extends Controller
         unset($data['password']);
 
         $guide = HuongDanVien::create(array_merge($data, [
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]));
 
         $role = VaiTro::firstOrCreate(
@@ -122,12 +143,20 @@ class HuongDanVienController extends Controller
             'ho_ten' => 'required|string|max:255',
             'email' => 'required|email|unique:huong_dan_viens,email,' . $huongDanVien->id . '|unique:users,email,' . optional($huongDanVien->user)->id,
             'password' => 'nullable|string|min:6',
+
+            'so_cccd' => 'nullable|string|max:20',
+            'ngay_cap_cccd' => 'nullable|date',
+            'noi_cap_cccd' => 'nullable|string|max:255',
+            'anh_cccd_truoc' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'anh_cccd_sau' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+
             'so_dien_thoai' => 'nullable|string|max:20',
             'ngay_sinh' => 'nullable|date',
             'gioi_tinh' => 'nullable|in:nam,nu,khac',
             'dia_chi' => 'nullable|string|max:500',
             'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
+            'ngon_ngu_thanh_thao' => 'nullable|string|max:255',
             'mo_ta' => 'nullable|string',
             'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
         ]);
@@ -137,9 +166,32 @@ class HuongDanVienController extends Controller
                 Storage::disk('public')->delete($huongDanVien->anh_dai_dien);
             }
 
-            $data['anh_dai_dien'] = $request->file('anh_dai_dien')->store('huong-dan-viens', 'public');
+            $data['anh_dai_dien'] = $request->file('anh_dai_dien')
+                ->store('huong-dan-viens/avatar', 'public');
         } else {
             unset($data['anh_dai_dien']);
+        }
+
+        if ($request->hasFile('anh_cccd_truoc')) {
+            if ($huongDanVien->anh_cccd_truoc && Storage::disk('public')->exists($huongDanVien->anh_cccd_truoc)) {
+                Storage::disk('public')->delete($huongDanVien->anh_cccd_truoc);
+            }
+
+            $data['anh_cccd_truoc'] = $request->file('anh_cccd_truoc')
+                ->store('huong-dan-viens/cccd', 'public');
+        } else {
+            unset($data['anh_cccd_truoc']);
+        }
+
+        if ($request->hasFile('anh_cccd_sau')) {
+            if ($huongDanVien->anh_cccd_sau && Storage::disk('public')->exists($huongDanVien->anh_cccd_sau)) {
+                Storage::disk('public')->delete($huongDanVien->anh_cccd_sau);
+            }
+
+            $data['anh_cccd_sau'] = $request->file('anh_cccd_sau')
+                ->store('huong-dan-viens/cccd', 'public');
+        } else {
+            unset($data['anh_cccd_sau']);
         }
 
         $password = $data['password'] ?? null;
@@ -171,6 +223,14 @@ class HuongDanVienController extends Controller
     {
         if ($huongDanVien->anh_dai_dien && Storage::disk('public')->exists($huongDanVien->anh_dai_dien)) {
             Storage::disk('public')->delete($huongDanVien->anh_dai_dien);
+        }
+
+        if ($huongDanVien->anh_cccd_truoc && Storage::disk('public')->exists($huongDanVien->anh_cccd_truoc)) {
+            Storage::disk('public')->delete($huongDanVien->anh_cccd_truoc);
+        }
+
+        if ($huongDanVien->anh_cccd_sau && Storage::disk('public')->exists($huongDanVien->anh_cccd_sau)) {
+            Storage::disk('public')->delete($huongDanVien->anh_cccd_sau);
         }
 
         if ($huongDanVien->user) {

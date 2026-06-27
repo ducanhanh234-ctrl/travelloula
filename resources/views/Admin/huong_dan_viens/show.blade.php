@@ -72,7 +72,7 @@
                 </div>
                 <div>
                     <span>Ngày sinh</span>
-                    <strong>{{ $huongDanVien->ngay_sinh?->format('d/m/Y') ?? '-' }}</strong>
+                    <strong>{{ $huongDanVien->ngay_sinh ? $huongDanVien->ngay_sinh->format('d/m/Y') : '-' }}</strong>
                 </div>
             </div>
 
@@ -82,7 +82,17 @@
                 </div>
                 <div>
                     <span>Giới tính</span>
-                    <strong>{{ ucfirst($huongDanVien->gioi_tinh ?? 'Chưa cập nhật') }}</strong>
+                    <strong>
+                        @if($huongDanVien->gioi_tinh == 'nam')
+                            Nam
+                        @elseif($huongDanVien->gioi_tinh == 'nu')
+                            Nữ
+                        @elseif($huongDanVien->gioi_tinh == 'khac')
+                            Khác
+                        @else
+                            -
+                        @endif
+                    </strong>
                 </div>
             </div>
 
@@ -103,6 +113,64 @@
                 <div>
                     <span>Kinh nghiệm</span>
                     <strong>{{ $huongDanVien->so_nam_kinh_nghiem ?? 0 }} năm</strong>
+                </div>
+            </div>
+
+            <div class="guide-info-item">
+                <div class="info-icon language">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div>
+                    <span>Ngôn ngữ thành thạo</span>
+                    <strong>{{ $huongDanVien->ngon_ngu_thanh_thao ?? '-' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-desc">
+            <h5>
+                <i class="fas fa-id-card"></i>
+                Thông tin CCCD/CMND
+            </h5>
+
+            <div class="cccd-info-grid">
+                <div class="cccd-info-item">
+                    <span>Số CCCD/CMND</span>
+                    <strong>{{ $huongDanVien->so_cccd ?? '-' }}</strong>
+                </div>
+
+                <div class="cccd-info-item">
+                    <span>Ngày cấp CCCD</span>
+                    <strong>
+                        {{ $huongDanVien->ngay_cap_cccd ? $huongDanVien->ngay_cap_cccd->format('d/m/Y') : '-' }}
+                    </strong>
+                </div>
+
+                <div class="cccd-info-item">
+                    <span>Nơi cấp CCCD</span>
+                    <strong>{{ $huongDanVien->noi_cap_cccd ?? '-' }}</strong>
+                </div>
+            </div>
+
+            <div class="cccd-image-grid">
+                <div class="cccd-image-box">
+                    <div class="cccd-image-title">Ảnh CCCD mặt trước</div>
+
+                    @if($huongDanVien->anh_cccd_truoc)
+                        <img src="{{ asset('storage/' . $huongDanVien->anh_cccd_truoc) }}" alt="Ảnh CCCD mặt trước">
+                    @else
+                        <div class="cccd-empty">Chưa có ảnh</div>
+                    @endif
+                </div>
+
+                <div class="cccd-image-box">
+                    <div class="cccd-image-title">Ảnh CCCD mặt sau</div>
+
+                    @if($huongDanVien->anh_cccd_sau)
+                        <img src="{{ asset('storage/' . $huongDanVien->anh_cccd_sau) }}" alt="Ảnh CCCD mặt sau">
+                    @else
+                        <div class="cccd-empty">Chưa có ảnh</div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -371,6 +439,11 @@
     color: #7c3aed;
 }
 
+.info-icon.language {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
 .guide-info-item span {
     display: block;
     font-size: 13px;
@@ -410,6 +483,75 @@
     line-height: 1.8;
 }
 
+.cccd-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.cccd-info-item {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 15px;
+}
+
+.cccd-info-item span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.cccd-info-item strong {
+    color: #111827;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.cccd-image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.cccd-image-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.cccd-image-title {
+    font-weight: 800;
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.cccd-image-box img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+}
+
+.cccd-empty {
+    width: 100%;
+    height: 180px;
+    border-radius: 14px;
+    background: #f3f4f6;
+    border: 1px dashed #cbd5e1;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
 .guide-footer {
     margin-top: 22px;
     padding-top: 18px;
@@ -442,8 +584,15 @@
         font-size: 26px;
     }
 
-    .guide-info-grid {
+    .guide-info-grid,
+    .cccd-info-grid,
+    .cccd-image-grid {
         grid-template-columns: 1fr;
+    }
+
+    .cccd-image-box img {
+        height: auto;
+        max-height: 260px;
     }
 
     .guide-footer {

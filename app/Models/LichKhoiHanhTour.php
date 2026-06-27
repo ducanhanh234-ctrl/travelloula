@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\HuongDanVien;
 use Carbon\Carbon;
 
 
@@ -29,6 +30,14 @@ class LichKhoiHanhTour extends Model
     public function tour()
     {
         return $this->belongsTo(DanhSachTour::class, 'tour_id');
+    }
+
+    public function huongDanVien()
+    {
+        return $this->belongsTo(
+            HuongDanVien::class,
+            'huong_dan_vien_id'
+        );
     }
 
     public function getTrangThaiHienThiAttribute()

@@ -1,3 +1,7 @@
+.table th {
+    white-space: nowrap;
+}
+
 /* Pagination */
 .pagination {
     margin-bottom: 0;
@@ -24,22 +28,6 @@
     gap: 15px;
 }
 
-/* .btn-action {
-    height: 48px;
-    min-height: 48px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 8px;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    white-space: nowrap;
-} */
-
 .input-group-text {
     border-right: none;
 }
@@ -65,4 +53,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+}
+
+.guide-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }

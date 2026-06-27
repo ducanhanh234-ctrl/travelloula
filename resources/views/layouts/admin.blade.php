@@ -960,26 +960,6 @@
                         <span class="nav-text">Quản lý Đặt tour</span>
                     </a>
                 </div>
-                {{-- <div class="nav-item">
-                    <a href=""
-                        class="nav-link {{ request()->routeIs('admin.check-in-out*') ? 'active' : '' }}">
-                        <div class="nav-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <span class="nav-text">Check-in/Check-out</span>
-                    </a>
-                </div> --}}
-
-
-
-                <!-- Bookings Management -->
-                {{-- <div class="nav-item">
-                <a href="   "
-                    class="nav-link {{ request()->routeIs('admin.bookings*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
-                    <span class="nav-text">Quản lý Đặt tour</span>
-                </a>
-            </div> --}}
 
                 <!-- Users Management -->
 
@@ -1222,13 +1202,6 @@
                                 Hồ sơ cá nhân
                             </a>
                         </li>
-
-                        {{-- <li>
-                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-2"></i>
-                                Dashboard
-                            </a>
-                        </li> --}}
 
                         <li>
                             <hr class="dropdown-divider">
@@ -1500,6 +1473,10 @@
             font-family: "bootstrap-icons", "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
         }
     </style>
+
+    <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js') }}"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

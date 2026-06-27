@@ -41,12 +41,34 @@
                                     Tour
                                 </label>
 
-                                <select name="tour_id" class="form-select">
+                                <select name="tour_id" id="tour_id" class="form-select">
 
                                     @foreach ($tours as $tour)
-                                        <option value="{{ $tour->id }}"
+                                        <option value="{{ $tour->id }}" data-thoi-luong="{{ $tour->thoi_luong }}"
                                             {{ $item->tour_id == $tour->id ? 'selected' : '' }}>
                                             {{ $tour->ten_tour }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+
+                            {{-- HƯỚNG DẪN VIÊN --}}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Hướng dẫn viên
+                                </label>
+
+                                <select name="huong_dan_vien_id" class="form-select">
+
+                                    <option value="">
+                                        -- Chọn hướng dẫn viên --
+                                    </option>
+
+                                    @foreach ($guides as $guide)
+                                        <option value="{{ $guide->id }}"
+                                            {{ $item->huong_dan_vien_id == $guide->id ? 'selected' : '' }}>
+                                            {{ $guide->ho_ten }}
                                         </option>
                                     @endforeach
 
@@ -59,8 +81,18 @@
                                     Ngày khởi hành
                                 </label>
 
-                                <input type="date" name="ngay_khoi_hanh" value="{{ $item->ngay_khoi_hanh }}"
-                                    class="form-control">
+                                <input type="date" id="ngay_khoi_hanh" name="ngay_khoi_hanh"
+                                    value="{{ $item->ngay_khoi_hanh }}" class="form-control">
+                            </div>
+
+                            {{-- NGÀY KẾT THÚC --}}
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">
+                                    Ngày kết thúc
+                                </label>
+
+                                <input type="date" id="ngay_ket_thuc" name="ngay_ket_thuc"
+                                    value="{{ $item->ngay_ket_thuc }}" class="form-control" readonly>
                             </div>
 
                             {{-- SỐ CHỖ --}}
@@ -152,5 +184,54 @@
         </div>
 
     </div>
+
+    {{-- <script>
+        function capNhatThongTinTour() {
+            tinhNgayKetThuc();
+        }
+
+        function tinhNgayKetThuc() {
+
+            const tourSelect = document.getElementById('tour_id');
+            const ngayKhoiHanh = document.getElementById('ngay_khoi_hanh');
+            const ngayKetThuc = document.getElementById('ngay_ket_thuc');
+
+            if (!ngayKhoiHanh.value) return;
+
+            const option = tourSelect.options[tourSelect.selectedIndex];
+
+            const thoiLuong = option.dataset.thoiLuong;
+
+            const match = thoiLuong.match(/(\d+)/);
+
+            if (!match) return;
+
+            const soNgay = parseInt(match[1]);
+
+            const date = new Date(ngayKhoiHanh.value);
+
+            date.setDate(date.getDate() + soNgay - 1);
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            ngayKetThuc.value = `${year}-${month}-${day}`;
+        }
+
+        document
+            .getElementById('tour_id')
+            .addEventListener('change', capNhatThongTinTour);
+
+        document
+            .getElementById('ngay_khoi_hanh')
+            .addEventListener('change', tinhNgayKetThuc);
+
+        capNhatThongTinTour();
+    </script> --}}
+
+    @push('scripts')
+        <script src="{{ asset('admin-assets/js/lich-khoi-hanh.js') }}"></script>
+    @endpush
 
 @endsection

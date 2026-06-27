@@ -4,6 +4,8 @@
 
 @section('content')
 
+    <link rel="stylesheet" href="{{ asset('admin-assets/css/lich-khoi-hanh-show.css') }}">
+
     <div class="container-fluid">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -42,7 +44,7 @@
                     <div class="col-md-5">
 
                         @if ($item->tour->anh_dai_dien)
-                            <img src="{{ asset('images/anh_dai_dien/' . $item->tour->anh_dai_dien) }}"
+                            <img src="{{ asset('images/avt_tour/' . $item->tour->anh_dai_dien) }}"
                                 alt="{{ $item->tour->ten_tour }}" class="img-fluid rounded shadow tour-image">
                         @else
                             <div class="bg-light border rounded d-flex align-items-center justify-content-center"
@@ -334,6 +336,123 @@
 
                 </div>
 
+                {{-- HƯỚNG DẪN VIÊN --}}
+                <div class="card shadow-sm mb-4">
+
+                    <div class="card-header section-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-route me-2"></i>
+                            Hướng dẫn viên phụ trách
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        @if ($item->huongDanVien)
+                            <div class="guide-card">
+
+                                @if ($item->huongDanVien->anh_dai_dien)
+                                    <img src="{{ asset('images/avt_hdv/' . $item->huongDanVien->anh_dai_dien) }}"
+                                        alt="{{ $item->huongDanVien->ho_ten }}" class="guide-avatar-img">
+                                @else
+                                    <div class="guide-avatar">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                @endif
+
+                                <div class="guide-info">
+
+                                    <h5 class="guide-name">
+                                        {{ $item->huongDanVien->ho_ten }}
+                                    </h5>
+
+                                    <span class="badge {{ $item->huongDanVien->trang_thai_hien_thi['class'] }}">
+                                        {{ $item->huongDanVien->trang_thai_hien_thi['text'] }}
+                                    </span>
+
+                                    @if ($item->huongDanVien->mo_ta)
+                                        <div class="guide-description">
+                                            <h6>
+                                                <i class="fas fa-id-card me-2"></i>
+                                                Giới thiệu
+                                            </h6>
+                                            <p>
+                                                {{ $item->huongDanVien->mo_ta }}
+                                            </p>
+                                        </div>
+                                    @endif
+
+                                    <div class="guide-meta">
+
+                                        <div class="guide-item">
+                                            <small>Email</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-envelope text-primary"></i>
+                                                <span>{{ $item->huongDanVien->email }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="guide-item">
+                                            <small>Số điện thoại</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-phone text-primary"></i>
+                                                <span>{{ $item->huongDanVien->so_dien_thoai }}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="guide-item">
+                                            <small>Giới tính</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-venus-mars text-info"></i>
+                                                <span>
+                                                    {{ $item->huongDanVien->gioi_tinh == 'nam' ? 'Nam' : 'Nữ' }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="guide-item">
+                                            <small>Tuổi</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-user-clock text-info"></i>
+                                                <span>
+                                                    {{ \Carbon\Carbon::parse($item->huongDanVien->ngay_sinh)->age }}
+                                                    tuổi
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="guide-item">
+                                            <small>Kinh nghiệm</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-briefcase text-warning"></i>
+                                                <span>{{ $item->huongDanVien->so_nam_kinh_nghiem }}</span>
+                                                năm kinh nghiệm
+                                            </div>
+                                        </div>
+
+                                        <div class="guide-item">
+                                            <small>Địa chỉ</small>
+                                            <div class="guide-content">
+                                                <i class="fas fa-map-marker-alt text-danger"></i>
+                                                <span>{{ $item->huongDanVien->dia_chi }}</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        @else
+                            <div class="alert alert-warning mb-0">
+                                Chưa phân công hướng dẫn viên
+                            </div>
+                        @endif
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -409,7 +528,7 @@
 
     </div>
 
-    @push('styles')
+    {{-- @push('styles')
         <style>
             .tour-image {
                 width: 100%;
@@ -705,5 +824,5 @@
                 font-weight: 700;
             }
         </style>
-    @endpush
+    @endpush --}}
 @endsection

@@ -196,20 +196,6 @@
                             <input type="date" name="to_date" class="form-control" value="{{ request('to_date') }}">
                         </div>
 
-                        {{-- <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100 btn-action">
-                                <i class="fas fa-search"></i>
-                                <span>Tìm kiếm</span>
-                            </button>
-                        </div>
-
-                        <div class="col-md-1">
-                            <a href="{{ route('Admin.lich-khoi-hanh.index') }}" class="btn btn-secondary w-100 btn-action">
-                                <i class="fas fa-sync"></i>
-                                <span>Reset</span>
-                            </a>
-                        </div> --}}
-
                         <div class="col-md-auto">
                             <button type="submit" class="btn btn-primary btn-action">
                                 <i class="fas fa-search"></i>
@@ -237,12 +223,19 @@
                         <thead>
                             <tr>
                                 <th>STT</th>
-                                <th>Tour</th>
+                                <th style="min-width: 200px">
+                                    Tour
+                                </th>
+                                <th style="min-width: 200px" class="text-nowrap">
+                                    Hướng dẫn viên
+                                </th>
                                 <th>Thời gian</th>
                                 <th>Số chỗ</th>
                                 <th>Giá</th>
-                                <th>Trạng thái</th>
-                                <th width="120">Thao tác</th>
+                                <th class="text-center">
+                                    Trạng thái
+                                </th>
+                                <th width="100">Thao tác</th>
                             </tr>
                         </thead>
 
@@ -250,7 +243,6 @@
 
                             @forelse ($data as $item)
                                 <tr>
-
                                     <td>
                                         <span class="fw-bold">
                                             {{ $loop->iteration }}
@@ -267,6 +259,26 @@
                                     </td>
 
                                     <td>
+                                        @if ($item->huongDanVien)
+                                            <div class="guide-cell">
+                                                <div>
+                                                    <div class="fw-semibold">
+                                                        {{ $item->huongDanVien->ho_ten }}
+                                                    </div>
+
+                                                    <small class="text-muted">
+                                                        HDV phụ trách
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="badge bg-secondary">
+                                                Chưa phân công
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <td>
                                         <div>
                                             {{ \Carbon\Carbon::parse($item->ngay_khoi_hanh)->format('d/m/Y') }}
                                         </div>
@@ -277,8 +289,7 @@
                                         </small>
                                     </td>
 
-                                    <td>
-
+                                    {{-- <td>
                                         @php
                                             $tyLe = ($item->so_cho_con_lai / $item->so_cho) * 100;
                                         @endphp
@@ -299,6 +310,33 @@
 
                                         <small class="text-muted">
                                             Đã đặt: {{ $item->so_cho_da_dat }}
+                                        </small>
+
+                                    </td> --}}
+
+                                    <td>
+
+                                        @php
+                                            $tyLe =
+                                                $item->so_cho > 0 ? ($item->so_cho_da_dat / $item->so_cho) * 100 : 0;
+                                        @endphp
+
+                                        @if ($tyLe < 50)
+                                            <span class="badge bg-success">
+                                            @elseif($tyLe < 80)
+                                                <span class="badge bg-warning">
+                                                @else
+                                                    <span class="badge bg-danger">
+                                        @endif
+
+                                        {{ $item->so_cho_da_dat }}/{{ $item->so_cho }}
+
+                                        </span>
+
+                                        <br>
+
+                                        <small class="text-muted">
+                                            Còn {{ $item->so_cho_con_lai }} chỗ
                                         </small>
 
                                     </td>
@@ -352,21 +390,17 @@
                                                 </span>
                                             @break
                                         @endswitch
-
                                     </td>
 
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{{ route('Admin.lich-khoi-hanh.show', $item->id) }}"
                                                 class="btn btn-sm btn-info" title="Xem chi tiết">
-
                                                 <i class="fas fa-eye"></i>
-
                                             </a>
 
                                             <a href="{{ route('Admin.lich-khoi-hanh.edit', $item->id) }}"
                                                 class="btn btn-sm btn-primary" title="Sửa">
-
                                                 <i class="fas fa-edit"></i>
                                             </a>
 
@@ -391,7 +425,7 @@
                                 </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-5">
+                                        <td colspan="8" class="text-center py-5">
                                             <i class="fas fa-inbox fa-2x text-muted mb-2"></i>
                                             <div>Chưa có lịch khởi hành</div>
                                         </td>

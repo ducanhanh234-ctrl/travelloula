@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LichKhoiHanhTour;
 use App\Models\DanhSachTour;
+use App\Models\HuongDanVien;
 use Carbon\Carbon;
 
 
@@ -13,9 +14,15 @@ class LichKhoiHanhController extends Controller
 {
     public function index()
     {
-        $allData = LichKhoiHanhTour::with('tour')->get();
+        $allData = LichKhoiHanhTour::with([
+            'tour',
+            'huongDanVien'
+        ])->get();
 
-        $query = LichKhoiHanhTour::with('tour');
+        $query = LichKhoiHanhTour::with([
+            'tour',
+            'huongDanVien'
+        ]);
 
         if (request('keyword')) {
 
@@ -122,11 +129,14 @@ class LichKhoiHanhController extends Controller
     {
         $request->validate([
             'tour_id' => 'required',
+
             'ngay_khoi_hanh' => 'required|date',
+
             'so_cho' => 'required|integer',
+
             'gia_nguoi_lon' => 'required|integer',
             'gia_tre_em' => 'required|integer',
-            'trang_thai' => 'required',
+
             'ngay_ket_thuc' => 'required|date|after:ngay_khoi_hanh',
         ]);
 
@@ -167,7 +177,8 @@ class LichKhoiHanhController extends Controller
     {
         $item = LichKhoiHanhTour::with([
             'tour',
-            'tour.danhMuc'
+            'tour.danhMuc',
+            'huongDanVien'
         ])->findOrFail($id);
 
         return view(
@@ -182,9 +193,20 @@ class LichKhoiHanhController extends Controller
 
         $tours = DanhSachTour::orderBy('ten_tour')->get();
 
+        $guides = HuongDanVien::where(
+            'trang_thai',
+            'hoat_dong'
+        )
+            ->orderBy('ho_ten')
+            ->get();
+
         return view(
             'Admin.lich_khoi_hanh.edit',
-            compact('item', 'tours')
+            compact(
+                'item',
+                'tours',
+                'guides'
+            )
         );
     }
 
@@ -192,9 +214,44 @@ class LichKhoiHanhController extends Controller
     {
         $item = LichKhoiHanhTour::findOrFail($id);
 
-        $item->update($request->all());
+        $request->validate([
+            'tour_id' => 'required',
+            'ngay_khoi_hanh' => 'required|date',
+            'so_cho' => 'required|integer|min:1',
+            'gia_nguoi_lon' => 'required|integer|min:0',
+            'gia_tre_em' => 'required|integer|min:0',
+            'trang_thai' => 'required',
+            'huong_dan_vien_id' => 'nullable|exists:huong_dan_viens,id',
+        ]);
 
-        return redirect()->route('Admin.lich-khoi-hanh.index')
+        $tour = DanhSachTour::findOrFail($request->tour_id);
+
+        preg_match('/(\d+)/', $tour->thoi_luong, $match);
+
+        $soNgay = (int) ($match[1] ?? 1);
+
+        $ngayKetThuc = Carbon::parse($request->ngay_khoi_hanh)
+            ->addDays($soNgay - 1)
+            ->format('Y-m-d');
+
+        $item->update([
+            'tour_id' => $request->tour_id,
+
+            'ngay_khoi_hanh' => $request->ngay_khoi_hanh,
+            'ngay_ket_thuc'  => $ngayKetThuc,
+
+            'so_cho' => $request->so_cho,
+
+            'gia_nguoi_lon' => $request->gia_nguoi_lon,
+            'gia_tre_em' => $request->gia_tre_em,
+
+            'trang_thai' => $request->trang_thai,
+
+            'huong_dan_vien_id' => $request->huong_dan_vien_id,
+        ]);
+
+        return redirect()
+            ->route('Admin.lich-khoi-hanh.index')
             ->with('success', 'Cập nhật thành công');
     }
 

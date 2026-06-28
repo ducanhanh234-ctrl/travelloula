@@ -212,34 +212,10 @@ class QuanLyDatTourController extends Controller
                 ($soTreEm * $tour->gia_tre_em) +
                 ($soEmBe * $tour->gia_em_be);
 
-            // Kiểm tra lịch đã tồn tại chưa
-            $ngayKhoiHanh = \Carbon\Carbon::createFromFormat(
-                'd/m/Y',
-                $request->lich_khoi_hanh
-            )->format('Y-m-d');
-            $lichKhoiHanh = LichKhoiHanhTour::where(
-                'tour_id',
-                $tour->id
-            )
-                ->where(
-                    'ngay_khoi_hanh',
-                    $ngayKhoiHanh
-                )
-                ->first();
+            $lichKhoiHanh = LichKhoiHanhTour::where('id', $request->lich_khoi_hanh_id)
+                ->where('tour_id', $request->tour_id)
+                ->firstOrFail();
 
-            // Nếu chưa có thì tạo lịch mới
-            if (!$lichKhoiHanh) {
-                $soNgayTour = $tour->lichTrinh->count();
-                $lichKhoiHanh = LichKhoiHanhTour::create([
-                    'tour_id' => $tour->id,
-                    'ngay_khoi_hanh' => $ngayKhoiHanh,
-                    'ngay_ket_thuc' => \Carbon\Carbon::parse($ngayKhoiHanh)
-                        ->addDays($soNgayTour - 1),
-                    'so_cho_con_lai' => 40,
-                    'so_cho_da_dat' => 0,
-                    'trang_thai' => 'available',
-                ]);
-            }
             // Kiểm tra số chỗ còn lại
             if ($lichKhoiHanh->so_cho_con_lai < $tongKhach) {
                 return back()
@@ -320,11 +296,11 @@ class QuanLyDatTourController extends Controller
             }
 
 
-        // TẠO THANH TOÁN CHO BOOKING
-        ThanhToan::create([
-            'dat_tour_id' => $datTour->id,
-            'nguoi_dung_id' => Auth::id(),
-            'phuong_thuc_thanh_toan' =>
+            // TẠO THANH TOÁN CHO BOOKING
+            ThanhToan::create([
+                'dat_tour_id' => $datTour->id,
+                'nguoi_dung_id' => Auth::id(),
+                'phuong_thuc_thanh_toan' =>
                 $request->phuong_thuc_thanh_toan,
 
                 'so_tien' =>
@@ -354,7 +330,7 @@ class QuanLyDatTourController extends Controller
                 ->with(
                     'error',
                     $e->getMessage()
-            );
+                );
         }
     }
     public function show($id)
@@ -553,9 +529,9 @@ class QuanLyDatTourController extends Controller
                             'gioi_tinh' => $hk['gioi_tinh'],
                             'nam_sinh' => $hk['nam_sinh'],
                         ]);
-                    }
                 }
             }
+        }
 
         // thêm hành khách mới
         if ($request->has('hanh_khach_moi')) {

@@ -584,4 +584,22 @@ class QuanLyDatTourController extends Controller
                 'Cập nhật booking thành công'
             );
     }
+    public function create_dat_tour($tourId)
+{
+    $tour = Tour::findOrFail($tourId);
+
+    $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
+        ->where('trang_thai', 'available')
+        ->orderBy('ngay_khoi_hanh')
+        ->get();
+$lichDuocChon = [
+    'gia_nguoi_lon' => $tour->gia_nguoi_lon,
+    'tong_tien' => ($tour->gia_nguoi_lon + $tour->gia_tre_em + $tour->gia_em_be),
+];
+    return view('client.dat_tour.index', compact(
+        'tour',
+        'lichKhoiHanhs',
+        'lichDuocChon'
+    ));
+}
 }

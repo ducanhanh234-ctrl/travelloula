@@ -25,26 +25,38 @@ class DanhSachTour extends Model
         'dich_vu_bao_gom',
         'dich_vu_khong_bao_gom',
         'trang_thai',
+        'gia_nguoi_lon',
+        'gia_tre_em',
+        'gia_em_be',
     ];
 
-    protected $casts = [
-        'gia_tour' => 'decimal:2',
-        'so_khach_toi_da' => 'integer',
-    ];
-
-    public function lichKhoiHanhs()
+    public function danhMuc()
     {
-        return $this->hasMany(
-            LichKhoiHanhTour::class,
-            'tour_id'
-        );
+        return $this->belongsTo(DanhMuc::class, 'danh_muc_id');
+    }
+
+    public function lichKhoiHanhTours()
+    {
+        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
+    }
+
+    public function lichTrinhTours()
+    {
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')->orderBy('ngay_thu');
+    }
+
+    public function hinhAnhTours()
+    {
+        return $this->hasMany(HinhAnhTour::class, 'tour_id')->orderBy('thu_tu_hien_thi');
     }
 
     public function datTours()
     {
-        return $this->hasMany(
-            DatTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(DatTour::class, 'tour_id');
+    }
+
+    public function danhGia()
+    {
+        return $this->hasMany(DanhGia::class, 'tour_id');
     }
 }

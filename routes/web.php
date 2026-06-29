@@ -1,6 +1,7 @@
 <?php
 
-
+use App\Http\Controllers\Client\HomeClientController;
+use App\Http\Controllers\Client\TourClientController;
 use App\Http\Controllers\ThanhToanController;
 
 use App\Http\Controllers\KhachHangDatTourController;
@@ -43,20 +44,46 @@ Route::get('/{id}/bai_viet', function () {
 Route::get('/demo', function () {
     return view('Client.demo');
 });
-Route::get('/trang_chu', function () {
-    return view('Client.trang_chu.index');
-});
-Route::get('/ve_chung_toi', function () {
-    return view('Client.ve_chung_toi.index');
-});
 
 
-Route::get('/danh_sach_tour_yeu_thich', function () {
-    return view('Client.danh_sach_tour_yeu_thich.index');
-});
+
+// Client routes
+Route::get('/', [HomeClientController::class, 'index'])
+    ->name('Client.home');
+
+Route::get('/trang_chu', [HomeClientController::class, 'index'])
+    ->name('Client.trang_chu.index');
+
+Route::get('/tour', [TourClientController::class, 'index'])
+    ->name('Client.danh_sach_tour.index');
+
+Route::get('/tour/{id}', [TourClientController::class, 'show'])
+    ->name('Client.danh_sach_tour.show');
+
+Route::get('/bai_viet', function () {
+    return view('Client.bai_viet.index');
+})->name('Client.bai_viet.index');
+
+Route::get('/bai_viet/{id}', function ($id) {
+    return view('Client.bai_viet.detail');
+})->name('Client.bai_viet.detail');
+
 Route::get('/dieu_khoan', function () {
     return view('Client.dieu_khoan.index');
-});
+})->name('Client.dieu_khoan.index');
+
+Route::get('/tour_yeu_thich', function () {
+    return view('Client.danh_sach_tour_yeu_thich.index');
+})->name('Client.tour_yeu_thich.index');
+
+Route::get('/ve_chung_toi', function () {
+    return view('Client.ve_chung_toi.index');
+})->name('Client.ve_chung_toi.index');
+
+
+
+
+
 // Auth routes
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PhuongTienController;

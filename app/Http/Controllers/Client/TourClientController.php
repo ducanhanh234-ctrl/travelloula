@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc;
 use App\Models\DanhSachTour;
+use App\Models\DanhSachTourYeuThich;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TourClientController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DanhSachTour::with(['danhMuc', 'lichKhoiHanhTours'])
+        $query = DanhSachTour::with([
+            'danhMuc',
+            'lichKhoiHanhTours',
+        ])
             ->where('trang_thai', 'active');
 
         if ($request->filled('keyword')) {
@@ -46,63 +51,76 @@ class TourClientController extends Controller
             });
         }
 
-        if ($request->filled('so_nguoi')) {
-            $query->where('so_khach_toi_da', '>=', $request->so_nguoi);
-        }
-
-        $sort = $request->get('sort');
-
-        if ($sort === 'price_asc') {
+        if ($request->sort === 'price_asc') {
             $query->orderBy('gia_tour', 'asc');
-        } elseif ($sort === 'price_desc') {
+        } elseif ($request->sort === 'price_desc') {
             $query->orderBy('gia_tour', 'desc');
         } else {
             $query->latest();
         }
 
-        $tours = $query
-            ->paginate(9)
-            ->appends($request->query());
+        $tours = $query->paginate(12)->withQueryString();
 
         $danhMucs = DanhMuc::where('trang_thai', 'active')
             ->orderBy('ten_danh_muc')
             ->get();
 
-        return view('Client.danh_sach_tour.index', compact('tours', 'danhMucs'));
+        $favoriteTourIds = [];
+
+        if (Auth::check()) {
+            $favoriteTourIds = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+                ->pluck('tour_id')
+                ->toArray();
+        }
+
+        return view('Client.danh_sach_tour.index', compact(
+            'tours',
+            'danhMucs',
+            'favoriteTourIds'
+        ));
     }
 
-   public function show($id)
-{
-    $tour = DanhSachTour::with([
-        'danhMuc',
-        'hinhAnhTours',
-        'lichTrinhTours',
-        'lichKhoiHanhTours',
-    ])
-        ->where('trang_thai', 'active')
-        ->findOrFail($id);
+    public function show($id)
+    {
+        $tour = DanhSachTour::with([
+            'danhMuc',
+            'hinhAnhTours',
+            'lichTrinhTours',
+            'lichKhoiHanhTours',
+        ])
+            ->where('trang_thai', 'active')
+            ->findOrFail($id);
 
-    $lichGanNhat = $tour->lichKhoiHanhTours
-        ->where('trang_thai', 'available')
-        ->sortBy('ngay_khoi_hanh')
-        ->first();
+        $lichGanNhat = $tour->lichKhoiHanhTours
+            ->where('trang_thai', 'available')
+            ->sortBy('ngay_khoi_hanh')
+            ->first();
 
-    $soSaoTrungBinh = 0;
-    $soLuotDat = 0;
+        $soSaoTrungBinh = 0;
+        $soLuotDat = 0;
 
-    if (method_exists($tour, 'danhGia')) {
-        $soSaoTrungBinh = $tour->danhGia()->avg('so_sao') ?? 0;
+        if (method_exists($tour, 'danhGia')) {
+            $soSaoTrungBinh = $tour->danhGia()->avg('so_sao') ?? 0;
+        }
+
+        if (method_exists($tour, 'datTours')) {
+            $soLuotDat = $tour->datTours()->count();
+        }
+
+        $isFavorite = false;
+
+        if (Auth::check()) {
+            $isFavorite = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+                ->where('tour_id', $tour->id)
+                ->exists();
+        }
+
+        return view('Client.danh_sach_tour.show', compact(
+            'tour',
+            'lichGanNhat',
+            'soSaoTrungBinh',
+            'soLuotDat',
+            'isFavorite'
+        ));
     }
-
-    if (method_exists($tour, 'datTours')) {
-        $soLuotDat = $tour->datTours()->count();
-    }
-
-    return view('Client.danh_sach_tour.show', compact(
-        'tour',
-        'lichGanNhat',
-        'soSaoTrungBinh',
-        'soLuotDat'
-    ));
-}
 }

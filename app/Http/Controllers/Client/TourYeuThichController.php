@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\DanhSachTour;
 use App\Models\DanhSachTourYeuThich;
+use Illuminate\Support\Facades\Auth;
 
 class TourYeuThichController extends Controller
 {
@@ -14,7 +15,7 @@ class TourYeuThichController extends Controller
             'tour.danhMuc',
             'tour.lichKhoiHanhTours',
         ])
-            ->where('nguoi_dung_id', auth()->id())
+            ->where('nguoi_dung_id', Auth::id())
             ->latest()
             ->paginate(6);
 
@@ -23,10 +24,16 @@ class TourYeuThichController extends Controller
 
     public function store($tourId)
     {
+        if (!Auth::check()) {
+            return redirect()
+                ->route('login')
+                ->with('error', 'Vui lòng đăng nhập để thêm tour yêu thích.');
+        }
+
         $tour = DanhSachTour::where('trang_thai', 'active')
             ->findOrFail($tourId);
 
-        $favorite = DanhSachTourYeuThich::where('nguoi_dung_id', auth()->id())
+        $favorite = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
             ->where('tour_id', $tour->id)
             ->first();
 
@@ -35,7 +42,7 @@ class TourYeuThichController extends Controller
         }
 
         DanhSachTourYeuThich::create([
-            'nguoi_dung_id' => auth()->id(),
+            'nguoi_dung_id' => Auth::id(),
             'tour_id' => $tour->id,
         ]);
 
@@ -44,7 +51,13 @@ class TourYeuThichController extends Controller
 
     public function destroy($tourId)
     {
-        DanhSachTourYeuThich::where('nguoi_dung_id', auth()->id())
+        if (!Auth::check()) {
+            return redirect()
+                ->route('login')
+                ->with('error', 'Vui lòng đăng nhập để thực hiện chức năng này.');
+        }
+
+        DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
             ->where('tour_id', $tourId)
             ->delete();
 

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\DanhMuc;
 use App\Models\DanhSachTour;
+use App\Models\DanhSachTourYeuThich;
 use App\Models\KhachHangDatTour;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -13,7 +15,10 @@ class HomeClientController extends Controller
 {
     public function index()
     {
-        $tours = DanhSachTour::with(['danhMuc', 'lichKhoiHanhTours'])
+        $tours = DanhSachTour::with([
+            'danhMuc',
+            'lichKhoiHanhTours',
+        ])
             ->where('trang_thai', 'active')
             ->latest()
             ->take(4)
@@ -75,6 +80,14 @@ class HomeClientController extends Controller
             $khuyenMais = $query->take(2)->get();
         }
 
+        $favoriteTourIds = [];
+
+        if (Auth::check()) {
+            $favoriteTourIds = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+                ->pluck('tour_id')
+                ->toArray();
+        }
+
         return view('Client.trang_chu.index', compact(
             'tours',
             'diemDens',
@@ -83,7 +96,8 @@ class HomeClientController extends Controller
             'totalDiemDen',
             'totalKhachHang',
             'avgRating',
-            'khuyenMais'
+            'khuyenMais',
+            'favoriteTourIds'
         ));
     }
 }

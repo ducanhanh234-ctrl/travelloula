@@ -165,6 +165,13 @@
             @endif
         </div>
 
+        @if(session('success'))
+            <div class="alert-success-custom">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+
         @if($tours->count())
             <div class="tour-grid">
                 @foreach($tours as $tour)
@@ -185,6 +192,10 @@
                                 $srcAnh = asset($anhTour);
                             }
                         }
+
+                        $isFavorite = auth()->check()
+                            ? in_array($tour->id, $favoriteTourIds ?? [])
+                            : false;
                     @endphp
 
                     <article class="tour-card">
@@ -197,9 +208,34 @@
                                 {{ $tour->danhMuc->ten_danh_muc ?? 'Tour du lịch' }}
                             </span>
 
-                            <button type="button" class="heart-btn">
-                                <i class="fa-regular fa-heart"></i>
-                            </button>
+                            @auth
+                                @if($isFavorite)
+                                    <form action="{{ route('Client.tour_yeu_thich.destroy', $tour->id) }}"
+                                          method="POST"
+                                          class="favorite-form">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="heart-btn active" title="Bỏ yêu thích">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('Client.tour_yeu_thich.store', $tour->id) }}"
+                                          method="POST"
+                                          class="favorite-form">
+                                        @csrf
+
+                                        <button type="submit" class="heart-btn" title="Thêm vào yêu thích">
+                                            <i class="fa-regular fa-heart"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="heart-btn" title="Đăng nhập để thêm yêu thích">
+                                    <i class="fa-regular fa-heart"></i>
+                                </a>
+                            @endauth
                         </div>
 
                         <div class="tour-body">
@@ -731,6 +767,20 @@
     box-shadow:0 12px 24px rgba(225,29,72,.18);
 }
 
+.alert-success-custom{
+    max-width:1660px;
+    margin:0 auto 22px;
+    padding:15px 18px;
+    border-radius:18px;
+    background:#ecfdf5;
+    border:1px solid #bbf7d0;
+    color:#047857;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
 /* GRID */
 .tour-grid{
     max-width:1660px;
@@ -823,6 +873,25 @@
     text-overflow:ellipsis;
 }
 
+.favorite-form{
+    position:absolute;
+    z-index:3;
+    top:18px;
+    right:18px;
+    margin:0;
+}
+
+.favorite-form .heart-btn{
+    position:static;
+}
+
+.tour-img > .heart-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+}
+
 .heart-btn{
     position:absolute;
     z-index:3;
@@ -838,11 +907,26 @@
     cursor:pointer;
     box-shadow:0 12px 28px rgba(15,23,42,.16);
     transition:.25s ease;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .heart-btn:hover{
     color:#ef4444;
     transform:scale(1.08);
+}
+
+.heart-btn.active{
+    color:#e11d48;
+    background:#fff1f2;
+    border-color:#fecdd3;
+}
+
+.heart-btn.active:hover{
+    color:#fff;
+    background:#e11d48;
+    border-color:#e11d48;
 }
 
 .tour-body{
@@ -1126,7 +1210,8 @@
     .tour-result-bar,
     .tour-grid,
     .pagination-wrap,
-    .empty-tour{
+    .empty-tour,
+    .alert-success-custom{
         max-width:1240px;
     }
 

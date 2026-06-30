@@ -42,12 +42,14 @@ class DanhSachTour extends Model
 
     public function lichTrinhTours()
     {
-        return $this->hasMany(LichTrinhTour::class, 'tour_id')->orderBy('ngay_thu');
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')
+            ->orderBy('ngay_thu');
     }
 
     public function hinhAnhTours()
     {
-        return $this->hasMany(HinhAnhTour::class, 'tour_id')->orderBy('thu_tu_hien_thi');
+        return $this->hasMany(HinhAnhTour::class, 'tour_id')
+            ->orderBy('thu_tu_hien_thi');
     }
 
     public function datTours()
@@ -58,5 +60,10 @@ class DanhSachTour extends Model
     public function danhGia()
     {
         return $this->hasMany(DanhGia::class, 'tour_id');
+    }
+
+    public function yeuThichs()
+    {
+        return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
     }
 }

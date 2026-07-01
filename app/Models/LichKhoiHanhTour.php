@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\HuongDanVien;
+use App\Models\PhuongTien;
 
 class LichKhoiHanhTour extends Model
 {
@@ -15,6 +17,7 @@ class LichKhoiHanhTour extends Model
         'so_cho_con_lai',
         'so_cho_da_dat',
         'huong_dan_vien_id',
+        'phuong_tien_id',
         'trang_thai',
     ];
 
@@ -34,7 +37,7 @@ class LichKhoiHanhTour extends Model
     public function huongDanVien()
     {
         return $this->belongsTo(
-            User::class,
+            HuongDanVien::class,
             'huong_dan_vien_id'
         );
     }
@@ -44,6 +47,14 @@ class LichKhoiHanhTour extends Model
         return $this->hasMany(
             DatTour::class,
             'lich_khoi_hanh_id'
+        );
+    }
+
+    public function phuongTien()
+    {
+        return $this->belongsTo(
+            PhuongTien::class,
+            'phuong_tien_id'
         );
     }
 }

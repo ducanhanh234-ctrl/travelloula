@@ -9,16 +9,30 @@ class ThanhToanController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ThanhToan::query();
-        $tongDoanhThu = ThanhToan::where('trang_thai', 1)
+        $query = ThanhToan::with([
+            'datTour.tour',
+            'datTour.khachHangs',
+            'nguoiDung'
+        ])->whereHas('datTour');
+        $tongDoanhThu = ThanhToan::where(
+            'trang_thai',
+            'da_thanh_toan'
+        )
             ->sum('so_tien');
-
-        $daThanhToan = ThanhToan::where('trang_thai', 1)
+        $daThanhToan = ThanhToan::where(
+            'trang_thai',
+            'da_thanh_toan'
+        )
             ->count();
-
-        $dangXuLy = ThanhToan::where('trang_thai', 2)
+        $dangXuLy = ThanhToan::where(
+            'trang_thai',
+            'cho_thanh_toan'
+        )
             ->count();
-        $hoanTien = ThanhToan::where('trang_thai', 4)
+        $hoanTien = ThanhToan::where(
+            'trang_thai',
+            'hoan_tien'
+        )
             ->count();
         // Text search
         if ($request->filled('search')) {
@@ -41,24 +55,34 @@ class ThanhToanController extends Controller
             $query->where('trang_thai', $request->status);
         }
 
-        $thanh_toans = $query->latest()->paginate(10)->withQueryString();
-
+        $thanh_toans = $query
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
         return view(
-            'admin.thanh_toan.index',
+            'Admin.thanh_toan.index',
+
             compact('thanh_toans', 'tongDoanhThu', 'daThanhToan', 'dangXuLy', 'hoanTien')
         );
     }
     public function show($id)
     {
-        $thanh_toan = ThanhToan::query()->findOrFail($id);
-        return view('admin.thanh_toan.show', compact('thanh_toan'));
+        $thanh_toan = ThanhToan::with([
+            'datTour.tour',
+            'datTour.khachHangs',
+            'nguoiDung'
+        ])->findOrFail($id);
+
+        return view('Admin.thanh_toan.show', compact('thanh_toan'));
     }
     public function editStatus($id)
     {
         $thanhToan = ThanhToan::findOrFail($id);
 
         return view(
-            'admin.thanh_toan.edit_status',
+
+            'Admin.thanh_toan.edit_status',
+
             compact('thanhToan')
         );
     }
@@ -78,13 +102,16 @@ class ThanhToanController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.thanh_toans.show', $thanhToan->id)
+
+            ->route('Admin.thanh_toans.show', $thanhToan->id)
+
             ->with('success', 'Cập nhật trạng thái thành công');
     }
     public function destroy($id)
     {
         $thanh_toan = ThanhToan::query()->findOrFail($id);
         $thanh_toan->delete();
-        return redirect()->route('admin.thanh_toans.index')->with('success', 'Xóa thành công');
+
+        return redirect()->route('Admin.thanh_toans.index')->with('success', 'Xóa thành công');
     }
 }

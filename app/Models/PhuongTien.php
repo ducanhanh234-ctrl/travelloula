@@ -59,8 +59,19 @@ class PhuongTien extends Model
         ];
     }
 
+
     public function getTrangThaiTextAttribute()
     {
         return self::trangThaiList()[$this->trang_thai] ?? 'Không xác định';
     }
 }
+
+    public function lichKhoiHanhs()
+    {
+        return $this->hasMany(
+            LichKhoiHanhTour::class,
+            'phuong_tien_id'
+        );
+    }
+}
+

@@ -80,7 +80,12 @@ class TourController extends Controller
         $request->validate([
             'ten_tour' => 'required|max:255',
             'danh_muc_id' => 'required|exists:danh_mucs,id',
+            
+
             'gia_tour' => 'required|numeric|min:0',
+            'gia_nguoi_lon' => 'required|numeric|min:0',
+            'gia_tre_em' => 'required|numeric|min:0',
+            'gia_em_be' => 'required|numeric|min:0',
 
             'so_ngay' => 'required|integer|min:1|max:30',
             'so_dem' => 'required|integer|min:0|max:29',
@@ -192,7 +197,15 @@ class TourController extends Controller
         $request->validate([
             'ten_tour' => 'required|max:255',
             'danh_muc_id' => 'required|exists:danh_mucs,id',
+            
+
+
+
             'gia_tour' => 'required|numeric|min:0',
+            'gia_nguoi_lon' => 'required|numeric|min:0',
+            'gia_tre_em' => 'required|numeric|min:0',
+            'gia_em_be' => 'required|numeric|min:0',
+
 
             'so_ngay' => 'required|integer|min:1|max:30',
             'so_dem' => 'required|integer|min:0|max:29',
@@ -202,7 +215,7 @@ class TourController extends Controller
 
             'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
-        $tour = DanhSachTour::findOrFail($id);
+        $tour = DanhSachTour::with('danhMuc')->findOrFail($id);
 
         // Lưu dữ liệu cũ
         $duLieuCu = json_encode(

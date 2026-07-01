@@ -46,11 +46,39 @@
 
                 </div>
 
-                <div class="mb-3">
+                <div class="row">
 
-                    <label>Giá Tour</label>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá tour (Giá niêm yết)</label>
 
-                    <input type="number" name="gia_tour" class="form-control">
+                        <input type="number" name="gia_tour" class="form-control"
+                            value="{{ old('gia_tour', $tour->gia_tour ?? '') }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá người lớn</label>
+
+                        <input type="number" name="gia_nguoi_lon" class="form-control"
+                            value="{{ old('gia_nguoi_lon', $tour->gia_nguoi_lon ?? '') }}">
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá trẻ em</label>
+
+                        <input type="number" name="gia_tre_em" class="form-control"
+                            value="{{ old('gia_tre_em', $tour->gia_tre_em ?? '') }}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Giá em bé</label>
+
+                        <input type="number" name="gia_em_be" class="form-control"
+                            value="{{ old('gia_em_be', $tour->gia_em_be ?? '') }}">
+                    </div>
 
                 </div>
 
@@ -120,13 +148,13 @@
 
                 </div>
 
-                <div class="mb-3">
+                {{-- <div class="mb-3">
 
                     <label>Phương tiện</label>
 
                     <input type="text" name="phuong_tien" class="form-control">
 
-                </div>
+                </div> --}}
 
                 <div class="mb-3">
 

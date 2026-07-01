@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChiTietLichTrinh;
 use App\Models\DanhSachTour;
 use App\Models\LichTrinhTour;
 use Illuminate\Http\Request;
+
 
 class LichTrinhTourController extends Controller
 {
@@ -197,4 +199,6 @@ class LichTrinhTourController extends Controller
                 'Xóa thành công'
             );
     }
+
+    
 }

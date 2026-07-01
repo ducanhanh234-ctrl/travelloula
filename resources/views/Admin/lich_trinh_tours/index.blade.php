@@ -197,7 +197,12 @@
                                     <td>
 
                                         <div class="d-flex gap-1">
+                                            <a href="{{ route('Admin.chi_tiet_lich_trinhs.index', $item->id) }}"
+                                                class="btn btn-info btn-sm">
 
+                                                <i class="fas fa-list-ol    "></i>
+
+                                            </a>
                                             <a href="{{ route('Admin.lich_trinh_tours.edit', $item->id) }}"
                                                 class="btn btn-warning btn-sm" title="Sửa">
 

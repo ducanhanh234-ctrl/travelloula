@@ -30,4 +30,12 @@ class PhuongTien extends Model
             5 => 'Ngừng hoạt động',
         ];
     }
+
+    public function lichKhoiHanhs()
+    {
+        return $this->hasMany(
+            LichKhoiHanhTour::class,
+            'phuong_tien_id'
+        );
+    }
 }

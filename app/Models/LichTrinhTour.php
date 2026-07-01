@@ -16,15 +16,19 @@ class LichTrinhTour extends Model
         'dia_diem',
         'hoat_dong',
         'bua_an',
+
         'thong_tin_khach_san'
+
     ];
 
     public function tour()
     {
-        return $this->belongsTo(
-            DanhSachTour::class,
-            'tour_id'
-        );
+
+        return $this->belongsTo(DanhSachTour::class, 'tour_id');
+    }
+}
+
+        
     }
     public function chiTiets()
     {
@@ -34,5 +38,6 @@ class LichTrinhTour extends Model
         )->orderBy('gio_bat_dau');
     }
 }
+
 
 

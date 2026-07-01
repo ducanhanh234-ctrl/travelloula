@@ -9,9 +9,15 @@ class DanhGia extends Model
     protected $table = 'danh_gia';
 
     protected $fillable = [
-        'khach_hang_dat_tour_id',
+
+        'user_id',
         'tour_id',
-        'sao',
+        'so_sao',
+        'noi_dung',
+        'trang_thai',
+
+        'khach_hang_dat_tour_id',
+        
         'noi_dung_danh_gia',
         'thoi_gian_danh_gia',
     ];
@@ -26,3 +32,4 @@ class DanhGia extends Model
         return $this->belongsTo(Tour::class, 'tour_id');
     }
 }
+

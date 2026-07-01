@@ -43,7 +43,7 @@ class DanhSachTour extends Model
 
 
 
-    
+
 
     public function lichTrinhs()
     {
@@ -53,15 +53,9 @@ class DanhSachTour extends Model
         );
     }
 
-    
 
-public function danhMuc()
-    {
-        return $this->belongsTo(
-            DanhMuc::class,
-            'danh_muc_id'
-        );
-    }
+
+
     protected $casts = [
         'gia_tour' => 'decimal:2',
         'so_khach_toi_da' => 'integer',
@@ -95,5 +89,4 @@ public function danhMuc()
     {
         return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
     }
-
 }

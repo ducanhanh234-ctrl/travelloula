@@ -24,23 +24,45 @@
         </a>
 
         <nav class="main-menu">
-            <a href="{{ url('/') }}" class="active">Trang chủ</a>
-            <a href="{{ route('Client.danh_sach_tour.index') }}">Tour</a>
-            <a href="{{ route('Client.tour_yeu_thich.index') }}">Tour yêu thích</a>
-            <a href="{{ route('Client.dieu_khoan.index') }}">Điều khoản</a>
-            <a href="{{ route('Client.bai_viet.index') }}">Bài viết</a>
+            <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Trang chủ</a>
+            <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour*') ? 'active' : '' }}">Tour</a>
+            <a href="{{ route('Client.tour_yeu_thich.index') }}" class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">Tour yêu thích</a>
+            <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">Điều khoản</a>
+            <a href="{{ route('Client.bai_viet.index') }}" class="{{ request()->is('bai_viet*') ? 'active' : '' }}">Bài viết</a>
             <a href="#">Ưu đãi</a>
             <a href="#">Liên hệ</a>
-            <a href="{{ route('Client.ve_chung_toi.index') }}">Về chúng tôi</a>
+            <a href="{{ route('Client.ve_chung_toi.index') }}" class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">Về chúng tôi</a>
         </nav>
 
         <div class="header-actions">
             @auth
-                <a href="#" class="login-btn">
-                    <i class="fa-regular fa-user"></i>
-                    {{ auth()->user()->name }}
-                    <i class="fa-solid fa-angle-down"></i>
-                </a>
+                <div class="user-dropdown">
+                    <button type="button" class="user-btn" onclick="toggleUserMenu()">
+                        <i class="fa-regular fa-user"></i>
+                        <span>{{ auth()->user()->name }}</span>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </button>
+
+                    <div class="user-menu" id="userMenu">
+                        <a href="{{ route('Client.tour_yeu_thich.index') }}">
+                            <i class="fa-solid fa-heart"></i>
+                            Tour yêu thích
+                        </a>
+
+                        <a href="{{ route('Client.danh_sach_tour.index') }}">
+                            <i class="fa-solid fa-suitcase-rolling"></i>
+                            Danh sách tour
+                        </a>
+
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
             @else
                 <a href="{{ url('/register') }}" class="register-btn">Đăng ký</a>
 
@@ -87,8 +109,8 @@
             <h3>Hệ Thống</h3>
             <a href="{{ route('Client.trang_chu.index') }}"><i class="fa-solid fa-angle-right"></i> Trang chủ</a>
             <a href="{{ route('Client.danh_sach_tour.index') }}"><i class="fa-solid fa-angle-right"></i> Tours</a>
-            <a href=""><i class="fa-solid fa-angle-right"></i> Đặt tour</a>
-            <a href=""><i class="fa-solid fa-angle-right"></i> Khách hàng</a>
+            <a href="{{ route('Client.tour_yeu_thich.index') }}"><i class="fa-solid fa-angle-right"></i> Tour yêu thích</a>
+            <a href="{{ route('Client.dieu_khoan.index') }}"><i class="fa-solid fa-angle-right"></i> Điều khoản</a>
         </div>
 
         <div class="footer-col">
@@ -268,8 +290,87 @@ a{
 }
 
 .login-btn:hover{
+    color:#fff;
     transform:translateY(-2px);
     box-shadow:0 16px 34px rgba(0,68,199,.35);
+}
+
+/* USER DROPDOWN */
+
+.user-dropdown{
+    position:relative;
+}
+
+.user-btn{
+    height:52px;
+    padding:0 24px;
+    border:0;
+    border-radius:999px;
+    background:linear-gradient(135deg,#0757d8,#0044c7);
+    color:#fff;
+    font-size:15px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:0 12px 26px rgba(0,68,199,.25);
+    transition:.25s;
+}
+
+.user-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 16px 34px rgba(0,68,199,.35);
+}
+
+.user-menu{
+    position:absolute;
+    top:calc(100% + 12px);
+    right:0;
+    width:230px;
+    padding:10px;
+    border-radius:18px;
+    background:#fff;
+    border:1px solid #e2e8f0;
+    box-shadow:0 22px 50px rgba(15,23,42,.16);
+    display:none;
+    z-index:99999;
+}
+
+.user-menu.show{
+    display:block;
+}
+
+.user-menu a,
+.user-menu button{
+    width:100%;
+    min-height:44px;
+    padding:0 14px;
+    border:0;
+    border-radius:12px;
+    background:transparent;
+    color:#0f172a;
+    font-size:14px;
+    font-weight:850;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    text-align:left;
+    text-decoration:none;
+    transition:.2s;
+}
+
+.user-menu a:hover,
+.user-menu button:hover{
+    background:#eff6ff;
+    color:var(--primary);
+}
+
+.user-menu form{
+    margin:0;
 }
 
 /* MAIN */
@@ -466,9 +567,16 @@ main{
     }
 
     .register-btn,
-    .login-btn{
+    .login-btn,
+    .user-btn{
         height:46px;
         padding:0 20px;
+    }
+
+    .user-menu{
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
     }
 
     .footer-grid{
@@ -496,6 +604,29 @@ main{
     }
 }
 </style>
+
+<script>
+    function toggleUserMenu() {
+        const menu = document.getElementById('userMenu');
+
+        if (menu) {
+            menu.classList.toggle('show');
+        }
+    }
+
+    document.addEventListener('click', function (event) {
+        const dropdown = document.querySelector('.user-dropdown');
+        const menu = document.getElementById('userMenu');
+
+        if (!dropdown || !menu) {
+            return;
+        }
+
+        if (!dropdown.contains(event.target)) {
+            menu.classList.remove('show');
+        }
+    });
+</script>
 
 </body>
 </html>

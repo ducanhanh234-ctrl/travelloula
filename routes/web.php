@@ -4,6 +4,9 @@
 use App\Http\Controllers\Client\HomeClientController;
 use App\Http\Controllers\Client\TourClientController;
 
+use App\Http\Controllers\Client\TourYeuThichController;
+
+
 use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\DanhGiaController;
 
@@ -14,6 +17,7 @@ use App\Http\Controllers\ThongKeController;
 use App\Http\Controllers\BannerController;
 
 use App\Http\Controllers\DanhMucController;
+
 
 
 
@@ -95,9 +99,14 @@ Route::get('/dieu_khoan', function () {
     return view('Client.dieu_khoan.index');
 })->name('Client.dieu_khoan.index');
 
-Route::get('/tour_yeu_thich', function () {
-    return view('Client.danh_sach_tour_yeu_thich.index');
-})->name('Client.tour_yeu_thich.index');
+Route::get('/tour_yeu_thich', [TourYeuThichController::class, 'index'])
+        ->name('Client.tour_yeu_thich.index');
+
+    Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])
+        ->name('Client.tour_yeu_thich.store');
+
+    Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])
+        ->name('Client.tour_yeu_thich.destroy');
 
 Route::get('/ve_chung_toi', function () {
     return view('Client.ve_chung_toi.index');

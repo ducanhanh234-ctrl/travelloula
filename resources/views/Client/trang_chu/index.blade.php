@@ -257,10 +257,23 @@ a{
     font-weight:900;
 }
 
+.home-favorite-form{
+    position:absolute;
+    top:13px;
+    right:13px;
+    z-index:5;
+    margin:0;
+}
+
+.home-favorite-form .heart{
+    position:static;
+}
+
 .heart{
     position:absolute;
     top:13px;
     right:13px;
+    z-index:5;
     width:36px;
     height:36px;
     border-radius:50%;
@@ -268,6 +281,27 @@ a{
     background:#fff;
     color:#0757d8;
     cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 20px rgba(15,23,42,.16);
+    transition:.25s;
+    text-decoration:none;
+}
+
+.heart:hover{
+    color:#e11d48;
+    transform:scale(1.08);
+}
+
+.heart.active{
+    color:#e11d48;
+    background:#fff1f2;
+}
+
+.heart.active:hover{
+    color:#fff;
+    background:#e11d48;
 }
 
 .tour-body{
@@ -710,6 +744,13 @@ a{
             </a>
         </div>
 
+        @if(session('success'))
+            <div style="margin-bottom:18px;padding:14px 16px;border-radius:12px;background:#ecfdf5;border:1px solid #bbf7d0;color:#047857;font-weight:800;">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+
         <div class="tour-grid">
             @forelse($tours as $tour)
                 @php
@@ -722,6 +763,10 @@ a{
                             $tourImage = asset($tour->anh_dai_dien);
                         }
                     }
+
+                    $isFavorite = auth()->check()
+                        ? in_array($tour->id, $favoriteTourIds ?? [])
+                        : false;
                 @endphp
 
                 <article class="tour-card">
@@ -734,9 +779,34 @@ a{
                             {{ $tour->danhMuc->ten_danh_muc ?? 'Tour nổi bật' }}
                         </span>
 
-                        <button class="heart" type="button">
-                            <i class="fa-regular fa-heart"></i>
-                        </button>
+                        @auth
+                            @if($isFavorite)
+                                <form action="{{ route('Client.tour_yeu_thich.destroy', $tour->id) }}"
+                                      method="POST"
+                                      class="home-favorite-form">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button class="heart active" type="submit" title="Bỏ yêu thích">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('Client.tour_yeu_thich.store', $tour->id) }}"
+                                      method="POST"
+                                      class="home-favorite-form">
+                                    @csrf
+
+                                    <button class="heart" type="submit" title="Thêm vào yêu thích">
+                                        <i class="fa-regular fa-heart"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="heart" title="Đăng nhập để thêm yêu thích">
+                                <i class="fa-regular fa-heart"></i>
+                            </a>
+                        @endauth
                     </div>
 
                     <div class="tour-body">
@@ -829,24 +899,26 @@ a{
 
             @forelse(($khuyenMais ?? collect())->take(2) as $km)
                 <div class="coupon">
-                    <span>{{ $km->ten_khuyen_mai ?? $km->ten_khuyen_mai ?? 'KHUYẾN MÃI' }}</span>
+                    <span>{{ $km->ten_khuyen_mai ?? $km->mo_ta ?? 'KHUYẾN MÃI' }}</span>
 
                     <h3>
                         @php
-                            $loaiGiamGia = $km->loai_giam_gia ?? $km->loai ?? '';
-                            $giaTriGiam = $km->gia_tri_giam ?? $km->gia_tri ?? 0;
+                            $phanTramGiam = $km->phan_tram_giam ?? null;
+                            $soTienGiam = $km->so_tien_giam ?? null;
                         @endphp
 
-                        @if($loaiGiamGia === 'percent' || $loaiGiamGia === 'phan_tram')
-                            {{ number_format($giaTriGiam, 0, ',', '.') }}%
+                        @if(!empty($phanTramGiam))
+                            {{ number_format($phanTramGiam, 0, ',', '.') }}%
+                        @elseif(!empty($soTienGiam))
+                            {{ number_format($soTienGiam, 0, ',', '.') }}đ
                         @else
-                            {{ number_format($giaTriGiam, 0, ',', '.') }}đ
+                            Ưu đãi
                         @endif
                     </h3>
 
                     <p>
                         Mã:
-                        <b>{{ $km->ma_khuyen_mai ?? $km->ma_code ?? $km->code ?? 'ĐANG CẬP NHẬT' }}</b>
+                        <b>{{ $km->ma_khuyen_mai ?? 'ĐANG CẬP NHẬT' }}</b>
                         <button type="button">Sao chép</button>
                     </p>
                 </div>

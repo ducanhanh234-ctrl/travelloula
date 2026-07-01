@@ -1,157 +1,373 @@
 @extends('Layouts.admin')
 
 @section('content')
+    <div class="container-fluid">
 
-<div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">
+                <i class="fas fa-map-marked-alt text-primary"></i>
+                Chi tiết Tour
+            </h3>
 
-    <div class="card">
-
-        <div class="card-header d-flex justify-content-between">
-
-            <h4>Chi tiết Tour</h4>
-
-            <a href="{{ route('Admin.tours.index') }}"
-               class="btn btn-secondary">
+            <a href="{{ route('Admin.tours.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
                 Quay lại
             </a>
+        </div>
+
+        <div class="row">
+
+            {{-- Ảnh --}}
+            <div class="col-lg-5">
+
+                <div class="card">
+
+                    <div class="card-body text-center">
+
+                        @if ($tour->anh_dai_dien)
+                            <img src="{{ asset('storage/' . $tour->anh_dai_dien) }}" class="img-fluid rounded shadow"
+                                style="width:100%;height:450px;object-fit:cover;">
+                        @else
+                            <img src="https://via.placeholder.com/600x450" class="img-fluid rounded shadow">
+                        @endif
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {{-- Thông tin --}}
+            <div class="col-lg-7">
+
+                <div class="card">
+
+                    <div class="card-header">
+                        <strong>Thông tin cơ bản</strong>
+                    </div>
+
+                    <div class="card-body p-0">
+
+                        <table class="table table-bordered mb-0">
+
+                            <tr>
+                                <th width="220">Tên tour</th>
+                                <td>{{ $tour->ten_tour }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Slug</th>
+                                <td>{{ $tour->duong_dan }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Danh mục</th>
+                                <td>{{ $tour->danhMuc->ten_danh_muc ?? '' }}</td>
+                            </tr>
+
+                            <tr>
+                                <th>Trạng thái</th>
+
+                                <td>
+
+                                    @if ($tour->trang_thai == 'active')
+                                        <span class="badge badge-success">
+                                            Hoạt động
+                                        </span>
+                                    @else
+                                        <span class="badge badge-danger">
+                                            Ngừng hoạt động
+                                        </span>
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                {{-- Giá --}}
+
+                <div class="card mt-3">
+
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-money-bill-wave text-success"></i>
+                            Bảng giá tour
+                        </h5>
+                    </div>
+
+                    <div class="card-body p-0">
+
+                        <table class="table table-bordered table-hover text-center mb-0">
+
+                            <thead class="bg-light">
+
+                                <tr>
+
+                                    <th style="width:25%">Giá tour</th>
+
+                                    <th style="width:25%">Người lớn</th>
+
+                                    <th style="width:25%">Trẻ em</th>
+
+                                    <th style="width:25%">Em bé</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+
+                                    <td>
+
+                                        <h5 class="text-danger mb-1">
+                                            {{ number_format($tour->gia_tour) }}đ
+                                        </h5>
+
+                                        <small class="text-muted">
+                                            Giá niêm yết
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <h5 class="text-primary mb-1">
+                                            {{ number_format($tour->gia_nguoi_lon) }}đ
+                                        </h5>
+
+                                        <small class="text-muted">
+                                            Từ 12 tuổi
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <h5 class="text-success mb-1">
+                                            {{ number_format($tour->gia_tre_em) }}đ
+                                        </h5>
+
+                                        <small class="text-muted">
+                                            5 - 11 tuổi
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <h5 class="text-info mb-1">
+                                            {{ number_format($tour->gia_em_be) }}đ
+                                        </h5>
+
+                                        <small class="text-muted">
+                                            Dưới 5 tuổi
+                                        </small>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
-        <div class="card-body">
+        {{-- Thông tin chi tiết --}}
 
-            <div class="row">
+        <div class="card">
 
-                <div class="col-md-4">
+            <div class="card-header">
+                <strong>Thông tin chi tiết</strong>
+            </div>
 
-                    @if($tour->anh_dai_dien)
+            <div class="card-body">
 
-                        <img
-                            src="{{ asset('storage/'.$tour->anh_dai_dien) }}"
-                            class="img-fluid rounded border">
+                <div class="row">
 
-                    @else
+                    <div class="col-md-4 mb-3">
 
-                        <img
-                            src="https://via.placeholder.com/400x300"
-                            class="img-fluid rounded border">
+                        <div class="border rounded p-3 h-100">
 
-                    @endif
+                            <strong>Thời lượng</strong>
 
-                </div>
+                            <hr>
 
-                <div class="col-md-8">
+                            {{ $tour->thoi_luong }}
 
-                    <table class="table table-bordered">
+                        </div>
 
-                        <tr>
-                            <th width="250">ID</th>
-                            <td>{{ $tour->id }}</td>
-                        </tr>
+                    </div>
 
-                        <tr>
-                            <th>Tên tour</th>
-                            <td>{{ $tour->ten_tour }}</td>
-                        </tr>
+                    <div class="col-md-4 mb-3">
 
-                        <tr>
-                            <th>Slug</th>
-                            <td>{{ $tour->duong_dan }}</td>
-                        </tr>
+                        <div class="border rounded p-3 h-100">
 
-                        <tr>
-                            <th>Giá tour</th>
-                            <td>
-                                {{ number_format($tour->gia_tour) }} VNĐ
-                            </td>
-                        </tr>
+                            <strong>Điểm khởi hành</strong>
 
-                        <tr>
-                            <th>Thời lượng</th>
-                            <td>{{ $tour->thoi_luong }}</td>
-                        </tr>
+                            <hr>
 
-                        <tr>
-                            <th>Điểm khởi hành</th>
-                            <td>{{ $tour->dia_diem_khoi_hanh }}</td>
-                        </tr>
+                            {{ $tour->dia_diem_khoi_hanh }}
 
-                        <tr>
-                            <th>Điểm đến</th>
-                            <td>{{ $tour->diem_den }}</td>
-                        </tr>
+                        </div>
 
-                        <tr>
-                            <th>Số khách tối đa</th>
-                            <td>{{ $tour->so_khach_toi_da }}</td>
-                        </tr>
+                    </div>
 
-                        <tr>
-                            <th>Phương tiện</th>
-                            <td>{{ $tour->phuong_tien }}</td>
-                        </tr>
+                    <div class="col-md-4 mb-3">
 
-                        <tr>
-                            <th>Khách sạn</th>
-                            <td>{{ $tour->tieu_chuan_khach_san }}</td>
-                        </tr>
+                        <div class="border rounded p-3 h-100">
 
-                        <tr>
-                            <th>Trạng thái</th>
-                            <td>
+                            <strong>Điểm đến</strong>
 
-                                @if($tour->trang_thai == 'active')
+                            <hr>
 
-                                    <span class="badge bg-success">
-                                        Hoạt động
-                                    </span>
+                            {{ $tour->diem_den }}
 
-                                @else
+                        </div>
 
-                                    <span class="badge bg-danger">
-                                        Ngừng hoạt động
-                                    </span>
+                    </div>
 
-                                @endif
+                    {{-- <div class="col-md-4 mb-3">
 
-                            </td>
-                        </tr>
+                        <div class="border rounded p-3 h-100">
 
-                    </table>
+                            <strong>Phương tiện</strong>
+
+                            <hr>
+
+                            {{ $tour->phuong_tien }}
+
+                        </div>
+
+                    </div> --}}
+
+                    <div class="col-md-4 mb-3">
+
+                        <div class="border rounded p-3 h-100">
+
+                            <strong>Khách sạn</strong>
+
+                            <hr>
+
+                            {{ $tour->tieu_chuan_khach_san }}
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+
+                        <div class="border rounded p-3 h-100">
+
+                            <strong>Số khách tối đa</strong>
+
+                            <hr>
+
+                            {{ $tour->so_khach_toi_da }}
+
+                        </div>
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <hr>
+        </div>
 
-            <h5>Mô tả</h5>
+        {{-- Mô tả --}}
 
-            <div class="border p-3 rounded mb-4">
+        <div class="card">
+
+            <div class="card-header bg-primary">
+
+                <strong>Mô tả Tour</strong>
+
+            </div>
+
+            <div class="card-body">
+
                 {!! nl2br(e($tour->mo_ta)) !!}
+
             </div>
 
-            <h5>Tổng quan lịch trình</h5>
+        </div>
 
-            <div class="border p-3 rounded mb-4">
+        {{-- Lịch trình --}}
+
+        <div class="card">
+
+            <div class="card-header bg-info">
+
+                <strong>Tổng quan lịch trình</strong>
+
+            </div>
+
+            <div class="card-body">
+
                 {!! nl2br(e($tour->tong_quan_lich_trinh)) !!}
+
             </div>
 
-            <h5>Dịch vụ bao gồm</h5>
+        </div>
 
-            <div class="border p-3 rounded mb-4">
-                {!! nl2br(e($tour->dich_vu_bao_gom)) !!}
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <div class="card card-success">
+
+                    <div class="card-header">
+
+                        <strong>Dịch vụ bao gồm</strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        {!! nl2br(e($tour->dich_vu_bao_gom)) !!}
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <h5>Dịch vụ không bao gồm</h5>
+            <div class="col-md-6">
 
-            <div class="border p-3 rounded">
-                {!! nl2br(e($tour->dich_vu_khong_bao_gom)) !!}
+                <div class="card card-danger">
+
+                    <div class="card-header">
+
+                        <strong>Dịch vụ không bao gồm</strong>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        {!! nl2br(e($tour->dich_vu_khong_bao_gom)) !!}
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
     </div>
-
-</div>
-
 @endsection

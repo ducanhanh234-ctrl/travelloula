@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\DanhGiaController;
 
 use App\Http\Controllers\ThongKeController;
@@ -110,7 +110,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
         ->name('dat_tours.show');
 
-        //sửa
+    //sửa
     Route::get('/dat-tours/{id}/edit', [QuanLyDatTourController::class, 'edit'])
         ->name('dat_tours.edit');
 
@@ -188,14 +188,46 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'lich_trinh_tours',
         LichTrinhTourController::class
     );
+    Route::prefix('lich_trinh_tours/{lichTrinh}/chi_tiet')
+        ->name('chi_tiet_lich_trinhs.')
+        ->group(function () {
+
+            Route::get('/', [ChiTietLichTrinhController::class, 'index'])
+                ->name('index');
+
+            Route::get('/create', [ChiTietLichTrinhController::class, 'create'])
+                ->name('create');
+
+            Route::post('/', [ChiTietLichTrinhController::class, 'store'])
+                ->name('store');
+        });
+
+    Route::get(
+        'chi_tiet_lich_trinhs/{chiTiet}/edit',
+        [ChiTietLichTrinhController::class, 'edit']
+    )->name('chi_tiet_lich_trinhs.edit');
+
+    Route::put(
+        'chi_tiet_lich_trinhs/{chiTiet}',
+        [ChiTietLichTrinhController::class, 'update']
+    )->name('chi_tiet_lich_trinhs.update');
+
+    Route::delete(
+        'chi_tiet_lich_trinhs/{chiTiet}',
+        [ChiTietLichTrinhController::class, 'destroy']
+    )->name('chi_tiet_lich_trinhs.destroy');
+    Route::get(
+        'tour/{tour}/lich-trinh',
+        [LichTrinhTourController::class, 'indexByTour']
+    )->name('lich_trinh_tours.tour');
 
     Route::resource(
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-        'index',
-        'show'
-    ]);
+                'index',
+                'show'
+            ]);
 });
 
 

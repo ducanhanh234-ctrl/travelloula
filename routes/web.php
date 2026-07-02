@@ -170,6 +170,8 @@ Route::get('/ve_chung_toi', function () {
 // Auth routes
 
 
+use App\Http\Controllers\PhanCongController;
+
 use App\Http\Controllers\PhuongTienController;
 
 
@@ -414,7 +416,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         DanhMucController::class
     );
     Route::resource('phuong-tiens', PhuongTienController::class);
-
+    Route::resource('phan-cong', PhanCongController::class);
 
     Route::resource('tours', TourController::class);
 

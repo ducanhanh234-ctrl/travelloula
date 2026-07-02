@@ -137,4 +137,8 @@ class LichKhoiHanhTour extends Model
 
         );
     }
+    public function phanCong()
+    {
+        return $this->hasOne(PhanCong::class);
+    }
 }

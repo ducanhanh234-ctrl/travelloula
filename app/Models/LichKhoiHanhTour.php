@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\HuongDanVien;
@@ -9,11 +10,15 @@ use Carbon\Carbon;
 use App\Models\ChiTietYeuCauGopDoan;
 use App\Models\DanhSachTour;
 use App\Models\DatTour;
-
+use App\Models\PhuongTien;
 
 class LichKhoiHanhTour extends Model
 {
     use HasFactory;
+
+
+
+
 
     protected $table = 'lich_khoi_hanh_tours';
 
@@ -21,6 +26,7 @@ class LichKhoiHanhTour extends Model
         'tour_id',
         'ngay_khoi_hanh',
         'ngay_ket_thuc',
+
         'so_cho',
         'so_cho_con_lai',
         'so_cho_da_dat',
@@ -30,12 +36,24 @@ class LichKhoiHanhTour extends Model
         'trang_thai',
         'dang_gop_doan',
         'gop_vao_lich_id',
-        'da_gop'
+        'da_gop',
+
+        'huong_dan_vien_id',
+        'phuong_tien_id',
+        'trang_thai',
+    ];
+
+    protected $casts = [
+        'ngay_khoi_hanh' => 'date',
+        'ngay_ket_thuc' => 'date',
+
     ];
 
     public function tour()
     {
+
         return $this->belongsTo(DanhSachTour::class, 'tour_id');
+
     }
 
     public function huongDanVien()
@@ -45,6 +63,7 @@ class LichKhoiHanhTour extends Model
             'huong_dan_vien_id'
         );
     }
+
 
     public function getTrangThaiHienThiAttribute()
     {
@@ -93,6 +112,7 @@ class LichKhoiHanhTour extends Model
         return $this->hasMany(ChiTietYeuCauGopDoan::class, 'lich_khoi_hanh_id');
     }
 
+
     public function datTours()
     {
         return $this->hasMany(
@@ -101,11 +121,20 @@ class LichKhoiHanhTour extends Model
         );
     }
 
+
     public function lichGopDen()
     {
         return $this->belongsTo(
             LichKhoiHanhTour::class,
             'gop_vao_lich_id'
+);
+    }
+    public function phuongTien()
+    {
+        return $this->belongsTo(
+            PhuongTien::class,
+            'phuong_tien_id'
+
         );
     }
 }

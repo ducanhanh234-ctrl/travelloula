@@ -9,12 +9,20 @@ class PhuongTien extends Model
     protected $table = 'phuong_tiens';
 
     protected $fillable = [
+
+        'ten_phuong_tien',
+        'so_cho',
+        'bien_so',
+        'trang_thai',
+   
+
+
         'bien_so_xe',
         'loai_phuong_tien',
         'hang_xe',
         'nam_san_xuat',
         'mau_xe',
-        'trang_thai',
+        
         'ten_tai_xe',
         'so_dien_thoai_tai_xe',
         'ghi_chu',
@@ -74,4 +82,5 @@ class PhuongTien extends Model
         );
     }
 }
+
 

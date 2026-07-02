@@ -7,12 +7,18 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
 
     public function run(): void
     {
         $this->call([
-            LichTrinhTourSeeder::class,
+            DanhMucSeeder::class,
+            DanhSachTourSeeder::class,
+            UserSeeder::class,
+            HuongDanVienSeeder::class,
+            PhuongTienSeeder::class,
+            LichKhoiHanhTourSeeder::class,
+            DatTourSeeder::class, // thêm dòng này
+
         ]);
     }
 }

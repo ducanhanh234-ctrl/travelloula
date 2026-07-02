@@ -878,9 +878,10 @@
         }
 
     </style>
-
+    @stack('styles')
     @yield('styles')
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
     <!-- Sidebar -->
@@ -928,7 +929,9 @@
                         <span class="nav-text">Danh sách Tours</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
+
 
                     <a href="{{ route('Admin.lich_trinh_tours.index') }}" class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
                         <div class="nav-icon">
@@ -941,12 +944,24 @@
 
                     <a href="" class="nav-link ">
 
+
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
                         <span class="nav-text">Quản lý Khởi hành</span>
                     </a>
                 </div>
+
+                <div class="nav-item">
+                    <a href="{{ route('Admin.gop-doan.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.gop-doan.*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-object-group"></i>
+                        </div>
+                        <span class="nav-text">Gộp đoàn</span>
+                    </a>
+                </div>
+
                 <div class="nav-item">
 
 
@@ -974,6 +989,7 @@
             </div>
 
             <!-- Bookings & Operations -->
+
             <div class="nav-item">
 
                 <a href="{{ route('Admin.quan_ly_dat_tour.index') }}" class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}">
@@ -986,6 +1002,7 @@
                     <span class="nav-text">Quản lý Đặt tour</span>
 
                 </a>
+
 
             </div>
 
@@ -1003,7 +1020,21 @@
 
 
 
-                        <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                <div class="nav-section">
+                    <div class="nav-section-title">Quản lý Người dùng</div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.users.index') }}" class="nav-link ">
+                            <div class="nav-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="nav-text">Người dùng</span>
+                        </a>
+
+                    </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+
                             <div class="nav-icon">
                                 <i class="fas fa-users"></i>
                             </div>
@@ -1371,12 +1402,6 @@
                             </a>
                         </li>
 
-                        {{-- <li>
-                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                        <i class="fas fa-tachometer-alt me-2"></i>
-                        Dashboard
-                        </a>
-                        </li> --}}
 
                         <li>
                             <hr class="dropdown-divider">
@@ -1411,8 +1436,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('adminSidebar');
-            const main = document.getElementById('adminMain');
+            const sidebar = document.getElementById('sidebar');
+            const main = document.querySelector('.main-content');
 
             if (sidebarToggle && sidebar && main) {
                 sidebarToggle.addEventListener('click', function() {
@@ -1649,6 +1674,10 @@
         }
 
     </style>
+
+    <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js') }}"></script>
+
+
     @stack('scripts')
 </body>
 

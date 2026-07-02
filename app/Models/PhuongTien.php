@@ -14,7 +14,7 @@ class PhuongTien extends Model
         'so_cho',
         'bien_so',
         'trang_thai',
-   
+
 
 
         'bien_so_xe',
@@ -22,7 +22,7 @@ class PhuongTien extends Model
         'hang_xe',
         'nam_san_xuat',
         'mau_xe',
-        
+
         'ten_tai_xe',
         'so_dien_thoai_tai_xe',
         'ghi_chu',
@@ -72,7 +72,7 @@ class PhuongTien extends Model
     {
         return self::trangThaiList()[$this->trang_thai] ?? 'Không xác định';
     }
-}
+
 
     public function lichKhoiHanhs()
     {
@@ -82,5 +82,3 @@ class PhuongTien extends Model
         );
     }
 }
-
-

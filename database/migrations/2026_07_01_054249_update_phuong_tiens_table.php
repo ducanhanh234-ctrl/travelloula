@@ -12,12 +12,6 @@ return new class extends Migration
             $table->string('ten_phuong_tien')->after('id');
             $table->integer('so_cho')->after('ten_phuong_tien');
             $table->string('bien_so')->nullable()->after('so_cho');
-
-            $table->enum('trang_thai', [
-                'san_sang',
-                'dang_su_dung',
-                'bao_tri'
-            ])->default('san_sang')->after('bien_so');
         });
     }
 
@@ -28,7 +22,7 @@ return new class extends Migration
                 'ten_phuong_tien',
                 'so_cho',
                 'bien_so',
-                'trang_thai'
+
             ]);
         });
     }

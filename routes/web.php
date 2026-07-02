@@ -38,7 +38,18 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\LichKhoiHanhController;
 use App\Http\Controllers\Admin\GopDoanController;
 
+use App\Http\Controllers\VaiTroController;
+use App\Http\Controllers\QuanLyDatTourController;
 
+
+
+use App\Http\Controllers\Admin\TourController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\LichTrinhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+
+use App\Http\Controllers\Admin\DatTourController;
+use App\Http\Controllers\Admin\NhatKyTourController;
 /*
 |--------------------------------------------------------------------------
 | CLIENT ROUTES
@@ -56,19 +67,9 @@ Route::get('/trang_chu', function () {
 
 Route::get('/ve_chung_toi', function () {
     return view('Client.ve_chung_toi.index');
+});
 
-use App\Http\Controllers\VaiTroController;
-use App\Http\Controllers\QuanLyDatTourController;
 
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\Admin\TourController;
-use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
-use App\Http\Controllers\Admin\LichTrinhTourController;
-use App\Http\Controllers\Admin\HinhAnhTourController;
-
-use App\Http\Controllers\Admin\DatTourController;
-use App\Http\Controllers\Admin\NhatKyTourController;
 
 
 
@@ -87,7 +88,6 @@ Route::get('/bai_viet', function () {
 Route::get('/{id}/bai_viet', function () {
 
     return view('Client.bai_viet.detail');
-
 })->name('bai_viet.detail');
 
 
@@ -98,7 +98,6 @@ Route::get('/{id}/bai_viet', function () {
 
 Route::get('/demo', function () {
     return view('Client.demo');
-
 });
 
 Route::get('/bai_viet', function () {
@@ -152,13 +151,13 @@ Route::get('/dieu_khoan', function () {
 })->name('Client.dieu_khoan.index');
 
 Route::get('/tour_yeu_thich', [TourYeuThichController::class, 'index'])
-        ->name('Client.tour_yeu_thich.index');
+    ->name('Client.tour_yeu_thich.index');
 
-    Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])
-        ->name('Client.tour_yeu_thich.store');
+Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])
+    ->name('Client.tour_yeu_thich.store');
 
-    Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])
-        ->name('Client.tour_yeu_thich.destroy');
+Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])
+    ->name('Client.tour_yeu_thich.destroy');
 
 Route::get('/ve_chung_toi', function () {
     return view('Client.ve_chung_toi.index');
@@ -169,7 +168,7 @@ Route::get('/ve_chung_toi', function () {
 
 
 // Auth routes
-use App\Http\Controllers\AuthController;
+
 
 use App\Http\Controllers\PhuongTienController;
 
@@ -460,9 +459,9 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-                'index',
-                'show'
-            ]);
+        'index',
+        'show'
+    ]);
 });
 
 
@@ -495,4 +494,3 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
 });
-

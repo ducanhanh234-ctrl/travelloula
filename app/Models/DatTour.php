@@ -70,11 +70,6 @@ class DatTour extends Model
         )->orderBy('id', 'asc');
     }
 
-    public function lichKhoiHanh()
-    {
-        return $this->belongsTo(
-            LichKhoiHanhTour::class,
-            'lich_khoi_hanh_id'
 
     public function khachHangs()
     {

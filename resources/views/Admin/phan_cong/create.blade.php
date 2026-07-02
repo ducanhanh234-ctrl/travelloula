@@ -83,6 +83,8 @@
                                 {{ date('d/m/Y', strtotime($lich->ngay_khoi_hanh)) }}
                                 -
                                 {{ date('d/m/Y', strtotime($lich->ngay_ket_thuc)) }}
+                                -
+                                {{ $lich->tour->so_khach_toi_da }} chỗ
 
                             </option>
 

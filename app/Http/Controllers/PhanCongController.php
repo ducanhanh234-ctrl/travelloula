@@ -61,7 +61,17 @@ class PhanCongController extends Controller
 
         $ngayBatDau = $lich->ngay_khoi_hanh;
         $ngayKetThuc = $lich->ngay_ket_thuc;
+        $xe = PhuongTien::findOrFail($request->phuong_tien_id);
 
+        $soKhach = $lich->tour->so_khach_toi_da;
+
+        if ($xe->loai_phuong_tien < $soKhach) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'phuong_tien_id' => 'Xe không đủ số chỗ cho đoàn khách.'
+                ]);
+        }
         /**
          * ==========================
          * Kiểm tra HDV có bị trùng lịch
@@ -156,9 +166,12 @@ class PhanCongController extends Controller
                 ->orWhere('id', $phanCong->hdv_id);
         })->get();
 
-        $phuongTiens = PhuongTien::where(function ($q) use ($phanCong) {
-
-            $q->where('trang_thai', 1)
+        $soKhach = $phanCong->lichKhoiHanh->tour->so_khach_toi_da;
+        $phuongTiens = PhuongTien::where(function ($q) use ($phanCong, $soKhach) {
+            $q->where(function ($query) use ($soKhach) {
+                $query->where('trang_thai', 1)
+                    ->where('loai_phuong_tien', '>=', $soKhach);
+            })
                 ->orWhere('id', $phanCong->phuong_tien_id);
         })->get();
 

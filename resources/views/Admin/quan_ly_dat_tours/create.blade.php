@@ -19,7 +19,16 @@
                 Quay lại
             </a>
         </div>
-        <form method="POST" action="{{ route('Admin.dat-tours.store') }}">
+        <form id="bookingForm" method="POST" action="{{ route('Admin.dat-tours.store') }}">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             @csrf
             <!-- Thông tin tour -->
             <div class="card mb-4">
@@ -62,19 +71,28 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="mb-3">
-                        <label class="form-label">
-                            Ngày khởi hành *
-                        </label>
-                        <input type="text" class="form-control" id="lich_khoi_hanh" name="lich_khoi_hanh"
-                            placeholder="dd/mm/yyyy" required>
+                        <label class="form-label">Lịch khởi hành *</label>
+                        <select class="form-select" id="lich_khoi_hanh_id" name="lich_khoi_hanh_id" required>
+                            <option value="">
+                                -- Chọn lịch khởi hành --
+                            </option>
+                        </select>
                     </div>
 
-                    <div class="mt-3">
-                        <label class="form-label">
-                            Ngày kết thúc
-                        </label>
-                        <input type="text" class="form-control" id="ngay_ket_thuc" name="ngay_ket_thuc" readonly>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Ngày khởi hành</label>
+
+                            <input type="text" id="ngay_bat_dau" class="form-control" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label>Ngày kết thúc</label>
+
+                            <input type="text" id="ngay_ket_thuc" class="form-control" readonly>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -156,23 +174,27 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
-                            <label>
-                                Số người lớn
-                            </label>
-                            <input type="number" name="so_nguoi_lon" id="adult_count" class="form-control" value="1"
-                                min="0">
+                            <label>Số người lớn</label>
+                            <input type="number" name="so_nguoi_lon" id="adult_count"
+                                class="form-control @error('so_nguoi_lon') is-invalid @enderror"
+                                value="{{ old('so_nguoi_lon', 1) }}" min="0">
+                            @error('so_nguoi_lon')
+                                <div class="text-danger mt-2 fw-bold">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
+
                         <div class="col-md-4">
-                            <label>
-                                Số trẻ em
-                            </label>
-                            <input type="number" name="so_tre_em" id="child_count" class="form-control" value="0" min="0">
+                            <label>Số trẻ em</label>
+                            <input type="number" name="so_tre_em" id="child_count" class="form-control"
+                                value="{{ old('so_tre_em', 0) }}" min="0">
                         </div>
+
                         <div class="col-md-4">
-                            <label>
-                                Số em bé
-                            </label>
-                            <input type="number" name="so_em_be" id="baby_count" class="form-control" value="0" min="0">
+                            <label>Số em bé</label>
+                            <input type="number" name="so_em_be" id="baby_count" class="form-control"
+                                value="{{ old('so_em_be', 0) }}" min="0">
                         </div>
                     </div>
                 </div>
@@ -278,8 +300,8 @@
             </div>
     </div>
 
-            {{-- Ghi chú --}}
-            <div class="card mb-4">
+    {{-- Ghi chú --}}
+    <div class="card mb-4">
         <div class="card-header fw-bold">
             Ghi chú
         </div>
@@ -287,83 +309,167 @@
         <div class="card-body">
             <textarea name="ghi_chu" rows="4" class="form-control" placeholder="Yêu cầu đặc biệt của khách..."></textarea>
         </div>
-        </div>
+    </div>
 
-            {{-- end --}}
-            <div class="text-end mb-4">
-                <a href="{{ route('Admin.quan_ly_dat_tour.index') }}" class="btn btn-danger">
-                    Hủy
-                </a>
-            <div id="debug"></div>
-            <button type="submit" class="btn btn-primary">
-                Lưu đặt tour
-            </button>
-        </div>
+    {{-- end --}}
+    <div class="text-end mb-4">
+        <a href="{{ route('Admin.quan_ly_dat_tour.index') }}" class="btn btn-danger">
+            Hủy
+        </a>
+        <div id="debug"></div>
+        <button type="submit" class="btn btn-primary">
+            Lưu đặt tour
+        </button>
+    </div>
     </form>
-</div>
+    </div>
 
     <script>
         function createPassenger(type, index) {
+
             let loai = 'adult';
+
             if (type === 'Trẻ em') {
                 loai = 'child';
-            } else if (type === 'Em bé') {
+            }
+            else if (type === 'Em bé') {
                 loai = 'baby';
             }
             return `
-                <div class="card mb-3">
-                <div class="card-header">
-                    <b>${type} #${index}</b>
-                </div>
-                <div class="card-body">
-                    <input
-                        type="hidden"
-                        name="hanh_khach[${index}][loai_hanh_khach]"
-                        value="${loai}">
-                    <div class="row">
-                        <div class="col-md-6">
-                        <label>Họ tên</label>
-                    <input
-                        type="text"
-                        class="form-control"
-                        name="hanh_khach[${index}][ho_ten]"
-                        required>
-                    </div>
 
-                <div class="col-md-3">
-                    <label>Giới tính</label>
-                        <select
-                            class="form-select"
-                            name="hanh_khach[${index}][gioi_tinh]">
-                                <option value="Nam">Nam</option>
-                                <option value="Nữ">Nữ</option>
-                        </select>
-                    </div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <b>${type} #${index + 1}</b>
+                            </div>
 
-                    <div class="col-md-3">
-                        <label>Năm sinh</label>
-                        <input
-                            type="number"
-                             class="form-control"
-                            name="hanh_khach[${index}][nam_sinh]">
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
+                            <div class="card-body">
+                                <input
+                                    type="hidden"
+                                    name="hanh_khach[${index}][loai_hanh_khach]"
+                                    value="${loai}">
 
-    function generatePassengers() {
-        let adult =
-            parseInt(document.getElementById('adult_count').value) || 0;
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label>
+                                            Họ tên *
+                                        </label>
 
-        let child =
-            parseInt(document.getElementById('child_count').value) || 0;
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="hanh_khach[${index}][ho_ten]"
+                                            required>
+                                    </div>
 
-        let baby =
-            parseInt(document.getElementById('baby_count').value) || 0;
+                                    <div class="col-md-3">
+                                        <label>
+                                            Giới tính
+                                        </label>
 
-        let total = adult + child + baby;
+                                        <select
+                                            class="form-select"
+                                            name="hanh_khach[${index}][gioi_tinh]">
+
+                                            <option value="Nam">
+                                                Nam
+                                            </option>
+
+                                            <option value="Nữ">
+                                                Nữ
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label>
+                                            Ngày sinh
+                                        </label>
+
+                                        <input
+                                            type="date"
+                                            class="form-control"
+                                            name="hanh_khach[${index}][ngay_sinh]">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        <label>
+                                            Quốc tịch
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="hanh_khach[${index}][quoc_tich]"
+                                            value="Việt Nam">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label>
+                                            Loại giấy tờ <span class="text-danger">*</span>
+                                        </label>
+
+                                        <select
+                                            class="form-select"
+                                            name="hanh_khach[${index}][loai_giay_to]" required>
+                                            <option value="CCCD">CCCD</option>
+                                            <option value="Hộ chiếu">Hộ chiếu</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label>
+                                            Số giấy tờ
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="hanh_khach[${index}][so_giay_to]">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label>
+                                            Số điện thoại
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="hanh_khach[${index}][so_dien_thoai]">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label>
+                                            Yêu cầu đặc biệt
+                                        </label>
+
+                                        <textarea
+                                            class="form-control"
+                                            rows="2"
+                                            name="hanh_khach[${index}][yeu_cau_dac_biet]"
+                                            placeholder="Ăn chay, dị ứng, yêu cầu khác..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+        }
+
+        function generatePassengers() {
+            let adult =
+                parseInt(document.getElementById('adult_count').value) || 0;
+
+            let child =
+                parseInt(document.getElementById('child_count').value) || 0;
+
+            let baby =
+                parseInt(document.getElementById('baby_count').value) || 0;
+
+            let total = adult + child + baby;
             document.getElementById('passenger-summary').innerHTML =
                 `Tổng số hành khách: <b>${total}</b>`;
             let html = '';
@@ -378,9 +484,9 @@
                 html += createPassenger('Em bé', index++);
             }
 
-        document.getElementById('passenger-container').innerHTML = html;
-        document.getElementById('debug').innerText =
-        document.querySelectorAll('[name^="hanh_khach"]').length;
+            document.getElementById('passenger-container').innerHTML = html;
+            document.getElementById('debug').innerText =
+                document.querySelectorAll('[name^="hanh_khach"]').length;
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -501,90 +607,197 @@
             document.getElementById('tong_tien').value = tongTien;
             document.getElementById('payment_detail').innerHTML = `
 
-                <div class="payment-box">
-                <div class="payment-title">
-                    💳 Chi tiết thanh toán
-                </div>
+                                                                                                <div class="payment-box">
+                                                                                                <div class="payment-title">
+                                                                                                    💳 Chi tiết thanh toán
+                                                                                                </div>
 
-                <div class="payment-item">
-                    <div>
-                        <b>Người lớn</b>
-                        <small>${adult} khách × ${formatMoney(giaNguoiLon)} VNĐ</small>
-                    </div>
+                                                                                                <div class="payment-item">
+                                                                                                    <div>
+                                                                                                        <b>Người lớn</b>
+                                                                                                        <small>${adult} khách × ${formatMoney(giaNguoiLon)} VNĐ</small>
+                                                                                                    </div>
 
-                    <strong>
-                        ${formatMoney(tienNguoiLon)} VNĐ
-                    </strong>
-                </div>
+                                                                                                    <strong>
+                                                                                                        ${formatMoney(tienNguoiLon)} VNĐ
+                                                                                                    </strong>
+                                                                                                </div>
 
-                <div class="payment-item">
-                    <div>
-                        <b>Trẻ em</b>
-                        <small>${child} khách × ${formatMoney(giaTreEm)} VNĐ</small>
-                    </div>
+                                                                                                <div class="payment-item">
+                                                                                                    <div>
+                                                                                                        <b>Trẻ em</b>
+                                                                                                        <small>${child} khách × ${formatMoney(giaTreEm)} VNĐ</small>
+                                                                                                    </div>
 
-                    <strong>
-                        ${formatMoney(tienTreEm)} VNĐ
-                    </strong>
-                </div>
+                                                                                                    <strong>
+                                                                                                        ${formatMoney(tienTreEm)} VNĐ
+                                                                                                    </strong>
+                                                                                                </div>
 
-                <div class="payment-item">
-                    <div>
-                        <b>Em bé</b>
-                        <small>${baby} bé × ${formatMoney(giaEmBe)} VNĐ</small>
-                    </div>
+                                                                                                <div class="payment-item">
+                                                                                                    <div>
+                                                                                                        <b>Em bé</b>
+                                                                                                        <small>${baby} bé × ${formatMoney(giaEmBe)} VNĐ</small>
+                                                                                                    </div>
 
-                    <strong>
-                        ${formatMoney(tienEmBe)} VNĐ
-                    </strong>
-                </div>
+                                                                                                    <strong>
+                                                                                                        ${formatMoney(tienEmBe)} VNĐ
+                                                                                                    </strong>
+                                                                                                </div>
 
-                <div class="payment-total">
-                    <span>
-                        Tổng thanh toán
-                    </span>
-                    <b>
-                        ${formatMoney(tongTien)} VNĐ
-                    </b>
-                </div>
-            </div>
-        `;
-    }
+                                                                                                <div class="payment-total">
+                                                                                                    <span>
+                                                                                                        Tổng thanh toán
+                                                                                                    </span>
+                                                                                                    <b>
+                                                                                                        ${formatMoney(tongTien)} VNĐ
+                                                                                                    </b>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        `;
+        }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const tourSelect =
-            document.getElementById('tour_id');
-        tourSelect.addEventListener('change', function () {
-            let option =
-                this.options[this.selectedIndex];
+        document.addEventListener('DOMContentLoaded', function () {
+            const tourSelect =
+                document.getElementById('tour_id');
+            tourSelect.addEventListener('change', function () {
+                let option =
+                    this.options[this.selectedIndex];
 
-            giaNguoiLon =
-                Number(option.dataset.adult || 0);
+                giaNguoiLon =
+                    Number(option.dataset.adult || 0);
 
-            giaTreEm =
-                Number(option.dataset.child || 0);
+                giaTreEm =
+                    Number(option.dataset.child || 0);
 
-            giaEmBe =
-                Number(option.dataset.baby || 0);
+                giaEmBe =
+                    Number(option.dataset.baby || 0);
 
-            document.getElementById('adult_price').value =
-                formatMoney(giaNguoiLon) + ' VNĐ';
+                document.getElementById('adult_price').value =
+                    formatMoney(giaNguoiLon) + ' VNĐ';
 
-            document.getElementById('child_price').value =
-            formatMoney(giaTreEm) + ' VNĐ';
+                document.getElementById('child_price').value =
+                    formatMoney(giaTreEm) + ' VNĐ';
 
-            document.getElementById('baby_price').value =
-                formatMoney(giaEmBe) + ' VNĐ';
-            updatePrice();
+                document.getElementById('baby_price').value =
+                    formatMoney(giaEmBe) + ' VNĐ';
+                updatePrice();
+            });
+
+            document.getElementById('adult_count')
+                .addEventListener('input', updatePrice);
+            document.getElementById('child_count')
+                .addEventListener('input', updatePrice);
+            document.getElementById('baby_count')
+                .addEventListener('input', updatePrice);
         });
 
-        document.getElementById('adult_count')
-            .addEventListener('input', updatePrice);
-        document.getElementById('child_count')
-            .addEventListener('input', updatePrice);
-        document.getElementById('baby_count')
-            .addEventListener('input', updatePrice);
-    });
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+
+            return `${day}/${month}/${year}`;
+        }
+
+        const tourSelect = document.getElementById('tour_id');
+        const lichSelect = document.getElementById('lich_khoi_hanh_id');
+
+        tourSelect.addEventListener('change', function () {
+
+            let tourId = this.value;
+
+            lichSelect.innerHTML =
+                '<option value="">-- Chọn lịch khởi hành --</option>';
+
+            document.getElementById('ngay_bat_dau').value = '';
+            document.getElementById('ngay_ket_thuc').value = '';
+            if (!tourId) return;
+            fetch('/Admin/tour/' + tourId + '/lich-khoi-hanh')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error("Không lấy được lịch khởi hành");
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data.length === 0) {
+                        let option = document.createElement('option');
+                        option.text = 'Không có lịch khởi hành';
+                        option.disabled = true;
+                        lichSelect.appendChild(option);
+                        return;
+                    }
+
+                    data.forEach(function (item) {
+                        let option = document.createElement('option');
+                        option.value = item.id;
+                        option.dataset.start = formatDate(item.ngay_khoi_hanh);
+                        option.dataset.end = formatDate(item.ngay_ket_thuc);
+
+                        if (item.is_full) {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Hết chỗ)`;
+                            option.disabled = true;
+                            option.style.color = "red";
+                        } else {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                        }
+                        lichSelect.appendChild(option);
+                    });
+                })
+
+                .catch(error => {
+                    console.error(error);
+                    alert("Không lấy được lịch khởi hành.");
+                });
+        });
+
+        lichSelect.addEventListener('change', function () {
+            let option = this.options[this.selectedIndex];
+            document.getElementById('ngay_bat_dau').value =
+                option.dataset.start || '';
+
+            document.getElementById('ngay_ket_thuc').value =
+                option.dataset.end || '';
+        });
+
+        //validate loại giấy tờ
+        // document.addEventListener('change', function (e) {
+        //     if (!e.target.name.includes('[loai_giay_to]')) return;
+
+        //     const card = e.target.closest('.card');
+        //     const input = card.querySelector('input[name*="[so_giay_to]"]');
+
+        //     if (e.target.value === 'CCCD') {
+        //         input.placeholder = 'Nhập 12 số CCCD';
+        //         input.maxLength = 12;
+        //         input.pattern = '\\d{12}';
+        //     } else {
+        //         input.placeholder = 'Nhập số hộ chiếu';
+        //         input.removeAttribute('maxLength');
+        //         input.removeAttribute('pattern');
+        //     }
+
+        //     input.value = '';
+        // });
+
+        // document.addEventListener('input', function (e) {
+        //     if (!e.target.name.includes('[so_giay_to]')) return;
+        //     const card = e.target.closest('.card');
+        //     const loai = card.querySelector('select[name*="[loai_giay_to]"]').value;
+        //     if (loai === 'CCCD') {
+        //         // Chỉ cho nhập số
+        //         e.target.value = e.target.value.replace(/\D/g, '');
+        //     } else {
+        //         // Hộ chiếu: chỉ cho chữ và số
+        //         e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        //     }
+        // });
     </script>
 
     <style>

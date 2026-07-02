@@ -348,17 +348,6 @@
                                             </button>
                                         </form>
 
-                                        {{-- Xóa cứng
-                                        <form action="{{ route('Admin.dat_tours.forceDelete', $booking->id) }}" method="POST"
-                                            onsubmit="return confirm('XÓA VĨNH VIỄN booking này? Không thể khôi phục!')">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa vĩnh viễn">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </form> --}}
                                     </div>
                                 </td>
                             </tr>

@@ -78,6 +78,7 @@
     border-radius:8px;
     padding:10px 14px;
     transition:.2s;
+    background:#fff;
 }
 
 .input-control{
@@ -194,16 +195,27 @@
                         <input type="text"
                                name="bien_so_xe"
                                class="input-control"
-                               value="{{ old('bien_so_xe') }}">
+                               value="{{ old('bien_so_xe') }}"
+                               placeholder="Ví dụ: 29B-12345">
                     </div>
 
                     <div class="col-md-4 mb-4">
                         <label class="form-label">Loại phương tiện *</label>
-                        <input type="text"
-                               name="loai_phuong_tien"
-                               class="input-control"
-                               placeholder="16 chỗ, 29 chỗ, 45 chỗ..."
-                               value="{{ old('loai_phuong_tien') }}">
+                        <select name="loai_phuong_tien" class="input-control">
+                            <option value="">-- Chọn loại phương tiện --</option>
+
+                            <option value="xe_16_cho" @selected(old('loai_phuong_tien') == 'xe_16_cho')>
+                                Xe 16 chỗ
+                            </option>
+
+                            <option value="xe_29_cho" @selected(old('loai_phuong_tien') == 'xe_29_cho')>
+                                Xe 29 chỗ
+                            </option>
+
+                            <option value="xe_45_cho" @selected(old('loai_phuong_tien') == 'xe_45_cho')>
+                                Xe 45 chỗ
+                            </option>
+                        </select>
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -211,7 +223,8 @@
                         <input type="text"
                                name="hang_xe"
                                class="input-control"
-                               value="{{ old('hang_xe') }}">
+                               value="{{ old('hang_xe') }}"
+                               placeholder="Ví dụ: Hyundai, Thaco, Samco...">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -219,7 +232,8 @@
                         <input type="number"
                                name="nam_san_xuat"
                                class="input-control"
-                               value="{{ old('nam_san_xuat') }}">
+                               value="{{ old('nam_san_xuat') }}"
+                               placeholder="Ví dụ: 2022">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -227,7 +241,8 @@
                         <input type="text"
                                name="mau_xe"
                                class="input-control"
-                               value="{{ old('mau_xe') }}">
+                               value="{{ old('mau_xe') }}"
+                               placeholder="Ví dụ: Trắng, Đen, Xanh...">
                     </div>
 
                     <div class="col-md-4 mb-4">
@@ -258,7 +273,8 @@
                         <input type="text"
                                name="ten_tai_xe"
                                class="input-control"
-                               value="{{ old('ten_tai_xe') }}">
+                               value="{{ old('ten_tai_xe') }}"
+                               placeholder="Nhập tên tài xế">
                     </div>
 
                     <div class="col-md-6 mb-4">
@@ -266,7 +282,8 @@
                         <input type="text"
                                name="so_dien_thoai_tai_xe"
                                class="input-control"
-                               value="{{ old('so_dien_thoai_tai_xe') }}">
+                               value="{{ old('so_dien_thoai_tai_xe') }}"
+                               placeholder="Nhập số điện thoại">
                     </div>
 
                 </div>

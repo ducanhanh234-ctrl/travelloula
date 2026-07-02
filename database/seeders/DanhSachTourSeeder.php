@@ -10,6 +10,7 @@ class DanhSachTourSeeder extends Seeder
 {
     public function run(): void
     {
+
         DB::table('danh_sach_tours')->insert([
             [
                 'danh_muc_id' => 1,

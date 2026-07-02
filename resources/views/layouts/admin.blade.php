@@ -922,14 +922,27 @@
                         <span class="nav-text">Danh sách Tours</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a href="{{ route('Admin.lich-khoi-hanh.index') }}" class="nav-link">
+                    <a href="{{ route('Admin.lich-khoi-hanh.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.lich-khoi-hanh.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-plane-departure"></i>
                         </div>
                         <span class="nav-text">Quản lý Khởi hành</span>
                     </a>
                 </div>
+
+                <div class="nav-item">
+                    <a href="{{ route('Admin.gop-doan.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.gop-doan.*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-object-group"></i>
+                        </div>
+                        <span class="nav-text">Gộp đoàn</span>
+                    </a>
+                </div>
+
                 <div class="nav-item">
                     <a href="" class="nav-link ">
                         <div class="nav-icon">

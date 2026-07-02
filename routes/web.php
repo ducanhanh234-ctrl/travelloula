@@ -1,11 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
+
 use App\Http\Controllers\KhachHangDatTourController;
 use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\UserController;
+
 use App\Http\Controllers\Admin\LichKhoiHanhController;
+use App\Http\Controllers\Admin\GopDoanController;
 
 
 /*
@@ -65,17 +69,114 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('Admin')
     ->name('Admin.')
-    ->middleware(['auth', \App\Http\Middleware\IsAdmin::class])
+    ->middleware([
+        'auth',
+        \App\Http\Middleware\IsAdmin::class
+    ])
     ->group(function () {
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard
+        |--------------------------------------------------------------------------
+        */
 
         Route::get('/', function () {
             return view('Layouts.admin');
         })->name('dashboard');
 
-        Route::resource('users', UserController::class);
-        Route::resource('khach-hang', KhachHangDatTourController::class);
-        Route::resource('huong-dan-viens', HuongDanVienController::class);
-        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | USERS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'users',
+            UserController::class
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | KHÁCH HÀNG
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'khach-hang',
+            KhachHangDatTourController::class
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HƯỚNG DẪN VIÊN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'huong-dan-viens',
+            HuongDanVienController::class
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LỊCH KHỞI HÀNH
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'lich-khoi-hanh',
+            LichKhoiHanhController::class
+        );
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | GỘP ĐOÀN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::resource(
+            'gop-doan',
+            GopDoanController::class
+        );
+
+
+        // Hủy yêu cầu gộp đoàn
+        Route::post(
+            'gop-doan/{id}/huy',
+            [
+                GopDoanController::class,
+                'destroy'
+            ]
+        )->name('gop-doan.huy');
+
+        Route::post(
+            'gop-doan/chi-tiet/{id}/trang-thai',
+            [
+                GopDoanController::class,
+                'capNhatTrangThaiLienHe'
+            ]
+        )
+            ->name('gop-doan.cap-nhat-trang-thai');
+
+        Route::post(
+            'gop-doan/{id}/chot',
+            [
+                GopDoanController::class,
+                'chotGop'
+            ]
+        )->name('gop-doan.chot');
     });
 
 

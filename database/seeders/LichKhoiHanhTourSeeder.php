@@ -10,168 +10,177 @@ class LichKhoiHanhTourSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('lich_khoi_hanh_tours')->truncate();
+        $data = [];
 
-        DB::table('lich_khoi_hanh_tours')->insert([
+        $today = Carbon::today();
 
-            // =====================
-            // TOUR ĐÀ NẴNG
-            // =====================
+        /*
+        |--------------------------------------------------------------------------
+        | 6 lịch Đà Nẵng - ĐÃ ĐÓNG BÁN
+        | Dữ liệu cố định để khớp DatTourSeeder
+        |--------------------------------------------------------------------------
+        */
 
-            [
+        $soChoDaDat = [
+            1 => 8,
+            2 => 12,
+            3 => 10,
+            4 => 15,
+            5 => 15,
+            6 => 9,
+        ];
+
+        for ($i = 1; $i <= 6; $i++) {
+
+            $ngayKhoiHanh = $today->copy()->addDays($i);
+            $ngayKetThuc = $ngayKhoiHanh->copy()->addDays(2);
+
+            $daDat = $soChoDaDat[$i];
+
+            $data[] = [
+
                 'tour_id' => 1,
-                'huong_dan_vien_id' => 1,
-                'ngay_khoi_hanh' => '2026-07-10',
-                'ngay_ket_thuc' => '2026-07-12',
+
+                'ngay_khoi_hanh' => $ngayKhoiHanh->format('Y-m-d'),
+                'ngay_ket_thuc' => $ngayKetThuc->format('Y-m-d'),
+
                 'so_cho' => 30,
-                'so_cho_da_dat' => 3,
-                'so_cho_con_lai' => 27,
+                'so_cho_da_dat' => $daDat,
+                'so_cho_con_lai' => 30 - $daDat,
+
                 'gia_nguoi_lon' => 3200000,
                 'gia_tre_em' => 2500000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
 
-            [
-                'tour_id' => 1,
-                'huong_dan_vien_id' => 2,
-                'ngay_khoi_hanh' => '2026-07-12',
-                'ngay_ket_thuc' => '2026-07-14',
-                'so_cho' => 30,
-                'so_cho_da_dat' => 8,
-                'so_cho_con_lai' => 22,
-                'gia_nguoi_lon' => 3200000,
-                'gia_tre_em' => 2500000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            [
-                'tour_id' => 1,
-                'huong_dan_vien_id' => 1,
-                'ngay_khoi_hanh' => '2026-07-15',
-                'ngay_ket_thuc' => '2026-07-17',
-                'so_cho' => 30,
-                'so_cho_da_dat' => 28,
-                'so_cho_con_lai' => 2,
-                'gia_nguoi_lon' => 3200000,
-                'gia_tre_em' => 2500000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            [
-                'tour_id' => 1,
-                'huong_dan_vien_id' => 2,
-                'ngay_khoi_hanh' => '2026-07-18',
-                'ngay_ket_thuc' => '2026-07-20',
-                'so_cho' => 30,
-                'so_cho_da_dat' => 0,
-                'so_cho_con_lai' => 30,
-                'gia_nguoi_lon' => 3200000,
-                'gia_tre_em' => 2500000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            [
-                'tour_id' => 1,
                 'huong_dan_vien_id' => null,
-                'ngay_khoi_hanh' => '2026-07-20',
-                'ngay_ket_thuc' => '2026-07-22',
-                'so_cho' => 30,
-                'so_cho_da_dat' => 12,
-                'so_cho_con_lai' => 18,
-                'gia_nguoi_lon' => 3200000,
-                'gia_tre_em' => 2500000,
-                'trang_thai' => 'available',
+                'phuong_tien_id' => null,
+
+                'da_gop' => 0,
+                'dang_gop_doan' => 0,
+                'gop_vao_lich_id' => null,
+
+                'trang_thai' => 'closed',
+
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
+            ];
+        }
 
-            // =====================
-            // TOUR PHÚ QUỐC
-            // =====================
+        /*
+        |--------------------------------------------------------------------------
+        | 2 lịch mở bán
+        |--------------------------------------------------------------------------
+        */
 
-            [
-                'tour_id' => 2,
-                'huong_dan_vien_id' => 2,
-                'ngay_khoi_hanh' => '2026-07-11',
-                'ngay_ket_thuc' => '2026-07-14',
-                'so_cho' => 40,
-                'so_cho_da_dat' => 5,
-                'so_cho_con_lai' => 35,
-                'gia_nguoi_lon' => 5200000,
-                'gia_tre_em' => 4100000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        for ($i = 8; $i <= 9; $i++) {
 
-            [
-                'tour_id' => 2,
-                'huong_dan_vien_id' => 1,
-                'ngay_khoi_hanh' => '2026-07-14',
-                'ngay_ket_thuc' => '2026-07-17',
-                'so_cho' => 40,
-                'so_cho_da_dat' => 18,
-                'so_cho_con_lai' => 22,
-                'gia_nguoi_lon' => 5200000,
-                'gia_tre_em' => 4100000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            $tourId = ($i == 8) ? 1 : 2;
+            $soCho = ($tourId == 1) ? 30 : 40;
 
-            [
-                'tour_id' => 2,
-                'huong_dan_vien_id' => 2,
-                'ngay_khoi_hanh' => '2026-07-17',
-                'ngay_ket_thuc' => '2026-07-20',
-                'so_cho' => 40,
-                'so_cho_da_dat' => 37,
-                'so_cho_con_lai' => 3,
-                'gia_nguoi_lon' => 5200000,
-                'gia_tre_em' => 4100000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            $ngayKhoiHanh = $today->copy()->addDays($i + 6);
+            $ngayKetThuc = $ngayKhoiHanh->copy()->addDays(2);
 
-            [
-                'tour_id' => 2,
+            $daDat = rand(5, 15);
+
+            $data[] = [
+
+                'tour_id' => $tourId,
+
+                'ngay_khoi_hanh' => $ngayKhoiHanh->format('Y-m-d'),
+                'ngay_ket_thuc' => $ngayKetThuc->format('Y-m-d'),
+
+                'so_cho' => $soCho,
+                'so_cho_da_dat' => $daDat,
+                'so_cho_con_lai' => $soCho - $daDat,
+
+                'gia_nguoi_lon' => $tourId == 1 ? 3200000 : 5200000,
+                'gia_tre_em' => $tourId == 1 ? 2500000 : 4100000,
+
                 'huong_dan_vien_id' => null,
-                'ngay_khoi_hanh' => '2026-07-21',
-                'ngay_ket_thuc' => '2026-07-24',
-                'so_cho' => 40,
-                'so_cho_da_dat' => 2,
-                'so_cho_con_lai' => 38,
-                'gia_nguoi_lon' => 5200000,
-                'gia_tre_em' => 4100000,
-                'trang_thai' => 'available',
+                'phuong_tien_id' => null,
+
+                'da_gop' => 0,
+                'dang_gop_doan' => 0,
+                'gop_vao_lich_id' => null,
+
+                'trang_thai' => 'open',
+
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
+            ];
+        }
 
-            [
-                'tour_id' => 2,
-                'huong_dan_vien_id' => 1,
-                'ngay_khoi_hanh' => '2026-07-25',
-                'ngay_ket_thuc' => '2026-07-28',
-                'so_cho' => 40,
-                'so_cho_da_dat' => 40,
-                'so_cho_con_lai' => 0,
-                'gia_nguoi_lon' => 5200000,
-                'gia_tre_em' => 4100000,
-                'trang_thai' => 'available',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        /*
+        |--------------------------------------------------------------------------
+        | 1 lịch đang diễn ra
+        |--------------------------------------------------------------------------
+        */
 
-        ]);
+        $ngayKhoiHanh = $today->copy()->subDay();
+        $ngayKetThuc = $today->copy()->addDay();
+
+        $data[] = [
+
+            'tour_id' => 2,
+
+            'ngay_khoi_hanh' => $ngayKhoiHanh->format('Y-m-d'),
+            'ngay_ket_thuc' => $ngayKetThuc->format('Y-m-d'),
+
+            'so_cho' => 40,
+            'so_cho_da_dat' => 40,
+            'so_cho_con_lai' => 0,
+
+            'gia_nguoi_lon' => 5200000,
+            'gia_tre_em' => 4100000,
+
+            'huong_dan_vien_id' => 1,
+            'phuong_tien_id' => 1,
+
+            'da_gop' => 0,
+            'dang_gop_doan' => 0,
+            'gop_vao_lich_id' => null,
+
+            'trang_thai' => 'running',
+
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | 1 lịch đã kết thúc
+        |--------------------------------------------------------------------------
+        */
+
+        $ngayKhoiHanh = $today->copy()->subDays(7);
+        $ngayKetThuc = $today->copy()->subDays(4);
+
+        $data[] = [
+
+            'tour_id' => 3,
+
+            'ngay_khoi_hanh' => $ngayKhoiHanh->format('Y-m-d'),
+            'ngay_ket_thuc' => $ngayKetThuc->format('Y-m-d'),
+
+            'so_cho' => 35,
+            'so_cho_da_dat' => 35,
+            'so_cho_con_lai' => 0,
+
+            'gia_nguoi_lon' => 6000000,
+            'gia_tre_em' => 5000000,
+
+            'huong_dan_vien_id' => 2,
+            'phuong_tien_id' => 2,
+
+            'da_gop' => 0,
+            'dang_gop_doan' => 0,
+            'gop_vao_lich_id' => null,
+
+            'trang_thai' => 'done',
+
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
+        DB::table('lich_khoi_hanh_tours')->insert($data);
     }
 }

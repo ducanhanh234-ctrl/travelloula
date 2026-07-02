@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\HuongDanVien;
 use Carbon\Carbon;
+use App\Models\ChiTietYeuCauGopDoan;
+use App\Models\DanhSachTour;
+use App\Models\DatTour;
 
 
 class LichKhoiHanhTour extends Model
@@ -24,7 +27,10 @@ class LichKhoiHanhTour extends Model
         'huong_dan_vien_id',
         'gia_nguoi_lon',
         'gia_tre_em',
-        'trang_thai'
+        'trang_thai',
+        'dang_gop_doan',
+        'gop_vao_lich_id',
+        'da_gop'
     ];
 
     public function tour()
@@ -80,5 +86,26 @@ class LichKhoiHanhTour extends Model
 
         // 6. Mở bán
         return 'Mở bán';
+    }
+
+    public function chiTietGopDoan()
+    {
+        return $this->hasMany(ChiTietYeuCauGopDoan::class, 'lich_khoi_hanh_id');
+    }
+
+    public function datTours()
+    {
+        return $this->hasMany(
+            DatTour::class,
+            'lich_khoi_hanh_id'
+        );
+    }
+
+    public function lichGopDen()
+    {
+        return $this->belongsTo(
+            LichKhoiHanhTour::class,
+            'gop_vao_lich_id'
+        );
     }
 }

@@ -16,12 +16,14 @@ class LichKhoiHanhController extends Controller
     {
         $allData = LichKhoiHanhTour::with([
             'tour',
-            'huongDanVien'
+            'huongDanVien',
+            'lichGopDen'
         ])->get();
 
         $query = LichKhoiHanhTour::with([
             'tour',
-            'huongDanVien'
+            'huongDanVien',
+            'lichGopDen'
         ]);
 
         if (request('keyword')) {

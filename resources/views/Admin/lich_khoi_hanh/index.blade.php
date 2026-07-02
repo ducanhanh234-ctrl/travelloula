@@ -253,8 +253,9 @@
                                         <div class="fw-semibold">
                                             {{ $item->tour->ten_tour ?? 'Không có tour' }}
                                         </div>
+
                                         <small class="text-muted">
-                                            ID tour hệ thống
+                                            ID lịch khởi hành: #{{ $item->id }}
                                         </small>
                                     </td>
 
@@ -289,30 +290,6 @@
                                         </small>
                                     </td>
 
-                                    {{-- <td>
-                                        @php
-                                            $tyLe = ($item->so_cho_con_lai / $item->so_cho) * 100;
-                                        @endphp
-
-                                        @if ($tyLe > 50)
-                                            <span class="badge bg-success">
-                                            @elseif ($tyLe > 20)
-                                                <span class="badge bg-warning">
-                                                @else
-                                                    <span class="badge bg-danger">
-                                        @endif
-
-                                        {{ $item->so_cho_con_lai }}/{{ $item->so_cho }}
-
-                                        </span>
-
-                                        <br>
-
-                                        <small class="text-muted">
-                                            Đã đặt: {{ $item->so_cho_da_dat }}
-                                        </small>
-
-                                    </td> --}}
 
                                     <td>
 
@@ -330,7 +307,6 @@
                                         @endif
 
                                         {{ $item->so_cho_da_dat }}/{{ $item->so_cho }}
-
                                         </span>
 
                                         <br>
@@ -338,6 +314,12 @@
                                         <small class="text-muted">
                                             Còn {{ $item->so_cho_con_lai }} chỗ
                                         </small>
+
+                                        @if ($item->da_gop)
+                                            <div class="small text-danger mt-1">
+                                                ➜ Gộp vào lịch #{{ $item->gop_vao_lich_id }}
+                                            </div>
+                                        @endif
 
                                     </td>
 
@@ -353,43 +335,49 @@
 
                                     <td>
 
-                                        @switch($item->trang_thai_hien_thi)
-                                            @case('Mở bán')
-                                                <span class="badge bg-success">
-                                                    Mở bán
-                                                </span>
-                                            @break
+                                        @if ($item->da_gop)
+                                            <span class="badge bg-dark">
+                                                Đã gộp
+                                            </span>
+                                        @else
+                                            @switch($item->trang_thai_hien_thi)
+                                                @case('Mở bán')
+                                                    <span class="badge bg-success">
+                                                        Mở bán
+                                                    </span>
+                                                @break
 
-                                            @case('Đã đóng')
-                                                <span class="badge bg-info text-dark">
-                                                    Đã đóng
-                                                </span>
-                                            @break
+                                                @case('Đã đóng')
+                                                    <span class="badge bg-info text-dark">
+                                                        Đã đóng
+                                                    </span>
+                                                @break
 
-                                            @case('Đang diễn ra')
-                                                <span class="badge bg-warning text-dark">
-                                                    Đang diễn ra
-                                                </span>
-                                            @break
+                                                @case('Đang diễn ra')
+                                                    <span class="badge bg-warning text-dark">
+                                                        Đang diễn ra
+                                                    </span>
+                                                @break
 
-                                            @case('Hết chỗ')
-                                                <span class="badge bg-danger">
-                                                    Hết chỗ
-                                                </span>
-                                            @break
+                                                @case('Hết chỗ')
+                                                    <span class="badge bg-danger">
+                                                        Hết chỗ
+                                                    </span>
+                                                @break
 
-                                            @case('Đã kết thúc')
-                                                <span class="badge bg-secondary">
-                                                    Đã kết thúc
-                                                </span>
-                                            @break
+                                                @case('Đã kết thúc')
+                                                    <span class="badge bg-secondary">
+                                                        Đã kết thúc
+                                                    </span>
+                                                @break
 
-                                            @case('Đã hủy')
-                                                <span class="badge bg-dark">
-                                                    Đã hủy
-                                                </span>
-                                            @break
-                                        @endswitch
+                                                @case('Đã hủy')
+                                                    <span class="badge bg-dark">
+                                                        Đã hủy
+                                                    </span>
+                                                @break
+                                            @endswitch
+                                        @endif
                                     </td>
 
                                     <td>
@@ -438,9 +426,6 @@
                     </div>
 
                 </div>
-                {{-- <div class="p-3">
-                    {{ $data->links() }}
-                </div> --}}
                 <div class="card-footer d-flex justify-content-between align-items-center">
 
                     <small class="text-muted">

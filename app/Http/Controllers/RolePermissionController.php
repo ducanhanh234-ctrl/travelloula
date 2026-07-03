@@ -15,8 +15,13 @@ class RolePermissionController extends Controller
 
     public function matrix()
     {
-        $vaiTros = VaiTro::with('quyenHans')->orderBy('ten_vai_tro')->get();
-        $quyenHans = QuyenHan::orderBy('mo_dun')->orderBy('ten_hien_thi')->get();
+        $vaiTros = VaiTro::with('quyenHans')
+            ->orderBy('ten_vai_tro')
+            ->get();
+
+        $quyenHans = QuyenHan::orderBy('mo_dun')
+            ->orderBy('ten_hien_thi')
+            ->paginate(10);
         $rolePermissions = [];
 
         foreach ($vaiTros as $role) {

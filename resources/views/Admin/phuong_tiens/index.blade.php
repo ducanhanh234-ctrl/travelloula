@@ -5,15 +5,16 @@
 .vehicle-page{
     background:#f8fafc;
     min-height:100vh;
-    padding:40px 48px;
+    padding:20px 12px 40px;
     color:#0f172a;
+    width:100%;
 }
 
 .vehicle-header{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    margin-bottom:30px;
+    margin-bottom:24px;
 }
 
 .vehicle-title-wrap{
@@ -23,97 +24,142 @@
 }
 
 .vehicle-icon{
-    width:52px;
-    height:52px;
+    width:48px;
+    height:48px;
     border-radius:14px;
     background:#eff6ff;
     color:#2563eb;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:28px;
+    font-size:26px;
 }
 
 .vehicle-title{
-    font-size:38px;
+    font-size:32px;
     font-weight:800;
     margin:0;
-    letter-spacing:-.8px;
 }
 
 .vehicle-subtitle{
     color:#64748b;
-    margin-top:8px;
-    font-size:16px;
+    margin-top:6px;
+    font-size:15px;
 }
 
 .btn-primary-custom{
     background:#3b82f6;
-    color:white;
-    padding:13px 24px;
-    border-radius:8px;
+    color:#fff;
+    padding:12px 22px;
+    border-radius:10px;
+    font-weight:700;
     text-decoration:none;
-    font-weight:800;
-    box-shadow:0 8px 18px rgba(59,130,246,.25);
+    transition:.2s;
+    box-shadow:0 6px 14px rgba(59,130,246,.22);
 }
 
 .btn-primary-custom:hover{
     background:#2563eb;
-    color:white;
+    color:#fff;
+    transform:translateY(-1px);
 }
 
 .filter-card{
-    background:white;
+    background:#fff;
     border:1px solid #e2e8f0;
     border-radius:14px;
-    padding:24px;
-    margin-bottom:24px;
-    box-shadow:0 1px 4px rgba(15,23,42,.05);
+    margin-bottom:26px;
+    box-shadow:0 1px 4px rgba(15,23,42,.06);
+    width:100%;
+    overflow:hidden;
+}
+
+.filter-title{
+    padding:18px 26px;
+    border-bottom:1px solid #e5e7eb;
+    font-size:18px;
+    font-weight:800;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.filter-body{
+    padding:24px 26px 26px;
 }
 
 .filter-grid{
     display:grid;
-    grid-template-columns:1fr 260px 170px;
-    gap:22px;
-    align-items:end;
-}
-
-.form-label-custom{
-    display:block;
-    font-weight:800;
-    margin-bottom:8px;
+    grid-template-columns:1.8fr 1.4fr 240px;
+    gap:18px;
+    align-items:center;
 }
 
 .form-control-custom{
     width:100%;
-    height:46px;
-    border:1px solid #cbd5e1;
-    border-radius:10px;
-    padding:0 14px;
+    height:50px;
+    border:1px solid #d1d5db;
+    border-radius:9px;
+    padding:0 16px;
     font-size:15px;
+    color:#0f172a;
+    background:#fff;
 }
 
 .form-control-custom:focus{
     outline:none;
     border-color:#3b82f6;
-    box-shadow:0 0 0 4px rgba(59,130,246,.12);
+    box-shadow:0 0 0 3px rgba(59,130,246,.15);
 }
 
 .btn-filter{
-    height:46px;
+    height:50px;
     border:none;
-    border-radius:10px;
+    border-radius:9px;
     background:#3b82f6;
-    color:white;
+    color:#fff;
     font-weight:800;
+    cursor:pointer;
+    transition:.2s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.btn-filter:hover{
+    background:#2563eb;
 }
 
 .table-card{
-    background:white;
+    background:#fff;
     border:1px solid #e2e8f0;
-    border-radius:14px;
+    border-radius:16px;
     overflow:hidden;
-    box-shadow:0 1px 4px rgba(15,23,42,.05);
+    box-shadow:0 1px 3px rgba(15,23,42,.06);
+    width:100%;
+}
+
+.table-header{
+    padding:18px 24px;
+    border-bottom:1px solid #e2e8f0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.table-title{
+    font-weight:800;
+    font-size:18px;
+}
+
+.table-count{
+    background:#eef2ff;
+    color:#4f46e5;
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:800;
 }
 
 .vehicle-table{
@@ -126,31 +172,43 @@
 }
 
 .vehicle-table th{
-    padding:17px 20px;
+    padding:18px 20px;
+    background:#f8fafc;
     border-bottom:1px solid #e2e8f0;
     text-transform:uppercase;
-    letter-spacing:.06em;
+    letter-spacing:.05em;
     font-size:13px;
-    font-weight:900;
-    color:#334155;
+    font-weight:800;
+    color:#475569;
     text-align:left;
 }
 
 .vehicle-table td{
-    padding:22px 20px;
+    padding:20px;
     border-bottom:1px solid #edf2f7;
     vertical-align:middle;
     font-size:15px;
+    color:#0f172a;
 }
 
-.vehicle-table tr:hover td{
-    background:#fbfdff;
+.vehicle-table tbody tr{
+    transition:.2s;
+}
+
+.vehicle-table tbody tr:hover td{
+    background:#f8fafc;
 }
 
 .plate{
     font-weight:900;
     color:#1e293b;
     font-size:16px;
+}
+
+.vehicle-color{
+    color:#64748b;
+    font-size:14px;
+    margin-top:4px;
 }
 
 .driver-name{
@@ -192,6 +250,7 @@
     text-decoration:none;
     font-size:18px;
     cursor:pointer;
+    padding:0;
 }
 
 .view{color:#06b6d4;}
@@ -199,7 +258,29 @@
 .delete{color:#ef4444;}
 
 .pagination-box{
-    padding:18px 20px;
+    padding:18px 24px;
+    background:#fff;
+}
+
+.pagination{
+    margin-bottom:0;
+}
+
+.pagination .page-link{
+    border:none;
+    border-radius:8px;
+    margin:0 3px;
+    color:#475569;
+    font-weight:700;
+}
+
+.pagination .active .page-link{
+    background:#3b82f6;
+    color:#fff;
+}
+
+.pagination .page-link:hover{
+    background:#e2e8f0;
 }
 
 .alert-success-custom{
@@ -218,11 +299,26 @@
 }
 
 @media(max-width:1100px){
-    .vehicle-page{padding:28px 22px;}
-    .vehicle-header{flex-direction:column;gap:18px;}
-    .filter-grid{grid-template-columns:1fr;}
-    .table-card{overflow-x:auto;}
-    .vehicle-table{min-width:1000px;}
+    .vehicle-page{
+        padding:20px 10px 32px;
+    }
+
+    .vehicle-header{
+        flex-direction:column;
+        gap:18px;
+    }
+
+    .filter-grid{
+        grid-template-columns:1fr;
+    }
+
+    .table-card{
+        overflow-x:auto;
+    }
+
+    .vehicle-table{
+        min-width:1000px;
+    }
 }
 </style>
 
@@ -232,10 +328,13 @@
         <div>
             <div class="vehicle-title-wrap">
                 <div class="vehicle-icon">🚐</div>
-                <h1 class="vehicle-title">Quản lý xe</h1>
-            </div>
-            <div class="vehicle-subtitle">
-                Theo dõi phương tiện, tài xế và trạng thái vận hành
+
+                <div>
+                    <h1 class="vehicle-title">Quản lý xe</h1>
+                    <div class="vehicle-subtitle">
+                        Theo dõi phương tiện, tài xế và trạng thái vận hành
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -245,31 +344,34 @@
     </div>
 
     <form method="GET" action="{{ route('Admin.phuong-tiens.index') }}" class="filter-card">
-        <div class="filter-grid">
-            <div>
-                <label class="form-label-custom">Tìm kiếm</label>
+        <div class="filter-title">
+            <i class="fa fa-filter"></i>
+            Bộ lọc tìm kiếm
+        </div>
+
+        <div class="filter-body">
+            <div class="filter-grid">
                 <input type="text"
                        name="keyword"
                        value="{{ request('keyword') }}"
                        class="form-control-custom"
-                       placeholder="Biển số, hãng xe, tài xế hoặc số điện thoại">
-            </div>
+                       placeholder="Tìm biển số, hãng xe, tài xế hoặc số điện thoại">
 
-            <div>
-                <label class="form-label-custom">Trạng thái</label>
                 <select name="trang_thai" class="form-control-custom">
-                    <option value="">Tất cả</option>
+                    <option value="">Tất cả trạng thái</option>
+
                     @foreach(\App\Models\PhuongTien::trangThaiList() as $key => $value)
                         <option value="{{ $key }}" @selected(request('trang_thai') == $key)>
                             {{ $value }}
                         </option>
                     @endforeach
                 </select>
-            </div>
 
-            <button class="btn-filter">
-                🔍 Lọc
-            </button>
+                <button type="submit" class="btn-filter">
+                    <i class="fa fa-search"></i>
+                    Tìm kiếm
+                </button>
+            </div>
         </div>
     </form>
 
@@ -280,13 +382,23 @@
     @endif
 
     <div class="table-card">
+        <div class="table-header">
+            <div class="table-title">
+                🚐 Danh sách xe
+            </div>
+
+            <div class="table-count">
+                {{ $phuongTiens->total() }} xe
+            </div>
+        </div>
+
         <table class="vehicle-table">
             <thead>
                 <tr>
                     <th>Biển số</th>
                     <th>Loại xe</th>
                     <th>Hãng xe</th>
-                    <th>Năm SX</th>
+                    <th>Năm Sản Xuất</th>
                     <th>Tài xế</th>
                     <th>Trạng thái</th>
                     <th>Thao tác</th>
@@ -298,10 +410,10 @@
                     <tr>
                         <td>
                             <div class="plate">{{ $phuongTien->bien_so_xe }}</div>
-                            <div style="color:#64748b;font-size:14px;">{{ $phuongTien->mau_xe }}</div>
+                            <div class="vehicle-color">{{ $phuongTien->mau_xe }}</div>
                         </td>
 
-                        <td>{{ $phuongTien->loai_phuong_tien }}</td>
+                       <td>{{ $phuongTien->loai_phuong_tien_text }}</td>
                         <td>{{ $phuongTien->hang_xe }}</td>
                         <td>{{ $phuongTien->nam_san_xuat }}</td>
 
@@ -315,15 +427,19 @@
                                 @case(1)
                                     <span class="badge-status bg-green">Hoạt động</span>
                                     @break
+
                                 @case(2)
                                     <span class="badge-status bg-blue">Đang chạy tour</span>
                                     @break
+
                                 @case(3)
                                     <span class="badge-status bg-yellow">Bảo trì</span>
                                     @break
+
                                 @case(4)
                                     <span class="badge-status bg-red">Đang sửa chữa</span>
                                     @break
+
                                 @default
                                     <span class="badge-status bg-gray">Ngừng hoạt động</span>
                             @endswitch
@@ -332,17 +448,26 @@
                         <td>
                             <div class="actions">
                                 <a href="{{ route('Admin.phuong-tiens.show', $phuongTien->id) }}"
-                                   class="action-link view">👁</a>
+                                   class="action-link view"
+                                   title="Xem chi tiết">
+                                    👁
+                                </a>
 
                                 <a href="{{ route('Admin.phuong-tiens.edit', $phuongTien->id) }}"
-                                   class="action-link edit">✏️</a>
+                                   class="action-link edit"
+                                   title="Chỉnh sửa">
+                                    ✏️
+                                </a>
 
                                 <form action="{{ route('Admin.phuong-tiens.destroy', $phuongTien->id) }}"
                                       method="POST"
                                       onsubmit="return confirm('Bạn có chắc muốn xóa xe này?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="action-btn delete">🗑</button>
+
+                                    <button class="action-btn delete" title="Xóa">
+                                        🗑
+                                    </button>
                                 </form>
                             </div>
                         </td>

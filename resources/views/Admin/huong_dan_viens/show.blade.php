@@ -1,6 +1,47 @@
 @extends('layouts.admin')
 
 @section('content')
+@php
+    $trangThaiMap = [
+        'hoat_dong' => [
+            'text' => 'Đang hoạt động',
+            'class' => 'active',
+            'avatar' => 'online',
+        ],
+        'san_sang' => [
+            'text' => 'Sẵn sàng',
+            'class' => 'ready',
+            'avatar' => 'online',
+        ],
+        'dang_dan_tour' => [
+            'text' => 'Đang dẫn tour',
+            'class' => 'assigned',
+            'avatar' => 'busy',
+        ],
+        'khong_hoat_dong' => [
+            'text' => 'Tạm nghỉ',
+            'class' => 'inactive',
+            'avatar' => 'offline',
+        ],
+        'bi_khoa' => [
+            'text' => 'Bị khóa',
+            'class' => 'locked',
+            'avatar' => 'offline',
+        ],
+        'nghi_viec' => [
+            'text' => 'Nghỉ việc',
+            'class' => 'quit',
+            'avatar' => 'offline',
+        ],
+    ];
+
+    $trangThai = $trangThaiMap[$huongDanVien->trang_thai] ?? [
+        'text' => 'Không xác định',
+        'class' => 'unknown',
+        'avatar' => 'offline',
+    ];
+@endphp
+
 <div class="guide-page">
     <div class="guide-top">
         <div>
@@ -10,14 +51,17 @@
 
         <div class="guide-actions">
             @php $currentUser = auth()->user(); @endphp
+
             @if($currentUser && $currentUser->hasPermission('guides.edit'))
                 <a href="{{ route('Admin.huong-dan-viens.edit', $huongDanVien->id) }}" class="btn-edit">
-                    <i class="fas fa-edit"></i> Sửa
+                    <i class="fas fa-edit"></i>
+                    Sửa
                 </a>
             @endif
 
             <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Quay lại
+                <i class="fas fa-arrow-left"></i>
+                Quay lại
             </a>
         </div>
     </div>
@@ -33,7 +77,7 @@
                     @endif
                 </div>
 
-                <span class="avatar-status {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'online' : 'offline' }}"></span>
+                <span class="avatar-status {{ $trangThai['avatar'] }}"></span>
             </div>
 
             <div class="guide-main-info">
@@ -49,8 +93,8 @@
                     {{ $huongDanVien->email }}
                 </p>
 
-                <span class="guide-status {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'active' : 'inactive' }}">
-                    {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                <span class="guide-status {{ $trangThai['class'] }}">
+                    {{ $trangThai['text'] }}
                 </span>
             </div>
         </div>
@@ -72,7 +116,9 @@
                 </div>
                 <div>
                     <span>Ngày sinh</span>
-                    <strong>{{ $huongDanVien->ngay_sinh?->format('d/m/Y') ?? '-' }}</strong>
+                    <strong>
+                        {{ $huongDanVien->ngay_sinh ? $huongDanVien->ngay_sinh->format('d/m/Y') : '-' }}
+                    </strong>
                 </div>
             </div>
 
@@ -82,7 +128,17 @@
                 </div>
                 <div>
                     <span>Giới tính</span>
-                    <strong>{{ ucfirst($huongDanVien->gioi_tinh ?? 'Chưa cập nhật') }}</strong>
+                    <strong>
+                        @if($huongDanVien->gioi_tinh == 'nam')
+                            Nam
+                        @elseif($huongDanVien->gioi_tinh == 'nu')
+                            Nữ
+                        @elseif($huongDanVien->gioi_tinh == 'khac')
+                            Khác
+                        @else
+                            -
+                        @endif
+                    </strong>
                 </div>
             </div>
 
@@ -105,6 +161,64 @@
                     <strong>{{ $huongDanVien->so_nam_kinh_nghiem ?? 0 }} năm</strong>
                 </div>
             </div>
+
+            <div class="guide-info-item">
+                <div class="info-icon language">
+                    <i class="fas fa-language"></i>
+                </div>
+                <div>
+                    <span>Ngôn ngữ thành thạo</span>
+                    <strong>{{ $huongDanVien->ngon_ngu_thanh_thao ?? '-' }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="guide-desc">
+            <h5>
+                <i class="fas fa-id-card"></i>
+                Thông tin CCCD/CMND
+            </h5>
+
+            <div class="cccd-info-grid">
+                <div class="cccd-info-item">
+                    <span>Số CCCD/CMND</span>
+                    <strong>{{ $huongDanVien->so_cccd ?? '-' }}</strong>
+                </div>
+
+                <div class="cccd-info-item">
+                    <span>Ngày cấp CCCD</span>
+                    <strong>
+                        {{ $huongDanVien->ngay_cap_cccd ? $huongDanVien->ngay_cap_cccd->format('d/m/Y') : '-' }}
+                    </strong>
+                </div>
+
+                <div class="cccd-info-item">
+                    <span>Nơi cấp CCCD</span>
+                    <strong>{{ $huongDanVien->noi_cap_cccd ?? '-' }}</strong>
+                </div>
+            </div>
+
+            <div class="cccd-image-grid">
+                <div class="cccd-image-box">
+                    <div class="cccd-image-title">Ảnh CCCD mặt trước</div>
+
+                    @if($huongDanVien->anh_cccd_truoc)
+                        <img src="{{ asset('storage/' . $huongDanVien->anh_cccd_truoc) }}" alt="Ảnh CCCD mặt trước">
+                    @else
+                        <div class="cccd-empty">Chưa có ảnh</div>
+                    @endif
+                </div>
+
+                <div class="cccd-image-box">
+                    <div class="cccd-image-title">Ảnh CCCD mặt sau</div>
+
+                    @if($huongDanVien->anh_cccd_sau)
+                        <img src="{{ asset('storage/' . $huongDanVien->anh_cccd_sau) }}" alt="Ảnh CCCD mặt sau">
+                    @else
+                        <div class="cccd-empty">Chưa có ảnh</div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <div class="guide-desc">
@@ -112,18 +226,19 @@
                 <i class="fas fa-align-left"></i>
                 Mô tả
             </h5>
+
             <p>{{ $huongDanVien->mo_ta ?? 'Chưa có mô tả.' }}</p>
         </div>
 
         <div class="guide-footer">
             <span>
                 <i class="fas fa-plus-circle"></i>
-                Tạo: {{ $huongDanVien->created_at->format('d/m/Y H:i') }}
+                Tạo: {{ $huongDanVien->created_at ? $huongDanVien->created_at->format('d/m/Y H:i') : '-' }}
             </span>
 
             <span>
                 <i class="fas fa-rotate"></i>
-                Cập nhật: {{ $huongDanVien->updated_at->format('d/m/Y H:i') }}
+                Cập nhật: {{ $huongDanVien->updated_at ? $huongDanVien->updated_at->format('d/m/Y H:i') : '-' }}
             </span>
         </div>
     </div>
@@ -267,6 +382,10 @@
     background: #22c55e;
 }
 
+.avatar-status.busy {
+    background: #3b82f6;
+}
+
 .avatar-status.offline {
     background: #ef4444;
 }
@@ -302,14 +421,35 @@
     font-weight: 800;
 }
 
-.guide-status.active {
+.guide-status.active,
+.guide-status.ready {
     background: #dcfce7;
     color: #15803d;
 }
 
+.guide-status.assigned {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
 .guide-status.inactive {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.guide-status.locked {
     background: #fee2e2;
     color: #b91c1c;
+}
+
+.guide-status.quit {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.guide-status.unknown {
+    background: #f3f4f6;
+    color: #6b7280;
 }
 
 .guide-info-grid {
@@ -371,6 +511,11 @@
     color: #7c3aed;
 }
 
+.info-icon.language {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
 .guide-info-item span {
     display: block;
     font-size: 13px;
@@ -410,6 +555,75 @@
     line-height: 1.8;
 }
 
+.cccd-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.cccd-info-item {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 15px;
+}
+
+.cccd-info-item span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.cccd-info-item strong {
+    color: #111827;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.cccd-image-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.cccd-image-box {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.cccd-image-title {
+    font-weight: 800;
+    color: #374151;
+    margin-bottom: 10px;
+}
+
+.cccd-image-box img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+}
+
+.cccd-empty {
+    width: 100%;
+    height: 180px;
+    border-radius: 14px;
+    background: #f3f4f6;
+    border: 1px dashed #cbd5e1;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
 .guide-footer {
     margin-top: 22px;
     padding-top: 18px;
@@ -442,8 +656,15 @@
         font-size: 26px;
     }
 
-    .guide-info-grid {
+    .guide-info-grid,
+    .cccd-info-grid,
+    .cccd-image-grid {
         grid-template-columns: 1fr;
+    }
+
+    .cccd-image-box img {
+        height: auto;
+        max-height: 260px;
     }
 
     .guide-footer {

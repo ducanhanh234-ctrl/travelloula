@@ -76,7 +76,7 @@ class PermissionSeeder extends Seeder
             ['ten' => 'bookings.create', 'ten_hien_thi' => 'Tạo đặt tour', 'mo_dun' => 'bookings', 'mo_ta' => 'Tạo đặt tour mới'],
             ['ten' => 'bookings.edit', 'ten_hien_thi' => 'Sửa đặt tour', 'mo_dun' => 'bookings', 'mo_ta' => 'Chỉnh sửa đặt tour'],
             ['ten' => 'bookings.delete', 'ten_hien_thi' => 'Xóa đặt tour', 'mo_dun' => 'bookings', 'mo_ta' => 'Xóa đặt tour'],
-            
+
             // Guides
             ['ten' => 'guides.view', 'ten_hien_thi' => 'Xem hướng dẫn viên', 'mo_dun' => 'guides', 'mo_ta' => 'Xem danh sách và chi tiết hướng dẫn viên'],
             ['ten' => 'guides.create', 'ten_hien_thi' => 'Tạo hướng dẫn viên', 'mo_dun' => 'guides', 'mo_ta' => 'Tạo hướng dẫn viên mới'],

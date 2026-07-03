@@ -172,20 +172,39 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Trạng thái</label>
+
                     <select name="trang_thai" class="form-select custom-input">
                         <option value="hoat_dong"
                             {{ old('trang_thai', $huongDanVien->trang_thai) == 'hoat_dong' ? 'selected' : '' }}>
-                            Hoạt động
+                            Đang hoạt động
                         </option>
+
+                        <option value="san_sang"
+                            {{ old('trang_thai', $huongDanVien->trang_thai) == 'san_sang' ? 'selected' : '' }}>
+                            Sẵn sàng
+                        </option>
+
+                        <option value="dang_dan_tour"
+                            {{ old('trang_thai', $huongDanVien->trang_thai) == 'dang_dan_tour' ? 'selected' : '' }}>
+                            Đang dẫn tour
+                        </option>
+
                         <option value="khong_hoat_dong"
                             {{ old('trang_thai', $huongDanVien->trang_thai) == 'khong_hoat_dong' ? 'selected' : '' }}>
-                            Không hoạt động
+                            Tạm nghỉ
                         </option>
+
                         <option value="bi_khoa"
                             {{ old('trang_thai', $huongDanVien->trang_thai) == 'bi_khoa' ? 'selected' : '' }}>
                             Bị khóa
                         </option>
+
+                        <option value="nghi_viec"
+                            {{ old('trang_thai', $huongDanVien->trang_thai) == 'nghi_viec' ? 'selected' : '' }}>
+                            Nghỉ việc
+                        </option>
                     </select>
+
                     <div class="text-danger small mt-1">{{ $errors->first('trang_thai') }}</div>
                 </div>
 

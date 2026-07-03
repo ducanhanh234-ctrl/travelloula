@@ -82,7 +82,7 @@ class HuongDanVienController extends Controller
             'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
             'ngon_ngu_thanh_thao' => 'nullable|string|max:255',
             'mo_ta' => 'nullable|string',
-            'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
+            'trang_thai' => 'required|in:hoat_dong,san_sang,dang_dan_tour,khong_hoat_dong,bi_khoa,nghi_viec',
         ]);
 
         if ($request->hasFile('anh_dai_dien')) {
@@ -158,7 +158,7 @@ class HuongDanVienController extends Controller
             'so_nam_kinh_nghiem' => 'nullable|integer|min:0',
             'ngon_ngu_thanh_thao' => 'nullable|string|max:255',
             'mo_ta' => 'nullable|string',
-            'trang_thai' => 'required|in:hoat_dong,khong_hoat_dong,bi_khoa',
+            'trang_thai' => 'required|in:hoat_dong,san_sang,dang_dan_tour,khong_hoat_dong,bi_khoa,nghi_viec',
         ]);
 
         if ($request->hasFile('anh_dai_dien')) {

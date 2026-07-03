@@ -13,7 +13,7 @@ class HuongDanVienSeeder extends Seeder
             [
                 'user_id' => 1,
                 'ho_ten' => 'Nguyễn Văn A',
-                'email' => 'hdv1@gmail.com',
+                'email' => 'lmao1@gmail.com',
                 'so_dien_thoai' => '0900000001',
                 'so_nam_kinh_nghiem' => 5,
                 'trang_thai' => 'hoat_dong',
@@ -23,7 +23,7 @@ class HuongDanVienSeeder extends Seeder
             [
                 'user_id' => 2,
                 'ho_ten' => 'Nguyễn Văn B',
-                'email' => 'hdv2@gmail.com',
+                'email' => 'lmao2@gmail.com',
                 'so_dien_thoai' => '0900000002',
                 'so_nam_kinh_nghiem' => 3,
                 'trang_thai' => 'hoat_dong',

@@ -14,7 +14,13 @@ use App\Models\DanhMuc;
 
 class DanhMucController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware('permission:danh_mucs.view')->only(['index', 'show']);
+        $this->middleware('permission:danh_mucs.create')->only(['create', 'store']);
+        $this->middleware('permission:danh_mucs.edit')->only(['edit', 'update']);
+        $this->middleware('permission:danh_mucs.delete')->only(['destroy']);
+    }
 
     public function index(Request $request)
     {

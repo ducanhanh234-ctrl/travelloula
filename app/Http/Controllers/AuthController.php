@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -8,30 +9,52 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showRegister(){ return view('auth.register'); }
-
-    public function register(Request $request){
-        $data = $request->validate([
-            'name'=>'required|max:255','email'=>'required|email|unique:users,email','password'=>'required|min:6',
-            'phone'=>'nullable|max:20','address'=>'nullable|max:255'
-        ]);
-
-        // Public registrations are treated as customers and saved as client accounts
-        $user = User::create([
-            'name'=>$data['name'],'email'=>$data['email'],'password'=>Hash::make($data['password']),
-            'phone'=>$data['phone'] ?? null,'address'=>$data['address'] ?? null,'is_active'=>true
-        ]);
-
-        return redirect()->route('login')->with('success','Đăng ký thành công. Bạn có thể đăng nhập bằng tài khoản khách hàng.');
+    // ===== REGISTER =====
+    public function showRegister()
+    {
+        return view('auth.register');
     }
 
-    public function showLogin(){ return view('auth.login'); }
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'phone' => 'nullable|max:20',
+            'address' => 'nullable|max:255',
+        ]);
 
-    public function login(Request $request){
-        $credentials = $request->validate(['email'=>'required|email','password'=>'required']);
+        User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'phone' => $data['phone'] ?? null,
+            'address' => $data['address'] ?? null,
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('login')
+            ->with('success', 'Đăng ký thành công. Bạn có thể đăng nhập.');
+    }
+
+    // ===== LOGIN =====
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
         if (!Auth::attempt($credentials)) {
-            return back()->withErrors(['email'=>'Thông tin đăng nhập không đúng'])->withInput();
+            return back()
+                ->withErrors(['email' => 'Email hoặc mật khẩu không đúng'])
+                ->withInput();
         }
 
         $request->session()->regenerate();
@@ -39,21 +62,32 @@ class AuthController extends Controller
         /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        if ($user && $user->hasPermission('vao_admin')) {
+        if (!$user || !$user->is_active) {
+            Auth::logout();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Tài khoản của bạn đã bị khóa hoặc chưa được kích hoạt.']);
+        }
+
+        if ($user->hasPermission('vao_admin')) {
             return redirect()->intended(route('Admin.dashboard'));
         }
 
-        if ($user && $user->hasPermission('vao_guide')) {
+        if ($user->hasPermission('vao_guide')) {
             return redirect()->intended(route('Guide.dashboard'));
         }
 
         return redirect()->intended('/trang_chu');
     }
 
-    public function logout(Request $request){
+    // ===== LOGOUT =====
+    public function logout(Request $request)
+    {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }

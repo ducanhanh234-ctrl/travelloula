@@ -21,7 +21,6 @@
     @endif
 
     <div class="guide-card">
-
         <div class="filter-box">
             <form method="GET" action="{{ route('Admin.huong-dan-viens.index') }}" class="filter-form">
                 <div>
@@ -40,18 +39,12 @@
                     <label for="trang_thai">Trạng thái</label>
                     <select name="trang_thai" id="trang_thai" class="form-select">
                         <option value="">Tất cả trạng thái</option>
-
-                        <option value="hoat_dong" {{ request('trang_thai') == 'hoat_dong' ? 'selected' : '' }}>
-                            Hoạt động
-                        </option>
-
-                        <option value="khong_hoat_dong" {{ request('trang_thai') == 'khong_hoat_dong' ? 'selected' : '' }}>
-                            Không hoạt động
-                        </option>
-
-                        <option value="bi_khoa" {{ request('trang_thai') == 'bi_khoa' ? 'selected' : '' }}>
-                            Bị khóa
-                        </option>
+                        <option value="hoat_dong" {{ request('trang_thai') == 'hoat_dong' ? 'selected' : '' }}>Hoạt động</option>
+                        <option value="san_sang" {{ request('trang_thai') == 'san_sang' ? 'selected' : '' }}>Sẵn sàng</option>
+                        <option value="dang_dan_tour" {{ request('trang_thai') == 'dang_dan_tour' ? 'selected' : '' }}>Đang dẫn tour</option>
+                        <option value="khong_hoat_dong" {{ request('trang_thai') == 'khong_hoat_dong' ? 'selected' : '' }}>Không hoạt động</option>
+                        <option value="bi_khoa" {{ request('trang_thai') == 'bi_khoa' ? 'selected' : '' }}>Bị khóa</option>
+                        <option value="nghi_viec" {{ request('trang_thai') == 'nghi_viec' ? 'selected' : '' }}>Nghỉ việc</option>
                     </select>
                 </div>
 
@@ -59,24 +52,13 @@
                     <label for="kinh_nghiem">Kinh nghiệm</label>
                     <select name="kinh_nghiem" id="kinh_nghiem" class="form-select">
                         <option value="">Tất cả kinh nghiệm</option>
-
-                        <option value="0_1" {{ request('kinh_nghiem') == '0_1' ? 'selected' : '' }}>
-                            0 - 1 năm
-                        </option>
-
-                        <option value="2_5" {{ request('kinh_nghiem') == '2_5' ? 'selected' : '' }}>
-                            2 - 5 năm
-                        </option>
-
-                        <option value="6_plus" {{ request('kinh_nghiem') == '6_plus' ? 'selected' : '' }}>
-                            Từ 6 năm
-                        </option>
+                        <option value="0_1" {{ request('kinh_nghiem') == '0_1' ? 'selected' : '' }}>0 - 1 năm</option>
+                        <option value="2_5" {{ request('kinh_nghiem') == '2_5' ? 'selected' : '' }}>2 - 5 năm</option>
+                        <option value="6_plus" {{ request('kinh_nghiem') == '6_plus' ? 'selected' : '' }}>Từ 6 năm</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    Lọc
-                </button>
+                <button type="submit" class="btn btn-primary">Lọc</button>
 
                 <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn btn-secondary">
                     Đặt lại
@@ -117,34 +99,76 @@
                                 </div>
                             </td>
 
-                            <td>
-                                {{ $guide->email }}
-                            </td>
+                            <td>{{ $guide->email }}</td>
+
+                            <td>{{ $guide->so_dien_thoai }}</td>
+
+                            <td>{{ $guide->so_nam_kinh_nghiem }} năm</td>
 
                             <td>
-                                {{ $guide->so_dien_thoai }}
-                            </td>
+                                <span class="status-badge
+                                    @switch($guide->trang_thai)
+                                        @case('hoat_dong')
+                                        @case('san_sang')
+                                            status-active
+                                            @break
 
-                            <td>
-                                {{ $guide->so_nam_kinh_nghiem }} Năm
-                            </td>
+                                        @case('dang_dan_tour')
+                                            status-assigned
+                                            @break
 
-                            <td>
-                                <span class="status-badge {{ $guide->trang_thai == 'hoat_dong' ? 'status-active' : ($guide->trang_thai == 'bi_khoa' ? 'status-locked' : 'status-inactive') }}">
-                                    {{ $guide->trang_thai == 'hoat_dong'
-                                        ? 'Hoạt động'
-                                        : ($guide->trang_thai == 'khong_hoat_dong'
-                                            ? 'Không hoạt động'
-                                            : 'Bị khóa') }}
+                                        @case('khong_hoat_dong')
+                                            status-inactive
+                                            @break
+
+                                        @case('bi_khoa')
+                                        @case('nghi_viec')
+                                            status-locked
+                                            @break
+
+                                        @default
+                                            status-inactive
+                                    @endswitch
+                                ">
+                                    @switch($guide->trang_thai)
+                                        @case('hoat_dong')
+                                            Hoạt động
+                                            @break
+
+                                        @case('san_sang')
+                                            Sẵn sàng
+                                            @break
+
+                                        @case('dang_dan_tour')
+                                            Đang dẫn tour
+                                            @break
+
+                                        @case('khong_hoat_dong')
+                                            Không hoạt động
+                                            @break
+
+                                        @case('bi_khoa')
+                                            Bị khóa
+                                            @break
+
+                                        @case('nghi_viec')
+                                            Nghỉ việc
+                                            @break
+
+                                        @default
+                                            Không xác định
+                                    @endswitch
                                 </span>
                             </td>
 
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ route('Admin.huong-dan-viens.show', $guide->id) }}"
-                                       class="btn btn-sm btn-info text-white">
-                                        Xem
-                                    </a>
+                                    @if($currentUser && $currentUser->hasPermission('guides.view'))
+                                        <a href="{{ route('Admin.huong-dan-viens.show', $guide->id) }}"
+                                           class="btn btn-sm btn-info text-white">
+                                            Xem
+                                        </a>
+                                    @endif
 
                                     @if($currentUser && $currentUser->hasPermission('guides.edit'))
                                         <a href="{{ route('Admin.huong-dan-viens.edit', $guide->id) }}"
@@ -346,6 +370,11 @@
     .status-active {
         background: #dcfce7;
         color: #15803d;
+    }
+
+    .status-assigned {
+        background: #dbeafe;
+        color: #1d4ed8;
     }
 
     .status-inactive {

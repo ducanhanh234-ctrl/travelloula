@@ -35,6 +35,42 @@ class PermissionSeeder extends Seeder
             ['ten' => 'tours.edit', 'ten_hien_thi' => 'Sửa tour', 'mo_dun' => 'tours', 'mo_ta' => 'Chỉnh sửa tour'],
             ['ten' => 'tours.delete', 'ten_hien_thi' => 'Xóa tour', 'mo_dun' => 'tours', 'mo_ta' => 'Xóa tour'],
 
+            // Banners
+            ['ten' => 'banners.view', 'ten_hien_thi' => 'Xem banner', 'mo_dun' => 'banners', 'mo_ta' => 'Xem danh sách banner'],
+            ['ten' => 'banners.create', 'ten_hien_thi' => 'Tạo banner', 'mo_dun' => 'banners', 'mo_ta' => 'Tạo banner mới'],
+            ['ten' => 'banners.edit', 'ten_hien_thi' => 'Sửa banner', 'mo_dun' => 'banners', 'mo_ta' => 'Chỉnh sửa banner'],
+            ['ten' => 'banners.delete', 'ten_hien_thi' => 'Xóa banner', 'mo_dun' => 'banners', 'mo_ta' => 'Xóa banner'],
+
+            // Danh mục
+            ['ten' => 'danh_mucs.view', 'ten_hien_thi' => 'Xem danh mục', 'mo_dun' => 'danh_mucs', 'mo_ta' => 'Xem danh sách danh mục'],
+            ['ten' => 'danh_mucs.create', 'ten_hien_thi' => 'Tạo danh mục', 'mo_dun' => 'danh_mucs', 'mo_ta' => 'Tạo danh mục mới'],
+            ['ten' => 'danh_mucs.edit', 'ten_hien_thi' => 'Sửa danh mục', 'mo_dun' => 'danh_mucs', 'mo_ta' => 'Chỉnh sửa danh mục'],
+            ['ten' => 'danh_mucs.delete', 'ten_hien_thi' => 'Xóa danh mục', 'mo_dun' => 'danh_mucs', 'mo_ta' => 'Xóa danh mục'],
+
+            // Phương tiện
+            ['ten' => 'phuong_tiens.view', 'ten_hien_thi' => 'Xem phương tiện', 'mo_dun' => 'phuong_tiens', 'mo_ta' => 'Xem danh sách phương tiện'],
+            ['ten' => 'phuong_tiens.create', 'ten_hien_thi' => 'Tạo phương tiện', 'mo_dun' => 'phuong_tiens', 'mo_ta' => 'Tạo phương tiện mới'],
+            ['ten' => 'phuong_tiens.edit', 'ten_hien_thi' => 'Sửa phương tiện', 'mo_dun' => 'phuong_tiens', 'mo_ta' => 'Chỉnh sửa phương tiện'],
+            ['ten' => 'phuong_tiens.delete', 'ten_hien_thi' => 'Xóa phương tiện', 'mo_dun' => 'phuong_tiens', 'mo_ta' => 'Xóa phương tiện'],
+
+            // Phân công
+            ['ten' => 'phan_cong.view', 'ten_hien_thi' => 'Xem phân công', 'mo_dun' => 'phan_cong', 'mo_ta' => 'Xem danh sách phân công'],
+            ['ten' => 'phan_cong.create', 'ten_hien_thi' => 'Tạo phân công', 'mo_dun' => 'phan_cong', 'mo_ta' => 'Tạo phân công mới'],
+            ['ten' => 'phan_cong.edit', 'ten_hien_thi' => 'Sửa phân công', 'mo_dun' => 'phan_cong', 'mo_ta' => 'Chỉnh sửa phân công'],
+            ['ten' => 'phan_cong.delete', 'ten_hien_thi' => 'Xóa phân công', 'mo_dun' => 'phan_cong', 'mo_ta' => 'Xóa phân công'],
+
+            // Lịch khởi hành
+            ['ten' => 'lich_khoi_hanh.view', 'ten_hien_thi' => 'Xem lịch khởi hành', 'mo_dun' => 'lich_khoi_hanh', 'mo_ta' => 'Xem danh sách lịch khởi hành'],
+            ['ten' => 'lich_khoi_hanh.create', 'ten_hien_thi' => 'Tạo lịch khởi hành', 'mo_dun' => 'lich_khoi_hanh', 'mo_ta' => 'Tạo lịch khởi hành mới'],
+            ['ten' => 'lich_khoi_hanh.edit', 'ten_hien_thi' => 'Sửa lịch khởi hành', 'mo_dun' => 'lich_khoi_hanh', 'mo_ta' => 'Chỉnh sửa lịch khởi hành'],
+            ['ten' => 'lich_khoi_hanh.delete', 'ten_hien_thi' => 'Xóa lịch khởi hành', 'mo_dun' => 'lich_khoi_hanh', 'mo_ta' => 'Xóa lịch khởi hành'],
+
+            // Gộp đoàn
+            ['ten' => 'gop_doan.view', 'ten_hien_thi' => 'Xem gộp đoàn', 'mo_dun' => 'gop_doan', 'mo_ta' => 'Xem danh sách gộp đoàn'],
+            ['ten' => 'gop_doan.create', 'ten_hien_thi' => 'Tạo gộp đoàn', 'mo_dun' => 'gop_doan', 'mo_ta' => 'Tạo yêu cầu gộp đoàn mới'],
+            ['ten' => 'gop_doan.edit', 'ten_hien_thi' => 'Sửa gộp đoàn', 'mo_dun' => 'gop_doan', 'mo_ta' => 'Cập nhật yêu cầu gộp đoàn'],
+            ['ten' => 'gop_doan.delete', 'ten_hien_thi' => 'Xóa gộp đoàn', 'mo_dun' => 'gop_doan', 'mo_ta' => 'Hủy yêu cầu gộp đoàn'],
+
             // Bookings
             ['ten' => 'bookings.view', 'ten_hien_thi' => 'Xem đặt tour', 'mo_dun' => 'bookings', 'mo_ta' => 'Xem danh sách đặt tour'],
             ['ten' => 'bookings.create', 'ten_hien_thi' => 'Tạo đặt tour', 'mo_dun' => 'bookings', 'mo_ta' => 'Tạo đặt tour mới'],

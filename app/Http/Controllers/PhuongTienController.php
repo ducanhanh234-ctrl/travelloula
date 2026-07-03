@@ -7,7 +7,15 @@ use Illuminate\Http\Request;
 
 class PhuongTienController extends Controller
 {
-     public function index(Request $request)
+    public function __construct()
+    {
+        $this->middleware('permission:phuong_tiens.view')->only(['index', 'show']);
+        $this->middleware('permission:phuong_tiens.create')->only(['create', 'store']);
+        $this->middleware('permission:phuong_tiens.edit')->only(['edit', 'update']);
+        $this->middleware('permission:phuong_tiens.delete')->only(['destroy']);
+    }
+
+    public function index(Request $request)
     {
         $query = PhuongTien::query();
 
@@ -27,7 +35,10 @@ class PhuongTienController extends Controller
             $query->where('trang_thai', $request->trang_thai);
         }
 
-        $phuongTiens = $query->orderByDesc('id')->paginate(10)->appends($request->query());
+        $phuongTiens = $query
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->appends($request->query());
 
         return view('Admin.phuong_tiens.index', compact('phuongTiens'));
     }
@@ -41,7 +52,9 @@ class PhuongTienController extends Controller
     {
         $data = $request->validate([
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe',
-            'loai_phuong_tien' => 'required|max:255',
+
+            'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
+
             'hang_xe' => 'required|max:255',
             'nam_san_xuat' => 'required|integer|min:1990|max:' . date('Y'),
             'mau_xe' => 'required|max:255',
@@ -78,7 +91,9 @@ class PhuongTienController extends Controller
 
         $data = $request->validate([
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe,' . $phuongTien->id,
-            'loai_phuong_tien' => 'required|max:255',
+
+            'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
+
             'hang_xe' => 'required|max:255',
             'nam_san_xuat' => 'required|integer|min:1990|max:' . date('Y'),
             'mau_xe' => 'required|max:255',

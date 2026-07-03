@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class DatTour extends Model
 {
+
+
 
     use SoftDeletes;
     protected $table = 'dat_tours';
@@ -52,9 +56,20 @@ class DatTour extends Model
     {
         return $this->hasMany(
             ThanhToan::class,
+
             'dat_tour_id'
         );
     }
+
+
+    public function khachDaiDien()
+    {
+        return $this->hasOne(
+            KhachHangDatTour::class,
+            'dat_tour_id'
+        )->orderBy('id', 'asc');
+    }
+
 
     public function khachHangs()
     {
@@ -87,6 +102,7 @@ class DatTour extends Model
         return $this->hasMany(
             KhachHangDatTour::class,
             'dat_tour_id'
+
         );
     }
 }

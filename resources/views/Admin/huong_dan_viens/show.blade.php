@@ -1,6 +1,47 @@
 @extends('layouts.admin')
 
 @section('content')
+@php
+    $trangThaiMap = [
+        'hoat_dong' => [
+            'text' => 'Đang hoạt động',
+            'class' => 'active',
+            'avatar' => 'online',
+        ],
+        'san_sang' => [
+            'text' => 'Sẵn sàng',
+            'class' => 'ready',
+            'avatar' => 'online',
+        ],
+        'dang_dan_tour' => [
+            'text' => 'Đang dẫn tour',
+            'class' => 'assigned',
+            'avatar' => 'busy',
+        ],
+        'khong_hoat_dong' => [
+            'text' => 'Tạm nghỉ',
+            'class' => 'inactive',
+            'avatar' => 'offline',
+        ],
+        'bi_khoa' => [
+            'text' => 'Bị khóa',
+            'class' => 'locked',
+            'avatar' => 'offline',
+        ],
+        'nghi_viec' => [
+            'text' => 'Nghỉ việc',
+            'class' => 'quit',
+            'avatar' => 'offline',
+        ],
+    ];
+
+    $trangThai = $trangThaiMap[$huongDanVien->trang_thai] ?? [
+        'text' => 'Không xác định',
+        'class' => 'unknown',
+        'avatar' => 'offline',
+    ];
+@endphp
+
 <div class="guide-page">
     <div class="guide-top">
         <div>
@@ -10,14 +51,17 @@
 
         <div class="guide-actions">
             @php $currentUser = auth()->user(); @endphp
+
             @if($currentUser && $currentUser->hasPermission('guides.edit'))
                 <a href="{{ route('Admin.huong-dan-viens.edit', $huongDanVien->id) }}" class="btn-edit">
-                    <i class="fas fa-edit"></i> Sửa
+                    <i class="fas fa-edit"></i>
+                    Sửa
                 </a>
             @endif
 
             <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Quay lại
+                <i class="fas fa-arrow-left"></i>
+                Quay lại
             </a>
         </div>
     </div>
@@ -33,7 +77,7 @@
                     @endif
                 </div>
 
-                <span class="avatar-status {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'online' : 'offline' }}"></span>
+                <span class="avatar-status {{ $trangThai['avatar'] }}"></span>
             </div>
 
             <div class="guide-main-info">
@@ -49,8 +93,8 @@
                     {{ $huongDanVien->email }}
                 </p>
 
-                <span class="guide-status {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'active' : 'inactive' }}">
-                    {{ $huongDanVien->trang_thai == 'hoat_dong' ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                <span class="guide-status {{ $trangThai['class'] }}">
+                    {{ $trangThai['text'] }}
                 </span>
             </div>
         </div>
@@ -72,7 +116,9 @@
                 </div>
                 <div>
                     <span>Ngày sinh</span>
-                    <strong>{{ $huongDanVien->ngay_sinh ? $huongDanVien->ngay_sinh->format('d/m/Y') : '-' }}</strong>
+                    <strong>
+                        {{ $huongDanVien->ngay_sinh ? $huongDanVien->ngay_sinh->format('d/m/Y') : '-' }}
+                    </strong>
                 </div>
             </div>
 
@@ -180,18 +226,19 @@
                 <i class="fas fa-align-left"></i>
                 Mô tả
             </h5>
+
             <p>{{ $huongDanVien->mo_ta ?? 'Chưa có mô tả.' }}</p>
         </div>
 
         <div class="guide-footer">
             <span>
                 <i class="fas fa-plus-circle"></i>
-                Tạo: {{ $huongDanVien->created_at->format('d/m/Y H:i') }}
+                Tạo: {{ $huongDanVien->created_at ? $huongDanVien->created_at->format('d/m/Y H:i') : '-' }}
             </span>
 
             <span>
                 <i class="fas fa-rotate"></i>
-                Cập nhật: {{ $huongDanVien->updated_at->format('d/m/Y H:i') }}
+                Cập nhật: {{ $huongDanVien->updated_at ? $huongDanVien->updated_at->format('d/m/Y H:i') : '-' }}
             </span>
         </div>
     </div>
@@ -335,6 +382,10 @@
     background: #22c55e;
 }
 
+.avatar-status.busy {
+    background: #3b82f6;
+}
+
 .avatar-status.offline {
     background: #ef4444;
 }
@@ -370,14 +421,35 @@
     font-weight: 800;
 }
 
-.guide-status.active {
+.guide-status.active,
+.guide-status.ready {
     background: #dcfce7;
     color: #15803d;
 }
 
+.guide-status.assigned {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
 .guide-status.inactive {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.guide-status.locked {
     background: #fee2e2;
     color: #b91c1c;
+}
+
+.guide-status.quit {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.guide-status.unknown {
+    background: #f3f4f6;
+    color: #6b7280;
 }
 
 .guide-info-grid {

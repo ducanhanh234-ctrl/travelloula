@@ -157,6 +157,18 @@ Route::prefix('Admin')
 
         /*
         |--------------------------------------------------------------------------
+        | TRANG ĐIỀU KHOẢN
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/trang_dieu_khoans/edit', [TrangDieuKhoanController::class, 'edit'])
+            ->name('trang_dieu_khoans.edit');
+
+        Route::put('/trang_dieu_khoans', [TrangDieuKhoanController::class, 'update'])
+            ->name('trang_dieu_khoans.update');
+
+        /*
+        |--------------------------------------------------------------------------
         | QUẢN LÝ ĐẶT TOUR
         |--------------------------------------------------------------------------
         */
@@ -165,10 +177,10 @@ Route::prefix('Admin')
             ->name('quan_ly_dat_tour.index');
 
         Route::get('/dat-tours/create', [QuanLyDatTourController::class, 'create'])
-            ->name('dat-tours.create');
+            ->name('dat_tours.create');
 
         Route::post('/dat-tours', [QuanLyDatTourController::class, 'store'])
-            ->name('dat-tours.store');
+            ->name('dat_tours.store');
 
         Route::get('/dat-tours/{id}', [QuanLyDatTourController::class, 'show'])
             ->name('dat_tours.show');
@@ -191,11 +203,11 @@ Route::prefix('Admin')
         Route::get('/dat-tours-trash', [QuanLyDatTourController::class, 'trash'])
             ->name('dat_tours.trash');
 
-        Route::get('/tour/{tourId}/lich-khoi-hanh', [QuanLyDatTourController::class, 'getLichKhoiHanhByTour'])
-            ->name('dat-tours.lich-khoi-hanh');
-
         Route::put('/quan-ly-dat-tour/{id}/update-status', [QuanLyDatTourController::class, 'updateStatus'])
             ->name('dat_tours.update-status');
+
+        Route::get('/tour/{tourId}/lich-khoi-hanh', [QuanLyDatTourController::class, 'getLichKhoiHanhByTour'])
+            ->name('dat_tours.lich-khoi-hanh');
 
         /*
         |--------------------------------------------------------------------------
@@ -333,18 +345,6 @@ Route::prefix('Admin')
         */
 
         Route::resource('phan-cong', PhanCongController::class);
-
-        /*
-        |--------------------------------------------------------------------------
-        | TRANG ĐIỀU KHOẢN
-        |--------------------------------------------------------------------------
-        */
-
-        Route::get('/trang_dieu_khoans/edit', [TrangDieuKhoanClientController::class, 'edit'])
-            ->name('trang_dieu_khoans.edit');
-
-        Route::put('/trang_dieu_khoans', [TrangDieuKhoanController::class, 'update'])
-            ->name('trang_dieu_khoans.update');
     });
 
 /*

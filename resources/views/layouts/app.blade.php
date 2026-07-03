@@ -5,76 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Travelloula')</title>
 
-
-
-   
-
-
-    {{-- @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/style.css'])
-    @else
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    @endif --}}
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    @stack('styles')
+    @yield('styles')
 </head>
 
 <body>
-
     <header class="client-header">
         <div class="client-container header-inner">
 
-            <a href="{{ url('/') }}" class="brand">
+            <a href="{{ route('Client.trang_chu.index') }}" class="brand">
                 <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}" alt="Travelloula">
             </a>
 
             <nav class="main-menu">
-                <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Trang chủ</a>
-                <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour*') ? 'active' : '' }}">Tour</a>
-                <a href="{{ route('Client.tour_yeu_thich.index') }}" class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">Tour yêu thích</a>
-                <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">Điều khoản</a>
-                <a href="{{ route('Client.bai_viet.index') }}" class="{{ request()->is('bai_viet*') ? 'active' : '' }}">Bài viết</a>
-                <a href="#">Ưu đãi</a>
-                <a href="#">Liên hệ</a>
-                <a href="{{ route('Client.ve_chung_toi.index') }}" class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">Về chúng tôi</a>
+                <a href="{{ route('Client.trang_chu.index') }}"
+                   class="{{ request()->is('/') || request()->is('trang_chu') ? 'active' : '' }}">
+                    Trang chủ
+                </a>
+
+                <a href="{{ route('Client.danh_sach_tour.index') }}"
+                   class="{{ request()->is('tour*') ? 'active' : '' }}">
+                    Tour
+                </a>
+
+                <a href="{{ route('Client.tour_yeu_thich.index') }}"
+                   class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">
+                    Tour yêu thích
+                </a>
+
+                <a href="{{ route('Client.dieu_khoan.index') }}"
+                   class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">
+                    Điều khoản
+                </a>
+
+                <a href="{{ route('Client.bai_viet.index') }}"
+                   class="{{ request()->is('bai_viet*') ? 'active' : '' }}">
+                    Bài viết
+                </a>
+
+                <a href="#">
+                    Ưu đãi
+                </a>
+
+                <a href="#">
+                    Liên hệ
+                </a>
+
+                <a href="{{ route('Client.ve_chung_toi.index') }}"
+                   class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">
+                    Về chúng tôi
+                </a>
             </nav>
 
             <div class="header-actions">
                 @auth
-                <div class="user-dropdown">
-                    <button type="button" class="user-btn" onclick="toggleUserMenu()">
-                        <i class="fa-regular fa-user"></i>
-                        <span>{{ auth()->user()->name }}</span>
-                        <i class="fa-solid fa-angle-down"></i>
-                    </button>
+                    <div class="user-dropdown">
+                        <button type="button" class="user-btn" onclick="toggleUserMenu()">
+                            <i class="fa-regular fa-user"></i>
+                            <span>{{ auth()->user()->name }}</span>
+                            <i class="fa-solid fa-angle-down"></i>
+                        </button>
 
-                    <div class="user-menu" id="userMenu">
-                        <a href="{{ route('Client.tour_yeu_thich.index') }}">
-                            <i class="fa-solid fa-heart"></i>
-                            Tour yêu thích
-                        </a>
+                        <div class="user-menu" id="userMenu">
+                            <a href="{{ route('Client.tour_yeu_thich.index') }}">
+                                <i class="fa-solid fa-heart"></i>
+                                Tour yêu thích
+                            </a>
 
-                        <a href="{{ route('Client.danh_sach_tour.index') }}">
-                            <i class="fa-solid fa-suitcase-rolling"></i>
-                            Danh sách tour
-                        </a>
+                            <a href="{{ route('Client.danh_sach_tour.index') }}">
+                                <i class="fa-solid fa-suitcase-rolling"></i>
+                                Danh sách tour
+                            </a>
 
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit">
-                                <i class="fa-solid fa-right-from-bracket"></i>
-                                Đăng xuất
-                            </button>
-                        </form>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+
+                                <button type="submit">
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+                                    Đăng xuất
+                                </button>
+                            </form>
+                        </div>
                     </div>
-                </div>
                 @else
-                <a href="{{ url('/register') }}" class="register-btn">Đăng ký</a>
+                    <a href="{{ url('/register') }}" class="register-btn">
+                        Đăng ký
+                    </a>
 
-                <a href="{{ url('/login') }}" class="login-btn">
-                    <i class="fa-regular fa-user"></i>
-                    Đăng nhập
-                </a>
+                    <a href="{{ url('/login') }}" class="login-btn">
+                        <i class="fa-regular fa-user"></i>
+                        Đăng nhập
+                    </a>
                 @endauth
             </div>
 
@@ -112,18 +135,50 @@
 
             <div class="footer-col">
                 <h3>Hệ Thống</h3>
-                <a href="{{ route('Client.trang_chu.index') }}"><i class="fa-solid fa-angle-right"></i> Trang chủ</a>
-                <a href="{{ route('Client.danh_sach_tour.index') }}"><i class="fa-solid fa-angle-right"></i> Tours</a>
-                <a href="{{ route('Client.tour_yeu_thich.index') }}"><i class="fa-solid fa-angle-right"></i> Tour yêu thích</a>
-                <a href="{{ route('Client.dieu_khoan.index') }}"><i class="fa-solid fa-angle-right"></i> Điều khoản</a>
+
+                <a href="{{ route('Client.trang_chu.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Trang chủ
+                </a>
+
+                <a href="{{ route('Client.danh_sach_tour.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Tours
+                </a>
+
+                <a href="{{ route('Client.tour_yeu_thich.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Tour yêu thích
+                </a>
+
+                <a href="{{ route('Client.dieu_khoan.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Điều khoản
+                </a>
             </div>
 
             <div class="footer-col">
                 <h3>Hỗ Trợ</h3>
-                <a href="#"><i class="fa-solid fa-angle-right"></i> Hướng dẫn</a>
-                <a href="#"><i class="fa-solid fa-angle-right"></i> Chính sách</a>
-                <a href="{{ route('Client.dieu_khoan.index') }}"><i class="fa-solid fa-angle-right"></i> Điều khoản</a>
-                <a href="#"><i class="fa-solid fa-angle-right"></i> Liên hệ</a>
+
+                <a href="#">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Hướng dẫn
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Chính sách
+                </a>
+
+                <a href="{{ route('Client.dieu_khoan.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Điều khoản
+                </a>
+
+                <a href="#">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Liên hệ
+                </a>
             </div>
 
             <div class="footer-col contact">
@@ -183,8 +238,6 @@
             width: min(1380px, calc(100% - 56px));
             margin: 0 auto;
         }
-
-        /* HEADER */
 
         .client-header {
             background: #fff;
@@ -300,8 +353,6 @@
             box-shadow: 0 16px 34px rgba(0, 68, 199, .35);
         }
 
-        /* USER DROPDOWN */
-
         .user-dropdown {
             position: relative;
         }
@@ -378,13 +429,9 @@
             margin: 0;
         }
 
-        /* MAIN */
-
         main {
             min-height: 60vh;
         }
-
-        /* FOOTER */
 
         .client-footer {
             position: relative;
@@ -513,8 +560,6 @@
             font-size: 15px;
         }
 
-        /* RESPONSIVE */
-
         @media(max-width:1300px) {
             .header-inner {
                 flex-wrap: wrap;
@@ -608,7 +653,6 @@
                 justify-content: center;
             }
         }
-
     </style>
 
     <script>
@@ -632,238 +676,9 @@
                 menu.classList.remove('show');
             }
         });
-
     </script>
 
+    @yield('scripts')
+    @stack('scripts')
 </body>
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: 'Segoe UI', sans-serif;
-        background: #f5f7fa;
-        color: #333;
-    }
-
-    /* ================= HEADER ================= */
-
-    .header {
-        background: #fff;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, .08);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-    }
-
-    .header .container {
-        max-width: 1300px;
-        margin: auto;
-        padding: 15px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .logo h1 {
-        font-size: 28px;
-        color: #0f4db8;
-        margin-bottom: 2px;
-    }
-
-    .logo span {
-        font-size: 13px;
-        color: #666;
-    }
-
-    /* ================= MENU ================= */
-
-    .menu {
-        display: flex;
-        align-items: center;
-        gap: 28px;
-    }
-
-    .menu a {
-        text-decoration: none;
-        color: #333;
-        font-weight: 600;
-        position: relative;
-        transition: .3s;
-    }
-
-    .menu a:hover {
-        color: #0f4db8;
-    }
-
-    .menu a::after {
-        content: '';
-        position: absolute;
-        bottom: -6px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: #0f4db8;
-        transition: .3s;
-    }
-
-    .menu a:hover::after {
-        width: 100%;
-    }
-
-    /* ================= BUTTON ================= */
-
-    .header-right {
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn {
-        text-decoration: none;
-        padding: 12px 22px;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: .3s;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #0f4db8, #2563eb);
-        color: #fff;
-        box-shadow: 0 5px 15px rgba(37, 99, 235, .25);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-3px);
-    }
-
-    .btn-secondary {
-        border: 2px solid #0f4db8;
-        color: #0f4db8;
-        background: #fff;
-    }
-
-    .btn-secondary:hover {
-        background: #0f4db8;
-        color: white;
-    }
-
-    /* ================= FOOTER ================= */
-
-    .footer {
-        background: #0f172a;
-        color: white;
-        margin-top: 80px;
-    }
-
-    .footer-grid {
-        max-width: 1300px;
-        margin: auto;
-        padding: 60px 30px;
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr 1.5fr;
-        gap: 40px;
-    }
-
-    .footer-logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .footer-logo h2 {
-        margin-bottom: 5px;
-    }
-
-    .footer-about p {
-        line-height: 1.8;
-        color: #cbd5e1;
-    }
-
-    .footer h3 {
-        margin-bottom: 18px;
-        color: #fff;
-    }
-
-    .footer ul {
-        list-style: none;
-    }
-
-    .footer ul li {
-        margin-bottom: 12px;
-        color: #cbd5e1;
-    }
-
-    .footer ul li a {
-        text-decoration: none;
-        color: #cbd5e1;
-        transition: .3s;
-    }
-
-    .footer ul li a:hover {
-        color: #38bdf8;
-    }
-
-    .footer ul li i {
-        color: #38bdf8;
-        margin-right: 8px;
-    }
-
-    .copyright {
-        border-top: 1px solid rgba(255, 255, 255, .1);
-        text-align: center;
-        padding: 18px;
-        color: #94a3b8;
-    }
-
-    /* ================= RESPONSIVE ================= */
-
-    @media(max-width:1100px) {
-
-        .header .container {
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .menu {
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .footer-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-    }
-
-    @media(max-width:768px) {
-
-        .footer-grid {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-
-        .header-right {
-            flex-direction: column;
-            width: 100%;
-        }
-
-        .btn {
-            text-align: center;
-        }
-    }
-
-</style>
-
-
-
 </html>

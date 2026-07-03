@@ -386,6 +386,43 @@
             padding: 10px 15px;
         }
 
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 2px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -456,6 +493,16 @@
                         <span class="nav-text">Dashboard</span>
                     </a>
                 </div>
+
+                <div class="nav-item">
+                    <a href="{{ route('Admin.trang_dieu_khoans.edit') }}"
+                       class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <span class="nav-text">Điều khoản</span>
+                    </a>
+                </div>
             </div>
 
             {{-- Quản lý Tours --}}
@@ -516,7 +563,7 @@
                     <a href="{{ route('Admin.nhat_ky_tours.index') }}"
                        class="nav-link {{ request()->routeIs('Admin.nhat_ky_tours*') ? 'active' : '' }}">
                         <div class="nav-icon">
-                            <i class="fas fa-map-marked-alt"></i>
+                            <i class="fas fa-book"></i>
                         </div>
                         <span class="nav-text">Nhật ký Tours</span>
                     </a>
@@ -576,7 +623,7 @@
                     <a href="{{ route('Admin.khach-hang.index') }}"
                        class="nav-link {{ request()->routeIs('Admin.khach-hang*') ? 'active' : '' }}">
                         <div class="nav-icon">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-user-check"></i>
                         </div>
                         <span class="nav-text">Quản lý Khách hàng</span>
                     </a>

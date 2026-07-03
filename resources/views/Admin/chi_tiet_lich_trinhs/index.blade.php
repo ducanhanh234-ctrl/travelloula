@@ -79,6 +79,10 @@
 
                                         {{ \Carbon\Carbon::parse($item->gio_bat_dau)->format('H:i') }}
 
+                                        -
+
+                                        {{ \Carbon\Carbon::parse($item->gio_ket_thuc)->format('H:i') }}
+
                                     </span>
 
                                 </td>

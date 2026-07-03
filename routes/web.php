@@ -77,7 +77,7 @@ Route::get('/dieu_khoan', function () {
     return view('Client.dieu_khoan.index');
 });
 Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
-
+Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
 // Auth routes
 use App\Http\Controllers\AuthController;
 

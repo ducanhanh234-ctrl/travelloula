@@ -4,9 +4,15 @@
 <div class="container-fluid py-5 bg-light">
     <div class="container">
         <!-- FORM BAO NGOÀI -->
-        <form id="bookingForm" method="POST" action="{{ route('Admin.dat-tours.store') }}">
+        <form id="bookingForm" method="POST" action="{{ route('store_dat_tour') }}">
             @csrf
-            
+            @if (session('error')
+                
+        )  
+        <div class="alert alert-danger">
+        {{session('error')}}    
+        </div>      
+            @endif
             <div class="row g-5">
                 <!-- LEFT - Thông tin chính -->
                 <div class="col-lg-7">

@@ -41,7 +41,7 @@ use App\Http\Controllers\Admin\NhatKyTourController;
 
 Route::get('/', function () {
     return view('Client.trang_chu.index');
-});
+})->name('client.home');
 
 
 Route::get('/bai_viet', function () {

@@ -7,14 +7,14 @@
 
 
 
-   
 
 
-    {{-- @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/style.css'])
+
+    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+    @vite(['resources/css/style.css'])
     @else
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    @endif --}}
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @endif
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>

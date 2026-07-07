@@ -16,6 +16,8 @@ use App\Models\ThanhToan;
 
 class QuanLyDatTourController extends Controller
 {
+
+    // Hiển thị danh sách đặt tour
     public function index(Request $request)
     {
         $query = DatTour::with([
@@ -24,7 +26,7 @@ class QuanLyDatTourController extends Controller
             'lichKhoiHanh.huongDanVien'
         ]);
 
-        // TÌM KIẾM
+        // Tìm kiếm
         if ($request->keyword) {
             $keyword = $request->keyword;
             $query->where(function ($q) use ($keyword) {
@@ -39,7 +41,7 @@ class QuanLyDatTourController extends Controller
             });
         }
 
-        // LỌC TRẠNG THÁI
+        // Lọc trạng thái
         if ($request->status) {
             $query->where(
                 'trang_thai',
@@ -51,7 +53,7 @@ class QuanLyDatTourController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        // THỐNG KÊ
+        // Thống kê
         $totalBookings = DatTour::count();
         $websiteBookings = 0;
         $saleBookings = 0;
@@ -99,23 +101,14 @@ class QuanLyDatTourController extends Controller
             $booking->so_nguoi_lon +
             $booking->so_tre_em +
             $booking->so_em_be;
+
         $newTotal =
             $request->so_nguoi_lon +
             $request->so_tre_em +
             $request->so_em_be;
 
         $diff = $newTotal - $oldTotal;
-//         dd([
-//     'oldTotal' => $oldTotal,
-//     'newTotal' => $newTotal,
-//     'diff' => $diff,
 
-//     'adult_request' => $request->so_nguoi_lon,
-//     'child_request' => $request->so_tre_em,
-//     'baby_request' => $request->so_em_be,
-
-//     'delete_ids' => $request->hanh_khach_xoa,
-// ]);
         if ($booking->lichKhoiHanh) {
             if ($diff > 0) {
                 // thêm khách -> trừ chỗ
@@ -336,7 +329,7 @@ class QuanLyDatTourController extends Controller
             }
 
 
-            // TẠO THANH TOÁN CHO BOOKING
+            // Tạo thanh toán cho đặt tour
             ThanhToan::create([
                 'dat_tour_id' => $datTour->id,
                 'nguoi_dung_id' => Auth::id(),
@@ -374,6 +367,7 @@ class QuanLyDatTourController extends Controller
         }
     }
 
+    // Hiển thị chi tiết đặt tour
     public function show($id)
     {
         $booking = DatTour::with([
@@ -500,6 +494,7 @@ class QuanLyDatTourController extends Controller
         return response()->json($data);
     }
 
+    // Sửa đặt tour
     public function edit($id)
     {
         $booking = DatTour::with([
@@ -523,6 +518,7 @@ class QuanLyDatTourController extends Controller
         );
     }
 
+    // Cập nhật đặt tour
     public function update(Request $request, $id)
     {
         //tránh nhập số âm

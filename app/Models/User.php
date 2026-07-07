@@ -78,5 +78,13 @@ class User extends Authenticatable
         return $this->is_active === 1 || !in_array($this->is_active, [2, 3], true);
     }
 
-    public function vaiTros(){ return $this->belongsToMany(VaiTro::class, 'nguoi_dung_vai_tros', 'nguoi_dung_id', 'vai_tro_id'); }
+    public function vaiTros()
+    {
+        return $this->belongsToMany(VaiTro::class, 'nguoi_dung_vai_tros', 'nguoi_dung_id', 'vai_tro_id');
+    }
+
+    public function huongDanVien()
+    {
+        return $this->hasOne(HuongDanVien::class, 'user_id');
+    }
 }

@@ -32,6 +32,7 @@
                 <a href="#">Ưu đãi</a>
                 <a href="#">Liên hệ</a>
                 <a href="{{ route('Client.ve_chung_toi.index') }}" class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">Về chúng tôi</a>
+                <a href="{{ route('Client.landing_page.index') }}" class="{{ request()->is('landing-page*') ? 'active' : '' }}">Landing Page</a>
             </nav>
 
             <div class="header-actions">

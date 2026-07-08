@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+// use App\Http\Controllers\Guide\ProfileController as GuideProfileController;
+use App\Http\Controllers\GuideProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\DanhGiaController;
@@ -365,10 +366,13 @@ Route::prefix('Guide')
     ->name('Guide.')
     ->middleware(['auth', 'permission:vao_guide'])
     ->group(function () {
-
         Route::get('/', function () {
             return view('layouts.guide');
         })->name('dashboard');
 
-        // Route::resource('phuong-tiens', PhuongTienController::class);
+        Route::get('/profile', [GuideProfileController::class, 'edit'])
+            ->name('profile');
+
+        Route::put('/profile', [GuideProfileController::class, 'update'])
+            ->name('profile.update');
     });

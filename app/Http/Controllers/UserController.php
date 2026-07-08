@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HuongDanVien;
 use App\Models\User;
 use App\Models\VaiTro;
 use Illuminate\Http\Request;
@@ -74,6 +75,9 @@ class UserController extends Controller
         ]);
 
         $user->vaiTros()->sync([$data['vai_tro_id']]);
+        $user->save();
+
+        $this->syncGuideRecord($user, $data['vai_tro_id']);
 
         return redirect()
             ->route('Admin.users.index')
@@ -120,10 +124,37 @@ class UserController extends Controller
         $user->update($payload);
 
         $user->vaiTros()->sync([$data['vai_tro_id']]);
+        $user->save();
+
+        $this->syncGuideRecord($user, $data['vai_tro_id']);
 
         return redirect()
             ->route('Admin.users.index')
             ->with('success', 'Đã cập nhật tài khoản');
+    }
+
+    protected function syncGuideRecord(User $user, int $roleId): void
+    {
+        $role = VaiTro::find($roleId);
+        if (!$role) {
+            return;
+        }
+
+        $isGuideRole = strtolower($role->ten_vai_tro ?? '') === 'guide';
+        if (!$isGuideRole) {
+            return;
+        }
+
+        HuongDanVien::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'ho_ten' => $user->name ?? 'Hướng dẫn viên',
+                'email' => $user->email,
+                'so_dien_thoai' => $user->phone,
+                'dia_chi' => $user->address,
+                'trang_thai' => 'san_sang',
+            ]
+        );
     }
 
     public function destroy(User $user)

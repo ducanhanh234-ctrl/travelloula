@@ -65,26 +65,7 @@ class User extends Authenticatable
             ->whereRaw("lower(ten_vai_tro) IN ({$placeholders})", $lowerRoles)
             ->exists();
 
-        if ($hasRole) {
-            return true;
-        }
-
-        return $this->legacyRoleFallback($roleNames);
-    }
-
-    protected function legacyRoleFallback(array $roleNames): bool
-    {
-        $activeValue = isset($this->attributes['is_active']) ? (int) $this->attributes['is_active'] : 0;
-
-        if ($activeValue === 3 && in_array('admin', $roleNames, true)) {
-            return true;
-        }
-
-        if ($activeValue === 2 && in_array('guide', $roleNames, true)) {
-            return true;
-        }
-
-        return false;
+        return $hasRole;
     }
 
     public function hasPermission(string $permissions): bool
@@ -101,11 +82,7 @@ class User extends Authenticatable
             $query->whereRaw("lower(ten) IN ({$placeholders})", $lowerPermissions);
         })->exists();
 
-        if ($hasPermission) {
-            return true;
-        }
-
-        return $this->legacyPermissionFallback($permissionNames);
+        return $hasPermission;
     }
 
     public function permissions()
@@ -146,21 +123,6 @@ class User extends Authenticatable
     public function isClient(): bool
     {
         return !$this->hasPermission('vao_admin|vao_guide');
-    }
-
-    protected function legacyPermissionFallback(array $permissionNames): bool
-    {
-        $activeValue = isset($this->attributes['is_active']) ? (int) $this->attributes['is_active'] : 0;
-
-        if ($activeValue === 3 && in_array('vao_admin', $permissionNames, true)) {
-            return true;
-        }
-
-        if ($activeValue === 2 && in_array('vao_guide', $permissionNames, true)) {
-            return true;
-        }
-
-        return false;
     }
 
     public function vaiTros()

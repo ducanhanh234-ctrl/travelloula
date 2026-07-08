@@ -743,15 +743,6 @@
                         <span class="badge bg-warning ms-auto">5</span>
                     </a>
                 </div>
-
-                <div class="nav-item">
-                    <a href="#" class="nav-link">
-                        <div class="nav-icon">
-                            <i class="fas fa-cog"></i>
-                        </div>
-                        <span class="nav-text">Cài đặt hệ thống</span>
-                    </a>
-                </div>
             </div>
         </nav>
     </aside>
@@ -790,9 +781,6 @@
                         <span class="notification-badge">5</span>
                     </button>
 
-                    <button class="header-btn" title="Cài đặt" type="button">
-                        <i class="fas fa-cog"></i>
-                    </button>
                 </div>
 
                 <div class="user-menu dropdown">

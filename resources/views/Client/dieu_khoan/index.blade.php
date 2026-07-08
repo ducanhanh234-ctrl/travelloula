@@ -1,228 +1,218 @@
 @extends('layouts.app')
 
-@section('title', 'Điều khoản hoàn hủy tour - Travelloula')
+@section('title', ($trangDieuKhoan->tieu_de ?? 'Điều khoản') . ' - Travelloula')
 
 @section('content')
+
+@php
+    $tieuDe = $trangDieuKhoan->tieu_de ?? 'Điều khoản';
+    $noiDungGoc = trim($trangDieuKhoan->noi_dung ?? '');
+
+    $sections = [];
+
+    if (!empty($noiDungGoc)) {
+        $noiDung = str_replace(["\r\n", "\r"], "\n", $noiDungGoc);
+        $lines = array_values(array_filter(array_map('trim', explode("\n", $noiDung)), function ($line) {
+            return $line !== '';
+        }));
+
+        $mainTitleFromContent = '';
+
+        if (!empty($lines) && !preg_match('/^\d+\.\s+/', $lines[0])) {
+            $mainTitleFromContent = $lines[0];
+            array_shift($lines);
+        }
+
+        $currentSection = null;
+
+        foreach ($lines as $line) {
+            if (preg_match('/^\d+\.\s+/', $line)) {
+                if ($currentSection) {
+                    $sections[] = $currentSection;
+                }
+
+                $title = trim($line);
+                $slug = \Illuminate\Support\Str::slug($title);
+
+                if (empty($slug)) {
+                    $slug = 'muc-' . (count($sections) + 1);
+                }
+
+                $currentSection = [
+                    'title' => $title,
+                    'slug' => $slug,
+                    'lines' => [],
+                ];
+            } else {
+                if (!$currentSection) {
+                    $currentSection = [
+                        'title' => $mainTitleFromContent ?: $tieuDe,
+                        'slug' => 'noi-dung',
+                        'lines' => [],
+                    ];
+                }
+
+                $currentSection['lines'][] = $line;
+            }
+        }
+
+        if ($currentSection) {
+            $sections[] = $currentSection;
+        }
+
+        if (!empty($mainTitleFromContent)) {
+            $tieuDe = $mainTitleFromContent;
+        }
+    }
+@endphp
 
 <section class="terms-page">
     <div class="terms-container">
 
         <div class="terms-hero">
-            <span>
-                <i class="fa-solid fa-file-contract"></i>
-                Chính sách dịch vụ
-            </span>
+            <div class="terms-hero-content">
+                <span>
+                    <i class="fa-solid fa-file-contract"></i>
+                    Chính sách dịch vụ
+                </span>
 
-            <h1>Điều khoản hoàn hủy tour du lịch</h1>
+                <h1>{{ $tieuDe }}</h1>
 
-            <p>
-                Quy định về hoàn hủy, thay đổi tour, thanh toán và các trường hợp phát sinh
-                trong quá trình khách hàng đặt tour tại Travelloula.
-            </p>
+                <p>
+                    Quy định về hoàn hủy, thay đổi tour, thanh toán và các trường hợp phát sinh
+                    trong quá trình khách hàng đặt tour tại Travelloula.
+                </p>
+
+                <div class="terms-hero-info">
+                    <div>
+                        <strong>{{ count($sections) }}</strong>
+                        <small>Nội dung chính sách</small>
+                    </div>
+
+                    <div>
+                        <strong>24/7</strong>
+                        <small>Hỗ trợ khách hàng</small>
+                    </div>
+
+                    <div>
+                        <strong>Minh bạch</strong>
+                        <small>Quy định rõ ràng</small>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="terms-layout">
 
             <aside class="terms-sidebar">
-                <h3>Mục lục</h3>
+                <div class="terms-sidebar-head">
+                    <i class="fa-solid fa-list-ul"></i>
+                    <h3>Mục lục</h3>
+                </div>
 
-                <a href="#pham-vi">1. Phạm vi áp dụng</a>
-                <a href="#huy-tour">2. Chính sách hủy tour</a>
-                <a href="#thay-doi-tour">3. Chính sách thay đổi tour</a>
-                <a href="#cong-ty-huy">4. Trường hợp công ty hủy tour</a>
-                <a href="#bat-kha-khang">5. Trường hợp bất khả kháng</a>
-                <a href="#hoan-tien">6. Thời gian hoàn tiền</a>
-                <a href="#quy-trinh">7. Quy trình yêu cầu hủy tour</a>
-                <a href="#thanh-toan">8. Điều khoản thanh toán</a>
-                <a href="#quy-dinh-chung">9. Quy định chung</a>
+                <div class="terms-sidebar-list">
+                    @if(!empty($sections))
+                        @foreach($sections as $index => $section)
+                            <a href="#{{ $section['slug'] }}">
+                                <span>{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                                <p>{{ $section['title'] }}</p>
+                            </a>
+                        @endforeach
+                    @else
+                        <a href="#noi-dung">
+                            <span>01</span>
+                            <p>Nội dung điều khoản</p>
+                        </a>
+                    @endif
+                </div>
+
+                <div class="terms-sidebar-line"></div>
+
+                <a class="terms-link-home" href="{{ route('Client.home') }}">
+                    <i class="fa-solid fa-house"></i>
+                    Về trang chủ
+                </a>
+
+                @if(Route::has('Client.danh_sach_tour.index'))
+                    <a class="terms-link-home" href="{{ route('Client.danh_sach_tour.index') }}">
+                        <i class="fa-solid fa-suitcase-rolling"></i>
+                        Xem danh sách tour
+                    </a>
+                @endif
             </aside>
 
             <div class="terms-content">
 
-                <section id="pham-vi" class="terms-card">
-                    <h2>1. Phạm vi áp dụng</h2>
+                @if(!empty($sections))
+                    @foreach($sections as $index => $section)
+                        <section id="{{ $section['slug'] }}" class="terms-card">
+                            <div class="terms-card-number">
+                                {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
+                            </div>
 
-                    <p>
-                        Điều khoản hoàn hủy này áp dụng đối với tất cả các tour du lịch được khách hàng
-                        đặt thông qua website của công ty. Khi xác nhận đặt tour và thanh toán, khách hàng
-                        được xem là đã đọc, hiểu và đồng ý với các điều khoản dưới đây.
-                    </p>
-                </section>
+                            <div class="terms-card-main">
+                                <h2>{{ $section['title'] }}</h2>
 
-                <section id="huy-tour" class="terms-card">
-                    <h2>2. Chính sách hủy tour của khách hàng</h2>
+                                <div class="terms-text">
+                                    @forelse($section['lines'] as $line)
+                                        @php
+                                            $line = trim($line);
+                                            $cleanLine = ltrim($line, "-•o \t");
+                                        @endphp
 
-                    <p>
-                        Khách hàng có quyền yêu cầu hủy tour trước ngày khởi hành. Mức phí hủy được áp dụng như sau:
-                    </p>
+                                        @if(\Illuminate\Support\Str::startsWith($line, ['-', '•', 'o']))
+                                            <div class="terms-bullet">
+                                                <span>
+                                                    <i class="fa-solid fa-check"></i>
+                                                </span>
 
-                    <div class="policy-table">
-                        <div class="policy-row">
-                            <strong>Hủy từ 15 đến dưới 30 ngày trước ngày khởi hành</strong>
-                            <span>Hoàn lại 90% tổng giá trị tour</span>
+                                                <p>{{ $cleanLine }}</p>
+                                            </div>
+                                        @elseif(preg_match('/^\d+\.\s*/', $line))
+                                            <div class="terms-order">
+                                                <span>
+                                                    <i class="fa-solid fa-circle-dot"></i>
+                                                </span>
+
+                                                <p>{{ $line }}</p>
+                                            </div>
+                                        @else
+                                            <p>{{ $line }}</p>
+                                        @endif
+                                    @empty
+                                        <p>Nội dung mục này đang được cập nhật.</p>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </section>
+                    @endforeach
+                @else
+                    <section id="noi-dung" class="terms-card terms-card-empty">
+                        <div class="terms-empty">
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            <div>
+                                <strong>Nội dung điều khoản đang trống.</strong>
+
+                                <p>
+                                    Vui lòng vào trang quản trị để cập nhật nội dung điều khoản,
+                                    sau đó quay lại trang này để kiểm tra.
+                                </p>
+
+                                @auth
+                                    @if(Route::has('Admin.trang_dieu_khoans.edit'))
+                                        <a href="{{ route('Admin.trang_dieu_khoans.edit') }}">
+                                            Đi tới trang quản trị điều khoản
+                                        </a>
+                                    @endif
+                                @endauth
+                            </div>
                         </div>
-
-                        <div class="policy-row">
-                            <strong>Hủy từ 07 đến dưới 15 ngày trước ngày khởi hành</strong>
-                            <span>Hoàn lại 70% tổng giá trị tour</span>
-                        </div>
-
-                        <div class="policy-row">
-                            <strong>Hủy từ 03 đến dưới 07 ngày trước ngày khởi hành</strong>
-                            <span>Hoàn lại 40% tổng giá trị tour</span>
-                        </div>
-
-                        <div class="policy-row danger">
-                            <strong>Hủy trong vòng 03 ngày trước ngày khởi hành hoặc không có mặt đúng giờ</strong>
-                            <span>Không hoàn tiền</span>
-                        </div>
-                    </div>
-
-                    <p>
-                        Thời gian hủy tour được tính từ thời điểm công ty xác nhận đã nhận được yêu cầu hủy
-                        bằng văn bản hoặc qua email.
-                    </p>
-                </section>
-
-                <section id="thay-doi-tour" class="terms-card">
-                    <h2>3. Chính sách thay đổi tour</h2>
-
-                    <p>Khách hàng có thể yêu cầu thay đổi ngày khởi hành hoặc chuyển sang tour khác nếu:</p>
-
-                    <ul>
-                        <li>Yêu cầu được gửi trước ít nhất 15 ngày so với ngày khởi hành.</li>
-                        <li>Tour mới còn chỗ.</li>
-                        <li>Khách hàng thanh toán phần chênh lệch nếu có hoặc được hoàn phần chênh lệch theo chính sách của công ty.</li>
-                    </ul>
-
-                    <p>
-                        Mỗi đơn đặt tour chỉ được hỗ trợ thay đổi tối đa một lần.
-                    </p>
-                </section>
-
-                <section id="cong-ty-huy" class="terms-card">
-                    <h2>4. Trường hợp công ty hủy tour</h2>
-
-                    <p>Công ty có quyền hủy tour trong các trường hợp sau:</p>
-
-                    <ul>
-                        <li>Không đủ số lượng khách tối thiểu để tổ chức.</li>
-                        <li>Thiên tai, dịch bệnh, chiến tranh hoặc các sự kiện bất khả kháng.</li>
-                        <li>Yêu cầu của cơ quan nhà nước có thẩm quyền.</li>
-                    </ul>
-
-                    <p>Trong trường hợp này, khách hàng sẽ được lựa chọn:</p>
-
-                    <ul>
-                        <li>Chuyển sang tour khác có giá trị tương đương.</li>
-                        <li>Hoàn lại 100% số tiền đã thanh toán nếu không có nhu cầu tiếp tục sử dụng dịch vụ.</li>
-                    </ul>
-                </section>
-
-                <section id="bat-kha-khang" class="terms-card">
-                    <h2>5. Trường hợp bất khả kháng</h2>
-
-                    <p>
-                        Các sự kiện như thiên tai, bão lũ, động đất, dịch bệnh, chiến tranh, đình công,
-                        thay đổi chính sách của cơ quan quản lý hoặc các trường hợp ngoài khả năng kiểm soát
-                        của các bên được xem là sự kiện bất khả kháng.
-                    </p>
-
-                    <p>
-                        Trong các trường hợp này, công ty sẽ cố gắng hỗ trợ khách hàng tối đa để đổi lịch
-                        hoặc bảo lưu tour. Việc hoàn tiền nếu có sẽ được thực hiện sau khi trừ các chi phí
-                        mà công ty đã thanh toán cho các nhà cung cấp dịch vụ và không thể thu hồi.
-                    </p>
-                </section>
-
-                <section id="hoan-tien" class="terms-card">
-                    <h2>6. Thời gian hoàn tiền</h2>
-
-                    <ul>
-                        <li>Tiền hoàn sẽ được chuyển về đúng tài khoản hoặc phương thức thanh toán mà khách hàng đã sử dụng.</li>
-                        <li>Thời gian xử lý hoàn tiền từ 07 đến 15 ngày làm việc, tùy thuộc vào ngân hàng hoặc đơn vị thanh toán.</li>
-                        <li>Mọi chi phí phát sinh liên quan đến giao dịch ngân hàng nếu có sẽ được thực hiện theo quy định của ngân hàng hoặc đơn vị thanh toán.</li>
-                    </ul>
-                </section>
-
-                <section id="quy-trinh" class="terms-card">
-                    <h2>7. Quy trình yêu cầu hủy tour</h2>
-
-                    <p>Để yêu cầu hủy tour, khách hàng cần cung cấp:</p>
-
-                    <ul>
-                        <li>Mã đơn đặt tour.</li>
-                        <li>Họ và tên người đặt tour.</li>
-                        <li>Số điện thoại hoặc email đã đăng ký.</li>
-                        <li>Lý do hủy tour.</li>
-                    </ul>
-
-                    <p>
-                        Yêu cầu hủy chỉ được xem là hợp lệ sau khi công ty xác nhận bằng email
-                        hoặc thông báo chính thức trên hệ thống.
-                    </p>
-                </section>
-
-                <section id="thanh-toan" class="terms-card">
-                    <h2>8. Điều khoản thanh toán</h2>
-
-                    <ol>
-                        <li>
-                            Khi xác nhận đặt tour, khách hàng có trách nhiệm thanh toán trước 30%
-                            tổng giá trị tour tiền cọc để giữ chỗ và xác nhận đăng ký tour.
-                        </li>
-
-                        <li>
-                            70% giá trị tour còn lại phải được khách hàng thanh toán đầy đủ trong thời hạn
-                            không quá 07 ngày kể từ ngày kết thúc tour.
-                        </li>
-
-                        <li>
-                            Trường hợp khách hàng không thanh toán đúng thời hạn nêu trên mà không có thỏa thuận khác
-                            bằng văn bản với công ty, công ty có quyền:
-                            <ul>
-                                <li>Yêu cầu khách hàng thanh toán toàn bộ số tiền còn thiếu.</li>
-                                <li>Tạm ngừng hoặc từ chối cung cấp các dịch vụ hậu mãi, xuất hóa đơn hoặc các quyền lợi liên quan cho đến khi khách hàng hoàn thành nghĩa vụ thanh toán.</li>
-                                <li>Thực hiện các biện pháp thu hồi công nợ theo quy định của pháp luật.</li>
-                            </ul>
-                        </li>
-
-                        <li>
-                            Mọi khoản thanh toán được thực hiện thông qua các phương thức do công ty công bố
-                            trên website hoặc theo hướng dẫn của nhân viên tư vấn.
-                        </li>
-
-                        <li>
-                            Khách hàng được xem là hoàn thành nghĩa vụ thanh toán khi số tiền đã được ghi nhận
-                            thành công vào tài khoản của công ty hoặc hệ thống xác nhận giao dịch thành công.
-                        </li>
-                    </ol>
-                </section>
-
-                <section id="quy-dinh-chung" class="terms-card">
-                    <h2>9. Quy định chung</h2>
-
-                    <ul>
-                        <li>
-                            Các chương trình khuyến mại, tour ưu đãi hoặc tour giảm giá đặc biệt có thể áp dụng
-                            chính sách hoàn hủy riêng và sẽ được thông báo trước khi khách hàng thanh toán.
-                        </li>
-
-                        <li>
-                            Công ty có quyền cập nhật hoặc điều chỉnh chính sách hoàn hủy để phù hợp với quy định
-                            của pháp luật và tình hình kinh doanh. Những thay đổi sẽ không ảnh hưởng đến các đơn
-                            đặt tour đã được xác nhận trước thời điểm cập nhật.
-                        </li>
-
-                        <li>
-                            Mọi tranh chấp phát sinh liên quan đến việc hoàn hủy tour sẽ được ưu tiên giải quyết
-                            bằng thương lượng. Nếu không đạt được thỏa thuận, tranh chấp sẽ được giải quyết theo
-                            quy định của pháp luật Việt Nam.
-                        </li>
-                    </ul>
-                </section>
+                    </section>
+                @endif
 
             </div>
+
         </div>
 
     </div>
@@ -231,11 +221,11 @@
 <style>
 .terms-page{
     min-height:100vh;
-    padding:86px 0 90px;
+    padding:88px 0 96px;
     background:
-        radial-gradient(circle at 8% 8%, rgba(7,87,216,.15), transparent 30%),
-        radial-gradient(circle at 92% 6%, rgba(255,214,41,.25), transparent 32%),
-        linear-gradient(180deg,#f8fbff 0%,#eef6ff 58%,#f8fbff 100%);
+        radial-gradient(circle at 8% 6%, rgba(7,87,216,.15), transparent 30%),
+        radial-gradient(circle at 92% 5%, rgba(255,214,41,.24), transparent 32%),
+        linear-gradient(180deg,#f8fbff 0%,#eef6ff 55%,#f8fbff 100%);
 }
 
 .terms-container{
@@ -244,22 +234,51 @@
 }
 
 .terms-hero{
-    padding:54px 58px;
-    border-radius:34px;
+    position:relative;
+    overflow:hidden;
+    padding:60px;
+    border-radius:38px;
     background:
-        linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.88)),
+        linear-gradient(135deg, rgba(255,255,255,.97), rgba(255,255,255,.9)),
         url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
     border:1px solid rgba(226,232,240,.95);
-    box-shadow:0 28px 80px rgba(15,23,42,.12);
+    box-shadow:0 30px 85px rgba(15,23,42,.13);
     margin-bottom:34px;
+}
+
+.terms-hero::before{
+    content:"";
+    position:absolute;
+    width:360px;
+    height:360px;
+    border-radius:999px;
+    right:-120px;
+    bottom:-130px;
+    background:linear-gradient(135deg, rgba(7,87,216,.16), rgba(56,189,248,.16));
+}
+
+.terms-hero::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    border-radius:999px;
+    right:110px;
+    top:-70px;
+    background:rgba(255,214,41,.24);
+}
+
+.terms-hero-content{
+    position:relative;
+    z-index:2;
 }
 
 .terms-hero span{
     display:inline-flex;
     align-items:center;
-    gap:9px;
-    height:38px;
-    padding:0 16px;
+    gap:10px;
+    height:42px;
+    padding:0 18px;
     border-radius:999px;
     background:rgba(7,87,216,.10);
     border:1px solid rgba(7,87,216,.22);
@@ -271,9 +290,9 @@
 
 .terms-hero h1{
     margin:0;
-    max-width:900px;
+    max-width:960px;
     color:#0b1226;
-    font-size:clamp(40px,4.4vw,62px);
+    font-size:clamp(40px,4.4vw,64px);
     line-height:1.08;
     font-weight:1000;
     letter-spacing:-1.8px;
@@ -281,18 +300,50 @@
 }
 
 .terms-hero p{
-    max-width:820px;
+    max-width:850px;
     margin:18px 0 0;
     color:#53627a;
     font-size:17px;
     line-height:1.75;
-    font-weight:600;
+    font-weight:650;
+}
+
+.terms-hero-info{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:28px;
+}
+
+.terms-hero-info div{
+    min-width:160px;
+    padding:16px 18px;
+    border-radius:20px;
+    background:rgba(255,255,255,.78);
+    border:1px solid rgba(226,232,240,.95);
+    box-shadow:0 12px 30px rgba(15,23,42,.07);
+}
+
+.terms-hero-info strong{
+    display:block;
+    color:#0757d8;
+    font-size:22px;
+    line-height:1.2;
+    font-weight:1000;
+}
+
+.terms-hero-info small{
+    display:block;
+    margin-top:5px;
+    color:#64748b;
+    font-size:13px;
+    font-weight:800;
 }
 
 .terms-layout{
     display:grid;
-    grid-template-columns:310px 1fr;
-    gap:28px;
+    grid-template-columns:340px 1fr;
+    gap:30px;
     align-items:start;
 }
 
@@ -300,33 +351,118 @@
     position:sticky;
     top:112px;
     padding:22px;
-    border-radius:24px;
-    background:#fff;
+    border-radius:28px;
+    background:rgba(255,255,255,.96);
     border:1px solid #e2e8f0;
     box-shadow:0 18px 45px rgba(15,23,42,.08);
+    backdrop-filter:blur(10px);
 }
 
-.terms-sidebar h3{
-    margin:0 0 16px;
+.terms-sidebar-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.terms-sidebar-head i{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:15px;
+    background:#eff6ff;
+    color:#0757d8;
+    font-size:18px;
+}
+
+.terms-sidebar-head h3{
+    margin:0;
     color:#0f172a;
     font-size:22px;
     font-weight:1000;
 }
 
-.terms-sidebar a{
+.terms-sidebar-list{
     display:flex;
-    align-items:center;
-    min-height:42px;
-    padding:0 12px;
-    border-radius:12px;
+    flex-direction:column;
+    gap:8px;
+}
+
+.terms-sidebar-list a{
+    display:grid;
+    grid-template-columns:38px 1fr;
+    align-items:flex-start;
+    gap:10px;
+    padding:11px 12px;
+    border-radius:15px;
     color:#334155;
-    font-size:14px;
-    font-weight:850;
     text-decoration:none;
     transition:.22s ease;
 }
 
-.terms-sidebar a:hover{
+.terms-sidebar-list a span{
+    width:34px;
+    height:34px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f1f5f9;
+    color:#0757d8;
+    font-size:12px;
+    font-weight:1000;
+}
+
+.terms-sidebar-list a p{
+    margin:0;
+    color:#334155;
+    font-size:14px;
+    line-height:1.45;
+    font-weight:900;
+}
+
+.terms-sidebar-list a:hover{
+    background:#eff6ff;
+    transform:translateX(4px);
+}
+
+.terms-sidebar-list a:hover span{
+    background:#0757d8;
+    color:#fff;
+}
+
+.terms-sidebar-list a:hover p{
+    color:#0757d8;
+}
+
+.terms-sidebar-line{
+    height:1px;
+    background:#e2e8f0;
+    margin:16px 0;
+}
+
+.terms-link-home{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-height:44px;
+    padding:0 12px;
+    border-radius:14px;
+    color:#334155;
+    font-size:14px;
+    font-weight:900;
+    text-decoration:none;
+    transition:.22s ease;
+}
+
+.terms-link-home i{
+    width:18px;
+    color:#0757d8;
+}
+
+.terms-link-home:hover{
     background:#eff6ff;
     color:#0757d8;
     transform:translateX(4px);
@@ -335,102 +471,173 @@
 .terms-content{
     display:flex;
     flex-direction:column;
-    gap:22px;
+    gap:24px;
 }
 
 .terms-card{
-    padding:32px 34px;
-    border-radius:26px;
+    position:relative;
+    display:grid;
+    grid-template-columns:82px 1fr;
+    gap:24px;
+    padding:36px 40px;
+    border-radius:30px;
     background:#fff;
     border:1px solid #e2e8f0;
     box-shadow:0 18px 45px rgba(15,23,42,.08);
     scroll-margin-top:120px;
+    overflow:hidden;
 }
 
-.terms-card h2{
+.terms-card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    width:7px;
+    height:100%;
+    background:linear-gradient(180deg,#0757d8,#38bdf8);
+}
+
+.terms-card-number{
+    width:70px;
+    height:70px;
+    border-radius:24px;
+    background:linear-gradient(135deg,#0757d8,#38bdf8);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:1000;
+    box-shadow:0 14px 28px rgba(7,87,216,.24);
+}
+
+.terms-card-main h2{
     margin:0 0 18px;
     color:#0757d8;
-    font-size:26px;
-    line-height:1.3;
+    font-size:28px;
+    line-height:1.32;
     font-weight:1000;
 }
 
-.terms-card p{
-    margin:0 0 16px;
+.terms-text{
     color:#334155;
-    font-size:16px;
-    line-height:1.85;
-    font-weight:600;
+    font-size:17px;
+    line-height:1.9;
+    font-weight:650;
 }
 
-.terms-card p:last-child{
-    margin-bottom:0;
+.terms-text > p{
+    margin:0 0 15px;
 }
 
-.terms-card ul,
-.terms-card ol{
-    margin:12px 0 18px 22px;
-    color:#334155;
+.terms-bullet{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin:0 0 12px;
+    padding:14px 16px;
+    border-radius:17px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
 }
 
-.terms-card li{
-    margin-bottom:10px;
-    padding-left:4px;
-    font-size:16px;
-    line-height:1.75;
-    font-weight:600;
-}
-
-.terms-card li::marker{
-    color:#0757d8;
-    font-weight:1000;
-}
-
-.policy-table{
-    margin:18px 0 20px;
-    border:1px solid #dbe7f5;
-    border-radius:20px;
-    overflow:hidden;
-    background:#fff;
-}
-
-.policy-row{
-    display:grid;
-    grid-template-columns:1.5fr .8fr;
-    gap:16px;
-    padding:18px 20px;
-    border-bottom:1px solid #e2e8f0;
-    align-items:center;
-}
-
-.policy-row:last-child{
-    border-bottom:0;
-}
-
-.policy-row strong{
-    color:#0f172a;
-    font-size:15px;
-    font-weight:950;
-    line-height:1.5;
-}
-
-.policy-row span{
-    justify-self:end;
-    padding:9px 14px;
+.terms-bullet span{
+    width:25px;
+    height:25px;
     border-radius:999px;
-    background:#ecfdf5;
-    color:#047857;
-    font-size:14px;
+    background:#dcfce7;
+    color:#16a34a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:3px;
+    flex-shrink:0;
+    font-size:12px;
+}
+
+.terms-bullet p{
+    margin:0;
+    color:#334155;
+    font-weight:800;
+}
+
+.terms-order{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    margin:0 0 12px;
+    padding:15px 16px;
+    border-radius:17px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+}
+
+.terms-order span{
+    color:#0757d8;
+    margin-top:3px;
+}
+
+.terms-order p{
+    margin:0;
+    color:#1e3a8a;
+    font-weight:850;
+}
+
+.terms-card-empty{
+    grid-template-columns:1fr;
+}
+
+.terms-empty{
+    display:flex;
+    gap:16px;
+    padding:24px;
+    border-radius:18px;
+    background:#fff7ed;
+    border:1px solid #fed7aa;
+    color:#c2410c;
+}
+
+.terms-empty i{
+    font-size:28px;
+    margin-top:2px;
+}
+
+.terms-empty strong{
+    display:block;
+    color:#9a3412;
+    font-size:18px;
     font-weight:1000;
-    white-space:nowrap;
+    margin-bottom:6px;
 }
 
-.policy-row.danger span{
-    background:#fff1f2;
-    color:#e11d48;
+.terms-empty p{
+    margin:0 0 12px;
+    color:#c2410c;
+    font-size:15px;
+    line-height:1.7;
+    font-weight:700;
 }
 
-@media(max-width:980px){
+.terms-empty a{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:40px;
+    padding:0 16px;
+    border-radius:999px;
+    background:#ea580c;
+    color:#fff;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:900;
+}
+
+.terms-empty a:hover{
+    background:#c2410c;
+}
+
+@media(max-width:1100px){
     .terms-layout{
         grid-template-columns:1fr;
     }
@@ -439,9 +646,14 @@
         position:relative;
         top:0;
     }
+
+    .terms-sidebar-list{
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
 }
 
-@media(max-width:640px){
+@media(max-width:720px){
     .terms-page{
         padding:64px 0 72px;
     }
@@ -452,28 +664,45 @@
 
     .terms-hero{
         padding:34px 24px;
-        border-radius:24px;
+        border-radius:26px;
     }
 
     .terms-hero h1{
         letter-spacing:-1px;
     }
 
-    .terms-card{
-        padding:24px 20px;
-        border-radius:22px;
-    }
-
-    .terms-card h2{
-        font-size:22px;
-    }
-
-    .policy-row{
+    .terms-hero-info{
+        display:grid;
         grid-template-columns:1fr;
     }
 
-    .policy-row span{
-        justify-self:start;
+    .terms-sidebar-list{
+        grid-template-columns:1fr;
+    }
+
+    .terms-card{
+        grid-template-columns:1fr;
+        padding:28px 22px;
+        border-radius:24px;
+    }
+
+    .terms-card-number{
+        width:58px;
+        height:58px;
+        border-radius:18px;
+        font-size:20px;
+    }
+
+    .terms-card-main h2{
+        font-size:23px;
+    }
+
+    .terms-text{
+        font-size:16px;
+    }
+
+    .terms-empty{
+        flex-direction:column;
     }
 }
 </style>

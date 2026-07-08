@@ -362,5 +362,5 @@ Route::prefix('Guide')
             return view('layouts.guide');
         })->name('dashboard');
 
-        Route::resource('phuong-tiens', PhuongTienController::class);
+        // Route::resource('phuong-tiens', PhuongTienController::class);
     });

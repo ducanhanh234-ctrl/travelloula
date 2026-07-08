@@ -21,7 +21,7 @@ class RolePermissionController extends Controller
 
         $quyenHans = QuyenHan::orderBy('mo_dun')
             ->orderBy('ten_hien_thi')
-            ->paginate(10);
+            ->paginate(20);
         $rolePermissions = [];
 
         foreach ($vaiTros as $role) {

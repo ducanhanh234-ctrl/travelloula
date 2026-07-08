@@ -17,10 +17,11 @@ use App\Http\Controllers\Admin\LichTrinhTourController;
 use App\Http\Controllers\Admin\HinhAnhTourController;
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
+use App\Http\Controllers\BaiVietController;
 use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\ThongKeController;
 use App\Http\Controllers\BannerController;
+use App\Http\Controllers\Client\BaiVietClientController;
 use App\Http\Controllers\DanhMucController;
 use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\KhachHangDatTourController;
@@ -50,13 +51,11 @@ Route::get('/tour', [TourClientController::class, 'index'])
 Route::get('/tour/{id}', [TourClientController::class, 'show'])
     ->name('Client.danh_sach_tour.show');
 
-Route::get('/bai_viet', function () {
-    return view('Client.bai_viet.index');
-})->name('Client.bai_viet.index');
+Route::get('/bai_viet', [BaiVietClientController::class, 'index'])
+    ->name('Client.bai_viet.index');
 
-Route::get('/bai_viet/{id}', function ($id) {
-    return view('Client.bai_viet.detail', compact('id'));
-})->name('Client.bai_viet.detail');
+Route::get('/bai_viet/{duongDan}', [BaiVietClientController::class, 'show'])
+    ->name('Client.bai_viet.detail');
 
 Route::get('/ve_chung_toi', function () {
     return view('Client.ve_chung_toi.index');
@@ -249,6 +248,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
     Route::get('/quan-ly-dat-tour', [QuanLyDatTourController::class, 'index'])->name('quan_ly_dat_tour.index');
+    Route::resource('bai_viets', BaiVietController::class);
     // thêm booking thủ công
 
     Route::get('/dat-tours/create', [QuanLyDatTourController::class, 'create'])

@@ -922,6 +922,15 @@
             <span class="nav-text">Điều khoản</span>
         </a>
     </div>
+      <div class="nav-item">
+        <a href="{{ route('Admin.bai_viets.index') }}"
+           class="nav-link {{ request()->routeIs('Admin.bai_viets*') ? 'active' : '' }}">
+            <div class="nav-icon">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <span class="nav-text">Bài viết</span>
+        </a>
+    </div>
 </div>
 
 
@@ -1032,23 +1041,10 @@
                 </a>
 
             </div>
-
-
-
-
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Người dùng</div>
                 <div class="nav-item">
-
-
-
                     <a href="{{ route('Admin.users.index') }}" class="nav-link ">
-
-
-
-
-
-
                         <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
 
                             <div class="nav-icon">
@@ -1068,7 +1064,6 @@
                 </div>
                 <div class="nav-item">
 
-
                     <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
 
                         <div class="nav-icon">
@@ -1079,9 +1074,7 @@
                 </div>
                 <div class="nav-item">
 
-
                     <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
-
 
                         <div class="nav-icon">
                             <i class="fas fa-users"></i>
@@ -1090,15 +1083,9 @@
                     </a>
                 </div>
 
-
-
                         </div>
 
                         <div class="nav-item">
-
-
-
-
 
                             <a href="{{route('Admin.banners.index')}}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
                                 Quản Lý Banner
@@ -1106,15 +1093,11 @@
 
                         </div>
 
-
-
-
                         <!-- Banners Management -->
                         <div class="nav-item">
                             <a href="{{ route('Admin.banners.index') }}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
                                 <i class="fas fa-image"></i>
                                 <span class="nav-text">Quản lý Banner</span>
-
 
                             </a>
                         </div>
@@ -1191,14 +1174,7 @@
                         <div class="nav-section">
                             <div class="nav-section-title">Hỗ trợ</div>
                             <div class="nav-item">
-
-
-
-
                                 <a href="{{route('Admin.danh_mucs.index')}}" class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
-
-
-
                                     <i class="fas fa-tags"></i>
                                     <span class="nav-text">Quản lý Danh mục</span>
                                 </a>
@@ -1206,8 +1182,6 @@
 
                             {{-- Đặt tour theo đoàn --}}
                             <li class="nav-item">
-
-
 
                                 <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}" href="">
 
@@ -1228,20 +1202,13 @@
                             </div>
                             <div class="nav-item">
 
-
-
-
                                 <a href="{{ route('Admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}">
-
 
 
                                     <i class="fas fa-credit-card"></i>
                                     <span class="nav-text">Quản lý Thanh toán</span>
                                 </a>
                             </div>
-
-
-
 
                             <!-- Reports -->
                             <div class="nav-item">
@@ -1253,12 +1220,10 @@
                                 </a>
                             </div>
 
-
                             <!-- Notifications -->
                             <div class="nav-item">
 
                                 <a href="" class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
-
 
                                     <i class="fas fa-bell"></i>
 
@@ -1290,18 +1255,12 @@
                                 </a>
                             </div>
 
-
-
-
                             <!-- Reviews & Support -->
                             <div class="nav-section">
                                 <div class="nav-section-title">Hỗ trợ</div>
                                 <div class="nav-item">
 
-
                                     <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
-
-
 
                                         <div class="nav-icon">
                                             <i class="fas fa-star"></i>

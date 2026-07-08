@@ -106,6 +106,14 @@ Route::post('/login', [AuthController::class, 'login'])
 Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])
+        ->name('profile');
+
+    Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])
+        ->name('profile.update');
+});
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES

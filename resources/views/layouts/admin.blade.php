@@ -828,7 +828,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="{{ route('profile') }}">
                                 <i class="fas fa-user me-2"></i>
                                 Hồ sơ cá nhân
                             </a>

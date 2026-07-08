@@ -28,12 +28,14 @@
                 <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}" alt="Travelloula">
             </a>
 
+
             <nav class="main-menu">
                 <a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Trang chủ</a>
                 <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour*') ? 'active' : '' }}">Tour</a>
                 <a href="{{ route('Client.tour_yeu_thich.index') }}" class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">Tour yêu thích</a>
                 <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">Điều khoản</a>
                 <a href="{{ route('Client.bai_viet.index') }}" class="{{ request()->is('bai_viet*') ? 'active' : '' }}">Bài viết</a>
+
                 <a href="#">Ưu đãi</a>
                 <a href="#">Liên hệ</a>
                 <a href="{{ route('Client.ve_chung_toi.index') }}" class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">Về chúng tôi</a>

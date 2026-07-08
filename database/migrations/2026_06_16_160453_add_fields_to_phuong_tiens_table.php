@@ -10,6 +10,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('phuong_tiens', function (Blueprint $table) {
+            if (!Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
+                $table->string('bien_so_xe')->after('id');
+            }
+
+
+            if (!Schema::hasColumn('phuong_tiens', 'loai_xe')) {
+                $table->string('loai_xe')->nullable()->after('bien_so_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'so_cho')) {
+                $table->integer('so_cho')->nullable()->after('loai_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'trang_thai')) {
+                $table->tinyInteger('trang_thai')->default(1)->after('so_cho');
 
             if (!Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
                 $table->string('bien_so_xe')->after('id');
@@ -51,6 +66,7 @@ return new class extends Migration
                 $table->text('ghi_chu')
                     ->nullable()
                     ->after('so_dien_thoai_tai_xe');
+
             }
         });
     }
@@ -58,18 +74,21 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('phuong_tiens', function (Blueprint $table) {
+            if (Schema::hasColumn('phuong_tiens', 'trang_thai')) {
+                $table->dropColumn('trang_thai');
+            }
 
-            $table->dropColumn([
-                'bien_so_xe',
-                'loai_phuong_tien',
-                'hang_xe',
-                'nam_san_xuat',
-                'mau_xe',
-                'trang_thai',
-                'ten_tai_xe',
-                'so_dien_thoai_tai_xe',
-                'ghi_chu',
-            ]);
+            if (Schema::hasColumn('phuong_tiens', 'so_cho')) {
+                $table->dropColumn('so_cho');
+            }
+
+            if (Schema::hasColumn('phuong_tiens', 'loai_xe')) {
+                $table->dropColumn('loai_xe');
+            }
+
+            if (Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
+                $table->dropColumn('bien_so_xe');
+            }
         });
     }
 };

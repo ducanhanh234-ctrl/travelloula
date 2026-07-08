@@ -230,3 +230,8 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
 });
+Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
+    ->name('vnpay.payment');
+
+Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
+    ->name('vnpay.return');

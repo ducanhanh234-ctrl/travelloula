@@ -203,7 +203,7 @@
                                     <label class="form-label fw-medium">Phương thức thanh toán</label>
                                     <select name="phuong_thuc_thanh_toan" class="form-select form-select-lg">
                                         <option value="Chuyen khoan">Chuyển khoản ngân hàng</option>
-                                        <option value="VNPay">Thanh toán VNPay</option>
+                                        <option value="VNPAY">Thanh toán VNPay</option>
                                     </select>
                                 </div>
 

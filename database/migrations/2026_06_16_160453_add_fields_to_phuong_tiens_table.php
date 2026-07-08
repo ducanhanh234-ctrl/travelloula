@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+
     public function up(): void
     {
         Schema::table('phuong_tiens', function (Blueprint $table) {
             if (!Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
                 $table->string('bien_so_xe')->after('id');
             }
+
 
             if (!Schema::hasColumn('phuong_tiens', 'loai_xe')) {
                 $table->string('loai_xe')->nullable()->after('bien_so_xe');
@@ -23,6 +25,48 @@ return new class extends Migration
 
             if (!Schema::hasColumn('phuong_tiens', 'trang_thai')) {
                 $table->tinyInteger('trang_thai')->default(1)->after('so_cho');
+
+            if (!Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
+                $table->string('bien_so_xe')->after('id');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'loai_phuong_tien')) {
+                $table->string('loai_phuong_tien')->after('bien_so_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'hang_xe')) {
+                $table->string('hang_xe')->after('loai_phuong_tien');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'nam_san_xuat')) {
+                $table->smallInteger('nam_san_xuat')->after('hang_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'mau_xe')) {
+                $table->string('mau_xe')->after('nam_san_xuat');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'trang_thai')) {
+                $table->tinyInteger('trang_thai')
+                    ->default(1)
+                    ->after('mau_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'ten_tai_xe')) {
+                $table->string('ten_tai_xe')
+                    ->after('trang_thai');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'so_dien_thoai_tai_xe')) {
+                $table->string('so_dien_thoai_tai_xe')
+                    ->after('ten_tai_xe');
+            }
+
+            if (!Schema::hasColumn('phuong_tiens', 'ghi_chu')) {
+                $table->text('ghi_chu')
+                    ->nullable()
+                    ->after('so_dien_thoai_tai_xe');
+
             }
         });
     }

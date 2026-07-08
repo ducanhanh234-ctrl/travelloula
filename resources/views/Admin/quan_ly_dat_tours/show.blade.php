@@ -155,50 +155,95 @@
                 Danh sách hành khách
         </h4>
 
-        <div class="table-responsive">
-            <table class="table table-hover table-striped align-middle">
-                <thead class="table-primary">
-                    <tr>
-                        <th width="60">#</th>
-                        <th>Họ tên</th>
-                        <th>Giới tính</th>
-                        <th>Năm sinh</th>
-                        <th>Loại khách</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($booking->khachHangDatTour as $index => $khach)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $khach->ho_ten }}</td>
-                            <td>{{ $khach->gioi_tinh }}</td>
-                            <td>{{ $khach->nam_sinh }}</td>
-                            <td>
-                                @switch($khach->loai_hanh_khach)
-                                    @case('adult')
-                                        Người lớn
-                                        @break
-                                    @case('child')
-                                        Trẻ em
-                                        @break
-                                    @case('baby')
-                                        Em bé
-                                        @break
-                                    @default
-                                        {{ $khach->loai_hanh_khach }}
-                                @endswitch
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center">
-                                Chưa có hành khách
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+     <div class="table-responsive">
+    <table class="table table-hover table-striped align-middle">
+
+        <thead class="table-primary">
+            <tr>
+                <th width="60">#</th>
+                <th>Họ tên</th>
+                <th>Giới tính</th>
+                <th>Ngày sinh</th>
+                <th>Quốc tịch</th>
+                <th>Loại giấy tờ</th>
+                <th>Số giấy tờ</th>
+                <th>Số điện thoại</th>
+                <th>Loại khách</th>
+                <th>Yêu cầu đặc biệt</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse($booking->khachHangDatTour as $index => $khach)
+                <tr>
+                    <td>
+                        {{ $index + 1 }}
+                    </td>
+
+                    <td>
+                        {{ $khach->ho_ten }}
+                    </td>
+
+                    <td>
+                        {{ $khach->gioi_tinh ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $khach->ngay_sinh
+                            ? $khach->ngay_sinh->format('d/m/Y')
+                            : '-'
+                        }}
+                    </td>
+
+                    <td>
+                        {{ $khach->quoc_tich ?? '-' }}
+                    </td>
+
+                    <td> {{ $khach->loai_giay_to ?? '-' }} </td>
+
+                    <td>
+                        {{ $khach->so_giay_to ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $khach->so_dien_thoai ?? '-' }}
+                    </td>
+
+                    <td>
+                        @switch($khach->loai_hanh_khach)
+                            @case('adult')
+                                Người lớn
+                                @break
+
+                            @case('child')
+                                Trẻ em
+                                @break
+
+                            @case('baby')
+                                Em bé
+                                @break
+
+                            @default
+                                {{ $khach->loai_hanh_khach }}
+
+                        @endswitch
+                    </td>
+
+                    <td>
+                        {{ $khach->yeu_cau_dac_biet ?? '-' }}
+                    </td>
+                </tr>
+
+                        @empty
+                            <tr>
+                                <td colspan="9" class="text-center">
+                                    Chưa có hành khách
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         <hr>
 
         {{-- Thanh toán --}}

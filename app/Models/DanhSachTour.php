@@ -9,6 +9,7 @@ class DanhSachTour extends Model
     protected $table = 'danh_sach_tours';
 
     protected $fillable = [
+
         'danh_muc_id',
         'ten_tour',
         'duong_dan',
@@ -24,53 +25,75 @@ class DanhSachTour extends Model
         'tong_quan_lich_trinh',
         'dich_vu_bao_gom',
         'dich_vu_khong_bao_gom',
+        'trang_thai',
+        'gia_nguoi_lon',
+        'gia_tre_em',
+        'gia_em_be',
 
-        'trang_thai'
     ];
 
-    
-
-    // public function lichTrinhs()
-    // {
-    //     return $this->hasMany(LichTrinhTour::class,'tour_id');
-    // }
-
-    // public function hinhAnhs()
-    // {
-    //     return $this->hasMany(HinhAnhTour::class,'tour_id');
-    // }
-
-    // public function datTours()
-    // {
-    //     return $this->hasMany(DatTour::class,'tour_id');
-    // }
-
-public function danhMuc()
+    public function lichKhoiHanh()
     {
-        return $this->belongsTo(
-            DanhMuc::class,
-            'danh_muc_id'
+
+        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
+    }
+
+    public function danhMuc()
+    {
+        return $this->belongsTo(DanhMuc::class, 'danh_muc_id');
+    }
+
+    public function lichKhoiHanhTours()
+
+    {
+        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
+    }
+
+
+
+
+    public function lichTrinhs()
+    {
+        return $this->hasMany(
+            LichTrinhTour::class,
+            'tour_id'
         );
     }
+
+
+
+
     protected $casts = [
         'gia_tour' => 'decimal:2',
         'so_khach_toi_da' => 'integer',
     ];
 
-    public function lichKhoiHanhs()
+
+    public function lichTrinhTours()
     {
-        return $this->hasMany(
-            LichKhoiHanhTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')
+            ->orderBy('ngay_thu');
+    }
+
+    public function hinhAnhTours()
+    {
+        return $this->hasMany(HinhAnhTour::class, 'tour_id')
+            ->orderBy('thu_tu_hien_thi');
     }
 
     public function datTours()
     {
-        return $this->hasMany(
-            DatTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(DatTour::class, 'tour_id');
     }
 
+    public function danhGia()
+    {
+        return $this->hasMany(DanhGia::class, 'tour_id');
+    }
+
+
+    public function yeuThichs()
+    {
+        return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
+    }
 }

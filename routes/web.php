@@ -50,7 +50,7 @@ use App\Http\Controllers\Admin\HinhAnhTourController;
 
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
+use App\Http\Controllers\Guide\GuideController;
 use App\Http\Controllers\TrangDieuKhoanClientController;
 
 /*
@@ -481,9 +481,9 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-                'index',
-                'show'
-            ]);
+        'index',
+        'show'
+    ]);
 });
 
 
@@ -515,4 +515,7 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
+    Route::resource('tour-phan-cong', GuideController::class);
+    Route::get('/lich-trinh/{phanCongId}', [GuideController::class, 'lichtrinh'])->name('lich-trinh');
+    Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])->name('danh-sach-khach');
 });

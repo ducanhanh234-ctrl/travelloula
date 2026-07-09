@@ -39,9 +39,9 @@
 
             --error-500: #ef4444;
 
-            --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
-            --shadow: 0 1px 3px rgba(0,0,0,.1);
-            --shadow-md: 0 4px 10px rgba(0,0,0,.1);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            --shadow-md: 0 4px 10px rgba(0, 0, 0, .1);
 
             --sidebar-width: 280px;
             --header-height: 70px;
@@ -188,7 +188,7 @@
             transition: .3s;
         }
 
-        .sidebar.collapsed + .main-content {
+        .sidebar.collapsed+.main-content {
             margin-left: 80px;
         }
 
@@ -362,7 +362,7 @@
             }
 
             .main-content,
-            .sidebar.collapsed + .main-content {
+            .sidebar.collapsed+.main-content {
                 margin-left: 0;
             }
 
@@ -384,6 +384,7 @@
                 font-size: 16px;
             }
         }
+
     </style>
 
     @yield('styles')
@@ -423,7 +424,7 @@
                 <div class="nav-section-title">Tour của tôi</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
@@ -527,19 +528,14 @@
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 
                         @if (Auth::check() && Auth::user()->avatar)
-                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                 alt="{{ Auth::user()->name }}"
-                                 class="user-avatar-img">
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="user-avatar-img">
                         @else
-                            <div class="user-avatar">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
-                            </div>
+                        <div class="user-avatar">
+                            {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
+                        </div>
                         @endif
                     </button>
 
@@ -593,12 +589,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.getElementById('sidebar');
 
             if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function () {
+                sidebarToggle.addEventListener('click', function() {
                     if (window.innerWidth <= 1024) {
                         sidebar.classList.toggle('open');
                     } else {
@@ -607,6 +603,7 @@
                 });
             }
         });
+
     </script>
 
     @yield('scripts')

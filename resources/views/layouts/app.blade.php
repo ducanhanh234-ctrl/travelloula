@@ -113,7 +113,7 @@
     <div class="client-container footer-content">
 
         <div class="footer-brand">
-            <a href="{{ url('/') }}" class="footer-logo footer-logo-frame">
+            <a href="{{ url('/') }}" class="footer-logo">
                 <img src="{{ asset('images/travelloula_logo_only_clean_v2.png') }}" alt="Travelloula">
             </a>
 
@@ -541,40 +541,31 @@
         align-items: start;
     }
 
-    /* LOGO FOOTER - KHUNG XANH ĐỒNG BỘ */
+    /* LOGO FOOTER - BỎ KHUNG */
 
     .footer-logo {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         margin-bottom: 28px;
+        padding: 0;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
         text-decoration: none;
     }
 
-    .footer-logo-frame {
-        width: 285px;
-        height: 86px;
-        padding: 12px 18px;
-        border-radius: 22px;
-        background:
-            linear-gradient(135deg, rgba(0, 180, 216, .20), rgba(7, 87, 216, .16)),
-            rgba(3, 29, 69, .42);
-        border: 1px solid rgba(0, 180, 216, .32);
-        box-shadow:
-            0 18px 36px rgba(0, 0, 0, .20),
-            inset 0 1px 0 rgba(255, 255, 255, .12);
-        backdrop-filter: blur(8px);
-    }
-
-    .footer-logo-frame img {
-        width: 235px;
+    .footer-logo img {
+        width: 250px;
         height: auto;
         display: block;
         object-fit: contain;
         background: transparent !important;
-        border: 0 !important;
+        border: none !important;
         box-shadow: none !important;
-        filter: drop-shadow(0 8px 14px rgba(0, 0, 0, .22));
+        filter:
+            drop-shadow(0 8px 16px rgba(0, 0, 0, .28))
+            drop-shadow(0 0 10px rgba(0, 180, 216, .18));
     }
 
     .footer-brand p {
@@ -1057,17 +1048,13 @@
         }
 
         .footer-logo {
+            justify-content: center;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .footer-logo-frame {
-            width: 250px;
-            height: 78px;
-        }
-
-        .footer-logo-frame img {
-            width: 205px;
+        .footer-logo img {
+            width: 210px;
         }
 
         .footer-brand p,

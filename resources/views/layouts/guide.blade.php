@@ -15,7 +15,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -39,9 +40,9 @@
 
             --error-500: #ef4444;
 
-            --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
-            --shadow: 0 1px 3px rgba(0,0,0,.1);
-            --shadow-md: 0 4px 10px rgba(0,0,0,.1);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            --shadow-md: 0 4px 10px rgba(0, 0, 0, .1);
 
             --sidebar-width: 280px;
             --header-height: 70px;
@@ -188,7 +189,7 @@
             transition: .3s;
         }
 
-        .sidebar.collapsed + .main-content {
+        .sidebar.collapsed+.main-content {
             margin-left: 80px;
         }
 
@@ -362,7 +363,7 @@
             }
 
             .main-content,
-            .sidebar.collapsed + .main-content {
+            .sidebar.collapsed+.main-content {
                 margin-left: 0;
             }
 
@@ -485,7 +486,8 @@
                 <div class="nav-section-title">Tài khoản</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.profile') }}"
+                        class="nav-link {{ request()->routeIs('Guide.profile') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-user"></i>
                         </div>
@@ -527,15 +529,12 @@
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
 
                         @if (Auth::check() && Auth::user()->avatar)
-                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                 alt="{{ Auth::user()->name }}"
-                                 class="user-avatar-img">
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="user-avatar-img">
                         @else
                             <div class="user-avatar">
                                 {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
@@ -559,7 +558,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="">
+                            <a class="dropdown-item" href="{{ route('Guide.profile') }}">
                                 <i class="fas fa-user me-2"></i>
                                 Hồ sơ cá nhân
                             </a>
@@ -593,12 +592,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.getElementById('sidebar');
 
             if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function () {
+                sidebarToggle.addEventListener('click', function() {
                     if (window.innerWidth <= 1024) {
                         sidebar.classList.toggle('open');
                     } else {

@@ -75,10 +75,6 @@
             white-space: nowrap;
         }
 
-        .permission-matrix tbody tr:hover {
-            background: #f8fbff;
-        }
-
         .permission-matrix th:first-child,
         .permission-matrix tbody td:first-child {
             position: sticky;
@@ -100,8 +96,89 @@
             color: #334155;
         }
 
-        .permission-matrix tbody tr:hover td:first-child {
+        .permission-matrix tbody tr.permission-row:hover {
             background: #f8fbff;
+        }
+
+        .permission-matrix tbody tr.permission-row:hover td:first-child {
+            background: #f8fbff;
+        }
+
+        .module-row td {
+            background: #eef6ff !important;
+            padding: 0 !important;
+        }
+
+        .module-toggle {
+            width: 100%;
+            border: none;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            color: #1e3a8a;
+            padding: 14px 18px;
+            font-weight: 800;
+            font-size: 15px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: .25s;
+        }
+
+        .module-toggle:hover {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        }
+
+        .module-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .module-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: #2563eb;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .module-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .module-name {
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        .module-count {
+            background: #fff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .module-arrow {
+            transition: .25s;
+        }
+
+        .module-toggle.collapsed .module-arrow {
+            transform: rotate(-90deg);
+        }
+
+        .permission-row.is-hidden {
+            display: none;
         }
 
         .permission-title {
@@ -222,6 +299,7 @@
 
         .btn-save:hover {
             background: #0b5ed7;
+            color: #fff;
         }
 
         .alert-container {
@@ -269,10 +347,11 @@
     <div class="permission-matrix-container">
         <div class="matrix-header">
             <h3>Bảng phân quyền vai trò</h3>
-            <p>Quản lý quyền hạn cho từng vai trò. Tích chọn ô để gán quyền cho vai trò tương ứng.</p>
+            <p>Quản lý quyền hạn theo từng nhóm chức năng. Bấm vào từng mục để xổ hoặc ẩn các quyền con.</p>
         </div>
 
         <form method="POST" action="{{ route('Admin.role-permissions.update-matrix') }}">
+            @csrf
 
             @foreach($quyenHans as $permission)
                 <input type="hidden" name="visible_permission_ids[]" value="{{ $permission->id }}">
@@ -296,8 +375,87 @@
 
                     <tbody>
                         @forelse($quyenHans->getCollection()->groupBy('mo_dun') as $module => $permissions)
+                            @php
+                                $moduleKey = $module ?: 'system';
+
+                                $moduleNames = [
+                                    'users' => 'Người dùng',
+                                    'roles' => 'Vai trò',
+                                    'permissions' => 'Quyền hạn',
+                                    'tours' => 'Tour',
+                                    'bookings' => 'Đặt tour',
+                                    'guides' => 'Hướng dẫn viên',
+                                    'banners' => 'Banner',
+                                    'danh_mucs' => 'Danh mục',
+                                    'phuong_tiens' => 'Phương tiện',
+                                    'phan_cong' => 'Phân công',
+                                    'lich_khoi_hanh' => 'Lịch khởi hành',
+                                    'gop_doan' => 'Gộp đoàn',
+                                    'payments' => 'Thanh toán',
+                                    'reports' => 'Báo cáo',
+                                    'customers' => 'Khách hàng',
+                                    'lich_trinh_tours' => 'Lịch trình tour',
+                                    'chi_tiet_lich_trinhs' => 'Chi tiết lịch trình',
+                                    'nhat_ky_tours' => 'Nhật ký tour',
+                                    'reviews' => 'Đánh giá',
+                                    'terms' => 'Điều khoản',
+                                    'favorites' => 'Tour yêu thích',
+                                    'system' => 'Hệ thống',
+                                ];
+
+                                $moduleIcons = [
+                                    'users' => 'fa-user',
+                                    'roles' => 'fa-user-tag',
+                                    'permissions' => 'fa-key',
+                                    'tours' => 'fa-map-marked-alt',
+                                    'bookings' => 'fa-calendar-check',
+                                    'guides' => 'fa-users',
+                                    'banners' => 'fa-image',
+                                    'danh_mucs' => 'fa-tags',
+                                    'phuong_tiens' => 'fa-bus',
+                                    'phan_cong' => 'fa-user-friends',
+                                    'lich_khoi_hanh' => 'fa-plane-departure',
+                                    'gop_doan' => 'fa-object-group',
+                                    'payments' => 'fa-credit-card',
+                                    'reports' => 'fa-chart-bar',
+                                    'customers' => 'fa-user-check',
+                                    'lich_trinh_tours' => 'fa-calendar-alt',
+                                    'chi_tiet_lich_trinhs' => 'fa-list',
+                                    'nhat_ky_tours' => 'fa-book',
+                                    'reviews' => 'fa-star',
+                                    'terms' => 'fa-file-contract',
+                                    'favorites' => 'fa-heart',
+                                    'system' => 'fa-gear',
+                                ];
+
+                                $moduleLabel = $moduleNames[$moduleKey] ?? ucfirst(str_replace('_', ' ', $moduleKey));
+                                $moduleIcon = $moduleIcons[$moduleKey] ?? 'fa-folder';
+                                $groupId = 'module_' . md5($moduleKey);
+                            @endphp
+
+                            <tr class="module-row">
+                                <td colspan="{{ count($vaiTros) + 1 }}">
+                                    <button type="button" class="module-toggle collapsed" data-target="{{ $groupId }}">
+                                        <span class="module-left">
+                                            <span class="module-icon">
+                                                <i class="fas {{ $moduleIcon }}"></i>
+                                            </span>
+
+                                            <span class="module-info">
+                                                <span class="module-name">{{ $moduleLabel }}</span>
+                                                <span class="module-count">{{ count($permissions) }} quyền</span>
+                                            </span>
+                                        </span>
+
+                                        <span class="module-arrow">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </span>
+                                    </button>
+                                </td>
+                            </tr>
+
                             @foreach($permissions as $permission)
-                                <tr>
+                                <tr class="permission-row {{ $groupId }} is-hidden">
                                     <td>
                                         <div class="permission-title">
                                             {{ $permission->ten_hien_thi }}
@@ -308,7 +466,7 @@
                                         </div>
 
                                         <div class="permission-module">
-                                            {{ $module ?: 'System' }}
+                                            {{ $moduleLabel }}
                                         </div>
                                     </td>
 
@@ -371,5 +529,22 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.module-toggle').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const target = this.dataset.target;
+                    const rows = document.querySelectorAll('.' + target);
+
+                    rows.forEach(function (row) {
+                        row.classList.toggle('is-hidden');
+                    });
+
+                    this.classList.toggle('collapsed');
+                });
+            });
+        });
+    </script>
 </div>
 @endsection

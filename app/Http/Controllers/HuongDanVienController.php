@@ -121,6 +121,7 @@ class HuongDanVienController extends Controller
         );
 
         $user->vaiTros()->syncWithoutDetaching([$role->id]);
+        $user->save();
 
         return redirect()
             ->route('Admin.huong-dan-viens.index')
@@ -212,6 +213,7 @@ class HuongDanVienController extends Controller
             }
 
             $huongDanVien->user->update($userData);
+            $huongDanVien->user->save();
         }
 
         return redirect()

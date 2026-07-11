@@ -38,6 +38,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
                 <a href="#">Trang chủ</a>
                 <a href="#">Tour</a>
                 <a href="#">Tour yêu thích</a>
+                <a href="{{route('tour_da_dat.index')}}">Tour đã đặt</a>
                 <a href="#">Điều khoản</a>
                 <a href="#">Bài viết</a>
                 <a href="#">Ưu đãi</a>

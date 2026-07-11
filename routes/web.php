@@ -32,9 +32,7 @@ use App\Http\Controllers\Admin\HinhAnhTourController;
 
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
-
-
+use App\Http\Controllers\TourDaDatController;
 
 // use App\Http\Controllers\TourController;
 // Client routes
@@ -78,6 +76,8 @@ Route::get('/dieu_khoan', function () {
 });
 Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
 Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
+
+Route::resource('tour_da_dat',TourDaDatController::class);
 // Auth routes
 use App\Http\Controllers\AuthController;
 

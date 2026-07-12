@@ -32,16 +32,14 @@ use App\Http\Controllers\Admin\HinhAnhTourController;
 
 use App\Http\Controllers\Admin\DatTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
-
-
-
+use App\Http\Controllers\TourDaDatController;
 
 // use App\Http\Controllers\TourController;
 // Client routes
 
 Route::get('/', function () {
     return view('Client.trang_chu.index');
-});
+})->name('client.home');
 
 
 Route::get('/bai_viet', function () {
@@ -77,7 +75,9 @@ Route::get('/dieu_khoan', function () {
     return view('Client.dieu_khoan.index');
 });
 Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
+Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
 
+Route::resource('tour_da_dat',TourDaDatController::class);
 // Auth routes
 use App\Http\Controllers\AuthController;
 
@@ -230,3 +230,8 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
 });
+Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
+    ->name('vnpay.payment');
+
+Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
+    ->name('vnpay.return');

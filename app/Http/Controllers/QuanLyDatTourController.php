@@ -13,6 +13,7 @@ use App\Models\KhachHangDatTour;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\ThanhToan;
+use Illuminate\Support\Facades\Log;
 
 class QuanLyDatTourController extends Controller
 {
@@ -186,6 +187,16 @@ class QuanLyDatTourController extends Controller
     // Lưu booking thủ công
     public function store(Request $request)
     {
+
+        // Validate phải có ít nhất 1 người lớn
+        if ((int) $request->so_nguoi_lon < 1) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'so_nguoi_lon' => 'Booking phải có ít nhất 1 người lớn.'
+                ]);
+        }
+
         DB::beginTransaction();
         try {
             // $request->validate([
@@ -212,34 +223,10 @@ class QuanLyDatTourController extends Controller
                 ($soTreEm * $tour->gia_tre_em) +
                 ($soEmBe * $tour->gia_em_be);
 
-            // Kiểm tra lịch đã tồn tại chưa
-            $ngayKhoiHanh = \Carbon\Carbon::createFromFormat(
-                'd/m/Y',
-                $request->lich_khoi_hanh
-            )->format('Y-m-d');
-            $lichKhoiHanh = LichKhoiHanhTour::where(
-                'tour_id',
-                $tour->id
-            )
-                ->where(
-                    'ngay_khoi_hanh',
-                    $ngayKhoiHanh
-                )
-                ->first();
+            $lichKhoiHanh = LichKhoiHanhTour::where('id', $request->lich_khoi_hanh_id)
+                ->where('tour_id', $request->tour_id)
+                ->firstOrFail();
 
-            // Nếu chưa có thì tạo lịch mới
-            if (!$lichKhoiHanh) {
-                $soNgayTour = $tour->lichTrinh->count();
-                $lichKhoiHanh = LichKhoiHanhTour::create([
-                    'tour_id' => $tour->id,
-                    'ngay_khoi_hanh' => $ngayKhoiHanh,
-                    'ngay_ket_thuc' => \Carbon\Carbon::parse($ngayKhoiHanh)
-                        ->addDays($soNgayTour - 1),
-                    'so_cho_con_lai' => 40,
-                    'so_cho_da_dat' => 0,
-                    'trang_thai' => 'available',
-                ]);
-            }
             // Kiểm tra số chỗ còn lại
             if ($lichKhoiHanh->so_cho_con_lai < $tongKhach) {
                 return back()
@@ -249,15 +236,6 @@ class QuanLyDatTourController extends Controller
                         'Lịch khởi hành không đủ chỗ trống'
                     );
             }
-
-            //validate ngày khởi hành
-            // $request->validate([
-            //     'ngay_khoi_hanh' => [
-            //         'required',
-            //         'date',
-            //         'after_or_equal:today'
-            //     ]
-            // ]);
 
             // Tạo booking
             $datTour = DatTour::create([
@@ -298,21 +276,48 @@ class QuanLyDatTourController extends Controller
                 foreach ($request->hanh_khach as $khach) {
                     KhachHangDatTour::create([
                         'dat_tour_id' => $datTour->id,
+
                         'ho_ten' =>
                         $khach['ho_ten']
                             ?? 'Chưa nhập',
+
                         'gioi_tinh' =>
                         $khach['gioi_tinh']
                             ?? null,
+
                         'nam_sinh' =>
                         $khach['nam_sinh']
                             ?? null,
+
+                        'ngay_sinh' =>
+                        $khach['ngay_sinh']
+                            ?? null,
+
+                        'quoc_tich' =>
+                        $khach['quoc_tich']
+                            ?? 'Việt Nam',
+
+                        'loai_giay_to' => $khach['loai_giay_to'] ?? 'CCCD',
+
+                        'so_giay_to' => $khach['so_giay_to'] ?? null,
+
+                        'so_dien_thoai' =>
+                        $khach['so_dien_thoai']
+                            ?? null,
+
+                        'yeu_cau_dac_biet' =>
+                        $khach['yeu_cau_dac_biet']
+                            ?? null,
+
                         'loai_hanh_khach' =>
                         $khach['loai_hanh_khach']
                             ?? 'adult',
+
                         'trang_thai_thanh_toan'
                         => 'pending',
+
                         'tong_tien' => 0,
+
                         'so_tien_da_thanh_toan'
                         => 0,
                     ]);
@@ -320,11 +325,11 @@ class QuanLyDatTourController extends Controller
             }
 
 
-        // TẠO THANH TOÁN CHO BOOKING
-        ThanhToan::create([
-            'dat_tour_id' => $datTour->id,
-            'nguoi_dung_id' => Auth::id(),
-            'phuong_thuc_thanh_toan' =>
+            // TẠO THANH TOÁN CHO BOOKING
+            ThanhToan::create([
+                'dat_tour_id' => $datTour->id,
+                'nguoi_dung_id' => Auth::id(),
+                'phuong_thuc_thanh_toan' =>
                 $request->phuong_thuc_thanh_toan,
 
                 'so_tien' =>
@@ -354,7 +359,7 @@ class QuanLyDatTourController extends Controller
                 ->with(
                     'error',
                     $e->getMessage()
-            );
+                );
         }
     }
     public function show($id)
@@ -587,7 +592,7 @@ class QuanLyDatTourController extends Controller
     public function create_dat_tour($tourId)
 {
     $tour = Tour::findOrFail($tourId);
-
+$tours = Tour::all();
     $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
         ->where('trang_thai', 'available')
         ->orderBy('ngay_khoi_hanh')
@@ -599,7 +604,200 @@ $lichDuocChon = [
     return view('client.dat_tour.index', compact(
         'tour',
         'lichKhoiHanhs',
-        'lichDuocChon'
+        'lichDuocChon',
+        'tours'
     ));
 }
+
+public function store_dat_tour(Request $request)
+{
+    $request->validate([
+        'tour_id'                => 'required|exists:danh_sach_tours,id',
+        'lich_khoi_hanh_id'      => 'required|exists:lich_khoi_hanh_tours,id',
+
+        'so_nguoi_lon'           => 'required|integer|min:1',
+        'so_tre_em'              => 'nullable|integer|min:0',
+        'so_em_be'               => 'nullable|integer|min:0',
+
+        'phuong_thuc_thanh_toan' => 'required|string',
+
+        'hanh_khach'             => 'required|array|min:1',
+        'hanh_khach.*.ho_ten'    => 'required|string|max:255',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+
+        // Khóa bản ghi lịch khởi hành để tránh nhiều người đặt cùng lúc
+        $lich = LichKhoiHanhTour::lockForUpdate()
+            ->findOrFail($request->lich_khoi_hanh_id);
+
+        $tour = Tour::findOrFail($request->tour_id);
+
+        $soNguoiLon = (int) $request->so_nguoi_lon;
+        $soTreEm    = (int) ($request->so_tre_em ?? 0);
+        $soEmBe     = (int) ($request->so_em_be ?? 0);
+
+        $tongKhach = $soNguoiLon + $soTreEm + $soEmBe;
+
+        // Kiểm tra số chỗ còn lại
+        if ($lich->so_cho_con_lai < $tongKhach) {
+
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->with('error', 'Lịch khởi hành không còn đủ chỗ.');
+        }
+
+        // Tính tổng tiền từ dữ liệu tour
+        $tongTien =
+            ($soNguoiLon * $tour->gia_nguoi_lon) +
+            ($soTreEm * $tour->gia_tre_em) +
+            ($soEmBe * $tour->gia_em_be);
+
+        // Sinh mã đặt tour
+        do {
+            $maDatTour = 'ATU' . strtoupper(Str::random(8));
+        } while (DatTour::where('ma_dat_tour', $maDatTour)->exists());
+
+        //==========================
+        // Tạo đơn đặt tour
+        //==========================
+        $booking = DatTour::create([
+
+            'nguoi_dung_id' => Auth::id(),
+
+            'tour_id' => $tour->id,
+
+            'lich_khoi_hanh_id' => $lich->id,
+
+            'ma_dat_tour' => $maDatTour,
+
+            'so_nguoi_lon' => $soNguoiLon,
+
+            'so_tre_em' => $soTreEm,
+
+            'so_em_be' => $soEmBe,
+
+            'tong_tien' => $tongTien,
+
+            'so_tien_da_thanh_toan' => 0,
+
+            'trang_thai' => 'cho_xac_nhan',
+
+            'ghi_chu' => $request->ghi_chu,
+
+            'ngay_dat' => now(),
+        ]);
+
+        //==========================
+        // Lưu hành khách
+        //==========================
+        foreach ($request->hanh_khach as $hk) {
+
+            KhachHangDatTour::create([
+
+                'dat_tour_id' => $booking->id,
+
+                'ho_ten' => $hk['ho_ten'],
+
+                'gioi_tinh' => $hk['gioi_tinh'] ?? null,
+
+                'ngay_sinh' => $hk['ngay_sinh'] ?? null,
+
+                'nam_sinh' => $hk['nam_sinh'] ?? null,
+
+                'quoc_tich' => $hk['quoc_tich'] ?? 'Việt Nam',
+
+                'loai_hanh_khach' => $hk['loai_hanh_khach'] ?? 'adult',
+
+                'loai_giay_to' => $hk['loai_giay_to'] ?? 'CCCD',
+
+                'so_giay_to' => $hk['so_giay_to'] ?? null,
+
+                'so_dien_thoai' => $hk['so_dien_thoai'] ?? null,
+
+                'yeu_cau_dac_biet' => $hk['yeu_cau_dac_biet'] ?? null,
+
+                'trang_thai_thanh_toan' => 'pending',
+
+                'tong_tien' => 0,
+
+                'so_tien_da_thanh_toan' => 0,
+            ]);
+        }
+
+        //==========================
+        // Tạo bản ghi thanh toán
+        //==========================
+        ThanhToan::create([
+
+            'dat_tour_id' => $booking->id,
+
+            'nguoi_dung_id' => Auth::id(),
+
+            'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan,
+
+            'so_tien' => $tongTien,
+
+            // Sẽ cập nhật sau khi tạo URL VNPay
+            'ma_giao_dich' => null,
+
+            'trang_thai' => 'cho_thanh_toan',
+
+            'ghi_chu' => 'Khởi tạo giao dịch.',
+
+            'thoi_gian_thanh_toan' => null,
+        ]);
+
+        //==========================
+        // Cập nhật số chỗ
+        //==========================
+        $lich->decrement('so_cho_con_lai', $tongKhach);
+
+        $lich->increment('so_cho_da_dat', $tongKhach);
+
+        // Nếu đã hết chỗ thì chuyển trạng thái
+        if ($lich->fresh()->so_cho_con_lai <= 0) {
+
+            $lich->update([
+                'trang_thai' => 'full'
+            ]);
+        }
+
+        DB::commit();
+
+        //==========================
+        // Chuyển sang VNPay
+        //==========================
+        if ($request->phuong_thuc_thanh_toan == 'VNPAY') {
+
+            return redirect()->route(
+                'vnpay.payment',
+                $booking->id
+            );
+        }
+
+        // Thanh toán tiền mặt
+        return redirect()
+            ->route('client.home')
+            ->with(
+                'success',
+                'Đặt tour thành công. Vui lòng thanh toán khi nhận dịch vụ.'
+            );
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return back()
+            ->withInput()
+            ->with('error', $e->getMessage());
+    }
+}
+
+
+    
 }

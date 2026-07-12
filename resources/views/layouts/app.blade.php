@@ -36,6 +36,7 @@
                 <a href="#">Trang chủ</a>
                 <a href="#">Tour</a>
                 <a href="#">Tour yêu thích</a>
+                <a href="{{route('tour_da_dat.index')}}">Tour đã đặt</a>
                 <a href="#">Điều khoản</a>
                 <a href="#">Bài viết</a>
                 <a href="#">Ưu đãi</a>
@@ -342,5 +343,5 @@
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
+@yield('scripts')
 </html>

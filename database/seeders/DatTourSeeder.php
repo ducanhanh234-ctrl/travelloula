@@ -10,53 +10,77 @@ class DatTourSeeder extends Seeder
     public function run(): void
     {
         $data = [];
+
         $bookingId = 1;
-        $userId = 2;
 
         /*
         |--------------------------------------------------------------------------
-        | Số khách của từng booking
+        | Danh sách user có tài khoản
         |--------------------------------------------------------------------------
-        | Tổng phải đúng với so_cho_da_dat trong LichKhoiHanhTourSeeder
+        */
+
+        $userIds = DB::table('users')
+            ->where('is_active', 1)
+            ->pluck('id')
+            ->toArray();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Khoảng 60% booking sẽ là khách có tài khoản
+        |--------------------------------------------------------------------------
+        */
+
+        $bookingCoTaiKhoan = [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dữ liệu booking
+        |--------------------------------------------------------------------------
         */
 
         $lichs = [
 
-            // lịch 1 -> tổng 12 khách
             1 => [
                 'tour' => 1,
                 'bookings' => [5, 4, 3],
             ],
 
-            // lịch 2 -> tổng 15 khách
             2 => [
                 'tour' => 1,
                 'bookings' => [5, 5, 5],
             ],
 
-            // lịch 3 -> tổng 18 khách
             3 => [
                 'tour' => 1,
                 'bookings' => [6, 6, 6],
             ],
 
-            // lịch 4 -> tổng 15 khách
             4 => [
                 'tour' => 1,
                 'bookings' => [8, 7],
             ],
 
-            // lịch 5 -> tổng 15 khách
             5 => [
                 'tour' => 1,
                 'bookings' => [10, 5],
             ],
 
-            // lịch 6 -> tổng 20 khách
             6 => [
                 'tour' => 1,
                 'bookings' => [8, 7, 5],
             ],
+
         ];
 
         foreach ($lichs as $lichId => $info) {
@@ -65,9 +89,12 @@ class DatTourSeeder extends Seeder
 
                 $tongTien = $soNguoiLon * 3200000;
 
-                $data[] = [
+                $laKhachCoTaiKhoan = in_array(
+                    $bookingId,
+                    $bookingCoTaiKhoan
+                );
 
-                    'nguoi_dung_id' => $userId,
+                $row = [
 
                     'tour_id' => $info['tour'],
 
@@ -75,7 +102,8 @@ class DatTourSeeder extends Seeder
 
                     'khuyen_mai_id' => null,
 
-                    'ma_dat_tour' => 'TDBK' . str_pad($bookingId, 5, '0', STR_PAD_LEFT),
+                    'ma_dat_tour' => 'TDBK' .
+                        str_pad($bookingId, 5, '0', STR_PAD_LEFT),
 
                     'so_nguoi_lon' => $soNguoiLon,
                     'so_tre_em' => 0,
@@ -90,35 +118,64 @@ class DatTourSeeder extends Seeder
 
                     'ngay_dat' => now()->subDays(rand(3, 7)),
 
-                    'ten_nguoi_dat' => 'Khách ' . $bookingId,
-                    'so_dien_thoai' => '090000' . str_pad($bookingId, 4, '0', STR_PAD_LEFT),
-                    'email' => 'khach' . $bookingId . '@gmail.com',
-
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
 
-                $bookingId++;
+                /*
+                |--------------------------------------------------------------------------
+                | Khách có tài khoản
+                |--------------------------------------------------------------------------
+                */
 
-                $userId++;
+                if ($laKhachCoTaiKhoan) {
 
-                if ($userId > 7) {
-                    $userId = 2;
+                    $row['nguoi_dung_id']
+                        = $userIds[array_rand($userIds)];
+
+                    $row['ten_nguoi_dat'] = null;
+                    $row['so_dien_thoai'] = null;
+                    $row['email'] = null;
                 }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Khách vãng lai
+                |--------------------------------------------------------------------------
+                */ else {
+
+                    $row['nguoi_dung_id'] = null;
+
+                    $row['ten_nguoi_dat']
+                        = 'Khách Hotline ' . $bookingId;
+
+                    $row['so_dien_thoai']
+                        = '091' . str_pad($bookingId, 7, '0', STR_PAD_LEFT);
+
+                    $row['email']
+                        = 'hotline' . $bookingId . '@gmail.com';
+                }
+
+                $data[] = $row;
+
+                $bookingId++;
             }
         }
 
         /*
         |--------------------------------------------------------------------------
-        | Lịch OPEN
+        | Booking OPEN 1 (Hotline)
         |--------------------------------------------------------------------------
         */
 
         $data[] = [
 
-            'nguoi_dung_id' => 2,
+            'nguoi_dung_id' => null,
+
             'tour_id' => 1,
+
             'lich_khoi_hanh_id' => 7,
+
             'khuyen_mai_id' => null,
 
             'ma_dat_tour' => 'DT99991',
@@ -137,18 +194,30 @@ class DatTourSeeder extends Seeder
             'ngay_dat' => now(),
 
             'ten_nguoi_dat' => 'Khách Open 1',
+
             'so_dien_thoai' => '0911111111',
+
             'email' => 'open1@gmail.com',
 
             'created_at' => now(),
             'updated_at' => now(),
+
         ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | Booking OPEN 2 (Có tài khoản)
+        |--------------------------------------------------------------------------
+        */
 
         $data[] = [
 
-            'nguoi_dung_id' => 3,
+            'nguoi_dung_id' => $userIds[array_rand($userIds)],
+
             'tour_id' => 2,
+
             'lich_khoi_hanh_id' => 8,
+
             'khuyen_mai_id' => null,
 
             'ma_dat_tour' => 'DT99992',
@@ -166,12 +235,13 @@ class DatTourSeeder extends Seeder
 
             'ngay_dat' => now(),
 
-            'ten_nguoi_dat' => 'Khách Open 2',
-            'so_dien_thoai' => '0922222222',
-            'email' => 'open2@gmail.com',
+            'ten_nguoi_dat' => null,
+            'so_dien_thoai' => null,
+            'email' => null,
 
             'created_at' => now(),
             'updated_at' => now(),
+
         ];
 
         DB::table('dat_tours')->insert($data);

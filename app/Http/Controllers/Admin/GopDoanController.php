@@ -33,103 +33,251 @@ class GopDoanController extends Controller
         return view('Admin.gop_doan.index', compact('deXuats'));
     }
 
-    public function store(Request $request)
+    public function thuCong()
     {
-        try {
+        $tours = DanhSachTour::with([
+            'lichKhoiHanh' => function ($query) {
 
-            $this->yeuCauGopDoanService->taoYeuCauThuCong(
-                $request->lich_ids,
-                $request->ly_do_de_xuat
-            );
+                $query
+                    ->where('da_gop', 0)
+                    ->where('dang_gop_doan', 0)
+                    ->where('so_cho_da_dat', '>', 0)
+                    ->orderBy('ngay_khoi_hanh');
+            }
+        ])
+            ->get();
 
-            return redirect()
-                ->route('Admin.gop-doan.index')
-                ->with('success', 'Tạo yêu cầu gộp đoàn thành công');
-        } catch (\Exception $e) {
+        /*
+    |--------------------------------------------------------------------------
+    | Chỉ giữ lịch đã đóng bán
+    |--------------------------------------------------------------------------
+    */
 
-            return back()->with('error', $e->getMessage());
-        }
-    }
+        $tours = $tours->map(function ($tour) {
 
-    public function show($id)
-    {
+            $tour->lichHopLe = $tour->lichKhoiHanh
+                ->filter(function ($lich) {
 
-        $yeuCau = YeuCauGopDoan::with([
-            'chiTiets.datTour',
-            'chiTiets.lichKhoiHanh',
-        ])->findOrFail($id);
+                    return $lich->trang_thai_hien_thi == 'Đã đóng';
+                })
+                ->values();
 
+            return $tour;
+        })
+            ->filter(function ($tour) {
 
+                return $tour->lichHopLe->count() >= 2;
+            })
+            ->values();
 
         return view(
-            'Admin.gop_doan.show',
-            compact('yeuCau')
+            'Admin.gop_doan.thu-cong',
+            compact('tours')
         );
     }
 
-    public function capNhatTrangThaiLienHe(Request $request, $id)
+    public function storeAI(Request $request)
     {
+        $request->validate([
+            'lich_ids' => 'required|array|min:2',
+            'lich_ids.*' => 'exists:lich_khoi_hanh_tours,id',
+            'ly_do_de_xuat' => 'required|string|max:500',
+        ]);
 
-        DB::transaction(function () use ($request, $id) {
+        try {
 
+            $lichs = LichKhoiHanhTour::whereIn(
+                'id',
+                $request->lich_ids
+            )->get();
 
-            $chiTiet = ChiTietYeuCauGopDoan::findOrFail($id);
-
-
-            $chiTiet->update([
-
-                'trang_thai_lien_he'
-                => $request->trang_thai
-
-            ]);
-
-
-
-            // nếu khách từ chối
-            if ($request->trang_thai == 'tu_choi') {
-
-
-                LichKhoiHanhTour::where(
-                    'id',
-                    $chiTiet->lich_khoi_hanh_id
-                )
-                    ->update([
-                        'dang_gop_doan' => 0
-                    ]);
+            if ($lichs->count() < 2) {
+                throw new \Exception('Phải chọn tối thiểu 2 lịch để gộp.');
             }
-        });
 
+            if (
+                $lichs->pluck('tour_id')
+                ->unique()
+                ->count() > 1
+            ) {
+                throw new \Exception(
+                    'Chỉ được gộp các lịch thuộc cùng một tour.'
+                );
+            }
 
-        return back()
-            ->with(
-                'success',
-                'Cập nhật trạng thái khách thành công'
-            );
-    }
+            if (
+                $lichs->contains(
+                    fn($l) => $l->dang_gop_doan != 0
+                )
+            ) {
+                throw new \Exception(
+                    'Có lịch đã nằm trong yêu cầu gộp khác.'
+                );
+            }
 
-    public function chotGop($id)
-    {
-
-        try {
-            $this->gopDoanService->chotGop($id);
-            return redirect()->route('Admin.gop-doan.index')->with('success', 'Đã chốt gộp đoàn thành công.');
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    public function destroy($id)
-    {
-        try {
-
-            $this->yeuCauGopDoanService->huyYeuCau($id);
+            $this->yeuCauGopDoanService
+                ->taoYeuCauTuDeXuat(
+                    $lichs,
+                    100,
+                    explode(' | ', $request->ly_do_de_xuat)
+                );
 
             return redirect()
                 ->route('Admin.gop-doan.index')
-                ->with('success', 'Hủy yêu cầu thành công');
+                ->with(
+                    'success',
+                    'Tạo yêu cầu AI thành công.'
+                );
         } catch (\Exception $e) {
 
-            return back()->with('error', $e->getMessage());
+            return back()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
         }
+    }
+
+    public function storeThuCong(Request $request)
+    {
+        $request->validate([
+            'lich_ids' => 'required|array|min:2',
+            'lich_ids.*' => 'exists:lich_khoi_hanh_tours,id',
+
+            'lich_chinh_id' => 'required|integer|exists:lich_khoi_hanh_tours,id',
+
+            'ly_do_de_xuat' => 'required|string|max:500',
+        ]);
+
+        try {
+
+            $lichs = LichKhoiHanhTour::whereIn(
+                'id',
+                $request->lich_ids
+            )->get();
+
+            /*
+        |--------------------------------------------------------------------------
+        | Lịch chính phải thuộc danh sách đã chọn
+        |--------------------------------------------------------------------------
+        */
+
+            if (!in_array($request->lich_chinh_id, $request->lich_ids)) {
+
+                throw new \Exception(
+                    'Lịch chính phải nằm trong danh sách các lịch được chọn.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Phải có ít nhất 2 lịch
+        |--------------------------------------------------------------------------
+        */
+            if ($lichs->count() < 2) {
+                throw new \Exception(
+                    'Phải chọn tối thiểu 2 lịch để gộp.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Chỉ được cùng Tour
+        |--------------------------------------------------------------------------
+        */
+            if (
+                $lichs->pluck('tour_id')
+                ->unique()
+                ->count() > 1
+            ) {
+                throw new \Exception(
+                    'Chỉ được gộp các lịch thuộc cùng một tour.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Không được nằm trong yêu cầu khác
+        |--------------------------------------------------------------------------
+        */
+            if (
+                $lichs->contains(
+                    fn($l) => $l->dang_gop_doan != 0
+                )
+            ) {
+                throw new \Exception(
+                    'Có lịch đã nằm trong một yêu cầu gộp khác.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Không gộp lịch đã khởi hành
+        |--------------------------------------------------------------------------
+        */
+            if (
+                $lichs->contains(function ($lich) {
+                    return \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->lt(today());
+                })
+            ) {
+                throw new \Exception(
+                    'Không thể gộp lịch đã khởi hành.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Chỉ cho phép cách nhau tối đa 7 ngày
+        |--------------------------------------------------------------------------
+        */
+            $min = $lichs->min('ngay_khoi_hanh');
+
+            $max = $lichs->max('ngay_khoi_hanh');
+
+            if (
+                $min->diffInDays($max) > 7
+            ) {
+                throw new \Exception(
+                    'Các lịch cách nhau quá 7 ngày.'
+                );
+            }
+
+            /*
+        |--------------------------------------------------------------------------
+        | Tạo yêu cầu
+        |--------------------------------------------------------------------------
+        */
+            $this->yeuCauGopDoanService
+                ->taoYeuCauThuCong(
+                    $request->lich_ids,
+                    $request->ly_do_de_xuat,
+                    $request->lich_chinh_id
+                );
+
+            return redirect()
+                ->route('Admin.gop-doan.index')
+                ->with(
+                    'success',
+                    'Tạo yêu cầu gộp đoàn thành công.'
+                );
+        } catch (\Exception $e) {
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+    }
+
+    public function lichSu()
+    {
+        $data = $this->gopDoanService->layLichSu();
+
+        return view(
+            'Admin.gop_doan.lich-su',
+            compact('data')
+        );
     }
 }

@@ -37,6 +37,7 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Admin\LichKhoiHanhController;
 use App\Http\Controllers\Admin\GopDoanController;
+use App\Http\Controllers\Admin\YeuCauGopDoanController;
 
 use App\Http\Controllers\VaiTroController;
 use App\Http\Controllers\QuanLyDatTourController;
@@ -200,71 +201,54 @@ Route::prefix('Admin')
         \App\Http\Middleware\IsAdmin::class
     ])
     ->group(function () {
-
-
         /*
         |--------------------------------------------------------------------------
         | Dashboard
         |--------------------------------------------------------------------------
         */
-
         Route::get('/', function () {
             return view('Layouts.admin');
         })->name('dashboard');
-
-
 
         /*
         |--------------------------------------------------------------------------
         | USERS
         |--------------------------------------------------------------------------
         */
-
         Route::resource(
             'users',
             UserController::class
         );
-
-
 
         /*
         |--------------------------------------------------------------------------
         | KHÁCH HÀNG
         |--------------------------------------------------------------------------
         */
-
         Route::resource(
             'khach-hang',
             KhachHangDatTourController::class
         );
-
-
 
         /*
         |--------------------------------------------------------------------------
         | HƯỚNG DẪN VIÊN
         |--------------------------------------------------------------------------
         */
-
         Route::resource(
             'huong-dan-viens',
             HuongDanVienController::class
         );
-
-
 
         /*
         |--------------------------------------------------------------------------
         | LỊCH KHỞI HÀNH
         |--------------------------------------------------------------------------
         */
-
         Route::resource(
             'lich-khoi-hanh',
             LichKhoiHanhController::class
         );
-
-
 
         /*
         |--------------------------------------------------------------------------
@@ -272,37 +256,114 @@ Route::prefix('Admin')
         |--------------------------------------------------------------------------
         */
 
-        Route::resource(
-            'gop-doan',
-            GopDoanController::class
-        );
-
-
-        // Hủy yêu cầu gộp đoàn
-        Route::post(
-            'gop-doan/{id}/huy',
+        //Lịch sdử gộp đoàn
+        Route::get(
+            'gop-doan/lich-su',
             [
                 GopDoanController::class,
-                'destroy'
+                'lichSu'
             ]
-        )->name('gop-doan.huy');
+        )->name('gop-doan.lich-su');
 
-        Route::post(
-            'gop-doan/chi-tiet/{id}/trang-thai',
+        // Gộp đoàn thủ công
+        Route::get(
+            'gop-doan/thu-cong',
             [
                 GopDoanController::class,
-                'capNhatTrangThaiLienHe'
+                'thuCong'
             ]
-        )
-            ->name('gop-doan.cap-nhat-trang-thai');
+        )->name('gop-doan.thu-cong');
 
         Route::post(
-            'gop-doan/{id}/chot',
+            'gop-doan/thu-cong',
             [
                 GopDoanController::class,
-                'chotGop'
+                'storeThuCong'
             ]
-        )->name('gop-doan.chot');
+        )->name('gop-doan.thu-cong.store');
+
+        // Route::resource(
+        //     'gop-doan',
+        //     GopDoanController::class
+        // );
+
+        Route::resource('gop-doan', GopDoanController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'show'
+            ]);
+
+        // Tạo yêu cầu từ đề xuất AI
+        Route::post(
+            'gop-doan/de-xuat',
+            [
+                GopDoanController::class,
+                'storeAI'
+            ]
+        )->name('gop-doan.ai.store');
+
+        // // Hủy yêu cầu gộp đoàn
+        // Route::post(
+        //     'gop-doan/{id}/huy',
+        //     [
+        //         GopDoanController::class,
+        //         'destroy'
+        //     ]
+        // )->name('gop-doan.huy');
+
+        // Route::post(
+        //     'gop-doan/chi-tiet/{id}/trang-thai',
+        //     [
+        //         GopDoanController::class,
+        //         'capNhatTrangThaiLienHe'
+        //     ]
+        // )
+        //     ->name('gop-doan.cap-nhat-trang-thai');
+
+        // Route::post(
+        //     'gop-doan/{id}/chot',
+        //     [
+        //         GopDoanController::class,
+        //         'chotGop'
+        //     ]
+        // )->name('gop-doan.chot');
+
+        Route::prefix('yeu-cau-gop-doan')
+            ->name('yeu-cau-gop-doan.')
+            ->group(function () {
+
+                Route::get('/', [YeuCauGopDoanController::class, 'index'])
+                    ->name('index');
+
+                Route::get('/{id}', [YeuCauGopDoanController::class, 'show'])
+                    ->name('show');
+
+                Route::post(
+                    '/chi-tiet/{id}/trang-thai',
+                    [YeuCauGopDoanController::class, 'capNhatTrangThaiLienHe']
+                )
+                    ->name('cap-nhat-trang-thai');
+
+                Route::post(
+                    '/{id}/chot',
+                    [YeuCauGopDoanController::class, 'chotGop']
+                )
+                    ->name('chot');
+
+                Route::post(
+                    '/{id}/huy',
+                    [YeuCauGopDoanController::class, 'destroy']
+                )
+                    ->name('destroy');
+
+                Route::get(
+                    '/lich-su',
+                    [YeuCauGopDoanController::class, 'lichSu']
+                )
+                    ->name('lich-su');
+            });
     });
 
 
@@ -465,26 +526,6 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'show'
     ]);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Route::prefix('guide')->name('guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
-
-
-// });
-
 
 // Login Guide
 Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {

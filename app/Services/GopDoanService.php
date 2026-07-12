@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Models\LichKhoiHanhTour;
 use Carbon\Carbon;
-use App\Services\YeuCauGopDoanService;
+// use App\Services\YeuCauGopDoanService;
 use Illuminate\Support\Facades\DB;
 use App\Models\YeuCauGopDoan;
 use App\Models\DatTour;
+
 
 class GopDoanService
 {
@@ -22,17 +23,17 @@ class GopDoanService
             $nhom = $item['nhom'];
 
             $deXuats[] = [
-                'id' => $item['yeuCau']->id ?? null,
-
-                'yeuCau' => $item['yeuCau'] ?? null,
 
                 'nhom' => $nhom,
+
+                'lich_chinh' => $nhom->first(),
 
                 'tong_khach' => $nhom->sum('so_cho_da_dat'),
 
                 'diem' => $item['diem'],
 
                 'ly_do' => $item['ly_do'],
+
             ];
         }
 
@@ -40,40 +41,50 @@ class GopDoanService
             return $b['diem'] <=> $a['diem'];
         });
 
+
         return $deXuats;
     }
 
     private function timNhomCoTheGop()
     {
+        // Chỉ lấy các lịch còn tự do
         $tourGroups = LichKhoiHanhTour::with('tour')
-            ->where('da_gop', false)
+            ->where('da_gop', 0)
+            ->where('dang_gop_doan', 0)
             ->where('so_cho_da_dat', '>', 0)
             ->get()
-            ->filter(fn($x) => $x->trang_thai_hien_thi === 'Đã đóng')
+            ->filter(fn($lich) => $lich->trang_thai_hien_thi === 'Đã đóng')
             ->groupBy('tour_id');
 
         $ketQua = [];
 
-        foreach ($tourGroups as $tour) {
+        foreach ($tourGroups as $lichTheoTour) {
 
-            $tour = $tour->sortBy('ngay_khoi_hanh')->values();
+            $lichTheoTour = $lichTheoTour
+                ->sortBy('ngay_khoi_hanh')
+                ->values();
 
+            // đánh dấu lịch đã dùng
             $daDung = [];
 
             while (true) {
 
-                $conLai = $tour
-                    ->reject(fn($x) => in_array($x->id, $daDung))
+                $conLai = $lichTheoTour
+                    ->reject(fn($l) => in_array($l->id, $daDung))
                     ->values();
 
                 if ($conLai->count() < 2) {
                     break;
                 }
 
-                $toHops = $this->taoTatCaToHop($conLai->all());
-
                 $totNhat = null;
                 $diemTotNhat = -1;
+
+                $toHops = $this->taoTatCaToHop(
+                    $conLai->all(),
+                    2,
+                    4
+                );
 
                 foreach ($toHops as $nhom) {
 
@@ -84,8 +95,9 @@ class GopDoanService
                     $diem = $this->tinhDiem($nhom);
 
                     if ($diem > $diemTotNhat) {
+
                         $diemTotNhat = $diem;
-                        $totNhat = $nhom;
+                        $totNhat = collect($nhom)->values();
                     }
                 }
 
@@ -93,34 +105,18 @@ class GopDoanService
                     break;
                 }
 
-                $nhomCollect = collect($totNhat)->values();
-
-
-                $lichIds = $nhomCollect->pluck('id')->sort()->values()->toArray();
-
-                $yeuCau = YeuCauGopDoan::with('chiTiets')
-                    ->where('trang_thai', 'cho_xu_ly')
-                    ->get()
-                    ->first(function ($yc) use ($lichIds) {
-
-                        $ids = $yc->chiTiets
-                            ->pluck('lich_khoi_hanh_id')
-                            ->unique()
-                            ->sort()
-                            ->values()
-                            ->toArray();
-
-                        return $ids == $lichIds;
-                    });
 
                 $ketQua[] = [
-                    'nhom' => $nhomCollect,
+
+                    'nhom' => $totNhat,
+
                     'diem' => $diemTotNhat,
+
                     'ly_do' => $this->sinhLyDo($totNhat),
 
-                    // thêm dòng này
-                    'yeuCau' => $yeuCau,
                 ];
+
+                // Đánh dấu các lịch đã dùng
                 foreach ($totNhat as $lich) {
                     $daDung[] = $lich->id;
                 }
@@ -298,25 +294,6 @@ class GopDoanService
 
             $lichHopLe = collect();
 
-            // foreach ($nhomTheoLich as $lichId => $chiTiets) {
-            //     //Không có ai đồng ý → bỏ lịch Không phải “có từ chối là loại”
-            //     if (!$chiTiets->contains('trang_thai_lien_he', 'dong_y')) {
-            //         continue;
-            //     }
-
-            //     //Chỉ cần CÓ người đồng ý là được Không cần tất cả đồng ý
-            //     if (!$chiTiets->contains('trang_thai_lien_he', 'dong_y')) {
-            //         throw new \Exception("Lịch #{$lichId} không có khách đồng ý gộp.");
-            //     } {
-
-            //         throw new \Exception(
-            //             "Lịch #{$lichId} vẫn còn booking chưa xác nhận."
-            //         );
-            //     }
-
-            //     $lichHopLe->push($lichId);
-            // }
-
             foreach ($nhomTheoLich as $lichId => $chiTiets) {
 
                 // bỏ lịch nếu không có ai đồng ý
@@ -375,12 +352,15 @@ class GopDoanService
                 }
 
                 // chuyển booking
-                DatTour::where(
-                    'lich_khoi_hanh_id',
-                    $lichId
-                )->update([
-                    'lich_khoi_hanh_id' => $lichChinhId
-                ]);
+                $bookingIds = $yeuCau->chiTiets
+                    ->where('lich_khoi_hanh_id', $lichId)
+                    ->where('trang_thai_lien_he', 'dong_y')
+                    ->pluck('dat_tour_id');
+
+                DatTour::whereIn('id', $bookingIds)
+                    ->update([
+                        'lich_khoi_hanh_id' => $lichChinhId
+                    ]);
 
                 $lichPhu = LichKhoiHanhTour::findOrFail($lichId);
 
@@ -418,9 +398,169 @@ class GopDoanService
         */
 
             $yeuCau->update([
-                'trang_thai' => 'hoan_tat'
+                'trang_thai' => 'hoan_tat',
+                'thoi_gian_hoan_tat' => now(),
             ]);
         });
+    }
+
+    public function layLichSu()
+    {
+        $data = YeuCauGopDoan::with([
+            'chiTiets.lichKhoiHanh.tour',
+            'chiTiets.datTour',
+            'phuongTien',
+            'huongDanVien'
+        ])
+            ->where('trang_thai', 'hoan_tat')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        $data->getCollection()->transform(function ($yeuCau) {
+
+            // ==========================
+            // Loại đề xuất
+            // ==========================
+
+            $yeuCau->loaiText = $yeuCau->loai_de_xuat == 'tu_dong'
+                ? 'AI'
+                : 'Thủ công';
+
+            // ==========================
+            // Trạng thái
+            // ==========================
+
+            $yeuCau->trangThaiText = $yeuCau->trang_thai == 'cho_xu_ly'
+                ? 'Chờ xử lý'
+                : 'Hoàn tất';
+
+            // ==========================
+            // Lịch chính
+            // ==========================
+
+            $lichChinh = $yeuCau->chiTiets
+                ->firstWhere('la_lich_chinh', 1);
+
+            $yeuCau->lichChinh = $lichChinh;
+
+            // ==========================
+            // Danh sách lịch
+            // ==========================
+
+            $yeuCau->danhSachLich = $yeuCau->chiTiets
+                ->groupBy('lich_khoi_hanh_id');
+
+            // ==========================
+            // Tour
+            // ==========================
+
+            $yeuCau->tenTour = optional(
+                optional($lichChinh)->lichKhoiHanh->tour
+            )->ten_tour ?? '-';
+
+            // ==========================
+            // Số lịch
+            // ==========================
+
+            $yeuCau->soLich = $yeuCau->danhSachLich->count();
+
+            // ==========================
+            // Tổng booking
+            // ==========================
+
+            $yeuCau->tongBooking = $yeuCau->chiTiets
+                ->whereNotNull('datTour')
+                ->count();
+
+            // ==========================
+            // Booking đồng ý
+            // ==========================
+
+            $yeuCau->bookingDongY = $yeuCau->chiTiets
+                ->where('trang_thai_lien_he', 'dong_y')
+                ->count();
+
+            // ==========================
+            // Booking từ chối
+            // ==========================
+
+            $yeuCau->bookingTuChoi = $yeuCau->chiTiets
+                ->where('trang_thai_lien_he', 'tu_choi')
+                ->count();
+
+            // ==========================
+            // Booking chưa liên hệ
+            // ==========================
+
+            $yeuCau->bookingChuaLienHe = $yeuCau->chiTiets
+                ->where('trang_thai_lien_he', 'chua_lien_he')
+                ->count();
+
+            // ==========================
+            // Tổng khách
+            // ==========================
+
+            $yeuCau->tongKhach = $yeuCau->chiTiets
+                ->sum(function ($ct) {
+
+                    if (!$ct->datTour) {
+                        return 0;
+                    }
+
+                    return ($ct->datTour->so_nguoi_lon ?? 0)
+                        + ($ct->datTour->so_tre_em ?? 0)
+                        + ($ct->datTour->so_em_be ?? 0);
+                });
+
+            // ==========================
+            // Khách đã chuyển
+            // ==========================
+
+            $yeuCau->khachDaChuyen = $yeuCau->chiTiets
+                ->where('trang_thai_lien_he', 'dong_y')
+                ->sum(function ($ct) {
+
+                    if (!$ct->datTour) {
+                        return 0;
+                    }
+
+                    return ($ct->datTour->so_nguoi_lon ?? 0)
+                        + ($ct->datTour->so_tre_em ?? 0)
+                        + ($ct->datTour->so_em_be ?? 0);
+                });
+
+            // ==========================
+            // Khách ở lại
+            // ==========================
+
+            $yeuCau->khachBoLai = $yeuCau->chiTiets
+                ->where('trang_thai_lien_he', 'tu_choi')
+                ->sum(function ($ct) {
+
+                    if (!$ct->datTour) {
+                        return 0;
+                    }
+
+                    return ($ct->datTour->so_nguoi_lon ?? 0)
+                        + ($ct->datTour->so_tre_em ?? 0)
+                        + ($ct->datTour->so_em_be ?? 0);
+                });
+
+            // ==========================
+            // Quyền thao tác
+            // ==========================
+
+            $yeuCau->coTheHuy =
+                $yeuCau->trang_thai == 'cho_xu_ly';
+
+            $yeuCau->coTheChot =
+                $yeuCau->trang_thai == 'cho_xu_ly'
+                && $yeuCau->bookingChuaLienHe == 0;
+
+            return $yeuCau;
+        });
+
+        return $data;
     }
 
     private function tinhTongKhachTheoLich($lichId)

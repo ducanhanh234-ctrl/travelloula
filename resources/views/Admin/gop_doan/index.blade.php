@@ -26,12 +26,27 @@
 
                 <h3 class="fw-bold mb-1">
                     <i class="fas fa-object-group text-primary me-2"></i>
-                    Đề xuất gộp đoàn
+                    Đề xuất gộp đoàn tự động
                 </h3>
 
                 <small class="text-muted">
-                    Hệ thống tự động phân tích các lịch khởi hành có thể gộp tối ưu.
+                    Các nhóm dưới đây được AI đề xuất có thể gộp.
+                    Sau khi tạo yêu cầu, việc quản lý sẽ thực hiện tại trang "Lịch sử gộp đoàn".
                 </small>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+                <a href="{{ route('Admin.gop-doan.thu-cong') }}" class="btn btn-success">
+                    <i class="fas fa-hand-paper me-1"></i>
+                    Gộp đoàn thủ công
+                </a>
+
+                <a href="{{ route('Admin.gop-doan.lich-su') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-history me-1"></i>
+                    Lịch sử gộp đoàn
+                </a>
 
             </div>
 
@@ -130,7 +145,7 @@
                             <th>Tổng khách</th>
                             <th>Điểm</th>
                             <th>Lý do</th>
-                            <th width="120">Thao tác</th>
+                            <th width="160">Tạo yêu cầu</th>
                         </tr>
 
                     </thead>
@@ -323,45 +338,8 @@
 
                                 <td class="text-center">
 
-                                    @php
-                                        // Lấy yêu cầu thật (quan trọng nhất)
-                                        $yeuCau = $item['yeuCau'] ?? null;
-
-                                        $status = $yeuCau->trang_thai ?? null;
-                                        $yeuCauId = $yeuCau->id ?? null;
-
-                                        // check nhóm đã bị lock chưa
-                                        $daCoYeuCau = collect($item['nhom'])->contains(
-                                            fn($l) => $l->dang_gop_doan != 0,
-                                        );
-                                    @endphp
-
-                                    {{-- TRẠNG THÁI --}}
-                                    <div class="mb-2">
-
-                                        @if (!$yeuCau)
-                                            <span class="badge bg-secondary">Chưa tạo yêu cầu</span>
-                                        @elseif($status == 'cho_xu_ly')
-                                            <span class="badge bg-warning text-dark">🟡 Đã tạo yêu cầu</span>
-                                        @elseif($status == 'hoan_tat')
-                                            <span class="badge bg-success">🟢 Đã gộp xong</span>
-                                        @endif
-
-                                    </div>
-
-                                    @if ($yeuCauId)
-                                        <a href="{{ route('Admin.gop-doan.show', ['gop_doan' => $yeuCauId]) }}"
-                                            class="btn btn-primary btn-sm">
-
-                                            <i class="fas fa-eye"></i>
-
-                                            Xem chi tiết
-
-                                        </a>
-                                    @endif
-
                                     {{-- FORM TẠO YÊU CẦU --}}
-                                    <form action="{{ route('Admin.gop-doan.store') }}" method="POST">
+                                    <form action="{{ route('Admin.gop-doan.ai.store') }}" method="POST">
                                         @csrf
 
                                         @foreach ($item['nhom'] as $lich)
@@ -371,33 +349,16 @@
                                         <input type="hidden" name="ly_do_de_xuat"
                                             value="{{ implode(' | ', $item['ly_do']) }}">
 
-                                        <button
-                                            class="btn btn-success btn-sm rounded-pill px-4 shadow
-                                            @if ($daCoYeuCau) btn-secondary @endif"
-                                            onclick="return confirm('Tạo yêu cầu gộp đoàn?')"
-                                            @if ($daCoYeuCau) disabled @endif>
+                                        <button class="btn btn-success btn-sm rounded-pill px-4 shadow"
+                                            onclick="return confirm('Tạo yêu cầu gộp đoàn?')">
+
                                             <i class="fas fa-plus-circle me-1"></i>
 
-                                            @if ($daCoYeuCau)
-                                                Đã tạo yêu cầu
-                                            @else
-                                                Tạo yêu cầu
-                                            @endif
+                                            Tạo yêu cầu
+
                                         </button>
 
                                     </form>
-
-                                    {{-- NÚT HỦY (SỬA ĐÚNG 100%) --}}
-                                    @if ($yeuCauId && $status == 'cho_xu_ly')
-                                        <form action="{{ route('Admin.gop-doan.huy', $yeuCauId) }}" method="POST">
-                                            @csrf
-
-                                            <button class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Hủy yêu cầu này?')">
-                                                Hủy
-                                            </button>
-                                        </form>
-                                    @endif
 
                                 </td>
 

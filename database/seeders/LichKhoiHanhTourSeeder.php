@@ -22,12 +22,14 @@ class LichKhoiHanhTourSeeder extends Seeder
         */
 
         $soChoDaDat = [
-            1 => 8,
-            2 => 12,
-            3 => 10,
+
+            1 => 12,
+            2 => 15,
+            3 => 18,
             4 => 15,
             5 => 15,
-            6 => 9,
+            6 => 20,
+
         ];
 
         for ($i = 1; $i <= 6; $i++) {

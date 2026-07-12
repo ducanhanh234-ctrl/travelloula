@@ -12,6 +12,7 @@ class YeuCauGopDoan extends Model
     protected $table = 'yeu_cau_gop_doans';
     protected $casts = [
         'ly_do_de_xuat' => 'array',
+        'thoi_gian_hoan_tat' => 'datetime',
     ];
 
     protected $fillable = [
@@ -42,5 +43,24 @@ class YeuCauGopDoan extends Model
     public function huongDanVien()
     {
         return $this->belongsTo(HuongDanVien::class, 'huong_dan_vien_id');
+    }
+
+    public function getLichBiGopAttribute()
+    {
+        return $this->chiTiets
+            ->where('la_lich_chinh', 0)
+            ->pluck('lich_khoi_hanh_id')
+            ->unique()
+            ->sort()
+            ->values();
+    }
+
+    public function getMaHienThiAttribute(): string
+    {
+        if (empty($this->ma_yeu_cau)) {
+            return '-';
+        }
+
+        return 'YG-' . substr($this->ma_yeu_cau, -5);
     }
 }

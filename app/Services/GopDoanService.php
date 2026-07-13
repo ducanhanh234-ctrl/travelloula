@@ -298,25 +298,6 @@ class GopDoanService
 
             $lichHopLe = collect();
 
-            // foreach ($nhomTheoLich as $lichId => $chiTiets) {
-            //     //Không có ai đồng ý → bỏ lịch Không phải “có từ chối là loại”
-            //     if (!$chiTiets->contains('trang_thai_lien_he', 'dong_y')) {
-            //         continue;
-            //     }
-
-            //     //Chỉ cần CÓ người đồng ý là được Không cần tất cả đồng ý
-            //     if (!$chiTiets->contains('trang_thai_lien_he', 'dong_y')) {
-            //         throw new \Exception("Lịch #{$lichId} không có khách đồng ý gộp.");
-            //     } {
-
-            //         throw new \Exception(
-            //             "Lịch #{$lichId} vẫn còn booking chưa xác nhận."
-            //         );
-            //     }
-
-            //     $lichHopLe->push($lichId);
-            // }
-
             foreach ($nhomTheoLich as $lichId => $chiTiets) {
 
                 // bỏ lịch nếu không có ai đồng ý

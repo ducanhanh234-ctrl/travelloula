@@ -318,3 +318,4 @@ class TourController extends Controller
             ->with('success', 'Xóa thành công');
     }
 }
+

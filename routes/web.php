@@ -1,38 +1,94 @@
 <?php
 
-use App\Http\Controllers\Admin\ChiTietLichTrinhController;
-use App\Http\Controllers\Admin\DatTourController;
-use App\Http\Controllers\Admin\GopDoanController;
-use App\Http\Controllers\Admin\HinhAnhTourController;
-use App\Http\Controllers\Admin\LichKhoiHanhController;
-use App\Http\Controllers\Admin\LichTrinhTourController;
-use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
-use App\Http\Controllers\Admin\NhatKyTourController;
-use App\Http\Controllers\Admin\TourController;
+
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BannerController;
+
 use App\Http\Controllers\Client\HomeClientController;
 use App\Http\Controllers\Client\TourClientController;
 use App\Http\Controllers\Client\TourYeuThichController;
+
+use App\Http\Controllers\Admin\ChiTietLichTrinhController;
+use App\Http\Controllers\Admin\LichKhoiHanhController;
+use App\Http\Controllers\Admin\GopDoanController;
+use App\Http\Controllers\Admin\TourController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\LichTrinhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+use App\Http\Controllers\Admin\DatTourController;
+use App\Http\Controllers\Admin\NhatKyTourController;
+use App\Http\Controllers\BaiVietController;
 use App\Http\Controllers\DanhGiaController;
-use App\Http\Controllers\DanhMucController;
-use App\Http\Controllers\Guide\BaoCaoSuCoController;
-use App\Http\Controllers\Guide\CheckInController;
-use App\Http\Controllers\Guide\NhatKyHuongDanVienController;
-use App\Http\Controllers\HuongDanVienController;
-use App\Http\Controllers\KhachHangDatTourController;
-use App\Http\Controllers\PhanCongController;
-use App\Http\Controllers\PhuongTienController;
-use App\Http\Controllers\QuanLyDatTourController;
-use App\Http\Controllers\ThanhToanController;
 use App\Http\Controllers\ThongKeController;
+use App\Http\Controllers\BannerController;
+use App\Http\Controllers\Client\BaiVietClientController;
+use App\Http\Controllers\DanhMucController;
+use App\Http\Controllers\ThanhToanController;
+use App\Http\Controllers\KhachHangDatTourController;
+use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\QuanLyDatTourController;
+use App\Http\Controllers\PhanCongController;
+use App\Http\Controllers\PhuongTienController;
+use App\Http\Controllers\TrangDieuKhoanController;
 
-Route::get('/', function () {
-    return redirect()->route('login');
+/*
+|--------------------------------------------------------------------------
+| CLIENT ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', [HomeClientController::class, 'index'])
+    ->name('Client.home');
+
+
+Route::get('/trang_chu', [HomeClientController::class, 'index'])
+    ->name('Client.trang_chu.index');
+
+Route::get('/tour', [TourClientController::class, 'index'])
+    ->name('Client.danh_sach_tour.index');
+
+Route::get('/tour/{id}', [TourClientController::class, 'show'])
+    ->name('Client.danh_sach_tour.show');
+
+Route::get('/bai_viet', [BaiVietClientController::class, 'index'])
+    ->name('Client.bai_viet.index');
+
+
+Route::get('/bai_viet/{duongDan}', [BaiVietClientController::class, 'show'])
+    ->name('Client.bai_viet.detail');
+
+
+Route::get('/ve_chung_toi', function () {
+    return view('Client.ve_chung_toi.index');
+})->name('Client.ve_chung_toi.index');
+
+
+Route::get('/demo', function () {
+    return view('Client.demo');
+})->name('Client.demo');
+
+Route::get('/dieu_khoan', [TrangDieuKhoanController::class, 'clientShow'])
+    ->name('Client.dieu_khoan.index');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tour_yeu_thich', [TourYeuThichController::class, 'index'])
+        ->name('Client.tour_yeu_thich.index');
+
+    Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])
+        ->name('Client.tour_yeu_thich.store');
+
+    Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])
+        ->name('Client.tour_yeu_thich.destroy');
 });
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register'])->name('register.perform');
@@ -52,6 +108,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
+
 Route::prefix('Admin')
     ->name('Admin.')
     ->middleware([
@@ -61,16 +118,35 @@ Route::prefix('Admin')
     ->group(function () {
 
 
+
         /*
         |--------------------------------------------------------------------------
         | Dashboard
         |--------------------------------------------------------------------------
         */
 
+
+Route::get('/danh_sach_tour_yeu_thich', function () {
+    return view('Client.danh_sach_tour_yeu_thich.index');
+});
+Route::get('/dieu_khoan', function () {
+    return view('Client.dieu_khoan.index');
+});
+Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
+Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
+
+Route::resource('tour_da_dat',TourDaDatController::class);
+// Auth routes
+use App\Http\Controllers\AuthController;
+
+
         Route::get('/', function () {
             return view('Layouts.admin');
         })->name('dashboard');
 
+
+
+     
 
 
         /*
@@ -86,16 +162,19 @@ Route::prefix('Admin')
 
 
 
+
         /*
         |--------------------------------------------------------------------------
         | KHÁCH HÀNG
         |--------------------------------------------------------------------------
         */
 
+
         Route::resource(
             'khach-hang',
             KhachHangDatTourController::class
         );
+
 
 
 
@@ -131,10 +210,20 @@ Route::prefix('Admin')
         |--------------------------------------------------------------------------
         */
 
+
         Route::resource(
             'gop-doan',
             GopDoanController::class
         );
+
+        // Hủy yêu cầu gộp đoàn
+        Route::post(
+            'gop-doan/{id}/huy',
+            [
+                GopDoanController::class,
+                'destroy'
+            ]
+        )->name('gop-doan.huy');
 
 
         // Hủy yêu cầu gộp đoàn
@@ -183,6 +272,24 @@ Route::prefix('Guide')
     });
 
 
+/*
+|--------------------------------------------------------------------------
+| GUIDE ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('Guide')
+    ->name('Guide.')
+    ->middleware(['auth', \App\Http\Middleware\IsGuide::class])
+    ->group(function () {
+
+        Route::get('/', function () {
+            return view('Layouts.guide');
+        })->name('dashboard');
+    });
+
+
+
 
 
 // Login ADMIN
@@ -197,6 +304,7 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
     Route::resource('khach-hang', KhachHangDatTourController::class);
     Route::resource('huong-dan-viens', HuongDanVienController::class);
     Route::get('/quan-ly-dat-tour', [QuanLyDatTourController::class, 'index'])->name('quan_ly_dat_tour.index');
+    Route::resource('bai_viets', BaiVietController::class);
     // thêm booking thủ công
 
     Route::get('/dat-tours/create', [QuanLyDatTourController::class, 'create'])
@@ -241,6 +349,16 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         [QuanLyDatTourController::class, 'store']
     )
         ->name('dat-tours.store');
+
+    //  điều khoản
+    // điều khoản
+    Route::get('/trang_dieu_khoans/edit', [TrangDieuKhoanController::class, 'edit'])
+        ->name('trang_dieu_khoans.edit');
+
+    Route::put('/trang_dieu_khoans', [TrangDieuKhoanController::class, 'update'])
+        ->name('trang_dieu_khoans.update');
+
+
 
     //lich khởi hành theo tour
     Route::get(
@@ -380,6 +498,7 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])
         ->name('nhatky.index');
 
+
     Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])
         ->name('nhatky.show');
 
@@ -416,4 +535,19 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
 
     Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])
         ->name('baocaosuco.show');
+
+    Route::get('/', function () {
+        return view('Layouts.guide');
+    })->name('dashboard');
+    //Guide routes
+    Route::resource('phuong-tiens', PhuongTienController::class);
+
+Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
+    ->name('vnpay.payment');
+
+Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
+    ->name('vnpay.return');
+
+
 });
+

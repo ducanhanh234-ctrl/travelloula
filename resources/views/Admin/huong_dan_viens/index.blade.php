@@ -1,5 +1,9 @@
 @extends('layouts.admin')
+
+@section('title', 'Quản lý hướng dẫn viên')
+
 @section('content')
+
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3>Quản lý hướng dẫn viên</h3>
@@ -283,3 +287,4 @@
 
 </style>
 @endsection
+

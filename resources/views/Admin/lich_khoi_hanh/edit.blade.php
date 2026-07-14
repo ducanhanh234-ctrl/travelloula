@@ -29,6 +29,7 @@
                                 </ul>
                             </div>
                         @endif
+
                         <form method="POST" action="{{ route('Admin.lich-khoi-hanh.update', $item->id) }}">
 
                             @csrf

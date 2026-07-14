@@ -13,11 +13,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // DanhMucSeeder::class,
             // DanhSachTourSeeder::class,
-            //UserSeeder::class,
-            //HuongDanVienSeeder::class,
-            //PhuongTienSeeder::class,
-            //LichKhoiHanhTourSeeder::class,
-            DatTourSeeder::class, // thêm dòng này
+
+            // UserSeeder::class,
+            // HuongDanVienSeeder::class,
+            // PhuongTienSeeder::class,
+            // LichKhoiHanhTourSeeder::class,
+            //DatTourSeeder::class, // thêm dòng này
+
 
         ]);
     }

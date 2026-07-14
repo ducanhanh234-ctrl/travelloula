@@ -43,6 +43,7 @@ class PhuongTienController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'ten_phuong_tien' => 'required|max:255',
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe',
 
             'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
@@ -55,6 +56,19 @@ class PhuongTienController extends Controller
             'so_dien_thoai_tai_xe' => 'required|max:255',
             'ghi_chu' => 'nullable|string',
         ]);
+        switch ($data['loai_phuong_tien']) {
+            case 'xe_16_cho':
+                $data['so_cho'] = 16;
+                break;
+
+            case 'xe_29_cho':
+                $data['so_cho'] = 29;
+                break;
+
+            case 'xe_45_cho':
+                $data['so_cho'] = 45;
+                break;
+        }
 
         PhuongTien::create($data);
 
@@ -82,6 +96,7 @@ class PhuongTienController extends Controller
         $phuongTien = PhuongTien::findOrFail($id);
 
         $data = $request->validate([
+            'ten_phuong_tien' => 'required|max:255',
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe,' . $phuongTien->id,
 
             'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
@@ -94,6 +109,19 @@ class PhuongTienController extends Controller
             'so_dien_thoai_tai_xe' => 'required|max:255',
             'ghi_chu' => 'nullable|string',
         ]);
+        switch ($data['loai_phuong_tien']) {
+            case 'xe_16_cho':
+                $data['so_cho'] = 16;
+                break;
+
+            case 'xe_29_cho':
+                $data['so_cho'] = 29;
+                break;
+
+            case 'xe_45_cho':
+                $data['so_cho'] = 45;
+                break;
+        }
 
         $phuongTien->update($data);
 

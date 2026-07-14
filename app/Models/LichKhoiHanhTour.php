@@ -30,6 +30,10 @@ class LichKhoiHanhTour extends Model
         'so_cho',
         'so_cho_con_lai',
         'so_cho_da_dat',
+
+        'gia_nguoi_lon',
+        'gia_tre_em',
+
         'huong_dan_vien_id',
         'gia_nguoi_lon',
         'gia_tre_em',
@@ -40,7 +44,12 @@ class LichKhoiHanhTour extends Model
 
         'huong_dan_vien_id',
         'phuong_tien_id',
+
         'trang_thai',
+
+        'dang_gop_doan',
+        'gop_vao_lich_id',
+        'da_gop',
     ];
 
     protected $casts = [
@@ -106,6 +115,7 @@ class LichKhoiHanhTour extends Model
         // 6. Mở bán
         return 'Mở bán';
     }
+
     public function capNhatTrangThai()
     {
         $today = Carbon::today();
@@ -132,6 +142,7 @@ class LichKhoiHanhTour extends Model
 
         $this->save();
     }
+
 
     public function chiTietGopDoan()
     {
@@ -160,6 +171,36 @@ class LichKhoiHanhTour extends Model
         return $this->belongsTo(
             PhuongTien::class,
             'phuong_tien_id'
+
+
+        );
+    }
+    public function phanCong()
+    {
+        return $this->hasOne(PhanCong::class);
+    }
+
+    public function checkIns()
+    {
+        return $this->hasMany(
+            CheckInKhachHang::class,
+            'lich_khoi_hanh_id'
+        );
+    }
+
+    public function baoCaoSuCos()
+    {
+        return $this->hasMany(
+            BaoCaoSuCo::class,
+            'lich_khoi_hanh_id'
+        );
+    }
+
+    public function nhatKys()
+    {
+        return $this->hasMany(
+            NhatKyHuongDanVien::class,
+            'lich_khoi_hanh_id'
 
         );
     }

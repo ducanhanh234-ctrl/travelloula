@@ -298,6 +298,7 @@ class GopDoanService
 
             $lichHopLe = collect();
 
+
             foreach ($nhomTheoLich as $lichId => $chiTiets) {
 
                 // bỏ lịch nếu không có ai đồng ý

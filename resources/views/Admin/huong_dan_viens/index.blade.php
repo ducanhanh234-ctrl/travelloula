@@ -4,400 +4,287 @@
 
 @section('content')
 
-    <div class="container">
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Quản lý hướng dẫn viên</h3>
+        <a href="{{ route('Admin.huong-dan-viens.create') }}" class="btn btn-primary">Thêm hướng dẫn viên</a>
+    </div>
+
+    @if (session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Điện thoại</th>
+                    <th>Kinh nghiệm</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($guides as $guide)
+                <tr>
+                    <td>{{ $guide->id }}</td>
+                    <td>{{ $guide->ho_ten }}</td>
+                    <td>{{ $guide->email }}</td>
+                    <td>{{ $guide->so_dien_thoai }}</td>
+                    <td>{{ $guide->so_nam_kinh_nghiem }} Năm</td>
+                    <td>
+                        <span class="status-badge
+    @switch($guide->trang_thai)
+        @case('hoat_dong')
+        @case('san_sang')
+            status-active
+            @break
+
+        @case('dang_dan_tour')
+            status-assigned
+            @break
+
+        @case('khong_hoat_dong')
+            status-inactive
+            @break
+
+        @case('bi_khoa')
+        @case('nghi_viec')
+            status-locked
+            @break
+
+        @default
+            status-inactive
+    @endswitch
+">
+
+                            @switch($guide->trang_thai)
+
+                            @case('hoat_dong')
+                            Hoạt động
+                            @break
+
+                            @case('san_sang')
+                            Sẵn sàng
+                            @break
+
+                            @case('dang_dan_tour')
+                            Đang dẫn tour
+                            @break
+
+                            @case('khong_hoat_dong')
+                            Không hoạt động
+                            @break
+
+                            @case('bi_khoa')
+                            Bị khóa
+                            @break
+
+                            @case('nghi_viec')
+                            Nghỉ việc
+                            @break
+
+                            @default
+                            Không xác định
+
+                            @endswitch
+
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ route('Admin.huong-dan-viens.show', $guide->id) }}" class="btn btn-sm btn-info">Xem</a>
+                        <a href="{{ route('Admin.huong-dan-viens.edit', $guide->id) }}" class="btn btn-sm btn-secondary">Sửa</a>
+                        <form action="{{ route('Admin.huong-dan-viens.destroy', $guide->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa hướng dẫn viên này?');">
+                            @csrf @method('DELETE')
+                            <button class="btn btn-sm btn-danger">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">Chưa có hướng dẫn viên nào.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    {{ $guides->links() }}
+</div>
+<style>
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .btn-add-guide {
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        border: none;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: .3s;
+    }
+
+    .btn-add-guide:hover {
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, .25);
+    }
+
+    /* Card */
+    .guide-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, .08);
+        border: 1px solid #e5e7eb;
+    }
+
+    /* Table */
+    .guide-table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .guide-table thead th {
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        font-size: 13px;
+        text-transform: uppercase;
+        font-weight: 700;
+        padding-bottom: 15px;
+    }
+
+    .guide-table tbody tr {
+        background: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, .04);
+        transition: .25s;
+    }
+
+    .guide-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+    }
+
+    .guide-table tbody td {
+        vertical-align: middle;
+        border-top: 1px solid #eef2f7;
+        border-bottom: 1px solid #eef2f7;
+        padding: 16px;
+    }
+
+    .guide-table tbody td:first-child {
+        border-left: 1px solid #eef2f7;
+        border-radius: 12px 0 0 12px;
+    }
+
+    .guide-table tbody td:last-child {
+        border-right: 1px solid #eef2f7;
+        border-radius: 0 12px 12px 0;
+    }
+
+    /* Avatar */
+    .guide-user {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .guide-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    /* Status */
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-active {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .status-inactive {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    /* Buttons */
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        margin-right: 5px;
+        transition: .25s;
+    }
+
+    .btn-view {
+        background: #dbeafe;
+        color: #2563eb;
+    }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .action-btn:hover {
+        transform: scale(1.08);
+    }
+
+    /* Alert */
+    .alert-success {
+        border: none;
+        border-radius: 12px;
+        background: #dcfce7;
+        color: #166534;
+        font-weight: 600;
+    }
+
+    /* Pagination */
+    .pagination {
+        justify-content: center;
+        margin-top: 25px;
+    }
+
+</style>
+@endsection
 
-        {{-- Header --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-
-                <h3 class="fw-bold mb-1">
-                    Quản lý Hướng dẫn viên
-                </h3>
-
-                <p class="text-muted mb-0">
-                    Quản lý danh sách hướng dẫn viên trong hệ thống
-                </p>
-
-            </div>
-
-            <a href="{{ route('Admin.huong-dan-viens.create') }}" class="btn btn-primary">
-
-                <i class="fas fa-plus"></i>
-
-                Thêm hướng dẫn viên
-
-            </a>
-
-        </div>
-
-        {{-- Thống kê --}}
-        <div class="stats-grid">
-
-            <div class="stat-card">
-
-                <div class="stat-icon stat-icon-primary">
-
-                    <i class="fas fa-user-tie"></i>
-
-                </div>
-
-                <div class="stat-value">
-
-                    {{ $tongHDV }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Tổng HDV
-
-                </div>
-
-            </div>
-
-            <div class="stat-card">
-
-                <div class="stat-icon stat-icon-success">
-
-                    <i class="fas fa-check-circle"></i>
-
-                </div>
-
-                <div class="stat-value">
-
-                    {{ $sanSang }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Sẵn sàng
-
-                </div>
-
-            </div>
-
-            <div class="stat-card">
-
-                <div class="stat-icon stat-icon-warning">
-
-                    <i class="fas fa-route"></i>
-
-                </div>
-
-                <div class="stat-value">
-
-                    {{ $dangDanTour }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Đang dẫn tour
-
-                </div>
-
-            </div>
-
-            <div class="stat-card">
-
-                <div class="stat-icon stat-icon-danger">
-
-                    <i class="fas fa-user-times"></i>
-
-                </div>
-
-                <div class="stat-value">
-
-                    {{ $nghiViec }}
-
-                </div>
-
-                <div class="stat-label">
-
-                    Nghỉ việc
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {{-- Bộ lọc --}}
-        <div class="card mb-4">
-
-            <div class="card-header">
-
-                <i class="fas fa-filter me-2"></i>
-
-                Bộ lọc tìm kiếm
-
-            </div>
-
-            <div class="card-body">
-
-                <form method="GET">
-
-                    <div class="row g-3">
-
-                        <div class="col-md-5">
-
-                            <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control"
-                                placeholder="Tên, email, số điện thoại...">
-
-                        </div>
-
-                        <div class="col-md-3">
-
-                            <select name="trang_thai" class="form-select">
-
-                                <option value="">Tất cả trạng thái</option>
-
-                                <option value="san_sang" {{ request('trang_thai') == 'san_sang' ? 'selected' : '' }}>
-
-                                    Sẵn sàng
-
-                                </option>
-
-                                <option value="dang_dan_tour" {{ request('trang_thai') == 'dang_dan_tour' ? 'selected' : '' }}>
-
-                                    Đang dẫn tour
-
-                                </option>
-
-                                <option value="khong_hoat_dong"
-                                    {{ request('trang_thai') == 'khong_hoat_dong' ? 'selected' : '' }}>
-
-                                    Không hoạt động
-
-                                </option>
-
-                                <option value="nghi_viec" {{ request('trang_thai') == 'nghi_viec' ? 'selected' : '' }}>
-
-                                    Nghỉ việc
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <button class="btn btn-primary w-100">
-
-                                <i class="fas fa-search"></i>
-
-                            </button>
-
-                        </div>
-
-                        <div class="col-md-2">
-
-                            <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn btn-secondary w-100">
-
-                                <i class="fas fa-rotate-right"></i>
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-        {{-- Danh sách --}}
-        <div class="card">
-
-            <div class="card-header d-flex justify-content-between">
-
-                <span>
-
-                    <i class="fas fa-user-tie me-2"></i>
-
-                    Danh sách hướng dẫn viên
-
-                </span>
-
-                <span class="badge badge-primary">
-
-                    {{ $guides->total() }} HDV
-
-                </span>
-
-            </div>
-
-            <div class="card-body p-0">
-
-                <div class="table-responsive">
-
-                    <table class="table mb-0">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>ID</th>
-
-                                <th>Họ tên</th>
-
-                                <th>Email</th>
-
-                                <th>Số điện thoại</th>
-
-                                <th>Kinh nghiệm</th>
-
-                                <th>Trạng thái</th>
-
-                                <th width="220">
-
-                                    Thao tác
-
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            @forelse($guides as $guide)
-                                <tr>
-
-                                    <td>
-
-                                        {{ ($guides->currentPage() - 1) * $guides->perPage() + $loop->iteration }}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $guide->ho_ten }}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $guide->email }}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $guide->so_dien_thoai }}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ $guide->so_nam_kinh_nghiem }} năm
-
-                                    </td>
-
-                                    <td>
-                                        @switch($guide->trang_thai)
-                                            @case('san_sang')
-                                                <span class="badge bg-success">Sẵn sàng</span>
-                                            @break
-
-                                            @case('dang_dan_tour')
-                                                <span class="badge bg-warning text-dark">Đang dẫn tour</span>
-                                            @break
-
-                                            @case('khong_hoat_dong')
-                                                <span class="badge bg-secondary">Không hoạt động</span>
-                                            @break
-
-                                            @case('bi_khoa')
-                                                <span class="badge bg-danger">Bị khóa</span>
-                                            @break
-
-                                            @case('nghi_viec')
-                                                <span class="badge bg-dark">Nghỉ việc</span>
-                                            @break
-
-                                            @case('hoat_dong')
-                                                <span class="badge bg-primary">Hoạt động</span>
-                                            @break
-
-                                            @default
-                                                <span class="badge bg-light text-dark">Không xác định</span>
-                                        @endswitch
-                                    </td>
-
-                                    <td>
-
-                                        <div class="d-flex gap-1">
-
-                                            <a href="{{ route('Admin.huong-dan-viens.show', $guide) }}"
-                                                class="btn btn-outline-primary btn-sm">
-
-                                                <i class="fas fa-eye"></i>
-
-                                            </a>
-
-                                            <a href="{{ route('Admin.huong-dan-viens.edit', $guide) }}"
-                                                class="btn btn-warning btn-sm">
-
-                                                <i class="fas fa-edit"></i>
-
-                                            </a>
-
-                                            <form action="{{ route('Admin.huong-dan-viens.destroy', $guide) }}"
-                                                method="POST">
-
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button onclick="return confirm('Bạn có chắc muốn xóa?')"
-                                                    class="btn btn-danger btn-sm">
-
-                                                    <i class="fas fa-trash"></i>
-
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                                @empty
-
-                                    <tr>
-
-                                        <td colspan="7" class="text-center py-4">
-
-                                            Chưa có hướng dẫn viên nào.
-
-                                        </td>
-
-                                    </tr>
-                                @endforelse
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-                <div class="card-footer text-center">
-
-                    {{ $guides->appends(request()->query())->links() }}
-
-                </div>
-
-            </div>
-
-        </div>
-
-    @endsection

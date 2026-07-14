@@ -10,6 +10,7 @@
 
 <body>
 
+
 <header class="client-header">
     <div class="client-container header-inner">
 
@@ -92,6 +93,7 @@
             @endauth
         </div>
 
+
     </div>
 </header>
 
@@ -102,9 +104,11 @@
 <footer class="client-footer">
     <div class="footer-top-line"></div>
 
+
     <div class="footer-plane">
         <i class="fa-solid fa-plane"></i>
     </div>
+
 
     <div class="footer-bag">
         <i class="fa-solid fa-suitcase-rolling"></i>
@@ -262,6 +266,7 @@
         padding: 0;
         box-sizing: border-box;
     }
+
 
     :root {
         --primary: #0757d8;
@@ -1161,3 +1166,4 @@
 
 </body>
 </html>
+

@@ -42,6 +42,7 @@ use App\Http\Controllers\TrangDieuKhoanController;
 Route::get('/', [HomeClientController::class, 'index'])
     ->name('Client.home');
 
+
 Route::get('/trang_chu', [HomeClientController::class, 'index'])
     ->name('Client.trang_chu.index');
 
@@ -54,12 +55,15 @@ Route::get('/tour/{id}', [TourClientController::class, 'show'])
 Route::get('/bai_viet', [BaiVietClientController::class, 'index'])
     ->name('Client.bai_viet.index');
 
+
 Route::get('/bai_viet/{duongDan}', [BaiVietClientController::class, 'show'])
     ->name('Client.bai_viet.detail');
+
 
 Route::get('/ve_chung_toi', function () {
     return view('Client.ve_chung_toi.index');
 })->name('Client.ve_chung_toi.index');
+
 
 Route::get('/demo', function () {
     return view('Client.demo');
@@ -118,9 +122,24 @@ Route::prefix('Admin')
         |--------------------------------------------------------------------------
         */
 
+
+Route::get('/danh_sach_tour_yeu_thich', function () {
+    return view('Client.danh_sach_tour_yeu_thich.index');
+});
+Route::get('/dieu_khoan', function () {
+    return view('Client.dieu_khoan.index');
+});
+Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
+Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
+
+Route::resource('tour_da_dat',TourDaDatController::class);
+// Auth routes
+use App\Http\Controllers\AuthController;
+
         Route::get('/', function () {
             return view('Layouts.admin');
         })->name('dashboard');
+
 
 
 
@@ -416,4 +435,12 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
+
+Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
+    ->name('vnpay.payment');
+
+Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
+    ->name('vnpay.return');
+
 });
+

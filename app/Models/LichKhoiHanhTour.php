@@ -106,6 +106,32 @@ class LichKhoiHanhTour extends Model
         // 6. Mở bán
         return 'Mở bán';
     }
+    public function capNhatTrangThai()
+    {
+        $today = Carbon::today();
+
+        $ngayKhoiHanh = Carbon::parse($this->ngay_khoi_hanh);
+        $ngayKetThuc = Carbon::parse($this->ngay_ket_thuc);
+        $ngayDongBan = $ngayKhoiHanh->copy()->subDays(7);
+
+        if ($this->trang_thai == 'cancelled') {
+            return;
+        }
+
+        if ($today->gt($ngayKetThuc)) {
+            $this->trang_thai = 'finished';
+        } elseif ($today->between($ngayKhoiHanh, $ngayKetThuc)) {
+            $this->trang_thai = 'running';
+        } elseif ($this->so_cho_con_lai <= 0) {
+            $this->trang_thai = 'full';
+        } elseif ($today->gte($ngayDongBan)) {
+            $this->trang_thai = 'closed';
+        } else {
+            $this->trang_thai = 'available';
+        }
+
+        $this->save();
+    }
 
     public function chiTietGopDoan()
     {
@@ -127,7 +153,7 @@ class LichKhoiHanhTour extends Model
         return $this->belongsTo(
             LichKhoiHanhTour::class,
             'gop_vao_lich_id'
-);
+        );
     }
     public function phuongTien()
     {

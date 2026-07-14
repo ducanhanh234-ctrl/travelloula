@@ -65,4 +65,22 @@ class HuongDanVien extends Model
     {
         return $this->hasMany(PhanCong::class);
     }
+
+
+    public function checkIns()
+    {
+        return $this->hasMany(
+            CheckInKhachHang::class,
+            'huong_dan_vien_id'
+        );
+    }
+
+    public function baoCaoSuCos()
+    {
+        return $this->hasMany(
+            BaoCaoSuCo::class,
+            'huong_dan_vien_id'
+        );
+    }
+
 }

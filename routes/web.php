@@ -12,12 +12,7 @@ use App\Http\Controllers\Client\TourYeuThichController;
 use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\Admin\LichKhoiHanhController;
 use App\Http\Controllers\Admin\GopDoanController;
-use App\Http\Controllers\Admin\TourController;
-use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
-use App\Http\Controllers\Admin\LichTrinhTourController;
-use App\Http\Controllers\Admin\HinhAnhTourController;
-use App\Http\Controllers\Admin\DatTourController;
-use App\Http\Controllers\Admin\NhatKyTourController;
+
 use App\Http\Controllers\BaiVietController;
 use App\Http\Controllers\DanhGiaController;
 use App\Http\Controllers\ThongKeController;

@@ -26,10 +26,10 @@ class LichTrinhTour extends Model
 
         return $this->belongsTo(DanhSachTour::class, 'tour_id');
     }
-}
 
-        
-    }
+
+
+
     public function chiTiets()
     {
         return $this->hasMany(
@@ -38,6 +38,3 @@ class LichTrinhTour extends Model
         )->orderBy('gio_bat_dau');
     }
 }
-
-
-

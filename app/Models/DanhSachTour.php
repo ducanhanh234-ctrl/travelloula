@@ -29,7 +29,14 @@ class DanhSachTour extends Model
         'gia_nguoi_lon',
         'gia_tre_em',
         'gia_em_be',
+
     ];
+
+    public function lichKhoiHanh()
+    {
+
+        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
+    }
 
     public function danhMuc()
     {
@@ -37,10 +44,10 @@ class DanhSachTour extends Model
     }
 
     public function lichKhoiHanhTours()
+
     {
         return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
     }
-
 
 
 

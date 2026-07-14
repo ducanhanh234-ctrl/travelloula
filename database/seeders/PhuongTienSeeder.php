@@ -3,37 +3,52 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+
+use Illuminate\Support\Facades\DB;
+
 use App\Models\PhuongTien;
+
 
 class PhuongTienSeeder extends Seeder
 {
     public function run(): void
     {
-        PhuongTien::insert([
+
+        DB::table('phuong_tiens')->insert([
             [
-                'bien_so_xe' => '29A-12345',
-                'loai_phuong_tien' => 'Xe 16 chỗ',
-                'hang_xe' => 'Ford Transit',
-                'nam_san_xuat' => 2022,
-                'mau_xe' => 'Trắng',
-                'trang_thai' => 1,
-                'ten_tai_xe' => 'Nguyễn Văn Hải',
-                'so_dien_thoai_tai_xe' => '0988888888',
+                'ten_phuong_tien' => 'Máy bay Vietnam Airlines',
+                'so_cho' => 180,
+                'bien_so' => null,
+                'bien_so_xe' => '29B-12345',
+                'trang_thai' => '1',
+                'hang_xe' => 'honda',
+                'mau_xe' => 'xanh',
+                'nam_san_xuat' => 2026,
+                'loai_phuong_tien' => '180 chỗ',
+                'ten_tai_xe' => 'admin',
+                'so_dien_thoai_tai_xe' => '0123456789',
+                'ghi_chu' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'bien_so_xe' => '30B-67890',
-                'loai_phuong_tien' => 'Xe 29 chỗ',
-                'hang_xe' => 'Hyundai County',
-                'nam_san_xuat' => 2021,
-                'mau_xe' => 'Đỏ',
-                'trang_thai' => 1,
-                'ten_tai_xe' => 'Trần Văn Nam',
-                'so_dien_thoai_tai_xe' => '0977777777',
+
+                'ten_phuong_tien' => 'Xe du lịch 45 chỗ',
+                'so_cho' => 45,
+                'bien_so' => '29B-12345',
+                'bien_so_xe' => '29B-12345',
+                'trang_thai' => '1',
+                'hang_xe' => 'honda',
+                'mau_xe' => 'xanh',
+                'nam_san_xuat' => 2026,
+                'loai_phuong_tien' => '45 chỗ',
+                'ten_tai_xe' => 'admin',
+                'so_dien_thoai_tai_xe' => '0123456789',
+                'ghi_chu' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
+
         ]);
     }
 }

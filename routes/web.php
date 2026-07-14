@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
@@ -107,6 +108,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
+
 Route::prefix('Admin')
     ->name('Admin.')
     ->middleware([
@@ -114,6 +116,7 @@ Route::prefix('Admin')
         \App\Http\Middleware\IsAdmin::class
     ])
     ->group(function () {
+
 
 
         /*
@@ -136,11 +139,14 @@ Route::resource('tour_da_dat',TourDaDatController::class);
 // Auth routes
 use App\Http\Controllers\AuthController;
 
+
         Route::get('/', function () {
             return view('Layouts.admin');
         })->name('dashboard');
 
 
+
+     
 
 
         /*
@@ -156,16 +162,19 @@ use App\Http\Controllers\AuthController;
 
 
 
+
         /*
         |--------------------------------------------------------------------------
         | KHÁCH HÀNG
         |--------------------------------------------------------------------------
         */
 
+
         Route::resource(
             'khach-hang',
             KhachHangDatTourController::class
         );
+
 
 
 
@@ -201,10 +210,20 @@ use App\Http\Controllers\AuthController;
         |--------------------------------------------------------------------------
         */
 
+
         Route::resource(
             'gop-doan',
             GopDoanController::class
         );
+
+        // Hủy yêu cầu gộp đoàn
+        Route::post(
+            'gop-doan/{id}/huy',
+            [
+                GopDoanController::class,
+                'destroy'
+            ]
+        )->name('gop-doan.huy');
 
 
         // Hủy yêu cầu gộp đoàn
@@ -251,6 +270,24 @@ Route::prefix('Guide')
             return view('Layouts.guide');
         })->name('dashboard');
     });
+
+
+/*
+|--------------------------------------------------------------------------
+| GUIDE ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('Guide')
+    ->name('Guide.')
+    ->middleware(['auth', \App\Http\Middleware\IsGuide::class])
+    ->group(function () {
+
+        Route::get('/', function () {
+            return view('Layouts.guide');
+        })->name('dashboard');
+    });
+
 
 
 
@@ -401,21 +438,10 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-                'index',
-                'show'
-            ]);
+        'index',
+        'show'
+    ]);
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -429,6 +455,86 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
 // Login Guide
 Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware\IsGuide::class])->group(function () {
 
+    Route::get('/', function () {
+        return view('Layouts.guide');
+    })->name('dashboard');
+    //Guide routes
+    Route::resource('phuong-tiens', PhuongTienController::class);
+
+    // Check-in
+    Route::get('/check-in', [CheckInController::class, 'index'])
+        ->name('checkin.index');
+
+    Route::get(
+        '/check-in/{lichKhoiHanh}/dia-diem',
+        [CheckInController::class, 'diaDiem']
+    )->name('checkin.dia-diem');
+
+    Route::get('/check-in/{lichKhoiHanh}/{chiTiet}', [CheckInController::class, 'show'])
+        ->name('checkin.show');
+
+    Route::post('/check-in', [CheckInController::class, 'checkIn'])
+        ->name('checkin.store');
+
+    Route::patch('/check-out/{id}',[CheckInController::class, 'checkOut'])
+    ->name('checkout');
+
+    Route::post('/check-in/checkin-tat-ca', [CheckInController::class, 'checkInTatCa'])
+        ->name('checkin.checkinTatCa');
+
+    Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
+        ->name('checkin.checkoutTatCa');
+
+    Route::post('/check-in/{id}/undo',[CheckInController::class, 'undoCheckIn'])
+    ->name('checkin.undo');
+
+    Route::post('/check-out/{id}/undo',[CheckInController::class, 'undoCheckOut'])
+    ->name('checkout.undo');
+
+    Route::post('/check-in/ghi-chu',[CheckInController::class, 'saveNote'])
+    ->name('checkin.note');
+
+    // Nhật ký
+    Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])
+        ->name('nhatky.index');
+
+
+    Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])
+        ->name('nhatky.show');
+
+    // Báo cáo sự cố
+    Route::get('/bao-cao-su-co', [BaoCaoSuCoController::class, 'index'])
+        ->name('baocaosuco.index');
+
+    Route::get('/bao-cao-su-co/create', [BaoCaoSuCoController::class, 'create'])
+        ->name('baocaosuco.create');
+
+    Route::post('/bao-cao-su-co', [BaoCaoSuCoController::class, 'store'])
+        ->name('baocaosuco.store');
+
+    Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])
+        ->name('checkout');
+
+    Route::get('/bao-cao-su-co/trash', [BaoCaoSuCoController::class, 'trash'])
+        ->name('baocaosuco.trash');
+
+    Route::patch('/bao-cao-su-co/{id}/restore', [BaoCaoSuCoController::class, 'restore'])
+        ->name('baocaosuco.restore');
+
+    Route::delete('/bao-cao-su-co/{id}/force-delete', [BaoCaoSuCoController::class, 'forceDelete'])
+        ->name('baocaosuco.forceDelete');
+
+    Route::get('/bao-cao-su-co/{id}/edit', [BaoCaoSuCoController::class, 'edit'])
+        ->name('baocaosuco.edit');
+
+    Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])
+        ->name('baocaosuco.update');
+
+    Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])
+        ->name('baocaosuco.destroy');
+
+    Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])
+        ->name('baocaosuco.show');
 
     Route::get('/', function () {
         return view('Layouts.guide');
@@ -441,6 +547,7 @@ Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
 
 Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
     ->name('vnpay.return');
+
 
 });
 

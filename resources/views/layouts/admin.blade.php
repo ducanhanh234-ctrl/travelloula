@@ -953,8 +953,10 @@
                 <div class="nav-item">
 
 
+
                     <a href="{{ route('Admin.lich_trinh_tours.index') }}"
                         class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
+
 
                         <div class="nav-icon">
                             <i class="fas fa-calendar-alt"></i>
@@ -1026,6 +1028,22 @@
                 </a>
 
 
+
+            </div>
+            <div class="nav-item">
+
+                <a href="{{ route('Admin.phan-cong.index') }}" class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}">
+
+
+                    <div class="nav-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+
+                    <span class="nav-text">Quản lý Phân Công</span>
+
+                </a>
+
+
             </div>
             <div class="nav-item">
 
@@ -1044,7 +1062,9 @@
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Người dùng</div>
                 <div class="nav-item">
+
                     <a href="{{ route('Admin.users.index') }}" class="nav-link ">
+
                         <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
 
                             <div class="nav-icon">
@@ -1064,7 +1084,36 @@
                 </div>
                 <div class="nav-item">
 
+
                     <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý HDV</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+
+
+                    <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
+
+
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khách hàng</span>
+                    </a>
+                </div>
+
+
+
+                        </div>
+
+                        <div class="nav-item">
+
+
+                    <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+
 
                         <div class="nav-icon">
                             <i class="fas fa-users"></i>
@@ -1138,6 +1187,7 @@
                             <a href="{{ route('Admin.thong_ke.index') }}" class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}">
                                 <i class="fas fa-chart-bar"></i>
                                 <span class="nav-text">Báo cáo & Thống kê</span>
+
                             </a>
                         </div>
 
@@ -1151,6 +1201,7 @@
                         </div>
 
 
+
                         <!-- Support Tickets -->
                         <div class="nav-item">
                             <a href="" class="nav-link ">
@@ -1159,6 +1210,7 @@
                                 <span class="badge badge-admin bg-warning ms-auto">5</span>
                             </a>
                         </div>
+
 
                         <!-- Settings -->
                         <div class="nav-item">
@@ -1169,6 +1221,7 @@
                         </div>
 
 
+                                <a href="{{route('Admin.danh_mucs.index')}}" class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
 
                         <!-- Reviews & Support -->
                         <div class="nav-section">
@@ -1179,6 +1232,7 @@
                                     <span class="nav-text">Quản lý Danh mục</span>
                                 </a>
                             </div>
+
 
                             {{-- Đặt tour theo đoàn --}}
                             <li class="nav-item">
@@ -1210,8 +1264,10 @@
                                 </a>
                             </div>
 
+
                             <!-- Reports -->
                             <div class="nav-item">
+
 
                                 <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
 
@@ -1220,17 +1276,21 @@
                                 </a>
                             </div>
 
+
                             <!-- Notifications -->
                             <div class="nav-item">
+
 
                                 <a href="" class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
                                     <i class="fas fa-bell"></i>
 
+
                                     <span class="nav-text">Thông báo</span>
                                 </a>
                             </div>
                         </div>
+
 
 
                         <!-- Reports & Settings -->
@@ -1302,6 +1362,9 @@
                             class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
 
 
+                                    <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+
+
                             <div class="nav-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
@@ -1320,6 +1383,7 @@
                             <span class="nav-text">Cài đặt</span>
                         </a>
                     </div>
+
                 </div>
 
         </nav>

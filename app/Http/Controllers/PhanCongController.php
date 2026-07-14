@@ -43,7 +43,9 @@ class PhanCongController extends Controller
     }
     public function create()
     {
+
         $lichKhoiHanhs = LichKhoiHanhTour::where('trang_thai', 'closed')->get();
+
         $huongDanViens = HuongDanVien::where('trang_thai', 'san_sang')->get();
         $phuongTiens = PhuongTien::where('trang_thai', '1')->get();
         return view('Admin.phan_cong.create', compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens'));

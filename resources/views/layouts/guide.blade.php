@@ -15,7 +15,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
@@ -39,9 +40,9 @@
 
             --error-500: #ef4444;
 
-            --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
-            --shadow: 0 1px 3px rgba(0,0,0,.1);
-            --shadow-md: 0 4px 10px rgba(0,0,0,.1);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, .1);
+            --shadow-md: 0 4px 10px rgba(0, 0, 0, .1);
 
             --sidebar-width: 280px;
             --header-height: 70px;
@@ -188,7 +189,7 @@
             transition: .3s;
         }
 
-        .sidebar.collapsed + .main-content {
+        .sidebar.collapsed+.main-content {
             margin-left: 80px;
         }
 
@@ -362,7 +363,7 @@
             }
 
             .main-content,
-            .sidebar.collapsed + .main-content {
+            .sidebar.collapsed+.main-content {
                 margin-left: 0;
             }
 
@@ -454,7 +455,7 @@
                 <div class="nav-section-title">Nghiệp vụ</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.checkin.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
@@ -463,20 +464,24 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.nhatky.index') }}"
+                        class="nav-link {{ request()->routeIs('Guide.nhatky.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-book"></i>
                         </div>
-                        <span class="nav-text">Nhật ký tour</span>
+                        <span class="nav-text">Nhật ký hướng dẫn viên</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.baocaosuco.index') }}"
+                        class="nav-link {{ request()->routeIs('Guide.baocaosuco.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-exclamation-circle"></i>
                         </div>
-                        <span class="nav-text">Báo cáo sự cố</span>
+                        <span class="nav-text">
+                            Báo cáo sự cố
+                        </span>
                     </a>
                 </div>
             </div>
@@ -527,20 +532,16 @@
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center"
-                            type="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                    <button class=" btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
 
                         @if (Auth::check() && Auth::user()->avatar)
-                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                 alt="{{ Auth::user()->name }}"
-                                 class="user-avatar-img">
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="user-avatar-img">
                         @else
                             <div class="user-avatar">
                                 {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
-                            </div>
-                        @endif
+                        </div> @endif
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">

@@ -385,6 +385,7 @@
                 font-size: 16px;
             }
         }
+
     </style>
 
     @yield('styles')
@@ -424,7 +425,7 @@
                 <div class="nav-section-title">Tour của tôi</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
@@ -532,6 +533,7 @@
                 </div>
 
                 <div class="user-menu dropdown">
+
                     <button class=" btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
 
@@ -542,6 +544,7 @@
                             <div class="user-avatar">
                                 {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
                         </div> @endif
+
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
@@ -594,12 +597,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.getElementById('sidebar');
 
             if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function () {
+                sidebarToggle.addEventListener('click', function() {
                     if (window.innerWidth <= 1024) {
                         sidebar.classList.toggle('open');
                     } else {
@@ -608,6 +611,7 @@
                 });
             }
         });
+
     </script>
 
     @yield('scripts')

@@ -33,10 +33,25 @@ use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
 use App\Http\Controllers\QuanLyDatTourController;
+
+
+
+
+use App\Http\Controllers\Admin\TourController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\LichTrinhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+
+use App\Http\Controllers\Admin\DatTourController;
+use App\Http\Controllers\Admin\NhatKyTourController;
+use App\Http\Controllers\Guide\GuideController;
+use App\Http\Controllers\TrangDieuKhoanClientController;
+
 use App\Http\Controllers\PhanCongController;
 use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\TourDaDatController;
 use App\Http\Controllers\TrangDieuKhoanController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -545,6 +560,9 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
+    Route::resource('tour-phan-cong', GuideController::class);
+    Route::get('/lich-trinh/{phanCongId}', [GuideController::class, 'lichtrinh'])->name('lich-trinh');
+    Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])->name('danh-sach-khach');
 });
 Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
     ->name('vnpay.payment');

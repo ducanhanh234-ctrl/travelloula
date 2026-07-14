@@ -62,7 +62,6 @@ class LichKhoiHanhTour extends Model
     {
 
         return $this->belongsTo(DanhSachTour::class, 'tour_id');
-
     }
 
     public function huongDanVien()
@@ -203,9 +202,5 @@ class LichKhoiHanhTour extends Model
             'lich_khoi_hanh_id'
 
         );
-    }
-    public function phanCong()
-    {
-        return $this->hasOne(PhanCong::class);
     }
 }

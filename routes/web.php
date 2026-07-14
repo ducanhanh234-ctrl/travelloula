@@ -31,6 +31,7 @@ use App\Http\Controllers\VaiTroController;
 use App\Http\Controllers\QuanLyDatTourController;
 use App\Http\Controllers\PhanCongController;
 use App\Http\Controllers\PhuongTienController;
+use App\Http\Controllers\TourDaDatController;
 use App\Http\Controllers\TrangDieuKhoanController;
 
 /*
@@ -68,7 +69,10 @@ Route::get('/ve_chung_toi', function () {
 Route::get('/demo', function () {
     return view('Client.demo');
 })->name('Client.demo');
+Route::get('/{id}/dat_tour', [QuanLyDatTourController::class, 'create_dat_tour'])->name('create_dat_tour');
+Route::post('/dat_tour', [QuanLyDatTourController::class, 'store_dat_tour'])->name('store_dat_tour');
 
+Route::resource('tour_da_dat', TourDaDatController::class);
 Route::get('/dieu_khoan', [TrangDieuKhoanController::class, 'clientShow'])
     ->name('Client.dieu_khoan.index');
 
@@ -123,18 +127,15 @@ Route::prefix('Admin')
         */
 
 
-Route::get('/danh_sach_tour_yeu_thich', function () {
-    return view('Client.danh_sach_tour_yeu_thich.index');
-});
-Route::get('/dieu_khoan', function () {
-    return view('Client.dieu_khoan.index');
-});
-Route::get('/{id}/dat_tour', [QuanLyDatTourController::class,'create_dat_tour'])->name('create_dat_tour');
-Route::post('/dat_tour',[QuanLyDatTourController::class,'store_dat_tour'])->name('store_dat_tour');
+        Route::get('/danh_sach_tour_yeu_thich', function () {
+            return view('Client.danh_sach_tour_yeu_thich.index');
+        });
+        Route::get('/dieu_khoan', function () {
+            return view('Client.dieu_khoan.index');
+        });
 
-Route::resource('tour_da_dat',TourDaDatController::class);
-// Auth routes
-use App\Http\Controllers\AuthController;
+        // Auth routes
+
 
         Route::get('/', function () {
             return view('Layouts.admin');
@@ -401,9 +402,9 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         'nhat_ky_tours',
         NhatKyTourController::class
     )->only([
-                'index',
-                'show'
-            ]);
+        'index',
+        'show'
+    ]);
 });
 
 
@@ -435,12 +436,9 @@ Route::prefix('Guide')->name('Guide.')->middleware(['auth', \App\Http\Middleware
     })->name('dashboard');
     //Guide routes
     Route::resource('phuong-tiens', PhuongTienController::class);
-
+});
 Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])
     ->name('vnpay.payment');
 
 Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])
     ->name('vnpay.return');
-
-});
-

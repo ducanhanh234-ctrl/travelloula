@@ -184,7 +184,7 @@
 </td>
                                                         <td class="fw-bold text-success">
                                                             {{number_format(
-                                    $thanh_toan->so_tien,
+                                    $thanh_toan->datTour->tong_tien,
                                     0,
                                     ',',
                                     '.'

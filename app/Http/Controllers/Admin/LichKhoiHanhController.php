@@ -14,6 +14,9 @@ class LichKhoiHanhController extends Controller
 {
     public function index()
     {
+        LichKhoiHanhTour::all()->each(function ($lich) {
+            $lich->capNhatTrangThai();
+        });
         $allData = LichKhoiHanhTour::with([
             'tour',
             'huongDanVien',
@@ -115,6 +118,7 @@ class LichKhoiHanhController extends Controller
                 'daDong'
             )
         );
+
     }
 
     public function create()
@@ -182,7 +186,13 @@ class LichKhoiHanhController extends Controller
             'tour.danhMuc',
             'huongDanVien'
         ])->findOrFail($id);
+        $item->capNhatTrangThai();
 
+        $item->load([
+            'tour',
+            'tour.danhMuc',
+            'huongDanVien'
+        ]);
         return view(
             'Admin.lich_khoi_hanh.show',
             compact('item')
@@ -192,7 +202,9 @@ class LichKhoiHanhController extends Controller
     public function edit($id)
     {
         $item = LichKhoiHanhTour::findOrFail($id);
+        // $item = LichKhoiHanhTour::findOrFail($id);
 
+        $item->capNhatTrangThai();
         $tours = DanhSachTour::orderBy('ten_tour')->get();
 
         $guides = HuongDanVien::where(
@@ -240,7 +252,7 @@ class LichKhoiHanhController extends Controller
             'tour_id' => $request->tour_id,
 
             'ngay_khoi_hanh' => $request->ngay_khoi_hanh,
-            'ngay_ket_thuc'  => $ngayKetThuc,
+            'ngay_ket_thuc' => $ngayKetThuc,
 
             'so_cho' => $request->so_cho,
 

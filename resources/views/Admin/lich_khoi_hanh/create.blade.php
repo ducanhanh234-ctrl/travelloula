@@ -43,10 +43,11 @@
                                 <select name="tour_id" id="tour_id" class="form-select">
 
                                     @foreach ($tours as $tour)
-                                        <option value="{{ $tour->id }}" data-thoi-luong="{{ $tour->thoi_luong }}">
-
+                                        <option value="{{ $tour->id }}" data-thoi-luong="{{ $tour->thoi_luong }}"
+                                            data-so-cho="{{ $tour->so_khach_toi_da }}"
+                                            data-gia-nguoi-lon="{{ $tour->gia_nguoi_lon }}"
+                                            data-gia-tre-em="{{ $tour->gia_tre_em }}">
                                             {{ $tour->ten_tour }}
-
                                         </option>
                                     @endforeach
 
@@ -85,7 +86,8 @@
                                     Số chỗ
                                 </label>
 
-                                <input type="number" name="so_cho" class="form-control" placeholder="Ví dụ: 30">
+                                <input type="number" id="so_cho" name="so_cho" class="form-control"
+                                    placeholder="Ví dụ: 30">
                             </div>
 
                             <div class="row">
@@ -98,7 +100,8 @@
                                             Giá người lớn
                                         </label>
 
-                                        <input type="number" name="gia_nguoi_lon" class="form-control" placeholder="VNĐ">
+                                        <input type="number" id="gia_nguoi_lon" name="gia_nguoi_lon" class="form-control"
+                                            placeholder="VNĐ">
 
                                     </div>
                                 </div>
@@ -111,7 +114,8 @@
                                             Giá trẻ em
                                         </label>
 
-                                        <input type="number" name="gia_tre_em" class="form-control" placeholder="VNĐ">
+                                        <input type="number" id="gia_tre_em" name="gia_tre_em" class="form-control"
+                                            placeholder="VNĐ">
 
                                     </div>
                                 </div>

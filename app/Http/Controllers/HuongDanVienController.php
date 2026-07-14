@@ -9,13 +9,58 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
+
 class HuongDanVienController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $guides = HuongDanVien::latest()->paginate(12);
-        return view('Admin.huong_dan_viens.index', compact('guides'));
+        $query = HuongDanVien::query();
+
+        // Tìm kiếm
+        if ($request->filled('keyword')) {
+            $keyword = $request->keyword;
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('ho_ten', 'like', "%{$keyword}%")
+                    ->orWhere('email', 'like', "%{$keyword}%")
+                    ->orWhere('so_dien_thoai', 'like', "%{$keyword}%");
+            });
+        }
+
+        // Lọc trạng thái
+        if ($request->filled('trang_thai')) {
+            $query->where('trang_thai', $request->trang_thai);
+        }
+
+        // Danh sách HDV
+        $guides = $query->orderByDesc('id')
+            ->paginate(10)
+            ->appends($request->query());
+
+        // Thống kê
+        $tongHDV = HuongDanVien::count();
+
+        $sanSang = HuongDanVien::where('trang_thai', 'san_sang')->count();
+
+        $dangDanTour = HuongDanVien::where('trang_thai', 'dang_dan_tour')->count();
+
+        $nghiViec = HuongDanVien::where('trang_thai', 'nghi_viec')->count();
+
+        return view(
+            'Admin.huong_dan_viens.index',
+            compact(
+                'guides',
+                'tongHDV',
+                'sanSang',
+                'dangDanTour',
+                'nghiViec'
+            )
+        );
     }
+
+    // return view('Admin.huong_dan_viens.index', compact('guides'));
+
 
     public function create()
     {

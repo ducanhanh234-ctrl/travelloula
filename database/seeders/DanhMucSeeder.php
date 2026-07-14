@@ -4,63 +4,29 @@ namespace Database\Seeders;
 
 
 use Illuminate\Database\Seeder;
-use App\Models\DanhMuc;
-
-
+use Illuminate\Support\Facades\DB;
 
 class DanhMucSeeder extends Seeder
 {
-
-
     public function run(): void
     {
-
-
-        DanhMuc::create([
-
-            'ten_danh_muc'=>'Tour trong nước',
-
-            'mo_ta'=>'Các tour du lịch Việt Nam',
-
-            'hinh_anh'=>'trong-nuoc.jpg',
-
-            'trang_thai'=>'active'
-
-
+        DB::table('danh_mucs')->insert([
+            [
+                'ten_danh_muc' => 'Tour biển',
+                'mo_ta' => 'Du lịch biển đảo',
+                'hinh_anh' => null,
+                'trang_thai' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'ten_danh_muc' => 'Tour núi',
+                'mo_ta' => 'Du lịch khám phá núi rừng',
+                'hinh_anh' => null,
+                'trang_thai' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
-
-
-
-        DanhMuc::create([
-
-            'ten_danh_muc'=>'Tour nước ngoài',
-
-            'mo_ta'=>'Các tour quốc tế',
-
-            'hinh_anh'=>'nuoc-ngoai.jpg',
-
-            'trang_thai'=>'active'
-
-
-        ]);
-
-
-
-        DanhMuc::create([
-
-            'ten_danh_muc'=>'Tour nghỉ dưỡng',
-
-            'mo_ta'=>'Tour resort cao cấp',
-
-            'hinh_anh'=>'nghi-duong.jpg',
-
-            'trang_thai'=>'active'
-
-
-        ]);
-
-
     }
-
-
 }

@@ -167,6 +167,7 @@
                                         ->ten_tour
                                     ?? 'Không xác định'
                                                     }}
+
                             </td>
                             <td>
                                 <span class="badge badge-info">
@@ -184,6 +185,7 @@
                             <td class="fw-bold text-success">
                                 {{number_format(
                                     $thanh_toan->so_tien,
+                                                       
                                     0,
                                     ',',
                                     '.'

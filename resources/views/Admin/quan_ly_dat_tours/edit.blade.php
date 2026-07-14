@@ -89,6 +89,7 @@
                     <h5>
                         Danh sách hành khách
                     </h5>
+
                     <div id="new-passenger-container"></div>
                     <div id="passenger-container">
                         @foreach($hanhKhachs as $index => $hk)
@@ -115,38 +116,79 @@
                                 <div class="card-body">
                                     <input type="hidden" name="hanh_khach[{{ $index }}][id]" value="{{ $hk->id }}">
                                     <div class="row">
-                                        <div class="col-md-4">
+    <div class="col-md-4">
+        <label>Họ tên</label>
+        <input
+            class="form-control"
+            name="hanh_khach[{{ $index }}][ho_ten]"
+            value="{{ $hk->ho_ten }}">
+    </div>
 
-                                            <label>
-                                                Họ tên
-                                            </label>
+    <div class="col-md-4">
+        <label>Giới tính</label>
+        <select
+            class="form-select"
+            name="hanh_khach[{{ $index }}][gioi_tinh]">
+            <option value="Nam" {{ $hk->gioi_tinh == 'Nam' ? 'selected' : '' }}>Nam</option>
+            <option value="Nữ" {{ $hk->gioi_tinh == 'Nữ' ? 'selected' : '' }}>Nữ</option>
+        </select>
+    </div>
 
-                                            <input class="form-control" name="hanh_khach[{{ $index }}][ho_ten]"
-                                                value="{{ $hk->ho_ten }}">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label>
-                                                Giới tính
-                                            </label>
-                                            <select class="form-select" name="hanh_khach[{{ $index }}][gioi_tinh]">
-                                                <option value="Nam" {{ $hk->gioi_tinh == 'Nam' ? 'selected' : '' }}>
-                                                    Nam
-                                                </option>
+    <div class="col-md-4">
+        <label>Ngày sinh</label>
+        <input
+            type="date"
+            class="form-control"
+            name="hanh_khach[{{ $index }}][ngay_sinh]"
+            value="{{ $hk->ngay_sinh ? \Carbon\Carbon::parse($hk->ngay_sinh)->format('Y-m-d') : '' }}">
+    </div>
+</div>
 
-                                                <option value="Nữ" {{ $hk->gioi_tinh == 'Nữ' ? 'selected' : '' }}>
-                                                    Nữ
-                                                </option>
-                                            </select>
-                                        </div>
+<div class="row mt-3">
+    <div class="col-md-3">
+        <label>Quốc tịch</label>
+        <input
+            class="form-control"
+            name="hanh_khach[{{ $index }}][quoc_tich]"
+            value="{{ $hk->quoc_tich }}">
+    </div>
 
-                                        <div class="col-md-4">
-                                            <label>
-                                                Năm sinh
-                                            </label>
-                                            <input type="number" class="form-control" name="hanh_khach[{{ $index }}][nam_sinh]"
-                                                value="{{ $hk->nam_sinh }}">
-                                        </div>
-                                    </div>
+    <div class="col-md-3">
+        <label>Loại giấy tờ</label>
+        <select
+            class="form-select"
+            name="hanh_khach[{{ $index }}][loai_giay_to]">
+            <option value="CCCD" {{ $hk->loai_giay_to == 'CCCD' ? 'selected' : '' }}>CCCD</option>
+            <option value="Hộ chiếu" {{ $hk->loai_giay_to == 'Hộ chiếu' ? 'selected' : '' }}>Hộ chiếu</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label>Số giấy tờ</label>
+        <input
+            class="form-control"
+            name="hanh_khach[{{ $index }}][so_giay_to]"
+            value="{{ $hk->so_giay_to }}">
+    </div>
+
+    <div class="col-md-3">
+        <label>SĐT</label>
+        <input
+            class="form-control"
+            name="hanh_khach[{{ $index }}][so_dien_thoai]"
+            value="{{ $hk->so_dien_thoai }}">
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-12">
+        <label>Yêu cầu đặc biệt</label>
+        <textarea
+            class="form-control"
+            rows="2"
+            name="hanh_khach[{{ $index }}][yeu_cau_dac_biet]">{{ $hk->yeu_cau_dac_biet }}</textarea>
+    </div>
+</div>
                                 </div>
                             </div>
                         @endforeach
@@ -213,70 +255,158 @@
     <script>
         let oldPassengerCount = {{ count($hanhKhachs) }};
         // tạo form hành khách mới
-        function createPassengerForm(index, title, type) {
-            let colorClass = '';
-            switch (type) {
-                case 'adult':
-                    colorClass = 'bg-primary text-white';
-                    break;
+       function createPassengerForm(index, title, type) {
 
-                case 'child':
-                    colorClass = 'bg-warning text-dark';
-                    break;
+    let colorClass = '';
 
-                case 'baby':
-                    colorClass = 'bg-info text-dark';
-                    break;
-            }
-            return `
-                    <div class="card mb-3 border-success">
-                        <div class="card-header ${colorClass}">
-                            ${title}
-                        </div>
+    switch (type) {
+        case 'adult':
+            colorClass = 'bg-primary text-white';
+            break;
 
-                        <div class="card-body">
-                            <input
-                                type="hidden"
-                                name="hanh_khach_moi[${index}][loai_hanh_khach]"
-                                value="${type}"
-                            >
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label>Họ tên</label>
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        name="hanh_khach_moi[${index}][ho_ten]"
-                                    >
-                                </div>
+        case 'child':
+            colorClass = 'bg-warning text-dark';
+            break;
 
-                                <div class="col-md-4">
-                                    <label>Giới tính</label>
-                                    <select
-                                        class="form-select"
-                                        name="hanh_khach_moi[${index}][gioi_tinh]">
-                                <option value="Nam">
-                                    Nam
-                                </option>
+        case 'baby':
+            colorClass = 'bg-info text-dark';
+            break;
+    }
 
-                                <option value="Nữ">
-                                    Nữ
-                                </option>
-                            </select>
-                        </div>
+    return `
+        <div class="card mb-3 border-success">
 
-                            <div class="col-md-4">
-                                <label>Năm sinh</label>
-                                    <input
-                                        type="number"
-                                        class="form-control"
-                                        name="hanh_khach_moi[${index}][nam_sinh]">
-                                </div>
-                            </div>
-                        </div>
+            <div class="card-header ${colorClass}">
+                ${title}
+            </div>
+
+            <div class="card-body">
+
+                <input
+                    type="hidden"
+                    name="hanh_khach_moi[${index}][loai_hanh_khach]"
+                    value="${type}"
+                >
+
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <label>Họ tên</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach_moi[${index}][ho_ten]"
+                        >
                     </div>
-                `;
-        }
+
+                    <div class="col-md-4">
+
+                        <label>Giới tính</label>
+
+                        <select
+                            class="form-select"
+                            name="hanh_khach_moi[${index}][gioi_tinh]">
+
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label>Ngày sinh</label>
+
+                        <input
+                            type="date"
+                            class="form-control"
+                            name="hanh_khach_moi[${index}][ngay_sinh]"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col-md-3">
+
+                        <label>Quốc tịch</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach_moi[${index}][quoc_tich]"
+                            value="Việt Nam"
+                        >
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label>Loại giấy tờ</label>
+
+                        <select
+                            class="form-select"
+                            name="hanh_khach_moi[${index}][loai_giay_to]">
+
+                            <option value="CCCD">CCCD</option>
+                            <option value="Hộ chiếu">Hộ chiếu</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label>Số giấy tờ</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach_moi[${index}][so_giay_to]"
+                        >
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <label>Số điện thoại</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach_moi[${index}][so_dien_thoai]"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="row mt-3">
+
+                    <div class="col-md-12">
+
+                        <label>Yêu cầu đặc biệt</label>
+
+                        <textarea
+                            class="form-control"
+                            rows="2"
+                            name="hanh_khach_moi[${index}][yeu_cau_dac_biet]"></textarea>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+}
 
         function generateNewPassengers() {
             let adult =
@@ -486,17 +616,36 @@
 
         function removeOldPassenger(button, id) {
             let card = button.closest('.passenger-card');
-            let input = document.createElement('input');
-            input.type = "hidden";
-            input.name = "hanh_khach_xoa[]";
-            input.value = id;
+            let type = card.dataset.type;
 
-            // thêm vào form chính
-            document
-                .getElementById('passenger-container')
-                .appendChild(input);
-            card.remove();
-            generateNewPassengers();
-        }
+    if (type === 'adult') {
+        let input = document.getElementById('adult_count');
+        input.value = Number(input.value) - 1;
+    }
+
+    if (type === 'child') {
+        let input = document.getElementById('child_count');
+        input.value = Number(input.value) - 1;
+    }
+
+    if (type === 'baby') {
+        let input = document.getElementById('baby_count');
+        input.value = Number(input.value) - 1;
+    }
+
+    let hidden = document.createElement('input');
+    hidden.type = "hidden";
+    hidden.name = "hanh_khach_xoa[]";
+    hidden.value = id;
+
+    document
+        .getElementById('passenger-container')
+        .appendChild(hidden);
+
+    card.remove();
+
+    generateNewPassengers();
+    updateTotalPrice();
+}
     </script>
 @endsection

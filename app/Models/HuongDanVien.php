@@ -26,6 +26,32 @@ class HuongDanVien extends Model
         'trang_thai',
     ];
 
+    public function getTrangThaiHienThiAttribute()
+    {
+        return match ($this->trang_thai) {
+
+            'hoat_dong' => [
+                'text' => 'Đang hoạt động',
+                'class' => 'bg-success'
+            ],
+
+            'khong_hoat_dong' => [
+                'text' => 'Tạm nghỉ',
+                'class' => 'bg-secondary'
+            ],
+
+            'bi_khoa' => [
+                'text' => 'Bị khóa',
+                'class' => 'bg-danger'
+            ],
+
+            default => [
+                'text' => 'Không xác định',
+                'class' => 'bg-dark'
+            ]
+        };
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -35,4 +61,8 @@ class HuongDanVien extends Model
         'ngay_sinh' => 'date',
         'so_nam_kinh_nghiem' => 'integer',
     ];
+    public function phanCongs()
+    {
+        return $this->hasMany(PhanCong::class);
+    }
 }

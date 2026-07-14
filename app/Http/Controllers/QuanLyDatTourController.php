@@ -104,7 +104,19 @@ class QuanLyDatTourController extends Controller
             $request->so_nguoi_lon +
             $request->so_tre_em +
             $request->so_em_be;
+
         $diff = $newTotal - $oldTotal;
+//         dd([
+//     'oldTotal' => $oldTotal,
+//     'newTotal' => $newTotal,
+//     'diff' => $diff,
+
+//     'adult_request' => $request->so_nguoi_lon,
+//     'child_request' => $request->so_tre_em,
+//     'baby_request' => $request->so_em_be,
+
+//     'delete_ids' => $request->hanh_khach_xoa,
+// ]);
         if ($booking->lichKhoiHanh) {
             if ($diff > 0) {
                 // thêm khách -> trừ chỗ
@@ -362,6 +374,7 @@ class QuanLyDatTourController extends Controller
                 );
         }
     }
+
     public function show($id)
     {
         $booking = DatTour::with([
@@ -474,10 +487,18 @@ class QuanLyDatTourController extends Controller
     public function getLichKhoiHanhByTour($tourId)
     {
         $lichs = LichKhoiHanhTour::where('tour_id', $tourId)
-            ->where('trang_thai', 'available')
             ->get();
-
-        return response()->json($lichs);
+        $data = $lichs->map(function ($lich) {
+            return [
+                'id' => $lich->id,
+                'ngay_khoi_hanh' => $lich->ngay_khoi_hanh,
+                'ngay_ket_thuc' => $lich->ngay_ket_thuc,
+                'so_cho_con_lai' => $lich->so_cho_con_lai,
+                'so_cho_da_dat' => $lich->so_cho_da_dat,
+                'is_full' => $lich->so_cho_con_lai <= 0,
+            ];
+        });
+        return response()->json($data);
     }
 
     public function edit($id)
@@ -512,22 +533,41 @@ class QuanLyDatTourController extends Controller
             'so_em_be' => 'required|integer|min:0',
         ]);
         $booking = DatTour::findOrFail($id);
+        $oldTotal =
+            $booking->so_nguoi_lon +
+            $booking->so_tre_em +
+            $booking->so_em_be;
+
+        $newTotal =
+            (int)$request->so_nguoi_lon +
+            (int)$request->so_tre_em +
+            (int)$request->so_em_be;
         $tour = Tour::findOrFail($request->tour_id);
+        $diff = $newTotal - $oldTotal;
+
+        if ($diff > 0 && $booking->lichKhoiHanh->so_cho_con_lai < $diff) {
+            return back()
+                ->withInput()
+                ->with('error', 'Lịch khởi hành không đủ chỗ trống.');
+        }
+
         $tongTien =
             ($request->so_nguoi_lon * $tour->gia_nguoi_lon) +
             ($request->so_tre_em * $tour->gia_tre_em) +
             ($request->so_em_be * $tour->gia_em_be);
+
         $booking->update([
             'tour_id' => $request->tour_id,
-            'so_nguoi_lon' => $request->so_nguoi_lon,
-            'so_tre_em' => $request->so_tre_em,
-            'so_em_be' => $request->so_em_be,
+            // 'so_nguoi_lon' => $request->so_nguoi_lon,
+            // 'so_tre_em' => $request->so_tre_em,
+            // 'so_em_be' => $request->so_em_be,
             'tong_tien' => $tongTien,
             'so_tien_da_thanh_toan'
             => $request->so_tien_da_thanh_toan,
             'trang_thai' => $request->trang_thai,
             'ghi_chu' => $request->ghi_chu,
         ]);
+
         // cập nhật thanh toán đầu tiên
         $payment = $booking->thanhToans()->first();
         if ($payment) {
@@ -543,8 +583,10 @@ class QuanLyDatTourController extends Controller
         // xóa hành khách khi giảm số lượng
         if ($request->has('hanh_khach_xoa')) {
             foreach ($request->hanh_khach_xoa as $id) {
-                KhachHangDatTour::where('id', $id)
-                    ->delete();
+                $khach = KhachHangDatTour::find($id);
+                if ($khach) {
+                    $khach->delete();
+                }
             }
         }
 
@@ -554,13 +596,18 @@ class QuanLyDatTourController extends Controller
                 if (!empty($hk['id'])) {
                     KhachHangDatTour::where('id', $hk['id'])
                         ->update([
-                            'ho_ten' => $hk['ho_ten'],
-                            'gioi_tinh' => $hk['gioi_tinh'],
-                            'nam_sinh' => $hk['nam_sinh'],
+                            'ho_ten' => $hk['ho_ten'] ?? null,
+                            'gioi_tinh' => $hk['gioi_tinh'] ?? null,
+                            'ngay_sinh' => $hk['ngay_sinh'] ?? null,
+                            'quoc_tich' => $hk['quoc_tich'] ?? null,
+                            'loai_giay_to' => $hk['loai_giay_to'] ?? null,
+                            'so_giay_to' => $hk['so_giay_to'] ?? null,
+                            'so_dien_thoai' => $hk['so_dien_thoai'] ?? null,
+                            'yeu_cau_dac_biet' => $hk['yeu_cau_dac_biet'] ?? null,
                         ]);
-                    }
                 }
             }
+        }
 
         // thêm hành khách mới
         if ($request->has('hanh_khach_moi')) {
@@ -569,19 +616,53 @@ class QuanLyDatTourController extends Controller
                     KhachHangDatTour::create([
                         'dat_tour_id' => $booking->id,
                         'ho_ten' => $hk['ho_ten'],
-                        'gioi_tinh' => $hk['gioi_tinh'],
-                        'nam_sinh' => $hk['nam_sinh'],
+                        'gioi_tinh' => $hk['gioi_tinh'] ?? null,
+                        'ngay_sinh' => $hk['ngay_sinh'] ?? null,
+                        'quoc_tich' => $hk['quoc_tich'] ?? null,
+                        'loai_giay_to' => $hk['loai_giay_to'] ?? null,
+                        'so_giay_to' => $hk['so_giay_to'] ?? null,
+                        'so_dien_thoai' => $hk['so_dien_thoai'] ?? null,
+                        'yeu_cau_dac_biet' => $hk['yeu_cau_dac_biet'] ?? null,
                         'loai_hanh_khach' => $hk['loai_hanh_khach'],
                     ]);
                 }
             }
         }
+
+        $booking->update([
+            'so_nguoi_lon' => $booking->khachHangs()
+                ->where('loai_hanh_khach', 'adult')
+                ->count(),
+
+            'so_tre_em' => $booking->khachHangs()
+                ->where('loai_hanh_khach', 'child')
+                ->count(),
+
+            'so_em_be' => $booking->khachHangs()
+                ->where('loai_hanh_khach', 'baby')
+                ->count(),
+        ]);
+
         if ($booking->lichKhoiHanh) {
             $booking->lichKhoiHanh->update([
                 'ngay_khoi_hanh' => $request->ngay_khoi_hanh,
                 'ngay_ket_thuc' => $request->ngay_ket_thuc,
+
+                'so_cho_da_dat' => $booking->lichKhoiHanh->so_cho_da_dat + $diff,
+                'so_cho_con_lai' => $booking->lichKhoiHanh->so_cho_con_lai - $diff,
             ]);
         }
+
+//         dd([
+//     'request_adult' => $request->so_nguoi_lon,
+//     'request_child' => $request->so_tre_em,
+//     'request_baby' => $request->so_em_be,
+
+//     'booking_adult' => $booking->so_nguoi_lon,
+//     'booking_child' => $booking->so_tre_em,
+//     'booking_baby' => $booking->so_em_be,
+// ]);
+
         return redirect()
             ->route('Admin.dat_tours.show', $booking->id)
             ->with(

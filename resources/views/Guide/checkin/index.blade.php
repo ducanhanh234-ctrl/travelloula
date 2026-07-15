@@ -36,7 +36,6 @@
                             <th>Tour</th>
                             <th>Ngày khởi hành</th>
                             <th>Ngày kết thúc</th>
-                            {{-- <th width="150">Trạng thái</th> --}}
                             <th width="180" class="text-center">
                                 Thao tác
                             </th>
@@ -62,29 +61,6 @@
                                     {{ $lich->ngay_ket_thuc->format('d/m/Y') }}
                                 </td>
 
-                                {{-- <td>
-                                    @if($lich->trang_thai_hien_thi == 'Đang diễn ra')
-                                    <span class="badge bg-success">
-                                        {{ $lich->trang_thai_hien_thi }}
-                                    </span>
-
-                                    @elseif($lich->trang_thai_hien_thi == 'Đã kết thúc')
-                                    <span class="badge bg-secondary">
-                                        {{ $lich->trang_thai_hien_thi }}
-                                    </span>
-
-                                    @elseif($lich->trang_thai_hien_thi == 'Mở bán')
-                                    <span class="badge bg-primary">
-                                        {{ $lich->trang_thai_hien_thi }}
-                                    </span>
-
-                                    @else
-                                    <span class="badge bg-warning text-dark">
-                                        {{ $lich->trang_thai_hien_thi }}
-                                    </span>
-                                    @endif
-                                </td> --}}
-
                                 <td class="text-center">
                                     <a href="{{ route('Guide.checkin.dia-diem', $lich->id) }}" class="btn btn-success btn-sm">
                                         <i class="fas fa-map-marker-alt"></i>
@@ -101,5 +77,4 @@
             @endif
         </div>
     </div>
-
 @endsection

@@ -22,7 +22,6 @@
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="row">
-
                 <div class="col-md-3">
                     <strong>Tour</strong>
                     <br>
@@ -46,13 +45,11 @@
                     <br>
                     {{ $chiTiet->gio_bat_dau }} - {{ $chiTiet->gio_ket_thuc }}
                 </div>
-
             </div>
         </div>
     </div>
 
     <div class="row mb-4">
-
         <div class="col-md-4">
             <div class="card border-0 shadow-sm">
                 <div class="card-body text-center">
@@ -82,68 +79,40 @@
     </div>
 
     <div class="card border-0 shadow-sm mb-4">
-
         <div class="card-body">
-
             <div class="d-flex justify-content-between mb-2">
-
                 <strong>Tiến độ Check-in</strong>
-
                 <span>{{ $daCheck }}/{{ $tongKhach }} hành khách</span>
-
             </div>
 
             <div class="progress" style="height: 22px;">
-
                 <div class="progress-bar bg-success" role="progressbar"
                     style="width: {{ $tongKhach > 0 ? ($daCheck / $tongKhach) * 100 : 0 }}%;">
-
                     {{ round($tongKhach > 0 ? ($daCheck / $tongKhach) * 100 : 0) }}%
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <div class="d-flex justify-content-end mb-3">
-
         <form action="{{ route('Guide.checkin.checkinTatCa') }}" method="POST" class="me-2">
-
             @csrf
-
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
-
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
             <button class="btn btn-success">
-
                 <i class="fas fa-user-check"></i>
-
                 Check-in tất cả
-
             </button>
-
         </form>
 
         <form action="{{ route('Guide.checkin.checkoutTatCa') }}" method="POST">
-
             @csrf
-
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
             <button class="btn btn-warning">
-
                 <i class="fas fa-sign-out-alt"></i>
-
                 Check-out tất cả
-
             </button>
-
         </form>
-
     </div>
 
     @if(session('success'))
@@ -162,12 +131,12 @@
 
     <table class="table table-bordered table-hover align-middle">
         <tr>
-            <th>STT</th>
-            <th>Họ tên</th>
-            <th>SĐT</th>
-            <th>Trạng thái</th>
+            <th width="60">STT</th>
+            <th width="220">Họ tên</th>
+            <th width="140">SĐT</th>
+            <th width="160" class="text-center">Trạng thái</th>
             <th>Ghi chú</th>
-            <th width="220">Thao tác</th>
+            <th width="220" class="text-center">Thao tác</th>
         </tr>
 
         @php
@@ -180,30 +149,26 @@
                     <td>{{ $stt++ }}</td>
                     <td>{{ $khach->ho_ten }}</td>
                     <td>{{ $khach->so_dien_thoai }}</td>
-                    <td>
+                    <td class="text-center">
                         @php
                             $checkIn = $checkIns[$khach->id] ?? null;
                         @endphp
 
-                        <pre>
-{{-- ID: {{ $khach->id }}
-{{ print_r($checkIn->toArray(), true) }}
-</pre> --}}
-
                         @if(!$checkIn || $checkIn->trang_thai == 'chua_check_in')
-                            <span class="badge bg-danger">
+                            <span class="badge badge-check bg-danger">
                                 Chưa check-in
                             </span>
 
                         @elseif($checkIn->trang_thai == 'da_check_in')
-                            <span class="badge bg-success">
+                            <span class="badge badge-check bg-success">
                                 Đã check-in
                             </span>
 
                         @else
-                            <span class="badge bg-primary">
+                            <span class="badge badge-check bg-primary">
                                 Đã check-out
                             </span>
+
                         @endif
                     </td>
 
@@ -219,15 +184,11 @@
                         @endif
                     </td>
 
-                    <td>
-
+                    <td class="text-center">
                         @if(!$checkIn || $checkIn->trang_thai == 'chua_check_in')
-
-                            <div class="d-flex gap-2">
-
+                            <div class="d-flex gap-2 justify-content-center flex-nowrap">
                                 <form action="{{ route('Guide.checkin.store') }}" method="POST">
                                     @csrf
-
                                     <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
                                     <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
                                     <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
@@ -236,24 +197,17 @@
                                         <i class="fas fa-user-check"></i>
                                         Check-in
                                     </button>
-
                                 </form>
 
                                 <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
                                     data-bs-target="#ghiChuModal{{ $khach->id }}">
-
                                     <i class="fas fa-pen"></i>
-
-                                    {{ $checkIn && $checkIn->ghi_chu ? 'Sửa ghi chú' : 'Ghi chú' }}
-
+                                    {{ $checkIn && $checkIn->ghi_chu ? 'Sửa' : 'Ghi chú' }}
                                 </button>
-
                             </div>
 
                         @elseif($checkIn->trang_thai == 'da_check_in')
-
                             <div class="d-flex gap-2">
-
                                 <form action="{{ route('Guide.checkout', $checkIn->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
@@ -262,34 +216,25 @@
                                         <i class="fas fa-sign-out-alt"></i>
                                         Check-out
                                     </button>
-
                                 </form>
 
                                 <form action="{{ route('Guide.checkin.undo', $checkIn->id) }}" method="POST">
                                     @csrf
-
                                     <button class="btn btn-secondary btn-sm">
                                         <i class="fas fa-rotate-left"></i>
                                     </button>
-
                                 </form>
-
                             </div>
 
                         @elseif($checkIn->trang_thai == 'da_check_out')
-
                             <form action="{{ route('Guide.checkout.undo', $checkIn->id) }}" method="POST">
                                 @csrf
-
                                 <button class="btn btn-info btn-sm">
                                     <i class="fas fa-rotate-left"></i>
                                     Hoàn tác
                                 </button>
-
                             </form>
-
                         @endif
-
                     </td>
                 </tr>
 
@@ -302,8 +247,8 @@
                                     <h5 class="modal-title">
                                         Ghi chú hành khách
                                     </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal">
-                                    </button>
+
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                 </div>
 
                                 <div class="modal-body">
@@ -312,7 +257,7 @@
                                     <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
                                     <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
                                     <textarea name="ghi_chu" class="form-control mt-3" rows="4"
-                                        placeholder="Ví dụ: Khách đến muộn..." required></textarea>
+                                        placeholder="Ví dụ: Khách đến muộn..." required>{{ $checkIn->ghi_chu ?? '' }}</textarea>
                                 </div>
 
                                 <div class="modal-footer">

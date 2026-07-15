@@ -144,7 +144,9 @@ class PhanCongController extends Controller
 
         // Cập nhật trạng thái lịch
         $lich->update([
-            'trang_thai' => 2 // Đã phân công
+            'huong_dan_vien_id' => $request->hdv_id,
+            'phuong_tien_id'    => $request->phuong_tien_id,
+            'trang_thai'        => 2,
         ]);
 
         return redirect()
@@ -255,6 +257,11 @@ class PhanCongController extends Controller
             'ghi_chu'           => $request->ghi_chu,
         ]);
 
+        $lich->update([
+            'huong_dan_vien_id' => $request->hdv_id,
+            'phuong_tien_id'    => $request->phuong_tien_id,
+        ]);
+
         return redirect()
             ->route('Admin.phan-cong.index')
             ->with('success', 'Cập nhật phân công thành công.');
@@ -275,8 +282,12 @@ class PhanCongController extends Controller
         $phanCong->delete();
 
         // Trả lịch về trạng thái Chờ phân công
+        $phanCong->delete();
+
         $lich->update([
-            'trang_thai' => 1
+            'huong_dan_vien_id' => null,
+            'phuong_tien_id'    => null,
+            'trang_thai'        => 1,
         ]);
 
         return redirect()

@@ -67,7 +67,6 @@
 
 @section('content')
 <div class="row g-4">
-
     <div class="col-12">
         <div class="card border-0">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
@@ -79,6 +78,7 @@
                     <i class="fas fa-arrow-left me-1"></i> Quay lại
                 </a>
             </div>
+
             <div class="card-body p-4">
                 <div class="row g-3">
                     <div class="col-md-3 col-sm-6">
@@ -96,6 +96,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-3 col-sm-6">
                         <div class="info-card">
                             <div class="info-label">Ngày Khởi Hành</div>
@@ -105,6 +106,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-3 col-sm-6">
                         <div class="info-card">
                             <div class="info-label">Phương Tiện</div>
@@ -127,6 +129,7 @@
                     <i class="fas fa-users me-2" style="color: var(--primary-500);"></i>
                     Danh sách hành khách ({{ $khachHangs->count() }})
                 </h5>
+
                 <div>
                     <button class="btn btn-sm btn-primary">
                         <i class="fas fa-file-excel me-1"></i> Xuất File Mems
@@ -147,6 +150,7 @@
                             <th width="15%" class="text-center">Thao tác</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @forelse($khachHangs as $index => $khach)
                         <tr>
@@ -183,6 +187,7 @@
                                 </button>
                             </td>
                         </tr>
+
                         @empty
                         <tr>
                             <td colspan="7" class="text-center py-5">
@@ -198,6 +203,5 @@
             </div>
         </div>
     </div>
-
 </div>
 @endsection

@@ -110,23 +110,6 @@
                                     </span>
                                 @break
                             @endswitch
-
-                            @if ($item->tour->danhMuc)
-
-                                @if ($item->tour->danhMuc->ten_danh_muc == 'Tour Trong Nước')
-                                    <span class="category-pill category-domestic">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Tour Trong Nước
-                                    </span>
-                                @else
-                                    <span class="category-pill category-international">
-                                        <i class="fas fa-globe-asia"></i>
-                                        Tour Nước Ngoài
-                                    </span>
-                                @endif
-
-                            @endif
-
                         </div>
 
 

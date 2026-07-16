@@ -11,16 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nhat_ky_tours', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('tour_id')->constrained('danh_sach_tours')->cascadeOnDelete();
-            $table->foreignId('nguoi_dung_id')->constrained('users')->cascadeOnDelete();
-            $table->string('hanh_dong', 255);
-            $table->text('du_lieu_cu')->nullable();
-            $table->text('du_lieu_moi')->nullable();
-            $table->string('dia_chi_ip', 100)->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('nhat_ky_tours')) {
+            Schema::create('nhat_ky_tours', function (Blueprint $table) {
+                $table->id();
+
+                $table->foreignId('tour_id')
+                    ->constrained('danh_sach_tours')
+                    ->cascadeOnDelete();
+
+                $table->foreignId('nguoi_dung_id')
+                    ->constrained('users')
+                    ->cascadeOnDelete();
+
+                $table->string('hanh_dong', 255);
+                $table->text('du_lieu_cu')->nullable();
+                $table->text('du_lieu_moi')->nullable();
+                $table->string('dia_chi_ip', 100)->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

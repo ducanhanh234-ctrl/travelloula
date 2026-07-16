@@ -29,4 +29,12 @@ class ChiTietLichTrinh extends Model
             'lich_trinh_tour_id'
         );
     }
+
+    public function checkIns()
+    {
+        return $this->hasMany(
+            CheckInKhachHang::class,
+            'chi_tiet_lich_trinh_id'
+        );
+    }
 }

@@ -17,8 +17,6 @@ class DanhMuc extends Model
         'ten_danh_muc',
         'mo_ta',
         'hinh_anh',
-
-
         'trang_thai'
 
   ];

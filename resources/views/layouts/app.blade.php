@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>@yield('title', 'Travelloula')</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
     @stack('styles')
     @yield('styles')
@@ -14,9 +17,8 @@
 <body>
     <header class="client-header">
         <div class="client-container header-inner">
-
             <a href="{{ route('Client.trang_chu.index') }}" class="brand">
-                <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}" alt="Travelloula">
+                <img src="{{ asset('images/logo_ngang.png') }}" alt="Travelloula">
             </a>
 
             <nav class="main-menu">
@@ -28,9 +30,11 @@
                     Tour
                 </a>
 
+                @auth
                 <a href="{{ route('Client.tour_yeu_thich.index') }}" class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">
                     Tour yêu thích
                 </a>
+                @endauth
 
                 <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">
                     Điều khoản
@@ -56,13 +60,18 @@
             <div class="header-actions">
                 @auth
                 <div class="user-dropdown">
-                    <button type="button" class="user-btn" onclick="toggleUserMenu()">
+                    <button type="button" class="user-btn" id="userMenuButton" aria-expanded="false" aria-controls="userMenu">
                         <i class="fa-regular fa-user"></i>
                         <span>{{ auth()->user()->name }}</span>
                         <i class="fa-solid fa-angle-down"></i>
                     </button>
 
                     <div class="user-menu" id="userMenu">
+                        <a href="{{ route('profile') }}">
+                            <i class="fa-regular fa-id-card"></i>
+                            Hồ sơ cá nhân
+                        </a>
+
                         <a href="{{ route('Client.tour_yeu_thich.index') }}">
                             <i class="fa-solid fa-heart"></i>
                             Tour yêu thích
@@ -84,17 +93,16 @@
                     </div>
                 </div>
                 @else
-                <a href="{{ url('/register') }}" class="register-btn">
+                <a href="{{ route('register') }}" class="register-btn">
                     Đăng ký
                 </a>
 
-                <a href="{{ url('/login') }}" class="login-btn">
+                <a href="{{ route('login') }}" class="login-btn">
                     <i class="fa-regular fa-user"></i>
                     Đăng nhập
                 </a>
                 @endauth
             </div>
-
         </div>
     </header>
 
@@ -103,32 +111,48 @@
     </main>
 
     <footer class="client-footer">
-        <div class="footer-bg"></div>
+        <div class="footer-top-line"></div>
 
-        <div class="client-container footer-grid">
+        <div class="footer-plane">
+            <i class="fa-solid fa-plane"></i>
+        </div>
 
-            <div class="footer-about">
-                <div class="footer-logo">
-                    <img src="{{ asset('images/logotravelloula-removebg-preview(1).png') }}" alt="Travelloula">
-                </div>
+        <div class="footer-bag">
+            <i class="fa-solid fa-suitcase-rolling"></i>
+        </div>
+
+        <div class="client-container footer-content">
+            <div class="footer-brand">
+                <a href="{{ route('Client.trang_chu.index') }}" class="footer-logo">
+                    <img src="{{ asset('images/travelloula_logo_only_clean_v2.png') }}" alt="Travelloula">
+                </a>
 
                 <p>
-                    Travelloula là hệ thống quản lý tour du lịch chuyên nghiệp,
-                    hỗ trợ quản lý khách hàng, booking, thanh toán và vận hành tour.
+                    Travelloula giúp khách hàng dễ dàng tìm kiếm, đặt tour và quản lý
+                    hành trình du lịch một cách nhanh chóng, an toàn và thuận tiện.
                 </p>
 
-                <h4>Kết nối với chúng tôi</h4>
+                <div class="footer-socials">
+                    <a href="#" class="facebook" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
 
-                <div class="socials">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-tiktok"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="tiktok" aria-label="TikTok">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+
+                    <a href="#" class="youtube" aria-label="YouTube">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+
+                    <a href="#" class="instagram" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
                 </div>
             </div>
 
-            <div class="footer-col">
-                <h3>Hệ Thống</h3>
+            <div class="footer-col footer-discover">
+                <h3>Khám phá</h3>
 
                 <a href="{{ route('Client.trang_chu.index') }}">
                     <i class="fa-solid fa-angle-right"></i>
@@ -137,67 +161,101 @@
 
                 <a href="{{ route('Client.danh_sach_tour.index') }}">
                     <i class="fa-solid fa-angle-right"></i>
-                    Tours
+                    Tour
                 </a>
 
+                @auth
                 <a href="{{ route('Client.tour_yeu_thich.index') }}">
                     <i class="fa-solid fa-angle-right"></i>
                     Tour yêu thích
                 </a>
+                @endauth
 
-                <a href="{{ route('Client.dieu_khoan.index') }}">
+                <a href="{{ route('Client.bai_viet.index') }}">
                     <i class="fa-solid fa-angle-right"></i>
-                    Điều khoản
+                    Bài viết
+                </a>
+
+                <a href="{{ route('Client.ve_chung_toi.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Về chúng tôi
                 </a>
             </div>
 
-            <div class="footer-col">
-                <h3>Hỗ Trợ</h3>
+            <div class="footer-col footer-contact">
+                <h3>Liên hệ</h3>
 
-                <a href="#">
-                    <i class="fa-solid fa-angle-right"></i>
-                    Hướng dẫn
-                </a>
+                <div class="contact-item">
+                    <span>
+                        <i class="fa-solid fa-location-dot"></i>
+                    </span>
+                    <p>Hà Nội, Việt Nam</p>
+                </div>
 
-                <a href="#">
-                    <i class="fa-solid fa-angle-right"></i>
-                    Chính sách
-                </a>
+                <div class="contact-item">
+                    <span>
+                        <i class="fa-solid fa-phone"></i>
+                    </span>
+                    <p>1900 1234</p>
+                </div>
 
-                <a href="{{ route('Client.dieu_khoan.index') }}">
-                    <i class="fa-solid fa-angle-right"></i>
-                    Điều khoản
-                </a>
+                <div class="contact-item">
+                    <span>
+                        <i class="fa-solid fa-envelope"></i>
+                    </span>
+                    <p>support@travelloula.com</p>
+                </div>
 
-                <a href="#">
-                    <i class="fa-solid fa-angle-right"></i>
-                    Liên hệ
-                </a>
+                <div class="contact-item">
+                    <span>
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+                    <p>Thứ 2 - Chủ nhật: 08:00 - 22:00</p>
+                </div>
             </div>
 
-            <div class="footer-col contact">
-                <h3>Liên Hệ</h3>
+            <div class="footer-col footer-news">
+                <h3>Nhận thông tin mới nhất</h3>
 
                 <p>
-                    <span><i class="fa-solid fa-location-dot"></i></span>
-                    Hà Nội, Việt Nam
+                    Đăng ký để nhận ưu đãi hấp dẫn, kinh nghiệm du lịch và các
+                    hành trình nổi bật từ Travelloula.
                 </p>
 
-                <p>
-                    <span><i class="fa-solid fa-phone"></i></span>
-                    1900 1234
-                </p>
+                <form action="#" method="GET" class="footer-form">
+                    <input type="email" name="email" placeholder="Nhập email của bạn" aria-label="Email đăng ký nhận tin">
 
-                <p>
-                    <span><i class="fa-solid fa-envelope"></i></span>
-                    support@travelloula.com
-                </p>
+                    <button type="submit">
+                        Đăng ký
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
             </div>
+        </div>
 
+        <div class="footer-wave">
+            <div class="footer-sun"></div>
+
+            <div class="footer-island">
+                <div class="palm palm-one"></div>
+                <div class="palm palm-two"></div>
+                <div class="bird bird-one"></div>
+                <div class="bird bird-two"></div>
+                <div class="bird bird-three"></div>
+            </div>
         </div>
 
         <div class="footer-bottom">
-            © 2026 Travelloula. All Rights Reserved.
+            <div class="client-container footer-bottom-inner">
+                <p>© 2026 Travelloula. All Rights Reserved.</p>
+
+                <div>
+                    <a href="{{ route('Client.dieu_khoan.index') }}">Điều khoản</a>
+                    <a href="#">Chính sách bảo mật</a>
+                    <a href="#">Câu hỏi thường gặp</a>
+                    <a href="#">Liên hệ</a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -234,17 +292,17 @@
         }
 
         .client-header {
-            background: #fff;
-            min-height: 88px;
             position: sticky;
             top: 0;
             z-index: 999;
+            min-height: 88px;
+            background: #fff;
             box-shadow: 0 6px 24px rgba(15, 23, 42, .06);
         }
 
         .header-inner {
-            min-height: 88px;
             display: flex;
+            min-height: 88px;
             align-items: center;
             justify-content: space-between;
             gap: 28px;
@@ -257,24 +315,24 @@
         }
 
         .brand img {
-            width: 155px;
             display: block;
+            width: 155px;
         }
 
         .main-menu {
             display: flex;
+            flex: 1;
             align-items: center;
             justify-content: center;
             gap: 30px;
-            flex: 1;
         }
 
         .main-menu a {
+            position: relative;
+            padding: 34px 0 30px;
             color: #020617;
             font-size: 15px;
             font-weight: 800;
-            padding: 34px 0 30px;
-            position: relative;
             white-space: nowrap;
             transition: .25s;
         }
@@ -282,8 +340,8 @@
         .main-menu a::after {
             content: "";
             position: absolute;
-            left: 0;
             bottom: 0;
+            left: 0;
             width: 0;
             height: 4px;
             border-radius: 20px 20px 0 0;
@@ -309,14 +367,15 @@
         }
 
         .register-btn,
-        .login-btn {
-            height: 52px;
-            padding: 0 28px;
-            border-radius: 999px;
+        .login-btn,
+        .user-btn {
             display: flex;
+            height: 52px;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            padding: 0 28px;
+            border-radius: 999px;
             font-size: 15px;
             font-weight: 900;
             white-space: nowrap;
@@ -324,24 +383,27 @@
         }
 
         .register-btn {
-            color: var(--primary);
             border: 2px solid var(--primary);
             background: #fff;
+            color: var(--primary);
         }
 
         .register-btn:hover {
-            color: #fff;
             background: var(--primary);
+            color: #fff;
             transform: translateY(-2px);
         }
 
-        .login-btn {
-            color: #fff;
+        .login-btn,
+        .user-btn {
+            border: 0;
             background: linear-gradient(135deg, #0757d8, #0044c7);
+            color: #fff;
             box-shadow: 0 12px 26px rgba(0, 68, 199, .25);
         }
 
-        .login-btn:hover {
+        .login-btn:hover,
+        .user-btn:hover {
             color: #fff;
             transform: translateY(-2px);
             box-shadow: 0 16px 34px rgba(0, 68, 199, .35);
@@ -352,41 +414,21 @@
         }
 
         .user-btn {
-            height: 52px;
-            padding: 0 24px;
-            border: 0;
-            border-radius: 999px;
-            background: linear-gradient(135deg, #0757d8, #0044c7);
-            color: #fff;
-            font-size: 15px;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
             cursor: pointer;
-            white-space: nowrap;
-            box-shadow: 0 12px 26px rgba(0, 68, 199, .25);
-            transition: .25s;
-        }
-
-        .user-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 34px rgba(0, 68, 199, .35);
         }
 
         .user-menu {
             position: absolute;
             top: calc(100% + 12px);
             right: 0;
+            z-index: 99999;
+            display: none;
             width: 230px;
             padding: 10px;
+            border: 1px solid #e2e8f0;
             border-radius: 18px;
             background: #fff;
-            border: 1px solid #e2e8f0;
             box-shadow: 0 22px 50px rgba(15, 23, 42, .16);
-            display: none;
-            z-index: 99999;
         }
 
         .user-menu.show {
@@ -395,8 +437,11 @@
 
         .user-menu a,
         .user-menu button {
+            display: flex;
             width: 100%;
             min-height: 44px;
+            align-items: center;
+            gap: 10px;
             padding: 0 14px;
             border: 0;
             border-radius: 12px;
@@ -404,12 +449,9 @@
             color: #0f172a;
             font-size: 14px;
             font-weight: 850;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
             text-align: left;
             text-decoration: none;
+            cursor: pointer;
             transition: .2s;
         }
 
@@ -429,132 +471,490 @@
 
         .client-footer {
             position: relative;
-            margin-top: 80px;
-            background: linear-gradient(135deg, #001b45, #002b68, #001636);
-            color: #fff;
+            margin-top: 90px;
             overflow: hidden;
-        }
-
-        .footer-bg {
-            position: absolute;
-            inset: 0;
-            opacity: .15;
+            color: #fff;
             background:
-                radial-gradient(circle at 35% 35%, rgba(56, 189, 248, .45), transparent 30%),
-                radial-gradient(circle at 70% 50%, rgba(37, 99, 235, .5), transparent 28%);
+                radial-gradient(circle at 18% 38%, rgba(0, 180, 216, .20), transparent 26%),
+                radial-gradient(circle at 86% 23%, rgba(0, 119, 182, .38), transparent 31%),
+                linear-gradient(135deg, #031b40 0%, #063f7a 52%, #012e56 100%);
         }
 
-        .footer-grid {
+        .footer-top-line {
+            width: 100%;
+            height: 7px;
+            background: linear-gradient(90deg,
+                    #0757d8 0%,
+                    #00b4d8 45%,
+                    #6ee7b7 68%,
+                    #facc15 84%,
+                    #f59e0b 100%);
+        }
+
+        .client-footer::before {
+            content: "";
+            position: absolute;
+            inset: 7px 0 0;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255, 255, 255, .03) 1px, transparent 1px);
+            background-size: 58px 58px;
+            opacity: .32;
+            pointer-events: none;
+        }
+
+        .client-footer::after {
+            content: "";
+            position: absolute;
+            bottom: 105px;
+            left: 16%;
+            width: 540px;
+            height: 260px;
+            background: radial-gradient(circle, rgba(255, 255, 255, .75) 2px, transparent 3px);
+            background-size: 18px 18px;
+            opacity: .09;
+            pointer-events: none;
+        }
+
+        .footer-content {
             position: relative;
-            z-index: 2;
-            padding: 70px 0;
+            z-index: 5;
             display: grid;
-            grid-template-columns: 2fr 1.2fr 1.2fr 1.5fr;
-            gap: 50px;
+            grid-template-columns: 1.38fr .9fr 1.15fr 1.45fr;
+            gap: 54px;
+            align-items: start;
+            padding: 84px 0 148px;
+        }
+
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 28px;
+            padding: 0;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            text-decoration: none;
         }
 
         .footer-logo img {
-            width: 190px;
-            filter: brightness(0) invert(1);
-            margin-bottom: 24px;
+            display: block;
+            width: 250px;
+            height: auto;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            object-fit: contain;
+            filter:
+                drop-shadow(0 8px 16px rgba(0, 0, 0, .28)) drop-shadow(0 0 10px rgba(0, 180, 216, .18));
         }
 
-        .footer-about p {
-            max-width: 420px;
-            color: #dbeafe;
-            line-height: 1.8;
-            font-size: 16px;
-            margin-bottom: 28px;
+        .footer-brand p,
+        .footer-news p {
+            margin: 0;
+            color: #e6f4ff;
+            font-size: 17px;
+            line-height: 1.85;
+            font-weight: 650;
         }
 
-        .footer-about h4 {
-            font-size: 16px;
-            margin-bottom: 14px;
+        .footer-brand p {
+            max-width: 410px;
         }
 
-        .socials {
+        .footer-socials {
             display: flex;
-            gap: 14px;
+            align-items: center;
+            gap: 18px;
+            margin-top: 34px;
         }
 
-        .socials a {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
+        .footer-socials a {
             display: grid;
+            width: 55px;
+            height: 55px;
             place-items: center;
+            border-radius: 50%;
             color: #fff;
-            background: rgba(255, 255, 255, .12);
-            font-size: 19px;
-            transition: .25s;
+            font-size: 23px;
+            text-decoration: none;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, .22);
+            transition: .25s ease;
         }
 
-        .socials a:hover {
-            background: #0f56d9;
-            transform: translateY(-4px);
+        .footer-socials a:hover {
+            transform: translateY(-5px) scale(1.04);
         }
 
-        .footer-col {
-            border-left: 1px solid rgba(255, 255, 255, .12);
-            padding-left: 34px;
+        .footer-socials .facebook {
+            background: #1877f2;
+        }
+
+        .footer-socials .tiktok {
+            background: #111827;
+        }
+
+        .footer-socials .youtube {
+            background: #ff1f2d;
+        }
+
+        .footer-socials .instagram {
+            background: linear-gradient(135deg, #7c3aed, #ec4899, #f97316);
         }
 
         .footer-col h3 {
-            font-size: 24px;
-            margin-bottom: 26px;
+            position: relative;
+            margin: 0 0 38px;
             color: #fff;
+            font-size: 30px;
+            line-height: 1.2;
+            font-weight: 1000;
+        }
+
+        .footer-col h3::after {
+            content: "";
+            position: absolute;
+            bottom: -17px;
+            left: 0;
+            width: 58px;
+            height: 5px;
+            border-radius: 999px;
+            background: #facc15;
         }
 
         .footer-col a {
             display: flex;
+            width: max-content;
+            max-width: 100%;
             align-items: center;
-            gap: 12px;
-            color: #dbeafe;
-            font-size: 17px;
+            gap: 14px;
             margin-bottom: 20px;
-            transition: .25s;
-        }
-
-        .footer-col a:hover {
-            color: #38bdf8;
-            transform: translateX(5px);
+            color: #f1f7ff;
+            font-size: 18px;
+            line-height: 1.4;
+            font-weight: 700;
+            text-decoration: none;
+            transition: .22s ease;
         }
 
         .footer-col a i {
-            font-size: 14px;
-            color: #dbeafe;
+            color: #00b4d8;
+            font-size: 17px;
         }
 
-        .contact p {
-            display: flex;
+        .footer-col a:hover {
+            color: #facc15;
+            transform: translateX(6px);
+        }
+
+        .footer-contact .contact-item {
+            display: grid;
+            grid-template-columns: 58px 1fr;
+            gap: 18px;
             align-items: center;
-            gap: 14px;
-            color: #fff;
-            font-size: 17px;
             margin-bottom: 22px;
         }
 
-        .contact span {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+        .footer-contact .contact-item span {
             display: grid;
+            width: 58px;
+            height: 58px;
             place-items: center;
-            background: rgba(59, 130, 246, .25);
+            border-radius: 50%;
+            background: #08aeea;
             color: #fff;
+            font-size: 22px;
+            box-shadow: 0 12px 28px rgba(8, 174, 234, .30);
+        }
+
+        .footer-contact .contact-item p {
+            margin: 0;
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.45;
+            font-weight: 800;
+        }
+
+        .footer-news p {
+            max-width: 500px;
+            margin-bottom: 34px;
+        }
+
+        .footer-form {
+            display: flex;
+            width: 100%;
+            max-width: 530px;
+            height: 69px;
+            align-items: center;
+            padding: 7px;
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, .24);
+        }
+
+        .footer-form input {
+            flex: 1;
+            min-width: 0;
+            height: 100%;
+            padding: 0 25px;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: #0f172a;
+            font-size: 17px;
+            font-weight: 650;
+        }
+
+        .footer-form input::placeholder {
+            color: #94a3b8;
+        }
+
+        .footer-form button {
+            display: inline-flex;
+            height: 55px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 24px;
+            border: 0;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            color: #fff;
+            font-size: 17px;
+            font-weight: 1000;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: .22s ease;
+        }
+
+        .footer-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 26px rgba(245, 158, 11, .34);
+        }
+
+        .footer-plane {
+            position: absolute;
+            top: 125px;
+            right: 45px;
+            z-index: 1;
+            color: rgba(255, 255, 255, .12);
+            font-size: 66px;
+            transform: rotate(-14deg);
+        }
+
+        .footer-bag {
+            position: absolute;
+            right: 70px;
+            bottom: 205px;
+            z-index: 1;
+            color: rgba(255, 255, 255, .08);
+            font-size: 80px;
+        }
+
+        .footer-wave {
+            position: absolute;
+            right: 0;
+            bottom: 88px;
+            left: 0;
+            z-index: 3;
+            height: 198px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .footer-wave::before,
+        .footer-wave::after {
+            content: "";
+            position: absolute;
+            height: 220px;
+            border-radius: 50% 50% 0 0 / 58% 58% 0 0;
+        }
+
+        .footer-wave::before {
+            right: -6%;
+            bottom: -82px;
+            left: -6%;
+            background: linear-gradient(135deg, #0ea5e9, #0757d8);
+            transform: rotate(-3deg);
+        }
+
+        .footer-wave::after {
+            right: -10%;
+            bottom: -98px;
+            left: 42%;
+            background: linear-gradient(135deg, #0757d8, #052c8c);
+            transform: rotate(4deg);
+            opacity: .96;
+        }
+
+        .footer-sun {
+            position: absolute;
+            bottom: 40px;
+            left: 95px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #facc15, #f97316);
+            box-shadow: 0 0 34px rgba(250, 204, 21, .38);
+        }
+
+        .footer-island {
+            position: absolute;
+            bottom: 32px;
+            left: 0;
+            width: 250px;
+            height: 110px;
+        }
+
+        .footer-island::before {
+            content: "";
+            position: absolute;
+            bottom: -18px;
+            left: -20px;
+            width: 270px;
+            height: 58px;
+            border-radius: 55% 55% 0 0;
+            background: #031b40;
+        }
+
+        .palm {
+            position: absolute;
+            bottom: 24px;
+            z-index: 2;
+            width: 14px;
+            height: 96px;
+            border-radius: 999px;
+            background: #031b40;
+            transform-origin: bottom;
+        }
+
+        .palm::before {
+            content: "";
+            position: absolute;
+            top: -28px;
+            left: -42px;
+            width: 96px;
+            height: 70px;
+            background: #031b40;
+            clip-path: polygon(50% 50%,
+                    0 25%,
+                    42% 42%,
+                    18% 0,
+                    55% 34%,
+                    72% 0,
+                    68% 40%,
+                    100% 20%,
+                    72% 52%,
+                    100% 70%,
+                    60% 62%,
+                    40% 100%,
+                    38% 62%,
+                    0 80%);
+        }
+
+        .palm-one {
+            left: 45px;
+            transform: rotate(-14deg);
+        }
+
+        .palm-two {
+            left: 92px;
+            height: 72px;
+            transform: rotate(8deg);
+        }
+
+        .bird {
+            position: absolute;
+            z-index: 4;
+            width: 22px;
+            height: 10px;
+            border-top: 3px solid #031b40;
+            border-radius: 50%;
+        }
+
+        .bird::after {
+            content: "";
+            position: absolute;
+            top: -3px;
+            left: 11px;
+            width: 22px;
+            height: 10px;
+            border-top: 3px solid #031b40;
+            border-radius: 50%;
+        }
+
+        .bird-one {
+            bottom: 62px;
+            left: 185px;
+            transform: rotate(8deg) scale(.8);
+        }
+
+        .bird-two {
+            bottom: 74px;
+            left: 220px;
+            transform: rotate(-4deg) scale(.65);
+        }
+
+        .bird-three {
+            bottom: 90px;
+            left: 155px;
+            transform: rotate(-6deg) scale(.55);
         }
 
         .footer-bottom {
             position: relative;
-            z-index: 2;
-            border-top: 1px solid rgba(255, 255, 255, .12);
-            text-align: center;
-            padding: 22px;
-            color: #cbd5e1;
-            font-size: 15px;
+            z-index: 5;
+            border-top: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(2, 20, 49, .78);
         }
 
-        @media(max-width:1300px) {
+        .footer-bottom-inner {
+            display: flex;
+            min-height: 88px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .footer-bottom p {
+            margin: 0;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 650;
+        }
+
+        .footer-bottom-inner div {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .footer-bottom a {
+            position: relative;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 650;
+            text-decoration: none;
+            transition: .22s ease;
+        }
+
+        .footer-bottom a:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            width: 1px;
+            height: 18px;
+            background: rgba(255, 255, 255, .45);
+            transform: translateY(-50%);
+        }
+
+        .footer-bottom a:hover {
+            color: #facc15;
+        }
+
+        @media (max-width: 1300px) {
             .header-inner {
                 flex-wrap: wrap;
                 padding: 16px 0;
@@ -585,13 +985,22 @@
             }
         }
 
-        @media(max-width:992px) {
-            .footer-grid {
+        @media (max-width: 1200px) {
+            .footer-content {
                 grid-template-columns: 1fr 1fr;
+                gap: 44px;
+            }
+
+            .footer-news {
+                grid-column: span 2;
+            }
+
+            .footer-form {
+                max-width: 100%;
             }
         }
 
-        @media(max-width:640px) {
+        @media (max-width: 760px) {
             .client-container {
                 width: min(100% - 28px, 1380px);
             }
@@ -618,58 +1027,145 @@
             }
 
             .user-menu {
-                left: 50%;
                 right: auto;
+                left: 50%;
                 transform: translateX(-50%);
             }
 
-            .footer-grid {
+            .footer-content {
                 grid-template-columns: 1fr;
+                gap: 34px;
+                padding: 58px 0 135px;
                 text-align: center;
             }
 
-            .footer-col {
-                border-left: none;
-                padding-left: 0;
-            }
-
-            .footer-about p {
-                margin-left: auto;
+            .footer-logo {
+                justify-content: center;
                 margin-right: auto;
+                margin-left: auto;
             }
 
-            .socials {
+            .footer-logo img {
+                width: 210px;
+            }
+
+            .footer-brand p,
+            .footer-news p {
+                max-width: 100%;
+            }
+
+            .footer-socials {
                 justify-content: center;
             }
 
-            .footer-col a,
-            .contact p {
+            .footer-col h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .footer-col a {
                 justify-content: center;
+                margin-right: auto;
+                margin-left: auto;
+            }
+
+            .footer-contact .contact-item {
+                grid-template-columns: 1fr;
+                justify-items: center;
+                gap: 10px;
+            }
+
+            .footer-news {
+                grid-column: auto;
+            }
+
+            .footer-form {
+                height: auto;
+                flex-direction: column;
+                padding: 8px;
+                border-radius: 22px;
+            }
+
+            .footer-form input {
+                width: 100%;
+                height: 46px;
+                text-align: center;
+            }
+
+            .footer-form button {
+                width: 100%;
+                height: 48px;
+            }
+
+            .footer-wave {
+                bottom: 112px;
+                height: 140px;
+            }
+
+            .footer-sun,
+            .footer-island,
+            .footer-plane,
+            .footer-bag {
+                display: none;
+            }
+
+            .footer-bottom-inner {
+                min-height: auto;
+                flex-direction: column;
+                padding: 22px 0;
+                text-align: center;
+            }
+
+            .footer-bottom-inner div {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 18px;
+            }
+
+            .footer-bottom a:not(:last-child)::after {
+                display: none;
             }
         }
 
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
     <script>
-        function toggleUserMenu() {
+        document.addEventListener('DOMContentLoaded', function() {
+            const button = document.getElementById('userMenuButton');
             const menu = document.getElementById('userMenu');
 
-            if (menu) {
-                menu.classList.toggle('show');
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            const dropdown = document.querySelector('.user-dropdown');
-            const menu = document.getElementById('userMenu');
-
-            if (!dropdown || !menu) {
+            if (!button || !menu) {
                 return;
             }
 
-            if (!dropdown.contains(event.target)) {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+
+                const isOpen = menu.classList.toggle('show');
+                button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+
+            menu.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+
+            document.addEventListener('click', function() {
                 menu.classList.remove('show');
-            }
+                button.setAttribute('aria-expanded', 'false');
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    menu.classList.remove('show');
+                    button.setAttribute('aria-expanded', 'false');
+                }
+            });
         });
 
     </script>

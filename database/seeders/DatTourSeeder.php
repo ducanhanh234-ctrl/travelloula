@@ -75,7 +75,7 @@ class DatTourSeeder extends Seeder
 
                     'khuyen_mai_id' => null,
 
-                    'ma_dat_tour' => 'DT' . str_pad($bookingId, 5, '0', STR_PAD_LEFT),
+                    'ma_dat_tour' => 'TDBK' . str_pad($bookingId, 5, '0', STR_PAD_LEFT),
 
                     'so_nguoi_lon' => $soNguoiLon,
                     'so_tre_em' => 0,

@@ -1,185 +1,816 @@
 @extends('layouts.admin')
+
 @section('content')
-<style>
-    .form-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        overflow: hidden;
-    }
+    <style>
+        :root {
+            --primary: #315be8;
+            --primary-dark: #244bd2;
+            --primary-light: #edf4ff;
+            --primary-border: #c9dcff;
 
-    .form-header {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-        padding: 24px;
-    }
+            --purple: #5b4dea;
+            --cyan: #16c7e8;
 
-    .form-header h3 {
-        margin: 0;
-        font-size: 22px;
-        font-weight: 600;
-    }
+            --text-dark: #172b4d;
+            --text-main: #344563;
+            --text-muted: #6b7895;
+            --text-light: #98a2b3;
 
-    .form-body {
-        padding: 30px;
-    }
+            --border: #dce6f5;
+            --border-light: #e8eef8;
 
-    .form-group {
-        margin-bottom: 24px;
-    }
+            --white: #ffffff;
+            --page-bg: #f4f7fc;
+            --soft-bg: #f6f9ff;
 
-    .form-label {
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 8px;
-        display: block;
-    }
+            --danger: #dc4c64;
+            --danger-light: #fff0f3;
 
-    .form-control {
-        border: 1px solid #d1d5db;
-        border-radius: 6px;
-        padding: 10px 12px;
-        font-size: 14px;
-    }
+            --success: #149963;
+            --success-light: #eaf9f1;
+        }
 
-    .form-control:focus {
-        border-color: #f59e0b;
-        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
-    }
+        .permission-form-page {
+            padding: 24px 0;
+            color: var(--text-dark);
+        }
 
-    .form-hint {
-        font-size: 12px;
-        color: #6b7280;
-        margin-top: 6px;
-    }
+        /* Điều hướng trên cùng */
+        .form-page-top {
+            max-width: 920px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
 
-    .form-actions {
-        display: flex;
-        gap: 12px;
-        margin-top: 32px;
-        padding-top: 24px;
-        border-top: 1px solid #e5e7eb;
-    }
+        .page-heading h3 {
+            margin: 0;
+            color: #173576;
+            font-size: 23px;
+            font-weight: 750;
+            letter-spacing: -0.2px;
+        }
 
-    .btn-save {
-        background: #f59e0b;
-        color: white;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
+        .page-heading p {
+            margin: 6px 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
 
-    .btn-save:hover {
-        background: #d97706;
-    }
+        .btn-back-top {
+            min-height: 38px;
+            padding: 8px 14px;
+            border: 1px solid #cbdcff;
+            border-radius: 8px;
+            background: #edf4ff;
+            color: #2c57d1;
+            font-size: 13px;
+            font-weight: 650;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: all 0.18s ease;
+        }
 
-    .btn-cancel {
-        background: #e5e7eb;
-        color: #374151;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 6px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-    }
+        .btn-back-top:hover {
+            background: #dfeaff;
+            border-color: #a9c5ff;
+            color: #1f46bd;
+            text-decoration: none;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(49, 91, 232, 0.12);
+        }
 
-    .btn-cancel:hover {
-        background: #d1d5db;
-    }
+        /* Card form */
+        .form-card {
+            position: relative;
+            max-width: 920px;
+            margin: 0 auto;
+            overflow: hidden;
+            background: var(--white);
+            border: 1px solid #d8e4f6;
+            border-radius: 15px;
+            box-shadow: 0 10px 32px rgba(28, 65, 139, 0.11);
+        }
 
-    .error-text {
-        color: #ef4444;
-        font-size: 12px;
-        margin-top: 6px;
-    }
+        .form-card::before {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 3;
+            height: 4px;
+            content: "";
+            background: linear-gradient(
+                90deg,
+                #2458e7,
+                #3478ef,
+                #18c7e7,
+                #5947e9
+            );
+        }
 
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 12px;
-        background: #f9fafb;
-        border-radius: 6px;
-        border: 1px solid #e5e7eb;
-    }
+        /* Header */
+        .form-header {
+            position: relative;
+            min-height: 135px;
+            padding: 28px 30px;
+            overflow: hidden;
+            color: var(--white);
+            background: linear-gradient(
+                120deg,
+                #2856df 0%,
+                #316cec 55%,
+                #5b49e8 100%
+            );
+            display: flex;
+            align-items: center;
+        }
 
-    .checkbox-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-    }
+        .form-header::before {
+            position: absolute;
+            right: -55px;
+            bottom: -100px;
+            width: 240px;
+            height: 240px;
+            content: "";
+            border: 22px solid rgba(255, 255, 255, 0.07);
+            border-radius: 50%;
+        }
 
-    .checkbox-group label {
-        cursor: pointer;
-        margin: 0;
-        font-weight: 500;
-    }
-</style>
+        .form-header::after {
+            position: absolute;
+            top: -85px;
+            right: 105px;
+            width: 175px;
+            height: 175px;
+            content: "";
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.045);
+        }
 
-<div class="container py-4">
-    <div class="card form-card">
-        <div class="form-header">
-            <h3>Tạo quyền mới</h3>
+        .form-header-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .form-header-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.16);
+            box-shadow: 0 7px 18px rgba(20, 43, 128, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-header-icon i {
+            font-size: 20px;
+        }
+
+        .form-header h3 {
+            margin: 0;
+            color: var(--white);
+            font-size: 23px;
+            font-weight: 750;
+        }
+
+        .form-header p {
+            margin: 7px 0 0;
+            color: rgba(255, 255, 255, 0.84);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* Body */
+        .form-body {
+            padding: 30px;
+            background: var(--white);
+        }
+
+        .form-section {
+            margin-bottom: 26px;
+            padding-bottom: 6px;
+        }
+
+        .form-section-title {
+            margin-bottom: 20px;
+            color: #24417d;
+            font-size: 14px;
+            font-weight: 750;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-section-title::before {
+            width: 4px;
+            height: 18px;
+            content: "";
+            border-radius: 999px;
+            background: linear-gradient(
+                180deg,
+                #315be8,
+                #5b4dea
+            );
+        }
+
+        .form-row-custom {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            margin-bottom: 8px;
+            color: #31456f;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .required-mark {
+            color: #dc4c64;
+            font-size: 14px;
+        }
+
+        /* Input */
+        .form-control {
+            width: 100%;
+            min-height: 44px;
+            padding: 10px 13px;
+            color: #344563;
+            background: #ffffff;
+            border: 1px solid #cfdaec;
+            border-radius: 9px;
+            font-size: 14px;
+            transition:
+                border-color 0.18s ease,
+                box-shadow 0.18s ease,
+                background-color 0.18s ease;
+        }
+
+        textarea.form-control {
+            min-height: 110px;
+            padding-top: 12px;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        .form-control::placeholder {
+            color: #a4aec1;
+        }
+
+        .form-control:hover {
+            border-color: #b6c9e8;
+        }
+
+        .form-control:focus {
+            color: #24375c;
+            background: #ffffff;
+            border-color: #4f78eb;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(49, 91, 232, 0.11);
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc4c64;
+            background-image: none;
+        }
+
+        .form-control.is-invalid:focus {
+            border-color: #dc4c64;
+            box-shadow: 0 0 0 4px rgba(220, 76, 100, 0.1);
+        }
+
+        /* Gợi ý */
+        .form-hint {
+            margin-top: 7px;
+            color: #7b879f;
+            font-size: 12px;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .form-hint i {
+            margin-top: 2px;
+            color: #5f81de;
+            font-size: 11px;
+        }
+
+        .error-text {
+            margin-top: 7px;
+            color: #cf3f58;
+            font-size: 12px;
+            font-weight: 550;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Checkbox trạng thái */
+        .status-option {
+            margin-top: 2px;
+        }
+
+        .checkbox-group {
+            position: relative;
+            padding: 15px 16px;
+            overflow: hidden;
+            background: linear-gradient(
+                135deg,
+                #f3f7ff 0%,
+                #edf3ff 100%
+            );
+            border: 1px solid #cfddf7;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.18s ease;
+        }
+
+        .checkbox-group:hover {
+            background: #eaf2ff;
+            border-color: #b5cbf6;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 19px;
+            height: 19px;
+            flex-shrink: 0;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #315be8;
+        }
+
+        .checkbox-content {
+            flex: 1;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            color: #27447e;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .checkbox-description {
+            margin-top: 3px;
+            color: #72809a;
+            font-size: 12px;
+        }
+
+        .checkbox-icon {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            color: #315be8;
+            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid #cfddf7;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkbox-icon i {
+            font-size: 13px;
+        }
+
+        /* Actions */
+        .form-actions {
+            margin-top: 30px;
+            padding-top: 23px;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-form {
+            min-width: 130px;
+            min-height: 42px;
+            padding: 9px 18px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            transition: all 0.18s ease;
+        }
+
+        .btn-form:hover {
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+        .btn-save {
+            color: var(--white);
+            background: linear-gradient(
+                135deg,
+                #315be8 0%,
+                #3b6dee 55%,
+                #594bea 100%
+            );
+            border-color: #315be8;
+            box-shadow: 0 6px 16px rgba(49, 91, 232, 0.24);
+        }
+
+        .btn-save:hover {
+            color: var(--white);
+            background: linear-gradient(
+                135deg,
+                #264ed4 0%,
+                #315edc 55%,
+                #4d40d8 100%
+            );
+            border-color: #264ed4;
+            box-shadow: 0 8px 19px rgba(49, 91, 232, 0.3);
+        }
+
+        .btn-save:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(49, 91, 232, 0.15);
+        }
+
+        .btn-cancel {
+            color: #53698f;
+            background: #f2f6fc;
+            border-color: #d4dfef;
+        }
+
+        .btn-cancel:hover {
+            color: #304d83;
+            background: #e7eef9;
+            border-color: #bdcce3;
+            box-shadow: 0 5px 13px rgba(41, 73, 132, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .permission-form-page {
+                padding: 15px 0;
+            }
+
+            .form-page-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .btn-back-top {
+                width: 100%;
+            }
+
+            .form-card {
+                border-radius: 11px;
+            }
+
+            .form-header {
+                min-height: 120px;
+                padding: 23px 20px;
+            }
+
+            .form-header h3 {
+                font-size: 21px;
+            }
+
+            .form-body {
+                padding: 22px 18px;
+            }
+
+            .form-row-custom {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .form-actions {
+                align-items: stretch;
+                flex-direction: column-reverse;
+            }
+
+            .btn-form {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-heading h3 {
+                font-size: 20px;
+            }
+
+            .form-header-content {
+                align-items: flex-start;
+            }
+
+            .form-header-icon {
+                width: 44px;
+                height: 44px;
+            }
+
+            .form-header p {
+                font-size: 12px;
+            }
+
+            .checkbox-group {
+                padding: 13px;
+            }
+
+            .checkbox-icon {
+                display: none;
+            }
+        }
+    </style>
+
+    <div class="container-fluid permission-form-page">
+        <div class="form-page-top">
+            <div class="page-heading">
+                <h3>Tạo quyền hạn</h3>
+                <p>Thêm một quyền hạn mới vào hệ thống.</p>
+            </div>
+
+            <a
+                href="{{ route('Admin.quyen-hans.index') }}"
+                class="btn-back-top"
+            >
+                <i class="fas fa-arrow-left"></i>
+                Quay lại danh sách
+            </a>
         </div>
 
-        <div class="form-body">
-            <form action="{{ route('Admin.quyen-hans.store') }}" method="POST">
-                @csrf
+        <div class="card form-card">
+            <div class="form-header">
+                <div class="form-header-content">
+                    <span class="form-header-icon">
+                        <i class="fas fa-key"></i>
+                    </span>
 
-                <div class="form-group">
-                    <label class="form-label">Tên kỹ thuật <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="ten" class="form-control @error('ten') is-invalid @enderror" 
-                        value="{{ old('ten') }}" placeholder="Ví dụ: users.create" required>
-                    <div class="form-hint">Sử dụng chữ thường, dấu chấm hoặc gạch dưới. Ví dụ: users.create, posts.edit</div>
-                    @error('ten')
-                        <div class="error-text">{{ $message }}</div>
-                    @enderror
-                </div>
+                    <div>
+                        <h3>Tạo quyền mới</h3>
 
-                <div class="form-group">
-                    <label class="form-label">Tên hiển thị <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="ten_hien_thi" class="form-control @error('ten_hien_thi') is-invalid @enderror" 
-                        value="{{ old('ten_hien_thi') }}" placeholder="Ví dụ: Tạo người dùng" required>
-                    @error('ten_hien_thi')
-                        <div class="error-text">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Mô đun</label>
-                    <input type="text" name="mo_dun" class="form-control" value="{{ old('mo_dun') }}" 
-                        placeholder="Ví dụ: users, posts, tours">
-                    <div class="form-hint">Tên nhóm mô đun mà quyền này thuộc về</div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Mô tả</label>
-                    <textarea name="mo_ta" class="form-control" rows="3" placeholder="Mô tả chi tiết về quyền này">{{ old('mo_ta') }}</textarea>
-                    @error('mo_ta')
-                        <div class="error-text">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" class="form-check-input" name="trang_thai" id="trang_thai" value="1" 
-                            {{ old('trang_thai') ? 'checked' : '' }}>
-                        <label for="trang_thai">Kích hoạt quyền này</label>
+                        <p>
+                            Khai báo thông tin kỹ thuật và trạng thái hoạt động
+                            của quyền hạn.
+                        </p>
                     </div>
-                    <div class="form-hint" style="margin-top: 8px;">Tắt để vô hiệu hóa quyền mà không cần xóa</div>
                 </div>
+            </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">💾 Lưu quyền</button>
-                    <a href="{{ route('Admin.quyen-hans.index') }}" class="btn-cancel">Hủy</a>
-                </div>
-            </form>
+            <div class="form-body">
+                <form
+                    action="{{ route('Admin.quyen-hans.store') }}"
+                    method="POST"
+                >
+                    @csrf
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            Thông tin quyền hạn
+                        </div>
+
+                        <div class="form-row-custom">
+                            <div class="form-group">
+                                <label for="ten" class="form-label">
+                                    Tên kỹ thuật
+                                    <span class="required-mark">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="ten"
+                                    id="ten"
+                                    class="form-control @error('ten') is-invalid @enderror"
+                                    value="{{ old('ten') }}"
+                                    placeholder="Ví dụ: users.create"
+                                    autocomplete="off"
+                                    required
+                                >
+
+                                <div class="form-hint">
+                                    <i class="fas fa-circle-info"></i>
+
+                                    <span>
+                                        Sử dụng chữ thường, dấu chấm hoặc gạch
+                                        dưới. Ví dụ: users.create, posts.edit.
+                                    </span>
+                                </div>
+
+                                @error('ten')
+                                    <div class="error-text">
+                                        <i class="fas fa-circle-exclamation"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ten_hien_thi" class="form-label">
+                                    Tên hiển thị
+                                    <span class="required-mark">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="ten_hien_thi"
+                                    id="ten_hien_thi"
+                                    class="form-control @error('ten_hien_thi') is-invalid @enderror"
+                                    value="{{ old('ten_hien_thi') }}"
+                                    placeholder="Ví dụ: Tạo người dùng"
+                                    autocomplete="off"
+                                    required
+                                >
+
+                                <div class="form-hint">
+                                    <i class="fas fa-circle-info"></i>
+
+                                    <span>
+                                        Tên dễ hiểu được hiển thị cho quản trị viên.
+                                    </span>
+                                </div>
+
+                                @error('ten_hien_thi')
+                                    <div class="error-text">
+                                        <i class="fas fa-circle-exclamation"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mo_dun" class="form-label">
+                                Mô đun
+                            </label>
+
+                            <input
+                                type="text"
+                                name="mo_dun"
+                                id="mo_dun"
+                                class="form-control @error('mo_dun') is-invalid @enderror"
+                                value="{{ old('mo_dun') }}"
+                                placeholder="Ví dụ: users, posts, tours"
+                                autocomplete="off"
+                            >
+
+                            <div class="form-hint">
+                                <i class="fas fa-layer-group"></i>
+
+                                <span>
+                                    Tên nhóm chức năng mà quyền hạn này thuộc về.
+                                </span>
+                            </div>
+
+                            @error('mo_dun')
+                                <div class="error-text">
+                                    <i class="fas fa-circle-exclamation"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mo_ta" class="form-label">
+                                Mô tả
+                            </label>
+
+                            <textarea
+                                name="mo_ta"
+                                id="mo_ta"
+                                class="form-control @error('mo_ta') is-invalid @enderror"
+                                rows="4"
+                                placeholder="Mô tả chi tiết về quyền hạn này..."
+                            >{{ old('mo_ta') }}</textarea>
+
+                            <div class="form-hint">
+                                <i class="fas fa-align-left"></i>
+
+                                <span>
+                                    Giải thích ngắn gọn quyền này cho phép người dùng
+                                    thực hiện thao tác gì.
+                                </span>
+                            </div>
+
+                            @error('mo_ta')
+                                <div class="error-text">
+                                    <i class="fas fa-circle-exclamation"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            Trạng thái hoạt động
+                        </div>
+
+                        <div class="status-option">
+                            <div
+                                class="checkbox-group"
+                                onclick="toggleStatusCheckbox(event)"
+                            >
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    name="trang_thai"
+                                    id="trang_thai"
+                                    value="1"
+                                    {{ old('trang_thai', 1) ? 'checked' : '' }}
+                                >
+
+                                <div class="checkbox-content">
+                                    <label for="trang_thai">
+                                        Kích hoạt quyền này
+                                    </label>
+
+                                    <div class="checkbox-description">
+                                        Quyền có thể được gán cho các vai trò ngay
+                                        sau khi tạo.
+                                    </div>
+                                </div>
+
+                                <span class="checkbox-icon">
+                                    <i class="fas fa-shield-check"></i>
+                                </span>
+                            </div>
+
+                            <div class="form-hint">
+                                <i class="fas fa-circle-info"></i>
+
+                                <span>
+                                    Bỏ chọn để tạm thời vô hiệu hóa quyền mà không
+                                    cần xóa khỏi hệ thống.
+                                </span>
+                            </div>
+
+                            @error('trang_thai')
+                                <div class="error-text">
+                                    <i class="fas fa-circle-exclamation"></i>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a
+                            href="{{ route('Admin.quyen-hans.index') }}"
+                            class="btn-form btn-cancel"
+                        >
+                            <i class="fas fa-xmark"></i>
+                            Hủy
+                        </a>
+
+                        <button type="submit" class="btn-form btn-save">
+                            <i class="fas fa-floppy-disk"></i>
+                            Lưu quyền
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    <script>
+        function toggleStatusCheckbox(event) {
+            if (
+                event.target.tagName === 'INPUT' ||
+                event.target.tagName === 'LABEL'
+            ) {
+                return;
+            }
+
+            const checkbox = document.getElementById('trang_thai');
+
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        }
+    </script>
 @endsection

@@ -22,6 +22,11 @@ class LichKhoiHanhController extends Controller
 
     public function index()
     {
+
+        LichKhoiHanhTour::all()->each(function ($lich) {
+            $lich->capNhatTrangThai();
+        });
+
         $allData = LichKhoiHanhTour::with([
             'tour',
             'huongDanVien',
@@ -191,6 +196,14 @@ class LichKhoiHanhController extends Controller
             'huongDanVien'
         ])->findOrFail($id);
 
+        $item->capNhatTrangThai();
+
+        $item->load([
+            'tour',
+            'tour.danhMuc',
+            'huongDanVien'
+        ]);
+
         return view(
             'Admin.lich_khoi_hanh.show',
             compact('item')
@@ -200,6 +213,10 @@ class LichKhoiHanhController extends Controller
     public function edit($id)
     {
         $item = LichKhoiHanhTour::findOrFail($id);
+
+        // $item = LichKhoiHanhTour::findOrFail($id);
+
+        $item->capNhatTrangThai();
 
         $tours = DanhSachTour::orderBy('ten_tour')->get();
 
@@ -224,45 +241,72 @@ class LichKhoiHanhController extends Controller
     {
         $item = LichKhoiHanhTour::findOrFail($id);
 
-        $request->validate([
-            'tour_id' => 'required',
+        $validated = $request->validate([
+            'tour_id' => 'required|exists:danh_sach_tours,id',
             'ngay_khoi_hanh' => 'required|date',
-            'so_cho' => 'required|integer|min:1',
-            'gia_nguoi_lon' => 'required|integer|min:0',
-            'gia_tre_em' => 'required|integer|min:0',
             'trang_thai' => 'required',
             'huong_dan_vien_id' => 'nullable|exists:huong_dan_viens,id',
+        ], [
+            'tour_id.required' => 'Vui lòng chọn tour.',
+            'tour_id.exists' => 'Tour được chọn không tồn tại.',
+            'ngay_khoi_hanh.required' => 'Vui lòng chọn ngày khởi hành.',
+            'ngay_khoi_hanh.date' => 'Ngày khởi hành không hợp lệ.',
+            'trang_thai.required' => 'Vui lòng chọn trạng thái.',
+            'huong_dan_vien_id.exists' => 'Hướng dẫn viên không tồn tại.',
         ]);
 
-        $tour = DanhSachTour::findOrFail($request->tour_id);
+        $tour = DanhSachTour::findOrFail($validated['tour_id']);
 
-        preg_match('/(\d+)/', $tour->thoi_luong, $match);
+        /*
+    |--------------------------------------------------------------------------
+    | Tính ngày kết thúc theo thời lượng tour
+    |--------------------------------------------------------------------------
+    | Ví dụ:
+    | "3 ngày 2 đêm" => 3 ngày
+    | "1 ngày"       => 1 ngày
+    */
+        preg_match('/(\d+)/', $tour->thoi_luong ?? '', $match);
 
-        $soNgay = (int) ($match[1] ?? 1);
+        $soNgay = max(1, (int) ($match[1] ?? 1));
 
-        $ngayKetThuc = Carbon::parse($request->ngay_khoi_hanh)
+        $ngayKetThuc = Carbon::parse($validated['ngay_khoi_hanh'])
             ->addDays($soNgay - 1)
             ->format('Y-m-d');
 
-        $item->update([
-            'tour_id' => $request->tour_id,
+        $dataUpdate = [
+            'tour_id' => $validated['tour_id'],
+            'ngay_khoi_hanh' => $validated['ngay_khoi_hanh'],
+            'ngay_ket_thuc' => $ngayKetThuc,
+            'trang_thai' => $validated['trang_thai'],
+        ];
 
-            'ngay_khoi_hanh' => $request->ngay_khoi_hanh,
-            'ngay_ket_thuc'  => $ngayKetThuc,
+        /*
+    |--------------------------------------------------------------------------
+    | Chỉ cập nhật hướng dẫn viên khi form có gửi trường này
+    |--------------------------------------------------------------------------
+    | Form hiện tại của bạn đang comment trường hướng dẫn viên.
+    | Làm như vậy để tránh tự động xóa hướng dẫn viên đang được phân công.
+    */
+        if ($request->exists('huong_dan_vien_id')) {
+            $dataUpdate['huong_dan_vien_id'] =
+                $validated['huong_dan_vien_id'] ?? null;
+        }
 
-            'so_cho' => $request->so_cho,
-
-            'gia_nguoi_lon' => $request->gia_nguoi_lon,
-            'gia_tre_em' => $request->gia_tre_em,
-
-            'trang_thai' => $request->trang_thai,
-
-            'huong_dan_vien_id' => $request->huong_dan_vien_id,
-        ]);
+        /*
+    |--------------------------------------------------------------------------
+    | Không cập nhật số chỗ và giá
+    |--------------------------------------------------------------------------
+    | Các trường sau được lấy từ bảng khác nên không nhận từ form:
+    |
+    | so_cho
+    | gia_nguoi_lon
+    | gia_tre_em
+    */
+        $item->update($dataUpdate);
 
         return redirect()
             ->route('Admin.lich-khoi-hanh.index')
-            ->with('success', 'Cập nhật thành công');
+            ->with('success', 'Cập nhật lịch khởi hành thành công.');
     }
 
     public function destroy($id)

@@ -35,7 +35,7 @@ class KhachHangDatTourController extends Controller
         ')
         ->groupBy('ho_ten', 'email', 'so_dien_thoai')
         ->orderByDesc('id')
-        ->paginate(10)
+        ->paginate(100)
         ->appends($request->query());
 
     return view('Admin.khach_hang_dat_tours.index', compact('khachHangs'));

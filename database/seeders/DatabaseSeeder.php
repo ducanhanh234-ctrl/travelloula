@@ -49,3 +49,5 @@ class DatabaseSeeder extends Seeder
         if ($adminUser) {
             $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
         }
+        
+    }

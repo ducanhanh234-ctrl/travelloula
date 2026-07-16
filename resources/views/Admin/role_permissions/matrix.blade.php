@@ -3,57 +3,176 @@
 @section('content')
 <div class="container-fluid permission-matrix-page">
     <style>
+
+        :root {
+            --pm-primary: #2563eb;
+            --pm-primary-dark: #1d4ed8;
+            --pm-primary-soft: #eff6ff;
+            --pm-indigo: #4f46e5;
+            --pm-cyan: #06b6d4;
+            --pm-success: #10b981;
+            --pm-warning: #f59e0b;
+            --pm-danger: #ef4444;
+            --pm-text: #0f172a;
+            --pm-muted: #64748b;
+            --pm-border: #e2e8f0;
+            --pm-surface: #ffffff;
+            --pm-surface-soft: #f8fafc;
+            --pm-shadow: 0 18px 50px rgba(15, 23, 42, .10);
+            --pm-shadow-soft: 0 8px 24px rgba(15, 23, 42, .08);
+            --pm-radius: 18px;
+        }
+
         .permission-matrix-page {
-            padding: 24px 0;
+            padding: 28px 0 36px;
+            color: var(--pm-text);
         }
 
         .permission-matrix-container {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            position: relative;
             overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, .22);
+            border-radius: 22px;
+            background: var(--pm-surface);
+            box-shadow: var(--pm-shadow);
+        }
+
+        .permission-matrix-container::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pm-primary), var(--pm-indigo), var(--pm-cyan));
+            z-index: 2;
         }
 
         .matrix-header {
-            background: linear-gradient(135deg, #0d6efd, #5b9dff);
+            position: relative;
+            overflow: hidden;
+            padding: 28px 30px 30px;
+            background:
+                radial-gradient(circle at 85% 15%, rgba(255,255,255,.18), transparent 26%),
+                linear-gradient(135deg, #1d4ed8 0%, #2563eb 48%, #4f46e5 100%);
             color: #fff;
-            padding: 22px 26px;
+        }
+
+        .matrix-header::after {
+            content: "";
+            position: absolute;
+            right: -70px;
+            bottom: -90px;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            border: 36px solid rgba(255,255,255,.08);
         }
 
         .matrix-header h3 {
+            position: relative;
+            z-index: 1;
             margin: 0;
-            font-size: 22px;
-            font-weight: 700;
+            font-size: clamp(22px, 2vw, 30px);
+            font-weight: 800;
+            letter-spacing: -.02em;
         }
 
         .matrix-header p {
-            margin: 8px 0 0;
+            position: relative;
+            z-index: 1;
+            max-width: 780px;
+            margin: 9px 0 0;
+            color: rgba(255,255,255,.88);
             font-size: 14px;
-            opacity: .9;
+            line-height: 1.7;
+        }
+
+        .role-summary-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+            margin-top: 22px;
+        }
+
+        .role-summary-card {
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,.20);
+            border-radius: 16px;
+            background: rgba(255,255,255,.13);
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
+        }
+
+        .role-summary-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .role-summary-name {
+            overflow: hidden;
+            font-size: 13px;
+            font-weight: 800;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .role-summary-number {
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .role-summary-progress {
+            height: 8px;
+            margin-top: 12px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255,255,255,.22);
+        }
+
+        .role-summary-progress span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #fff, #bfdbfe);
+            box-shadow: 0 0 14px rgba(255,255,255,.45);
+        }
+
+        .role-summary-meta {
+            margin-top: 8px;
+            color: rgba(255,255,255,.78);
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .table-wrapper {
             overflow-x: auto;
-            padding: 24px;
-            background: #fff;
+            padding: 26px;
+            background:
+                linear-gradient(180deg, #fff, #fbfdff);
         }
 
         .permission-matrix {
             width: 100%;
-            min-width: 900px;
+            min-width: 980px;
+            margin: 0;
+            overflow: hidden;
+            border: 1px solid var(--pm-border);
             border-collapse: separate;
             border-spacing: 0;
-            margin: 0;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: var(--pm-shadow-soft);
         }
 
         .permission-matrix th,
         .permission-matrix td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #e5e7eb;
-            border-right: 1px solid #e5e7eb;
+            padding: 15px 14px;
+            border-right: 1px solid var(--pm-border);
+            border-bottom: 1px solid var(--pm-border);
             text-align: center;
             vertical-align: middle;
             font-size: 14px;
@@ -61,17 +180,21 @@
 
         .permission-matrix th:last-child,
         .permission-matrix td:last-child {
-            border-right: none;
+            border-right: 0;
         }
 
         .permission-matrix tbody tr:last-child td {
-            border-bottom: none;
+            border-bottom: 0;
         }
 
         .permission-matrix thead th {
-            background: #f1f5f9;
+            position: sticky;
+            top: 0;
+            z-index: 7;
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
             color: #334155;
-            font-weight: 700;
+            font-size: 13px;
+            font-weight: 800;
             white-space: nowrap;
         }
 
@@ -79,21 +202,23 @@
         .permission-matrix tbody td:first-child {
             position: sticky;
             left: 0;
-            z-index: 5;
+            min-width: 300px;
+            max-width: 360px;
             text-align: left;
-            min-width: 260px;
-            max-width: 320px;
         }
 
         .permission-matrix th:first-child {
-            background: #f1f5f9;
-            z-index: 8;
+            z-index: 10;
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
         }
 
         .permission-matrix tbody td:first-child {
+            z-index: 4;
             background: #fff;
-            font-weight: 600;
-            color: #334155;
+        }
+
+        .permission-matrix tbody tr.permission-row {
+            transition: background .18s ease, transform .18s ease;
         }
 
         .permission-matrix tbody tr.permission-row:hover {
@@ -105,46 +230,49 @@
         }
 
         .module-row td {
-            background: #eef6ff !important;
             padding: 0 !important;
+            background: #eef6ff !important;
         }
 
         .module-toggle {
-            width: 100%;
-            border: none;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            color: #1e3a8a;
-            padding: 14px 18px;
-            font-weight: 800;
-            font-size: 15px;
-            text-align: left;
             display: flex;
+            width: 100%;
             align-items: center;
             justify-content: space-between;
+            padding: 16px 18px;
+            border: 0;
+            background:
+                linear-gradient(135deg, #eff6ff 0%, #dbeafe 62%, #e0e7ff 100%);
+            color: #1e3a8a;
+            font-size: 15px;
+            font-weight: 800;
+            text-align: left;
             cursor: pointer;
-            transition: .25s;
+            transition: .22s ease;
         }
 
         .module-toggle:hover {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            background:
+                linear-gradient(135deg, #dbeafe 0%, #bfdbfe 60%, #c7d2fe 100%);
         }
 
         .module-left {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .module-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            background: #2563eb;
-            color: #fff;
             display: flex;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            border-radius: 11px;
+            background: linear-gradient(135deg, var(--pm-primary), var(--pm-indigo));
+            color: #fff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, .25);
         }
 
         .module-info {
@@ -155,22 +283,29 @@
         }
 
         .module-name {
+            letter-spacing: .035em;
             text-transform: uppercase;
-            letter-spacing: .04em;
         }
 
         .module-count {
-            background: #fff;
-            color: #2563eb;
+            padding: 4px 10px;
             border: 1px solid #bfdbfe;
             border-radius: 999px;
-            padding: 4px 10px;
+            background: rgba(255,255,255,.88);
+            color: var(--pm-primary);
             font-size: 12px;
             font-weight: 800;
         }
 
         .module-arrow {
-            transition: .25s;
+            display: flex;
+            width: 30px;
+            height: 30px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: rgba(255,255,255,.65);
+            transition: transform .22s ease;
         }
 
         .module-toggle.collapsed .module-arrow {
@@ -182,51 +317,79 @@
         }
 
         .permission-title {
-            font-weight: 700;
-            color: #334155;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            color: #1e293b;
+            font-weight: 800;
         }
 
         .permission-code {
-            display: inline-block;
-            padding: 3px 8px;
+            display: inline-flex;
+            margin-top: 3px;
+            padding: 4px 9px;
+            border: 1px solid #bfdbfe;
             border-radius: 999px;
-            background: #e7f1ff;
-            color: #0d6efd;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 4px;
+            background: #eff6ff;
+            color: var(--pm-primary-dark);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .02em;
         }
 
         .permission-module {
+            margin-top: 6px;
+            color: var(--pm-muted);
             font-size: 12px;
-            color: #64748b;
-            margin-top: 4px;
         }
 
         .role-header {
-            min-width: 90px;
-            font-weight: 700;
-            color: #334155;
+            min-width: 130px;
+            text-align: center;
+        }
+
+        .role-header-name {
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+
+        .role-header-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 7px;
+            padding: 5px 9px;
+            border: 1px solid #bfdbfe;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: var(--pm-primary-dark);
+            font-size: 11px;
+            font-weight: 800;
         }
 
         .permission-checkbox {
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
 
         .permission-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            accent-color: var(--pm-primary);
             cursor: pointer;
-            accent-color: #0d6efd;
+            transition: transform .15s ease;
+        }
+
+        .permission-checkbox input[type="checkbox"]:hover {
+            transform: scale(1.08);
         }
 
         .pagination-wrapper {
-            padding: 0 24px 20px;
             display: flex;
             justify-content: center;
+            padding: 0 24px 22px;
         }
 
         .pagination-wrapper .pagination {
@@ -234,47 +397,49 @@
         }
 
         .matrix-footer {
-            padding: 18px 24px;
-            background: #f8fafc;
-            border-top: 1px solid #e5e7eb;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            justify-content: space-between;
+            gap: 18px;
             flex-wrap: wrap;
+            padding: 20px 26px;
+            border-top: 1px solid var(--pm-border);
+            background: linear-gradient(180deg, #f8fafc, #f1f5f9);
         }
 
         .stats {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .stat-item {
             display: flex;
+            min-height: 42px;
             align-items: center;
-            gap: 8px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
+            gap: 9px;
+            padding: 7px 12px;
+            border: 1px solid var(--pm-border);
             border-radius: 999px;
-            padding: 8px 12px;
-            font-size: 14px;
-            font-weight: 600;
+            background: #fff;
             color: #475569;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(15,23,42,.04);
         }
 
         .stat-icon {
-            min-width: 26px;
-            height: 26px;
-            padding: 0 8px;
-            background: #e7f1ff;
-            color: #0d6efd;
-            border-radius: 999px;
             display: flex;
+            min-width: 28px;
+            height: 28px;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
-            font-weight: 800;
+            padding: 0 8px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            color: var(--pm-primary-dark);
+            font-size: 12px;
+            font-weight: 900;
         }
 
         .matrix-actions {
@@ -285,21 +450,26 @@
 
         .matrix-actions .btn,
         .btn-save {
-            min-width: 140px;
-            border-radius: 8px;
-            font-weight: 600;
-            padding: 10px 16px;
+            min-width: 145px;
+            min-height: 44px;
+            justify-content: center;
+            border-radius: 11px;
+            font-weight: 700;
+            padding: 10px 17px;
+            transition: .22s ease;
         }
 
         .btn-save {
-            background: #0d6efd;
+            border: 0;
+            background: linear-gradient(135deg, var(--pm-primary), var(--pm-indigo));
             color: #fff;
-            border: none;
+            box-shadow: 0 10px 22px rgba(37,99,235,.24);
         }
 
         .btn-save:hover {
-            background: #0b5ed7;
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(37,99,235,.30);
         }
 
         .alert-container {
@@ -307,24 +477,57 @@
         }
 
         .alert {
-            border-radius: 10px;
+            border: 0;
+            border-radius: 14px;
+            box-shadow: var(--pm-shadow-soft);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
+            .matrix-header,
             .table-wrapper {
-                padding: 16px;
+                padding-inline: 18px;
             }
 
-            .matrix-header {
-                padding: 18px;
+            .role-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .matrix-footer {
                 align-items: stretch;
             }
+        }
 
+        @media (max-width: 640px) {
+            .permission-matrix-page {
+                padding-top: 14px;
+            }
+
+            .permission-matrix-container {
+                border-radius: 16px;
+            }
+
+            .matrix-header {
+                padding: 22px 16px 24px;
+            }
+
+            .role-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-wrapper {
+                padding: 14px;
+            }
+
+            .matrix-footer {
+                padding: 16px;
+            }
+
+            .stats,
             .matrix-actions {
                 width: 100%;
+            }
+
+            .matrix-actions {
                 flex-direction: column;
             }
 
@@ -333,6 +536,7 @@
                 width: 100%;
             }
         }
+
     </style>
 
     @if(session('success'))
@@ -348,6 +552,32 @@
         <div class="matrix-header">
             <h3>Bảng phân quyền vai trò</h3>
             <p>Quản lý quyền hạn theo từng nhóm chức năng. Bấm vào từng mục để xổ hoặc ẩn các quyền con.</p>
+
+            <div class="role-summary-grid">
+                @foreach($vaiTros as $vaiTro)
+                    @php
+                        $assignedCount = count($rolePermissions[$vaiTro->id] ?? []);
+                        $totalCount = max(1, $quyenHans->total());
+                        $assignedPercent = min(100, round(($assignedCount / $totalCount) * 100));
+                    @endphp
+
+                    <div class="role-summary-card">
+                        <div class="role-summary-top">
+                            <div class="role-summary-name">{{ $vaiTro->ten_vai_tro }}</div>
+                            <div class="role-summary-number">{{ $assignedCount }}/{{ $quyenHans->total() }}</div>
+                        </div>
+
+                        <div class="role-summary-progress">
+                            <span style="width: {{ $assignedPercent }}%"></span>
+                        </div>
+
+                        <div class="role-summary-meta">
+                            Đã cấp {{ $assignedPercent }}% tổng quyền
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
         </div>
 
         <form method="POST" action="{{ route('Admin.role-permissions.update-matrix') }}">
@@ -365,8 +595,19 @@
 
                             @foreach($vaiTros as $vaiTro)
                                 <th>
+                                    @php
+                                        $assignedCount = count($rolePermissions[$vaiTro->id] ?? []);
+                                    @endphp
+
                                     <div class="role-header">
-                                        {{ $vaiTro->ten_vai_tro }}
+                                        <div class="role-header-name">
+                                            {{ $vaiTro->ten_vai_tro }}
+                                        </div>
+
+                                        <div class="role-header-count">
+                                            <i class="fas fa-shield-halved"></i>
+                                            {{ $assignedCount }}/{{ $quyenHans->total() }} quyền
+                                        </div>
                                     </div>
                                 </th>
                             @endforeach
@@ -510,6 +751,15 @@
                         <div class="stat-icon">{{ $quyenHans->total() }}</div>
                         <span>Quyền</span>
                     </div>
+
+                    @foreach($vaiTros as $vaiTro)
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                {{ count($rolePermissions[$vaiTro->id] ?? []) }}
+                            </div>
+                            <span>{{ $vaiTro->ten_vai_tro }}</span>
+                        </div>
+                    @endforeach
 
                     <div class="stat-item">
                         <div class="stat-icon">{{ $quyenHans->currentPage() }}/{{ $quyenHans->lastPage() }}</div>

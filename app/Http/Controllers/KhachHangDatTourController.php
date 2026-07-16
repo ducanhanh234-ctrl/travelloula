@@ -9,43 +9,50 @@ use Illuminate\Http\Request;
 class KhachHangDatTourController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = DatTour::with([
-            'tour',
-            'lichKhoiHanh',
-            'lichKhoiHanh.huongDanVien',
-        ]);
-        if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
+{
+    $query = KhachHangDatTour::query();
 
-            $query->where(function ($q) use ($keyword) {
-                $q->where('ho_ten', 'like', "%{$keyword}%")
-                    ->orWhere('email', 'like', "%{$keyword}%")
-                    ->orWhere('so_dien_thoai', 'like', "%{$keyword}%");
-            });
-        }
+    if ($request->filled('keyword')) {
+        $keyword = trim($request->keyword);
 
-        if ($request->filled('loai_hanh_khach')) {
-            $query->where('loai_hanh_khach', $request->loai_hanh_khach);
-        }
+        $query->where(function ($q) use ($keyword) {
+            $q->where('ho_ten', 'like', "%{$keyword}%")
+                ->orWhere('email', 'like', "%{$keyword}%")
+                ->orWhere('so_dien_thoai', 'like', "%{$keyword}%");
+        });
+    }
 
-        $khachHangs = $query
-            ->selectRaw('
-            MAX(id) as id,
+    if ($request->filled('loai_hanh_khach')) {
+        $query->where(
+            'loai_hanh_khach',
+            $request->loai_hanh_khach
+        );
+    }
+
+    $khachHangs = $query
+        ->selectRaw('
+            MAX(id) AS id,
             ho_ten,
             email,
             so_dien_thoai,
-            COUNT(*) as so_lan_dat,
-            SUM(tong_tien) as tong_chi_tieu,
-            MAX(created_at) as ngay_tham_gia
+            COUNT(*) AS so_lan_dat,
+            SUM(tong_tien) AS tong_chi_tieu,
+            MAX(created_at) AS ngay_tham_gia
         ')
-            ->groupBy('ho_ten', 'email', 'so_dien_thoai')
-            ->orderByDesc('id')
-            ->paginate(100)
-            ->appends($request->query());
+        ->groupBy(
+            'ho_ten',
+            'email',
+            'so_dien_thoai'
+        )
+        ->orderByRaw('MAX(id) DESC')
+        ->paginate(100)
+        ->withQueryString();
 
-        return view('Admin.khach_hang_dat_tours.index', compact('khachHangs'));
-    }
+    return view(
+        'Admin.khach_hang_dat_tours.index',
+        compact('khachHangs')
+    );
+}
     public function show($id)
     {
         $khachHang = KhachHangDatTour::findOrFail($id);

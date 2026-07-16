@@ -693,6 +693,15 @@
                         <span class="nav-text">Quản lý Đánh giá</span>
                     </a>
                 </div>
+                <div class="nav-item">
+                    <a href=""
+                       class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Đánh giá Hướng dẫn viên</span>
+                    </a>
+                </div>
             </div>
 
             {{-- Thanh toán & báo cáo --}}

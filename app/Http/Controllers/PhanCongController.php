@@ -152,6 +152,7 @@ class PhanCongController extends Controller
 
         // Cập nhật trạng thái lịch
         $lich->update([
+            'huong_dan_vien_id' => $request->hdv_id,
             'trang_thai' => 2 // Đã phân công
         ]);
 

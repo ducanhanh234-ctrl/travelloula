@@ -13,8 +13,12 @@ return new class extends Migration
                 $table->string('bien_so_xe')->nullable()->after('id');
             }
 
+            if (!Schema::hasColumn('phuong_tiens', 'loai_xe')) {
+                $table->string('loai_xe')->nullable()->after('bien_so_xe');
+            }
+
             if (!Schema::hasColumn('phuong_tiens', 'loai_phuong_tien')) {
-                $table->string('loai_phuong_tien')->nullable()->after('bien_so_xe');
+                $table->string('loai_phuong_tien')->nullable()->after('loai_xe');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'hang_xe')) {
@@ -30,7 +34,7 @@ return new class extends Migration
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'so_cho')) {
-                $table->integer('so_cho')->nullable()->after('mau_xe');
+                $table->unsignedInteger('so_cho')->nullable()->after('mau_xe');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'trang_thai')) {
@@ -42,36 +46,41 @@ return new class extends Migration
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'so_dien_thoai_tai_xe')) {
-                $table->string('so_dien_thoai_tai_xe')->nullable()->after('ten_tai_xe');
+                $table->string('so_dien_thoai_tai_xe', 20)
+                    ->nullable()
+                    ->after('ten_tai_xe');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'ghi_chu')) {
-                $table->text('ghi_chu')->nullable()->after('so_dien_thoai_tai_xe');
+                $table->text('ghi_chu')
+                    ->nullable()
+                    ->after('so_dien_thoai_tai_xe');
             }
         });
     }
 
     public function down(): void
     {
-        Schema::table('phuong_tiens', function (Blueprint $table) {
-            $columns = [
-                'ghi_chu',
-                'so_dien_thoai_tai_xe',
-                'ten_tai_xe',
-                'trang_thai',
-                'so_cho',
-                'mau_xe',
-                'nam_san_xuat',
-                'hang_xe',
-                'loai_phuong_tien',
-                'bien_so_xe',
-            ];
+        $columns = [
+            'ghi_chu',
+            'so_dien_thoai_tai_xe',
+            'ten_tai_xe',
+            'trang_thai',
+            'so_cho',
+            'mau_xe',
+            'nam_san_xuat',
+            'hang_xe',
+            'loai_phuong_tien',
+            'loai_xe',
+            'bien_so_xe',
+        ];
 
-            foreach ($columns as $column) {
-                if (Schema::hasColumn('phuong_tiens', $column)) {
+        foreach ($columns as $column) {
+            if (Schema::hasColumn('phuong_tiens', $column)) {
+                Schema::table('phuong_tiens', function (Blueprint $table) use ($column) {
                     $table->dropColumn($column);
-                }
+                });
             }
-        });
+        }
     }
 };

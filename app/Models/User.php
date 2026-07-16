@@ -129,4 +129,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(VaiTro::class, 'nguoi_dung_vai_tros', 'nguoi_dung_id', 'vai_tro_id');
     }
+
+    public function huongDanVien()
+    {
+        return $this->hasOne(HuongDanVien::class, 'user_id');
+    }
 }

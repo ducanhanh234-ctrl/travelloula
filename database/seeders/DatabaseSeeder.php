@@ -10,9 +10,8 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
-{
-    $this->call(PermissionSeeder::class);
 
+    {
     $adminRole = VaiTro::firstOrCreate(
         ['ten_vai_tro' => 'admin'],
         ['mo_ta' => 'Quản trị viên hệ thống']
@@ -44,5 +43,9 @@ class DatabaseSeeder extends Seeder
         LichKhoiHanhTourSeeder::class,
         DatTourSeeder::class,
     ]);
-}
-}
+
+        $adminUser = User::where('email', 'admin@gmail.com')->first();
+
+        if ($adminUser) {
+            $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
+        }

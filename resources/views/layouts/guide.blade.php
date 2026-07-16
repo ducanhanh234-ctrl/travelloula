@@ -385,6 +385,7 @@
                 font-size: 16px;
             }
         }
+
     </style>
 
     @yield('styles')
@@ -424,7 +425,7 @@
                 <div class="nav-section-title">Tour của tôi</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </div>
@@ -455,7 +456,7 @@
                 <div class="nav-section-title">Nghiệp vụ</div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.checkin.index') }}" class="nav-link">
                         <div class="nav-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
@@ -464,20 +465,24 @@
                 </div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.nhatky.index') }}"
+                        class="nav-link {{ request()->routeIs('Guide.nhatky.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-book"></i>
                         </div>
-                        <span class="nav-text">Nhật ký tour</span>
+                        <span class="nav-text">Nhật ký hướng dẫn viên</span>
                     </a>
                 </div>
 
                 <div class="nav-item">
-                    <a href="" class="nav-link">
+                    <a href="{{ route('Guide.baocaosuco.index') }}"
+                        class="nav-link {{ request()->routeIs('Guide.baocaosuco.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-exclamation-circle"></i>
                         </div>
-                        <span class="nav-text">Báo cáo sự cố</span>
+                        <span class="nav-text">
+                            Báo cáo sự cố
+                        </span>
                     </a>
                 </div>
             </div>
@@ -529,8 +534,10 @@
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
 
                         @if (Auth::check() && Auth::user()->avatar)
                             <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
@@ -538,8 +545,8 @@
                         @else
                             <div class="user-avatar">
                                 {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
-                            </div>
-                        @endif
+                        </div> @endif
+
                     </button>
 
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
@@ -606,6 +613,7 @@
                 });
             }
         });
+
     </script>
 
     @yield('scripts')

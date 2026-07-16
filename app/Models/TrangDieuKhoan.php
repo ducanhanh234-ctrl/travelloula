@@ -14,4 +14,8 @@ class TrangDieuKhoan extends Model
         'noi_dung',
         'trang_thai',
     ];
+
+    protected $casts = [
+        'trang_thai' => 'integer',
+    ];
 }

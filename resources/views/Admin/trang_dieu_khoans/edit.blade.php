@@ -12,7 +12,6 @@
 
     .terms-wrapper {
         width: 100%;
-        max-width: none;
         margin: 0;
     }
 
@@ -143,6 +142,13 @@
         font-weight: 500;
     }
 
+    .terms-error-text {
+        margin-top: 7px;
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
     .terms-card {
         background: #ffffff;
         border: 1px solid #dbe3ee;
@@ -254,6 +260,12 @@
         box-shadow: 0 0 0 4px rgba(59, 130, 246, .12);
     }
 
+    .terms-input.is-invalid,
+    .terms-select.is-invalid,
+    .terms-textarea.is-invalid {
+        border-color: #ef4444;
+    }
+
     .terms-readonly {
         min-height: 54px;
         padding: 0 18px;
@@ -268,7 +280,7 @@
     }
 
     .terms-textarea {
-        min-height: 460px;
+        min-height: 520px;
         padding: 18px 20px;
         resize: vertical;
         line-height: 1.8;
@@ -367,14 +379,24 @@
 
 <div class="terms-page">
     <div class="terms-wrapper">
+
         @if(session('success'))
             <div class="terms-alert-success">
+                <i class="fas fa-check-circle"></i>
                 {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="terms-alert-error">
+                <i class="fas fa-triangle-exclamation"></i>
+                {{ session('error') }}
             </div>
         @endif
 
         @if($errors->any())
             <div class="terms-alert-error">
+                <i class="fas fa-triangle-exclamation"></i>
                 Vui lòng kiểm tra lại dữ liệu.
             </div>
         @endif
@@ -427,7 +449,7 @@
                     </h2>
 
                     <div class="terms-slug-badge">
-                        {{ $trangDieuKhoan->duong_dan }}
+                        {{ $trangDieuKhoan->duong_dan ?? 'dieu-khoan' }}
                     </div>
                 </div>
 
@@ -441,10 +463,16 @@
                             <input
                                 type="text"
                                 name="tieu_de"
-                                class="terms-input"
-                                value="{{ old('tieu_de', $trangDieuKhoan->tieu_de) }}"
+                                class="terms-input @error('tieu_de') is-invalid @enderror"
+                                value="{{ old('tieu_de', $trangDieuKhoan->tieu_de ?? '') }}"
                                 placeholder="Nhập tiêu đề điều khoản"
                             >
+
+                            @error('tieu_de')
+                                <div class="terms-error-text">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
 
                         <div class="terms-group">
@@ -452,15 +480,21 @@
                                 Trạng thái
                             </label>
 
-                            <select name="trang_thai" class="terms-select">
-                                <option value="1" @selected(old('trang_thai', $trangDieuKhoan->trang_thai) == 1)>
+                            <select name="trang_thai" class="terms-select @error('trang_thai') is-invalid @enderror">
+                                <option value="1" @selected(old('trang_thai', $trangDieuKhoan->trang_thai ?? 1) == 1)>
                                     Hiển thị
                                 </option>
 
-                                <option value="0" @selected(old('trang_thai', $trangDieuKhoan->trang_thai) == 0)>
+                                <option value="0" @selected(old('trang_thai', $trangDieuKhoan->trang_thai ?? 1) == 0)>
                                     Ẩn
                                 </option>
                             </select>
+
+                            @error('trang_thai')
+                                <div class="terms-error-text">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
 
@@ -470,7 +504,7 @@
                         </label>
 
                         <div class="terms-readonly">
-                            {{ $trangDieuKhoan->duong_dan }}
+                            {{ $trangDieuKhoan->duong_dan ?? 'dieu-khoan' }}
                         </div>
                     </div>
 
@@ -481,9 +515,15 @@
 
                         <textarea
                             name="noi_dung"
-                            class="terms-textarea"
+                            class="terms-textarea @error('noi_dung') is-invalid @enderror"
                             placeholder="Nhập nội dung điều khoản tại đây..."
-                        >{{ old('noi_dung', $trangDieuKhoan->noi_dung) }}</textarea>
+                        >{{ old('noi_dung', $trangDieuKhoan->noi_dung ?? '') }}</textarea>
+
+                        @error('noi_dung')
+                            <div class="terms-error-text">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 </div>
 

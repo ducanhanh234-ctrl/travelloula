@@ -1,4 +1,37 @@
 function capNhatThongTinTour() {
+
+
+    const tourSelect = document.getElementById('tour_id');
+
+    const soCho = document.getElementById('so_cho');
+    const giaNguoiLon = document.getElementById('gia_nguoi_lon');
+    const giaTreEm = document.getElementById('gia_tre_em');
+    const hienThiThoiLuong = document.getElementById('hien_thi_thoi_luong');
+
+    if (!tourSelect) return;
+
+    const option = tourSelect.options[tourSelect.selectedIndex];
+
+    // Hiển thị thời lượng
+    if (hienThiThoiLuong) {
+        hienThiThoiLuong.textContent = option.dataset.thoiLuong || '';
+    }
+
+    // Fill dữ liệu
+    if (soCho) {
+        soCho.value = option.dataset.soCho || '';
+    }
+
+    if (giaNguoiLon) {
+        giaNguoiLon.value = option.dataset.giaNguoiLon || '';
+    }
+
+    if (giaTreEm) {
+        giaTreEm.value = option.dataset.giaTreEm || '';
+    }
+
+    // Tính ngày kết thúc
+
     tinhNgayKetThuc();
 }
 
@@ -8,10 +41,9 @@ function tinhNgayKetThuc() {
     const ngayKhoiHanh = document.getElementById('ngay_khoi_hanh');
     const ngayKetThuc = document.getElementById('ngay_ket_thuc');
 
-    // Nếu trang hiện tại không có các phần tử này thì bỏ qua
-    if (!tourSelect || !ngayKhoiHanh || !ngayKetThuc) {
-        return;
-    }
+
+    if (!tourSelect || !ngayKhoiHanh || !ngayKetThuc) return;
+
 
     if (!ngayKhoiHanh.value) {
         ngayKetThuc.value = '';
@@ -46,12 +78,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const tourSelect = document.getElementById('tour_id');
     const ngayKhoiHanh = document.getElementById('ngay_khoi_hanh');
 
-    if (!tourSelect || !ngayKhoiHanh) {
-        return;
-    }
+
+    if (!tourSelect || !ngayKhoiHanh) return;
 
     tourSelect.addEventListener('change', capNhatThongTinTour);
-
     ngayKhoiHanh.addEventListener('change', tinhNgayKetThuc);
 
     capNhatThongTinTour();

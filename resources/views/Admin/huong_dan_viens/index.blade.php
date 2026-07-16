@@ -1,7 +1,11 @@
 @extends('layouts.admin')
 
+@section('title', 'Quản lý hướng dẫn viên')
+
 @section('content')
-@php $currentUser = auth()->user(); @endphp
+@php
+    $currentUser = auth()->user();
+@endphp
 
 <div class="container guide-management">
     <div class="page-header">
@@ -14,15 +18,24 @@
         @endif
     </div>
 
-    @if (session('success'))
+    @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="guide-card">
         <div class="filter-box">
-            <form method="GET" action="{{ route('Admin.huong-dan-viens.index') }}" class="filter-form">
+            <form method="GET"
+                  action="{{ route('Admin.huong-dan-viens.index') }}"
+                  class="filter-form">
+
                 <div>
                     <label for="keyword">Tìm kiếm</label>
                     <input
@@ -31,7 +44,7 @@
                         name="keyword"
                         class="form-control"
                         value="{{ request('keyword') }}"
-                        placeholder="Nhập họ tên, email hoặc điện thoại..."
+                        placeholder="Nhập họ tên, email, điện thoại hoặc CCCD..."
                     >
                 </div>
 
@@ -39,12 +52,24 @@
                     <label for="trang_thai">Trạng thái</label>
                     <select name="trang_thai" id="trang_thai" class="form-select">
                         <option value="">Tất cả trạng thái</option>
-                        <option value="hoat_dong" {{ request('trang_thai') == 'hoat_dong' ? 'selected' : '' }}>Hoạt động</option>
-                        <option value="san_sang" {{ request('trang_thai') == 'san_sang' ? 'selected' : '' }}>Sẵn sàng</option>
-                        <option value="dang_dan_tour" {{ request('trang_thai') == 'dang_dan_tour' ? 'selected' : '' }}>Đang dẫn tour</option>
-                        <option value="khong_hoat_dong" {{ request('trang_thai') == 'khong_hoat_dong' ? 'selected' : '' }}>Không hoạt động</option>
-                        <option value="bi_khoa" {{ request('trang_thai') == 'bi_khoa' ? 'selected' : '' }}>Bị khóa</option>
-                        <option value="nghi_viec" {{ request('trang_thai') == 'nghi_viec' ? 'selected' : '' }}>Nghỉ việc</option>
+                        <option value="hoat_dong" @selected(request('trang_thai') === 'hoat_dong')>
+                            Hoạt động
+                        </option>
+                        <option value="san_sang" @selected(request('trang_thai') === 'san_sang')>
+                            Sẵn sàng
+                        </option>
+                        <option value="dang_dan_tour" @selected(request('trang_thai') === 'dang_dan_tour')>
+                            Đang dẫn tour
+                        </option>
+                        <option value="khong_hoat_dong" @selected(request('trang_thai') === 'khong_hoat_dong')>
+                            Không hoạt động
+                        </option>
+                        <option value="bi_khoa" @selected(request('trang_thai') === 'bi_khoa')>
+                            Bị khóa
+                        </option>
+                        <option value="nghi_viec" @selected(request('trang_thai') === 'nghi_viec')>
+                            Nghỉ việc
+                        </option>
                     </select>
                 </div>
 
@@ -52,13 +77,21 @@
                     <label for="kinh_nghiem">Kinh nghiệm</label>
                     <select name="kinh_nghiem" id="kinh_nghiem" class="form-select">
                         <option value="">Tất cả kinh nghiệm</option>
-                        <option value="0_1" {{ request('kinh_nghiem') == '0_1' ? 'selected' : '' }}>0 - 1 năm</option>
-                        <option value="2_5" {{ request('kinh_nghiem') == '2_5' ? 'selected' : '' }}>2 - 5 năm</option>
-                        <option value="6_plus" {{ request('kinh_nghiem') == '6_plus' ? 'selected' : '' }}>Từ 6 năm</option>
+                        <option value="0_1" @selected(request('kinh_nghiem') === '0_1')>
+                            0 - 1 năm
+                        </option>
+                        <option value="2_5" @selected(request('kinh_nghiem') === '2_5')>
+                            2 - 5 năm
+                        </option>
+                        <option value="6_plus" @selected(request('kinh_nghiem') === '6_plus')>
+                            Từ 6 năm
+                        </option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-primary">Lọc</button>
+                <button type="submit" class="btn btn-primary">
+                    Lọc
+                </button>
 
                 <a href="{{ route('Admin.huong-dan-viens.index') }}" class="btn btn-secondary">
                     Đặt lại
@@ -82,6 +115,25 @@
 
                 <tbody>
                     @forelse($guides as $guide)
+                        @php
+                            $statusClass = match ($guide->trang_thai) {
+                                'hoat_dong', 'san_sang' => 'status-active',
+                                'dang_dan_tour' => 'status-assigned',
+                                'bi_khoa', 'nghi_viec' => 'status-locked',
+                                default => 'status-inactive',
+                            };
+
+                            $statusLabel = match ($guide->trang_thai) {
+                                'hoat_dong' => 'Hoạt động',
+                                'san_sang' => 'Sẵn sàng',
+                                'dang_dan_tour' => 'Đang dẫn tour',
+                                'khong_hoat_dong' => 'Không hoạt động',
+                                'bi_khoa' => 'Bị khóa',
+                                'nghi_viec' => 'Nghỉ việc',
+                                default => 'Không xác định',
+                            };
+                        @endphp
+
                         <tr>
                             <td>
                                 <strong>{{ $guide->id }}</strong>
@@ -90,7 +142,7 @@
                             <td>
                                 <div class="guide-user">
                                     <div class="guide-avatar">
-                                        {{ strtoupper(mb_substr($guide->ho_ten, 0, 1)) }}
+                                        {{ mb_strtoupper(mb_substr($guide->ho_ten ?? '?', 0, 1)) }}
                                     </div>
 
                                     <div>
@@ -99,89 +151,43 @@
                                 </div>
                             </td>
 
-                            <td>{{ $guide->email }}</td>
-
-                            <td>{{ $guide->so_dien_thoai }}</td>
-
-                            <td>{{ $guide->so_nam_kinh_nghiem }} năm</td>
+                            <td>{{ $guide->email ?: '—' }}</td>
+                            <td>{{ $guide->so_dien_thoai ?: '—' }}</td>
 
                             <td>
-                                <span class="status-badge
-                                    @switch($guide->trang_thai)
-                                        @case('hoat_dong')
-                                        @case('san_sang')
-                                            status-active
-                                            @break
+                                {{ $guide->so_nam_kinh_nghiem !== null
+                                    ? $guide->so_nam_kinh_nghiem . ' năm'
+                                    : '—'
+                                }}
+                            </td>
 
-                                        @case('dang_dan_tour')
-                                            status-assigned
-                                            @break
-
-                                        @case('khong_hoat_dong')
-                                            status-inactive
-                                            @break
-
-                                        @case('bi_khoa')
-                                        @case('nghi_viec')
-                                            status-locked
-                                            @break
-
-                                        @default
-                                            status-inactive
-                                    @endswitch
-                                ">
-                                    @switch($guide->trang_thai)
-                                        @case('hoat_dong')
-                                            Hoạt động
-                                            @break
-
-                                        @case('san_sang')
-                                            Sẵn sàng
-                                            @break
-
-                                        @case('dang_dan_tour')
-                                            Đang dẫn tour
-                                            @break
-
-                                        @case('khong_hoat_dong')
-                                            Không hoạt động
-                                            @break
-
-                                        @case('bi_khoa')
-                                            Bị khóa
-                                            @break
-
-                                        @case('nghi_viec')
-                                            Nghỉ việc
-                                            @break
-
-                                        @default
-                                            Không xác định
-                                    @endswitch
+                            <td>
+                                <span class="status-badge {{ $statusClass }}">
+                                    {{ $statusLabel }}
                                 </span>
                             </td>
 
                             <td>
                                 <div class="action-buttons">
                                     @if($currentUser && $currentUser->hasPermission('guides.view'))
-                                        <a href="{{ route('Admin.huong-dan-viens.show', $guide->id) }}"
+                                        <a href="{{ route('Admin.huong-dan-viens.show', $guide) }}"
                                            class="btn btn-sm btn-info text-white">
                                             Xem
                                         </a>
                                     @endif
 
                                     @if($currentUser && $currentUser->hasPermission('guides.edit'))
-                                        <a href="{{ route('Admin.huong-dan-viens.edit', $guide->id) }}"
+                                        <a href="{{ route('Admin.huong-dan-viens.edit', $guide) }}"
                                            class="btn btn-sm btn-secondary">
                                             Sửa
                                         </a>
                                     @endif
 
                                     @if($currentUser && $currentUser->hasPermission('guides.delete'))
-                                        <form action="{{ route('Admin.huong-dan-viens.destroy', $guide->id) }}"
+                                        <form action="{{ route('Admin.huong-dan-viens.destroy', $guide) }}"
                                               method="POST"
                                               class="d-inline"
-                                              onsubmit="return confirm('Xóa hướng dẫn viên này?');">
+                                              onsubmit="return confirm('Bạn có chắc muốn xóa hướng dẫn viên này?');">
                                             @csrf
                                             @method('DELETE')
 
@@ -204,9 +210,11 @@
             </table>
         </div>
 
-        <div class="pagination-wrapper">
-            {{ $guides->withQueryString()->links() }}
-        </div>
+        @if($guides->hasPages())
+            <div class="pagination-wrapper">
+                {{ $guides->withQueryString()->links() }}
+            </div>
+        @endif
     </div>
 </div>
 
@@ -219,70 +227,70 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 25px;
         gap: 16px;
         flex-wrap: wrap;
+        margin-bottom: 25px;
     }
 
     .page-title {
+        margin: 0;
+        color: #111827;
         font-size: 28px;
         font-weight: 800;
-        color: #111827;
-        margin: 0;
     }
 
     .btn-add-guide {
-        background: linear-gradient(135deg, #2563eb, #4f46e5);
-        border: none;
-        color: white;
         padding: 12px 18px;
+        border: none;
         border-radius: 12px;
+        background: linear-gradient(135deg, #2563eb, #4f46e5);
+        color: #fff;
         font-weight: 700;
         text-decoration: none;
         transition: .3s;
     }
 
     .btn-add-guide:hover {
+        color: #fff;
         transform: translateY(-2px);
-        color: white;
         box-shadow: 0 10px 20px rgba(37, 99, 235, .25);
     }
 
     .guide-card {
-        background: white;
-        border-radius: 20px;
         padding: 20px;
-        box-shadow: 0 10px 35px rgba(15, 23, 42, .08);
         border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 10px 35px rgba(15, 23, 42, .08);
     }
 
     .filter-box {
-        background: #f8fafc;
+        margin-bottom: 20px;
+        padding: 16px;
         border: 1px solid #e5e7eb;
         border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 20px;
+        background: #f8fafc;
     }
 
     .filter-form {
         display: grid;
-        grid-template-columns: 1fr 200px 200px auto auto;
+        grid-template-columns: minmax(240px, 1fr) 200px 200px auto auto;
         gap: 12px;
         align-items: end;
     }
 
     .filter-form label {
         display: block;
+        margin-bottom: 6px;
+        color: #374151;
         font-size: 13px;
         font-weight: 700;
-        color: #374151;
-        margin-bottom: 6px;
     }
 
     .filter-form .form-control,
     .filter-form .form-select {
-        border-radius: 10px;
         min-height: 40px;
+        border-radius: 10px;
         font-size: 14px;
     }
 
@@ -294,20 +302,20 @@
     }
 
     .guide-table {
+        min-width: 950px;
         margin-bottom: 0;
         border-collapse: separate;
         border-spacing: 0 10px;
-        min-width: 950px;
     }
 
     .guide-table thead th {
+        padding-bottom: 15px;
         border: none;
         background: transparent;
         color: #6b7280;
         font-size: 13px;
-        text-transform: uppercase;
         font-weight: 700;
-        padding-bottom: 15px;
+        text-transform: uppercase;
         white-space: nowrap;
     }
 
@@ -323,10 +331,10 @@
     }
 
     .guide-table tbody td {
-        vertical-align: middle;
+        padding: 16px;
         border-top: 1px solid #eef2f7;
         border-bottom: 1px solid #eef2f7;
-        padding: 16px;
+        vertical-align: middle;
         white-space: nowrap;
     }
 
@@ -347,16 +355,16 @@
     }
 
     .guide-avatar {
+        display: flex;
         width: 42px;
         height: 42px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-        color: white;
-        display: flex;
+        flex-shrink: 0;
         align-items: center;
         justify-content: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: #fff;
         font-weight: 700;
-        flex-shrink: 0;
     }
 
     .status-badge {
@@ -399,17 +407,25 @@
     }
 
     .action-buttons .btn {
+        min-width: 52px;
         border-radius: 8px;
         font-weight: 600;
-        min-width: 52px;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
     }
 
     .alert-success {
-        border: none;
-        border-radius: 12px;
         background: #dcfce7;
         color: #166534;
-        font-weight: 600;
+    }
+
+    .alert-danger {
+        background: #fee2e2;
+        color: #991b1b;
     }
 
     .empty-row {
@@ -419,9 +435,9 @@
     }
 
     .pagination-wrapper {
-        margin-top: 20px;
         display: flex;
         justify-content: center;
+        margin-top: 20px;
     }
 
     .pagination {

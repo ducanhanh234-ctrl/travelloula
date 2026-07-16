@@ -187,7 +187,7 @@
             </div>
             <div class="d-flex gap-2">
 
-                <a href="{{ route('Admin.dat-tours.create') }}" class="btn-booking text-decoration-none">
+                <a href="{{ route('Admin.dat_tours.create') }}" class="btn-booking text-decoration-none">
                     + Thêm booking thủ công
                 </a>
 

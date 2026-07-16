@@ -1,236 +1,571 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="article-page">
 
-<div class="container py-5">
+    <section class="article-header">
+        <div class="article-wrap">
+            <a href="{{ route('Client.bai_viet.index') }}" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại bài viết
+            </a>
 
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Trang chủ</a></li>
-            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Điểm đến</a></li>
-            <li class="breadcrumb-item active fw-bold text-primary" aria-current="page">Top 10 địa điểm du lịch...</li>
-        </ol>
-    </nav>
+            <span class="article-label">Cẩm nang du lịch</span>
 
-    <div class="row g-4">
+            <h1>{{ $baiViet->tieu_de }}</h1>
 
-        <div class="col-lg-8">
+            @if($baiViet->mo_ta_ngan)
+                <p>{{ $baiViet->mo_ta_ngan }}</p>
+            @endif
 
-            <div class="card border-0 shadow-sm p-lg-5 p-4 mb-5 article-card">
-                
-                <div class="mb-4">
-                    <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 mb-3 fw-semibold">
-                        🌍 Điểm đến
-                    </span>
-                    <h1 class="fw-bold text-dark mb-3" style="line-height: 1.4;">
-                        Top 10 địa điểm du lịch tuyệt đẹp không thể bỏ lỡ trong năm 2026
-                    </h1>
-                    
-                    <div class="d-flex align-items-center text-muted small">
-                        <div class="d-flex align-items-center me-4">
-                            <img src="https://i.pravatar.cc/150?img=11" alt="Author" class="rounded-circle me-2" width="30" height="30">
-                            <span class="fw-semibold text-dark">Nguyễn Văn A</span>
-                        </div>
-                        <div class="me-4"><i class="bi bi-calendar3 me-1"></i> 15/06/2026</div>
-                        <div><i class="bi bi-eye me-1"></i> 1,245 lượt xem</div>
+            <div class="article-meta">
+                <div class="author">
+                    <div class="avatar">
+                        {{ strtoupper(substr($baiViet->tac_gia ?? 'A', 0, 1)) }}
+                    </div>
+
+                    <div>
+                        <strong>{{ $baiViet->tac_gia ?? 'Admin' }}</strong>
+                        <span>{{ $baiViet->created_at?->format('d/m/Y') }}</span>
                     </div>
                 </div>
 
-                <div class="mb-5 overflow-hidden rounded-4">
-                    <img src="https://picsum.photos/1000/500?random=10" class="img-fluid w-100 object-fit-cover" alt="Cover Image" style="max-height: 450px;">
+                <div class="views">
+                    <i class="fa-regular fa-eye"></i>
+                    {{ number_format($baiViet->luot_xem ?? 0) }} lượt xem
                 </div>
-
-                <div class="article-content text-secondary">
-                    <p class="lead fw-normal text-dark mb-4">
-                        Năm 2026 hứa hẹn sẽ là một năm bùng nổ của những chuyến đi khám phá. Nếu bạn đang tìm kiếm những vùng đất mới để "chữa lành" hay đơn giản là lưu lại những khung hình tuyệt đẹp, thì danh sách dưới đây chính là cẩm nang dành cho bạn.
-                    </p>
-
-                    <h3 class="fw-bold text-dark mt-5 mb-3">1. Vịnh Hạ Long - Bản giao hưởng của đá và nước</h3>
-                    <p>
-                        Không có gì ngạc nhiên khi Vịnh Hạ Long tiếp tục góp mặt trong danh sách này. Với hàng ngàn hòn đảo đá vôi kỳ vĩ vươn lên từ mặt nước xanh ngọc lục bảo, nơi đây mang đến một vẻ đẹp huyền bí mà không máy ảnh nào lột tả hết được.
-                    </p>
-                    
-                    <figure class="figure w-100 my-4">
-                        <img src="https://picsum.photos/800/400?random=11" class="figure-img img-fluid rounded-4 w-100" alt="...">
-                        <figcaption class="figure-caption text-center mt-2">Vẻ đẹp hùng vĩ nhìn từ trên cao (Ảnh minh họa)</figcaption>
-                    </figure>
-
-                    <blockquote class="blockquote custom-blockquote p-4 my-5 bg-light rounded-4">
-                        <p class="mb-0 fst-italic text-dark">"Đích đến của chúng ta không phải là một vùng đất, mà là một cách nhìn mới."</p>
-                        <footer class="blockquote-footer mt-2">Henry Miller</footer>
-                    </blockquote>
-
-                    <h3 class="fw-bold text-dark mt-5 mb-3">2. Đà Lạt - Mùa sương mây giăng lối</h3>
-                    <p>
-                        Vẫn là cái se lạnh đặc trưng, nhưng Đà Lạt năm nay có thêm nhiều khu cắm trại glamping ẩn mình giữa rừng thông. Cảm giác thức dậy giữa tiếng chim hót và ngắm sương mù lấp ló qua tán lá sẽ làm dịu đi mọi mệt mỏi.
-                    </p>
-                </div>
-
-                <hr class="my-5">
-
-                <div class="d-flex flex-wrap align-items-center justify-content-between">
-                    <div class="d-flex flex-wrap gap-2 mb-3 mb-md-0">
-                        <span class="fw-bold text-dark me-2 d-flex align-items-center">Tags:</span>
-                        <a href="#" class="tag-pill text-decoration-none">Du lịch</a>
-                        <a href="#" class="tag-pill text-decoration-none">Việt Nam</a>
-                        <a href="#" class="tag-pill text-decoration-none">Khám phá</a>
-                    </div>
-                    
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="fw-bold text-dark me-2">Chia sẻ:</span>
-                        <a href="#" class="btn btn-light btn-sm rounded-circle shadow-sm" style="width: 35px; height: 35px;"><i class="bi bi-facebook text-primary"></i></a>
-                        <a href="#" class="btn btn-light btn-sm rounded-circle shadow-sm" style="width: 35px; height: 35px;"><i class="bi bi-twitter text-info"></i></a>
-                        <a href="#" class="btn btn-light btn-sm rounded-circle shadow-sm" style="width: 35px; height: 35px;"><i class="bi bi-link-45deg text-dark"></i></a>
-                    </div>
-                </div>
-
-            </div> <h4 class="fw-bold mb-4">Bài viết liên quan</h4>
-            <div class="row g-4 mb-5">
-                @for($i=1;$i<=2;$i++)
-                <div class="col-md-6">
-                    <div class="card border-0 shadow-sm h-100 post-card">
-                        <div class="overflow-hidden">
-                            <img src="https://picsum.photos/400/250?random={{$i+20}}" class="card-img-top card-img-hover" alt="Travel">
-                        </div>
-                        <div class="card-body p-3">
-                            <h6 class="fw-bold text-dark mb-2 line-clamp-2">Lịch trình khám phá Tây Bắc 4 ngày 3 đêm tự túc</h6>
-                            <a href="#" class="text-primary text-decoration-none small fw-semibold">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-                @endfor
             </div>
+        </div>
+    </section>
+
+    <section class="article-wrap article-section">
+        <div class="article-layout">
+
+            <main class="article-main">
+                @if($baiViet->anh_dai_dien)
+                    <div class="article-cover">
+                        <img src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}" alt="{{ $baiViet->tieu_de }}">
+                    </div>
+                @endif
+
+                <div class="article-content">
+                    @php
+                        $lines = preg_split('/\r\n|\r|\n/', $baiViet->noi_dung ?? '');
+                        $introDone = false;
+                    @endphp
+
+                    @foreach($lines as $line)
+                        @php
+                            $line = trim($line);
+                        @endphp
+
+                        @if($line === '')
+                            <div class="article-space"></div>
+                        @elseif(preg_match('/^[0-9]+\.\s/u', $line))
+                            <h2 class="article-section-title">
+                                {{ $line }}
+                            </h2>
+                        @else
+                            @if(!$introDone)
+                                <p class="article-intro">
+                                    {{ $line }}
+                                </p>
+
+                                @php
+                                    $introDone = true;
+                                @endphp
+                            @else
+                                <p>
+                                    {{ $line }}
+                                </p>
+                            @endif
+                        @endif
+                    @endforeach
+                </div>
+            </main>
+
+            <aside class="article-sidebar">
+                <div class="side-card">
+                    <h3>Thông tin bài viết</h3>
+
+                    <div class="info-row">
+                        <span>Tác giả</span>
+                        <strong>{{ $baiViet->tac_gia ?? 'Admin' }}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Ngày đăng</span>
+                        <strong>{{ $baiViet->created_at?->format('d/m/Y') }}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Lượt xem</span>
+                        <strong>{{ number_format($baiViet->luot_xem ?? 0) }}</strong>
+                    </div>
+                </div>
+
+                @if(isset($baiVietLienQuan) && $baiVietLienQuan->count())
+                    <div class="side-card">
+                        <h3>Bài viết liên quan</h3>
+
+                        <div class="related-list">
+                            @foreach($baiVietLienQuan as $item)
+                                <a href="{{ route('Client.bai_viet.detail', $item->duong_dan) }}" class="related-item">
+                                    @if($item->anh_dai_dien)
+                                        <img src="{{ asset('storage/' . $item->anh_dai_dien) }}" alt="{{ $item->tieu_de }}">
+                                    @else
+                                        <div class="related-icon">
+                                            <i class="fa-regular fa-newspaper"></i>
+                                        </div>
+                                    @endif
+
+                                    <div>
+                                        <strong>{{ \Illuminate\Support\Str::limit($item->tieu_de, 62) }}</strong>
+                                        <span>{{ $item->created_at?->format('d/m/Y') }}</span>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </aside>
 
         </div>
-
-        <div class="col-lg-4">
-            
-            <div class="card shadow-sm border-0 mb-4 p-4 text-center">
-                <img src="https://i.pravatar.cc/150?img=11" alt="Author" class="rounded-circle mx-auto mb-3 border border-3 border-white shadow-sm" width="100" height="100">
-                <h5 class="fw-bold mb-1">Nguyễn Văn A</h5>
-                <p class="text-muted small mb-3">Travel Blogger / Nhiếp ảnh gia</p>
-                <p class="small text-secondary mb-4">Đam mê xê dịch và ghi lại những khoảnh khắc đẹp của cuộc sống qua lăng kính máy ảnh. Hy vọng mang lại cảm hứng du lịch cho mọi người.</p>
-                <button class="btn btn-outline-primary rounded-pill w-100 fw-semibold">Theo dõi tác giả</button>
-            </div>
-
-            <div class="card shadow-sm border-0 mb-4 p-2">
-                <div class="card-header bg-white border-0 pb-0">
-                    <h5 class="fw-bold mb-0 text-dark">Xem nhiều nhất</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3 highlight-item pb-2 border-bottom d-flex align-items-center">
-                        <img src="https://picsum.photos/80/80?random=30" class="rounded-3 me-3" width="70" height="70" style="object-fit:cover;">
-                        <a href="#" class="text-decoration-none text-dark fw-semibold small line-clamp-2">Checklist hành lý du lịch cần thiết cho người mới</a>
-                    </div>
-                    <div class="highlight-item d-flex align-items-center">
-                        <img src="https://picsum.photos/80/80?random=31" class="rounded-3 me-3" width="70" height="70" style="object-fit:cover;">
-                        <a href="#" class="text-decoration-none text-dark fw-semibold small line-clamp-2">Mẹo săn vé máy bay giá rẻ từ A-Z</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card newsletter-card text-white border-0 p-4 mb-4 shadow-sm">
-                <h5 class="fw-bold mb-2">Đăng ký nhận tin ✉️</h5>
-                <p class="small text-white-50 mb-3">Nhận cẩm nang du lịch mới nhất hàng tuần.</p>
-                <div class="input-group">
-                    <input type="email" class="form-control border-0 rounded-start-pill ps-3" placeholder="Email...">
-                    <button class="btn btn-dark rounded-end-pill px-3 fw-bold" type="button">Gửi</button>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
+    </section>
 
 </div>
 
 <style>
-/* Kế thừa nền tảng màu sắc */
-body {
-    background: #f4f6fa;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+.article-page{
+    background:#f3f6fb;
+    min-height:100vh;
 }
 
-.card {
-    border-radius: 20px;
+.article-wrap{
+    width:100%;
+    max-width:1500px;
+    margin:0 auto;
+    padding-left:40px;
+    padding-right:40px;
 }
 
-/* Định dạng nội dung bài viết */
-.article-content {
-    font-size: 1.05rem;
-    line-height: 1.8;
+/* HEADER */
+.article-header{
+    position:relative;
+    background:
+        linear-gradient(90deg, rgba(7,19,49,.88), rgba(21,94,239,.58)),
+        url("{{ asset('images/blog-banner.jpg') }}");
+    background-size:cover;
+    background-position:center;
+    border-bottom:1px solid #e2e8f0;
 }
 
-.article-content p {
-    margin-bottom: 1.5rem;
+.article-header::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 80% 20%, rgba(255,255,255,.18), transparent 35%);
+    pointer-events:none;
 }
 
-/* Trích dẫn (Blockquote) đẹp mắt */
-.custom-blockquote {
-    border-left: 4px solid #0d6efd;
-    background-color: #f8f9fa;
+.article-header .article-wrap{
+    position:relative;
+    z-index:2;
+    padding-top:64px;
+    padding-bottom:62px;
 }
 
-/* Tags */
-.tag-pill {
-    background-color: #eef2ff;
-    color: #0d6efd;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
+.back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:18px;
+    color:#ffffff;
+    text-decoration:none;
+    font-size:14px;
+    font-weight:1000;
 }
 
-.tag-pill:hover {
-    background-color: #0d6efd;
-    color: #fff;
+.back-link:hover{
+    color:#dbeafe;
 }
 
-/* Badge (nhãn) tùy biến */
-.bg-primary-subtle {
-    background-color: #eef2ff !important;
+.article-label{
+    display:block;
+    width:max-content;
+    padding:8px 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.35);
+    color:#ffffff;
+    font-size:13px;
+    font-weight:1000;
+    margin-bottom:18px;
+    backdrop-filter:blur(8px);
 }
 
-/* CSS kế thừa từ bản trước */
-.post-card {
-    border-radius: 20px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.article-header h1{
+    max-width:1180px;
+    margin:0;
+    color:#ffffff;
+    font-size:48px;
+    line-height:1.12;
+    letter-spacing:-1.2px;
+    font-weight:1000;
+    text-shadow:0 12px 30px rgba(0,0,0,.25);
 }
 
-.post-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(13, 110, 253, 0.08) !important;
+.article-header p{
+    max-width:1000px;
+    margin:18px 0 0;
+    color:#eaf2ff;
+    font-size:18px;
+    line-height:1.8;
+    font-weight:650;
 }
 
-.post-card img {
-    height: 180px;
-    object-fit: cover;
-    transition: transform 0.5s ease;
+.article-meta{
+    max-width:1180px;
+    margin-top:26px;
+    padding-top:22px;
+    border-top:1px solid rgba(255,255,255,.25);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
 }
 
-.post-card:hover .card-img-hover {
-    transform: scale(1.05);
+.author{
+    display:flex;
+    align-items:center;
+    gap:12px;
 }
 
-.newsletter-card {
-    background: linear-gradient(135deg, #0d6efd 0%, #00c6ff 100%);
+.avatar{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    background:#155eef;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:1000;
+    box-shadow:0 12px 28px rgba(0,0,0,.22);
 }
 
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;  
-    overflow: hidden;
+.author strong{
+    display:block;
+    color:#ffffff;
+    font-size:15px;
+    font-weight:1000;
 }
 
-.highlight-item a {
-    transition: color 0.2s ease;
+.author span{
+    display:block;
+    margin-top:2px;
+    color:#dbeafe;
+    font-size:13px;
+    font-weight:800;
 }
-.highlight-item a:hover {
-    color: #0d6efd !important;
+
+.views{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:38px;
+    padding:0 14px;
+    border-radius:999px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.35);
+    color:#ffffff;
+    font-size:13px;
+    font-weight:1000;
+    backdrop-filter:blur(8px);
+}
+
+/* MAIN LAYOUT */
+.article-section{
+    padding-top:34px;
+    padding-bottom:76px;
+}
+
+.article-layout{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 360px;
+    gap:28px;
+    align-items:start;
+}
+
+.article-main{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 22px 60px rgba(15,23,42,.08);
+}
+
+.article-cover{
+    width:100%;
+    max-height:420px;
+    overflow:hidden;
+    background:#e2e8f0;
+}
+
+.article-cover img{
+    width:100%;
+    height:100%;
+    max-height:420px;
+    object-fit:cover;
+    display:block;
+}
+
+/* ARTICLE CONTENT - ĐẸP HƠN */
+.article-content{
+    padding:48px 66px 56px;
+    color:#26364d;
+    font-size:17px;
+    line-height:1.9;
+    font-weight:500;
+}
+
+.article-content p{
+    margin:0 0 18px;
+    color:#26364d;
+    font-size:17px;
+    line-height:1.9;
+    font-weight:500;
+}
+
+.article-intro{
+    position:relative;
+    padding:24px 28px 24px 30px;
+    margin-bottom:32px !important;
+    border-radius:22px;
+    background:linear-gradient(135deg,#eff6ff,#f8fbff);
+    border:1px solid #bfdbfe;
+    color:#102a56 !important;
+    font-size:18px !important;
+    line-height:1.85 !important;
+    font-weight:850 !important;
+    box-shadow:0 14px 34px rgba(21,94,239,.08);
+}
+
+.article-intro::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:22px;
+    bottom:22px;
+    width:5px;
+    border-radius:999px;
+    background:#155eef;
+}
+
+.article-section-title{
+    position:relative;
+    margin:38px 0 18px;
+    padding-left:22px;
+    color:#071331;
+    font-size:25px;
+    line-height:1.35;
+    font-weight:1000;
+    letter-spacing:-.35px;
+}
+
+.article-section-title::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:7px;
+    width:6px;
+    height:28px;
+    border-radius:999px;
+    background:#155eef;
+}
+
+.article-section-title::after{
+    content:"";
+    display:block;
+    width:72px;
+    height:3px;
+    border-radius:999px;
+    background:#dbeafe;
+    margin-top:12px;
+}
+
+.article-space{
+    height:8px;
+}
+
+/* SIDEBAR */
+.article-sidebar{
+    position:sticky;
+    top:96px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.side-card{
+    background:#fff;
+    border:1px solid #e2e8f0;
+    border-radius:24px;
+    padding:22px;
+    box-shadow:0 16px 42px rgba(15,23,42,.07);
+}
+
+.side-card h3{
+    margin:0 0 16px;
+    padding-bottom:14px;
+    border-bottom:1px solid #edf1f7;
+    color:#071331;
+    font-size:20px;
+    font-weight:1000;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid #edf1f7;
+}
+
+.info-row:last-child{
+    border-bottom:0;
+    padding-bottom:0;
+}
+
+.info-row span{
+    color:#64748b;
+    font-size:14px;
+    font-weight:800;
+}
+
+.info-row strong{
+    color:#071331;
+    font-size:14px;
+    font-weight:1000;
+    text-align:right;
+}
+
+.related-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.related-item{
+    display:grid;
+    grid-template-columns:70px 1fr;
+    gap:12px;
+    text-decoration:none;
+    padding:10px;
+    border-radius:16px;
+    background:#f8fbff;
+    border:1px solid #edf1f7;
+    transition:.22s ease;
+}
+
+.related-item:hover{
+    background:#eaf2ff;
+    border-color:#bfdbfe;
+}
+
+.related-item img,
+.related-icon{
+    width:70px;
+    height:56px;
+    border-radius:13px;
+    object-fit:cover;
+}
+
+.related-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#eaf2ff;
+    color:#155eef;
+    font-size:22px;
+}
+
+.related-item strong{
+    display:block;
+    color:#071331;
+    font-size:14px;
+    line-height:1.4;
+    font-weight:1000;
+}
+
+.related-item:hover strong{
+    color:#155eef;
+}
+
+.related-item span{
+    display:block;
+    margin-top:5px;
+    color:#64748b;
+    font-size:12px;
+    font-weight:800;
+}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+    .article-layout{
+        grid-template-columns:1fr;
+    }
+
+    .article-sidebar{
+        position:relative;
+        top:0;
+    }
+}
+
+@media(max-width:760px){
+    .article-wrap{
+        padding-left:18px;
+        padding-right:18px;
+    }
+
+    .article-header .article-wrap{
+        padding-top:44px;
+        padding-bottom:44px;
+    }
+
+    .article-header h1{
+        font-size:32px;
+    }
+
+    .article-header p{
+        font-size:15px;
+    }
+
+    .article-meta{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .article-content{
+        padding:26px;
+    }
+
+    .article-content p{
+        font-size:15px;
+        line-height:1.85;
+    }
+
+    .article-intro{
+        padding:18px 20px 18px 22px;
+        font-size:16px !important;
+        line-height:1.8 !important;
+    }
+
+    .article-section-title{
+        font-size:21px;
+        margin-top:30px;
+    }
 }
 </style>
-
 @endsection

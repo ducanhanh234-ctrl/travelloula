@@ -35,7 +35,10 @@
                     Tour yêu thích
                 </a>
                 @endauth
+                <a href="{{ route('tour_da_dat.index') }}" class="{{ request()->is('tour_da_dat*') ? 'active' : '' }}">
 
+                    Tour Đã Đặt
+                </a>
                 <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">
                     Điều khoản
                 </a>
@@ -76,7 +79,10 @@
                             <i class="fa-solid fa-heart"></i>
                             Tour yêu thích
                         </a>
-
+                        <a href="{{ route('tour_da_dat.index') }}">
+                            <i class="fa-solid fa-angle-right"></i>
+                            Tour Đã Đặt
+                        </a>
                         <a href="{{ route('Client.danh_sach_tour.index') }}">
                             <i class="fa-solid fa-suitcase-rolling"></i>
                             Danh sách tour
@@ -170,6 +176,11 @@
                     Tour yêu thích
                 </a>
                 @endauth
+
+                <a href="{{ route('tour_da_dat.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Tour Đã Đặt
+                </a>
 
                 <a href="{{ route('Client.bai_viet.index') }}">
                     <i class="fa-solid fa-angle-right"></i>

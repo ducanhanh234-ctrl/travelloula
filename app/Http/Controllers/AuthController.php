@@ -22,16 +22,16 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
             'phone' => 'nullable|max:20',
-            'address' => 'nullable|max:255'
+            'address' => 'nullable|max:255',
         ]);
 
-        $user = User::create([
+        User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'] ?? null,
             'address' => $data['address'] ?? null,
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         return redirect()->route('login')
@@ -48,7 +48,7 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         if (!Auth::attempt($credentials)) {
@@ -59,18 +59,24 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        /** @var \App\Models\User|null $user */
         $user = Auth::user();
 
-        // Nếu có role thì dùng (Admin_HDV)
-        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+        if (!$user || !$user->is_active) {
+            Auth::logout();
+
+            return redirect()->route('login')
+                ->withErrors(['email' => 'Tài khoản của bạn đã bị khóa hoặc chưa được kích hoạt.']);
+        }
+
+        if ($user->hasPermission('vao_admin')) {
             return redirect()->intended(route('Admin.dashboard'));
         }
 
-        if (method_exists($user, 'isGuide') && $user->isGuide()) {
+        if ($user->hasPermission('vao_guide')) {
             return redirect()->intended(route('Guide.dashboard'));
         }
 
-        // fallback (giữ logic của bạn)
         return redirect()->intended('/trang_chu');
     }
 

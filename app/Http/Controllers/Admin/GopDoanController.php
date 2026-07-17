@@ -22,6 +22,11 @@ class GopDoanController extends Controller
         GopDoanService $gopDoanService,
         YeuCauGopDoanService $yeuCauGopDoanService
     ) {
+        $this->middleware('permission:gop_doan.view')->only(['index', 'show']);
+        $this->middleware('permission:gop_doan.create')->only(['store']);
+        $this->middleware('permission:gop_doan.edit')->only(['capNhatTrangThaiLienHe', 'chotGop']);
+        $this->middleware('permission:gop_doan.delete')->only(['destroy']);
+
         $this->gopDoanService = $gopDoanService;
         $this->yeuCauGopDoanService = $yeuCauGopDoanService;
     }

@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class PhuongTienController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:phuong_tiens.view')->only(['index', 'show']);
+        $this->middleware('permission:phuong_tiens.create')->only(['create', 'store']);
+        $this->middleware('permission:phuong_tiens.edit')->only(['edit', 'update']);
+        $this->middleware('permission:phuong_tiens.delete')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $query = PhuongTien::query();
@@ -43,7 +51,6 @@ class PhuongTienController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'ten_phuong_tien' => 'required|max:255',
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe',
 
             'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
@@ -96,7 +103,6 @@ class PhuongTienController extends Controller
         $phuongTien = PhuongTien::findOrFail($id);
 
         $data = $request->validate([
-            'ten_phuong_tien' => 'required|max:255',
             'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe,' . $phuongTien->id,
 
             'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',

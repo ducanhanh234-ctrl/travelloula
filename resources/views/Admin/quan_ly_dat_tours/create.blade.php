@@ -19,7 +19,7 @@
                 Quay lại
             </a>
         </div>
-        <form id="bookingForm" method="POST" action="{{ route('Admin.dat-tours.store') }}">
+        <form id="bookingForm" method="POST" action="{{ route('Admin.dat_tours.store') }}">
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">

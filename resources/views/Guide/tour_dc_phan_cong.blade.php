@@ -864,12 +864,20 @@ $hoanThanh = $tourCollection
                         </h3>
 
                         @if (
-                        (int) ($lichKhoiHanh->trang_thai ?? 0)
-                        === 2
+                        ($lichKhoiHanh->trang_thai)
+                        === 'assigned'
                         )
                         <span class="assigned-status assigned-status-assigned">
                             <span class="assigned-status-dot"></span>
                             Đã phân công
+                        </span>
+                        @elseif (
+                        ($lichKhoiHanh->trang_thai)
+                        === 'running'
+                        )
+                        <span class="assigned-status assigned-status-running">
+                            <span class="assigned-status-dot"></span>
+                            Đang diễn ra
                         </span>
                         @else
                         <span class="assigned-status assigned-status-upcoming">

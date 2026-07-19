@@ -20,9 +20,15 @@ class GuideController extends Controller
             'lichKhoiHanh.tour',
             'hdv',
         ])
-            ->whereJsonContains('hdv_ids', (string) $hdvId)
-            ->latest()
-            ->get();
+            ->whereJsonContains('hdv_ids', (string)$hdvId)
+            ->get()
+            ->sortBy(function ($tour) {
+                return [
+                    $tour->trang_thai === 'running' ? 0 : 1,
+                    $tour->lichKhoiHanh->ngay_khoi_hanh?->timestamp ?? PHP_INT_MAX,
+                ];
+            })
+            ->values();
 
         // Lấy danh sách phương tiện của từng phân công
         foreach ($tours as $tour) {
@@ -103,8 +109,18 @@ class GuideController extends Controller
             'lichKhoiHanh'
         ])
             ->where('id', $phanCongId)
-            ->where('hdv_id', $hdv->id)
+            ->whereJsonContains('hdv_ids', (string)$hdv->id)
             ->firstOrFail();
+
+        // Lấy danh sách ID phương tiện từ JSON
+        $ids = $phanCong->phuong_tien_ids ?? [];
+
+        if (!is_array($ids)) {
+            $ids = json_decode($ids, true) ?? [];
+        }
+
+        // Lấy danh sách phương tiện
+        $phanCong->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
 
         // Lấy danh sách khách hàng đã đặt tour
         $khachHangs = KhachHangDatTour::whereHas('datTour', function ($query) use ($phanCong) {

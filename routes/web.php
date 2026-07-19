@@ -254,4 +254,14 @@ Route::prefix('Guide')
         Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
+
+        Route::get(
+            '/checkin/{lichKhoiHanh}/xuat-phat',
+            [CheckInController::class, 'showXuatPhat']
+        )->name('checkin.xuatPhat');
+
+        Route::post(
+            '/checkin/{lichKhoiHanh}/xuat-phat',
+            [CheckInController::class, 'storeXuatPhat']
+        )->name('checkin.storeXuatPhat');
     });

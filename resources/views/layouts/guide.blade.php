@@ -4,70 +4,35 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>
         @yield('title', 'Hướng dẫn viên - Travelloula')
     </title>
 
-    <meta
-        name="description"
-        content="Hệ thống quản lý dành cho hướng dẫn viên Travelloula"
-    >
+    <meta name="description" content="Hệ thống quản lý dành cho hướng dẫn viên Travelloula">
 
-    <meta
-        name="theme-color"
-        content="#315be8"
-    >
+    <meta name="theme-color" content="#315be8">
 
-    <link
-        rel="icon"
-        type="image/x-icon"
-        href="/favicon.ico"
-    >
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     {{-- Fonts --}}
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     {{-- Bootstrap --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     {{-- Bootstrap Icons --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -211,11 +176,9 @@
             flex-shrink: 0;
 
             color: #ffffff;
-            background: linear-gradient(
-                135deg,
-                var(--guide-primary-500),
-                var(--guide-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--guide-primary-500),
+                    var(--guide-purple));
 
             border-radius: 13px;
             box-shadow: 0 6px 16px rgba(49, 91, 232, 0.22);
@@ -333,11 +296,9 @@
 
         .guide-nav-link.active {
             color: var(--guide-primary-500);
-            background: linear-gradient(
-                90deg,
-                #edf4ff,
-                #f2f0ff
-            );
+            background: linear-gradient(90deg,
+                    #edf4ff,
+                    #f2f0ff);
 
             border-color: #cfddff;
             font-weight: 750;
@@ -352,11 +313,9 @@
             width: 4px;
             content: "";
 
-            background: linear-gradient(
-                180deg,
-                var(--guide-primary-500),
-                var(--guide-purple)
-            );
+            background: linear-gradient(180deg,
+                    var(--guide-primary-500),
+                    var(--guide-purple));
 
             border-radius: 0 8px 8px 0;
         }
@@ -441,7 +400,7 @@
             transition: margin-left 0.3s ease;
         }
 
-        .guide-sidebar.collapsed + .guide-main-content {
+        .guide-sidebar.collapsed+.guide-main-content {
             margin-left: var(--guide-sidebar-collapsed-width);
         }
 
@@ -693,11 +652,9 @@
 
         .guide-user-avatar {
             color: #ffffff;
-            background: linear-gradient(
-                135deg,
-                var(--guide-primary-500),
-                var(--guide-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--guide-primary-500),
+                    var(--guide-purple));
 
             border: 2px solid #e0e8fa;
             box-shadow: 0 4px 12px rgba(49, 91, 232, 0.18);
@@ -829,11 +786,9 @@
 
         .guide-content .btn-primary {
             color: #ffffff;
-            background: linear-gradient(
-                135deg,
-                var(--guide-primary-500),
-                var(--guide-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--guide-primary-500),
+                    var(--guide-purple));
 
             border-color: var(--guide-primary-500);
             box-shadow: 0 5px 14px rgba(49, 91, 232, 0.2);
@@ -841,11 +796,9 @@
 
         .guide-content .btn-primary:hover {
             color: #ffffff;
-            background: linear-gradient(
-                135deg,
-                var(--guide-primary-600),
-                #4c40d7
-            );
+            background: linear-gradient(135deg,
+                    var(--guide-primary-600),
+                    #4c40d7);
 
             border-color: var(--guide-primary-600);
         }
@@ -945,11 +898,9 @@
 
         .guide-content .page-item.active .page-link {
             color: #ffffff;
-            background: linear-gradient(
-                135deg,
-                var(--guide-primary-500),
-                var(--guide-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--guide-primary-500),
+                    var(--guide-purple));
 
             border-color: var(--guide-primary-500);
         }
@@ -1028,7 +979,7 @@
             }
 
             .guide-main-content,
-            .guide-sidebar.collapsed + .guide-main-content {
+            .guide-sidebar.collapsed+.guide-main-content {
                 margin-left: 0;
             }
 
@@ -1050,7 +1001,7 @@
                 display: none;
             }
 
-            .guide-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+            .guide-breadcrumb .breadcrumb-item+.breadcrumb-item::before {
                 display: none;
             }
 
@@ -1085,6 +1036,7 @@
                 width: min(280px, 86vw);
             }
         }
+
     </style>
 
     @stack('styles')
@@ -1093,15 +1045,9 @@
 
 <body>
     {{-- Sidebar --}}
-    <aside
-        class="guide-sidebar"
-        id="guideSidebar"
-    >
+    <aside class="guide-sidebar" id="guideSidebar">
         <div class="guide-sidebar-header">
-            <a
-                href="{{ route('Guide.tour-phan-cong.index') }}"
-                class="guide-sidebar-logo"
-            >
+            <a href="{{ route('Guide.tour-phan-cong.index') }}" class="guide-sidebar-logo">
                 <span class="guide-logo-icon">
                     <i class="fas fa-route"></i>
                 </span>
@@ -1126,15 +1072,11 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.tour-phan-cong.index') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.tour-phan-cong.*')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Dashboard hướng dẫn viên"
-                    >
+                            }}" title="Dashboard hướng dẫn viên">
                         <span class="guide-nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </span>
@@ -1153,53 +1095,17 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.tour-phan-cong.index') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.tour-phan-cong.*')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Tour được phân công"
-                    >
+                            }}" title="Tour được phân công">
                         <span class="guide-nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </span>
 
                         <span class="guide-nav-text">
                             Tour được phân công
-                        </span>
-                    </a>
-                </div>
-
-                <div class="guide-nav-item">
-                    <a
-                        href="#"
-                        class="guide-nav-link"
-                        title="Lịch khởi hành"
-                    >
-                        <span class="guide-nav-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </span>
-
-                        <span class="guide-nav-text">
-                            Lịch khởi hành
-                        </span>
-                    </a>
-                </div>
-
-                <div class="guide-nav-item">
-                    <a
-                        href="#"
-                        class="guide-nav-link"
-                        title="Danh sách khách"
-                    >
-                        <span class="guide-nav-icon">
-                            <i class="fas fa-users"></i>
-                        </span>
-
-                        <span class="guide-nav-text">
-                            Danh sách khách
                         </span>
                     </a>
                 </div>
@@ -1212,15 +1118,11 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.checkin.index') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.checkin.index') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.checkin.*')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Check-in khách"
-                    >
+                            }}" title="Check-in khách">
                         <span class="guide-nav-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </span>
@@ -1232,15 +1134,11 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.nhatky.index') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.nhatky.index') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.nhatky.*')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Nhật ký hướng dẫn viên"
-                    >
+                            }}" title="Nhật ký hướng dẫn viên">
                         <span class="guide-nav-icon">
                             <i class="fas fa-book"></i>
                         </span>
@@ -1252,15 +1150,11 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.baocaosuco.index') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.baocaosuco.index') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.baocaosuco.*')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Báo cáo sự cố"
-                    >
+                            }}" title="Báo cáo sự cố">
                         <span class="guide-nav-icon">
                             <i class="fas fa-exclamation-triangle"></i>
                         </span>
@@ -1279,15 +1173,11 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="{{ route('Guide.profile') }}"
-                        class="guide-nav-link
+                    <a href="{{ route('Guide.profile') }}" class="guide-nav-link
                             {{ request()->routeIs('Guide.profile')
                                 ? 'active'
                                 : ''
-                            }}"
-                        title="Hồ sơ cá nhân"
-                    >
+                            }}" title="Hồ sơ cá nhân">
                         <span class="guide-nav-icon">
                             <i class="fas fa-user"></i>
                         </span>
@@ -1299,11 +1189,7 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a
-                        href="#"
-                        class="guide-nav-link"
-                        title="Thông báo"
-                    >
+                    <a href="#" class="guide-nav-link" title="Thông báo">
                         <span class="guide-nav-icon">
                             <i class="fas fa-bell"></i>
                         </span>
@@ -1322,44 +1208,30 @@
     </aside>
 
     {{-- Overlay mobile --}}
-    <div
-        class="guide-sidebar-overlay"
-        id="guideSidebarOverlay"
-    ></div>
+    <div class="guide-sidebar-overlay" id="guideSidebarOverlay"></div>
 
     {{-- Nội dung --}}
     <div class="guide-main-content">
         <header class="guide-header">
             <div class="guide-header-left">
-                <button
-                    type="button"
-                    class="guide-sidebar-toggle"
-                    id="guideSidebarToggle"
-                    title="Thu gọn hoặc mở menu"
-                    aria-label="Mở menu"
-                >
+                <button type="button" class="guide-sidebar-toggle" id="guideSidebarToggle" title="Thu gọn hoặc mở menu" aria-label="Mở menu">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <nav
-                    class="guide-breadcrumb-wrapper"
-                    aria-label="breadcrumb"
-                >
+                <nav class="guide-breadcrumb-wrapper" aria-label="breadcrumb">
                     <ol class="breadcrumb guide-breadcrumb">
                         <li class="breadcrumb-item">
-                            <a
-                                href="{{ route('Guide.tour-phan-cong.index') }}"
-                            >
+                            <a href="{{ route('Guide.tour-phan-cong.index') }}">
                                 Hướng dẫn viên
                             </a>
                         </li>
 
                         @hasSection('breadcrumb')
-                            @yield('breadcrumb')
+                        @yield('breadcrumb')
                         @else
-                            <li class="breadcrumb-item active">
-                                @yield('guide', 'Trang hướng dẫn viên')
-                            </li>
+                        <li class="breadcrumb-item active">
+                            @yield('guide', 'Trang hướng dẫn viên')
+                        </li>
                         @endif
                     </ol>
                 </nav>
@@ -1369,20 +1241,11 @@
                 <div class="guide-search-box">
                     <i class="fas fa-search guide-search-icon"></i>
 
-                    <input
-                        type="text"
-                        class="guide-search-input"
-                        placeholder="Tìm kiếm..."
-                        autocomplete="off"
-                    >
+                    <input type="text" class="guide-search-input" placeholder="Tìm kiếm..." autocomplete="off">
                 </div>
 
                 <div class="guide-header-actions">
-                    <button
-                        type="button"
-                        class="guide-header-button"
-                        title="Thông báo"
-                    >
+                    <button type="button" class="guide-header-button" title="Thông báo">
                         <i class="fas fa-bell"></i>
 
                         <span class="guide-notification-badge">
@@ -1390,11 +1253,7 @@
                         </span>
                     </button>
 
-                    <button
-                        type="button"
-                        class="guide-header-button"
-                        title="Tin nhắn"
-                    >
+                    <button type="button" class="guide-header-button" title="Tin nhắn">
                         <i class="fas fa-envelope"></i>
 
                         <span class="guide-notification-badge">
@@ -1404,51 +1263,36 @@
                 </div>
 
                 <div class="dropdown">
-                    <button
-                        type="button"
-                        class="btn guide-user-button d-flex align-items-center"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
+                    <button type="button" class="btn guide-user-button d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Auth::check() && Auth::user()->avatar)
-                            <img
-                                src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                alt="{{ Auth::user()->name }}"
-                                class="guide-user-avatar-image"
-                                onerror="
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="guide-user-avatar-image" onerror="
                                     this.style.display='none';
                                     this.nextElementSibling.style.display='inline-flex';
-                                "
-                            >
+                                ">
 
-                            <span
-                                class="guide-user-avatar"
-                                style="display:none;"
-                            >
-                                {{ strtoupper(
+                        <span class="guide-user-avatar" style="display:none;">
+                            {{ strtoupper(
                                     substr(
                                         Auth::user()->name ?? 'H',
                                         0,
                                         1
                                     )
                                 ) }}
-                            </span>
+                        </span>
                         @else
-                            <span class="guide-user-avatar">
-                                {{ strtoupper(
+                        <span class="guide-user-avatar">
+                            {{ strtoupper(
                                     substr(
                                         Auth::user()->name ?? 'H',
                                         0,
                                         1
                                     )
                                 ) }}
-                            </span>
+                        </span>
                         @endif
                     </button>
 
-                    <ul
-                        class="dropdown-menu dropdown-menu-end guide-user-dropdown"
-                    >
+                    <ul class="dropdown-menu dropdown-menu-end guide-user-dropdown">
                         <li class="px-3 py-2">
                             <div class="fw-bold text-dark">
                                 {{ Auth::user()->name ?? 'Hướng dẫn viên' }}
@@ -1464,10 +1308,7 @@
                         </li>
 
                         <li>
-                            <a
-                                class="dropdown-item"
-                                href="{{ route('Guide.profile') }}"
-                            >
+                            <a class="dropdown-item" href="{{ route('Guide.profile') }}">
                                 <i class="fas fa-user me-2"></i>
                                 Hồ sơ cá nhân
                             </a>
@@ -1478,16 +1319,10 @@
                         </li>
 
                         <li>
-                            <form
-                                method="POST"
-                                action="{{ route('logout') }}"
-                            >
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
-                                <button
-                                    type="submit"
-                                    class="dropdown-item text-danger"
-                                >
+                                <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt me-2"></i>
                                     Đăng xuất
                                 </button>
@@ -1512,7 +1347,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar =
                 document.getElementById('guideSidebar');
 
@@ -1562,7 +1397,7 @@
                 }
             }
 
-            sidebarToggle.addEventListener('click', function () {
+            sidebarToggle.addEventListener('click', function() {
                 if (isMobile()) {
                     if (sidebar.classList.contains('open')) {
                         closeMobileSidebar();
@@ -1576,19 +1411,19 @@
                 sidebar.classList.toggle('collapsed');
 
                 localStorage.setItem(
-                    storageKey,
-                    sidebar.classList.contains('collapsed')
+                    storageKey
+                    , sidebar.classList.contains('collapsed')
                 );
             });
 
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener(
-                    'click',
-                    closeMobileSidebar
+                    'click'
+                    , closeMobileSidebar
                 );
             }
 
-            document.addEventListener('keydown', function (event) {
+            document.addEventListener('keydown', function(event) {
                 if (
                     event.key === 'Escape' &&
                     isMobile()
@@ -1597,7 +1432,7 @@
                 }
             });
 
-            window.addEventListener('resize', function () {
+            window.addEventListener('resize', function() {
                 if (!isMobile()) {
                     closeMobileSidebar();
 
@@ -1605,8 +1440,8 @@
                         localStorage.getItem(storageKey) === 'true';
 
                     sidebar.classList.toggle(
-                        'collapsed',
-                        isCollapsed
+                        'collapsed'
+                        , isCollapsed
                     );
 
                     return;
@@ -1618,8 +1453,8 @@
             const sidebarLinks =
                 sidebar.querySelectorAll('.guide-nav-link');
 
-            sidebarLinks.forEach(function (link) {
-                link.addEventListener('click', function () {
+            sidebarLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
                     if (
                         isMobile() &&
                         this.getAttribute('href') !== '#'
@@ -1629,6 +1464,7 @@
                 });
             });
         });
+
     </script>
 
     @yield('scripts')

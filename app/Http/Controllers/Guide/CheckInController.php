@@ -13,7 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\NhatKyHuongDanVien;
-
+use App\Models\PhanCong;
+use App\Models\LichTrinhTour;
 
 class CheckInController extends Controller
 {
@@ -21,21 +22,20 @@ class CheckInController extends Controller
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
 
+        // Lấy ID các lịch khởi hành mà HDV được phân công
+        $lichKhoiHanhIds = PhanCong::whereJsonContains('hdv_ids', (string)$guide->id)
+            ->pluck('lich_khoi_hanh_id');
+
+        // Chỉ lấy lịch khởi hành đang diễn ra
         $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
-            ->where('huong_dan_vien_id', $guide->id)
-            ->orderByDesc('ngay_khoi_hanh')
+            ->whereIn('id', $lichKhoiHanhIds)
+            ->where('trang_thai', 'running')
+            ->orderBy('ngay_khoi_hanh')
             ->paginate(10);
 
-        $tongTour = $lichKhoiHanhs->count();
-
-        $dangDienRa = $lichKhoiHanhs
-            ->where('ngay_khoi_hanh', '<=', now())
-            ->where('ngay_ket_thuc', '>=', now())
-            ->count();
-
-        $sapKhoiHanh = $lichKhoiHanhs
-            ->where('ngay_khoi_hanh', '>', now())
-            ->count();
+        $tongTour = $lichKhoiHanhs->total();
+        $dangDienRa = $tongTour;
+        $sapKhoiHanh = 0;
 
         return view(
             'Guide.checkin.index',
@@ -50,6 +50,42 @@ class CheckInController extends Controller
 
     public function show($lichKhoiHanhId, $chiTietId)
     {
+        $lichKhoiHanh = LichKhoiHanhTour::with('tour')->findOrFail($lichKhoiHanhId);
+
+        $chiTietObj = ChiTietLichTrinh::with('lichTrinh')->findOrFail($chiTietId);
+
+        $currentDay = optional($chiTietObj->lichTrinh)->ngay_thu;
+
+        // Nếu là ngày 1 thì phải đã check-in khởi hành
+        if ($currentDay == 1 && !$lichKhoiHanh->da_checkin_khoi_hanh) {
+            return redirect()
+                ->route('Guide.checkin.dia-diem', $lichKhoiHanhId)
+                ->with('error', 'Vui lòng thực hiện Check-in khởi hành trước khi Check-in ngày 1.');
+        }
+
+        // Nếu là ngày > 1 thì cần đảm bảo ngày trước đó đã hoàn tất (không còn trạng thái da_check_in)
+        if ($currentDay > 1) {
+            $previous = LichTrinhTour::where('tour_id', $lichKhoiHanh->tour_id)
+                ->where('ngay_thu', $currentDay - 1)
+                ->with('chiTiets')
+                ->first();
+
+            if ($previous && $previous->chiTiets->isNotEmpty()) {
+                $prevIds = $previous->chiTiets->pluck('id')->toArray();
+
+                $active = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanhId)
+                    ->whereIn('chi_tiet_lich_trinh_id', $prevIds)
+                    ->where('trang_thai', 'da_check_in')
+                    ->exists();
+
+                if ($active) {
+                    return redirect()
+                        ->route('checkin.dia-diem', $lichKhoiHanhId)
+                        ->with('error', 'Chưa hoàn tất Check-in/Check-out của ngày ' . ($currentDay - 1) . '. Vui lòng hoàn tất trước.');
+                }
+            }
+        }
+
         $datTours = DatTour::with([
             'nguoiDung',
             'khachHangs'
@@ -57,7 +93,7 @@ class CheckInController extends Controller
             ->where('lich_khoi_hanh_id', $lichKhoiHanhId)
             ->get();
 
-        $chiTiet = ChiTietLichTrinh::findOrFail($chiTietId);
+        $chiTiet = $chiTietObj;
 
         $checkedIds = CheckInKhachHang::where(
             'chi_tiet_lich_trinh_id',
@@ -481,5 +517,70 @@ class CheckInController extends Controller
             'success',
             'Đã lưu ghi chú.'
         );
+    }
+    public function showXuatPhat(LichKhoiHanhTour $lichKhoiHanh)
+    {
+        // Lấy danh sách đặt tour và địa điểm ngày 1 (sử dụng địa điểm đầu tiên của ngày 1)
+        $datTours = DatTour::with('khachHangs')
+            ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->get();
+
+        $firstLichTrinh = $lichKhoiHanh->tour->lichTrinhTours->firstWhere('ngay_thu', 1);
+
+        $chiTiet = null;
+
+        if ($firstLichTrinh && $firstLichTrinh->chiTiets->isNotEmpty()) {
+            $chiTiet = $firstLichTrinh->chiTiets->first();
+        }
+
+        if (!$chiTiet) {
+            return redirect()
+                ->route('Guide.checkin.dia-diem', $lichKhoiHanh->id)
+                ->with('error', 'Không có địa điểm để Check-in khởi hành. Vui lòng kiểm tra lịch trình.');
+        }
+
+        $checkedIds = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
+            ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
+            ->pluck('khach_hang_dat_tour_id')
+            ->toArray();
+
+        $checkIns = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
+            ->get()
+            ->keyBy('khach_hang_dat_tour_id');
+
+        $tongKhach = 0;
+        foreach ($datTours as $datTour) {
+            $tongKhach += $datTour->khachHangs->count();
+        }
+
+        $daCheck = count($checkedIds);
+        $chuaCheck = $tongKhach - $daCheck;
+
+        $lichKhoiHanhId = $lichKhoiHanh->id;
+
+        return view('Guide.checkin.xuat_phat', compact(
+            'lichKhoiHanh',
+            'datTours',
+            'chiTiet',
+            'checkedIds',
+            'checkIns',
+            'tongKhach',
+            'daCheck',
+            'chuaCheck',
+            'lichKhoiHanhId'
+        ));
+    }
+    public function storeXuatPhat(
+        Request $request,
+        LichKhoiHanhTour $lichKhoiHanh
+    ) {
+        // Ghi nhận đã thực hiện check-in khởi hành (mở quyền check-in ngày 1)
+        $lichKhoiHanh->update([
+            'da_checkin_khoi_hanh' => true,
+        ]);
+
+        return redirect()
+            ->route('Guide.checkin.xuatPhat', $lichKhoiHanh->id)
+            ->with('success', 'Đã xác nhận Check-in khởi hành. Bây giờ có thể Check-in ngày 1.');
     }
 }

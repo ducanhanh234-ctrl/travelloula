@@ -50,6 +50,7 @@ class LichKhoiHanhTour extends Model
         'dang_gop_doan',
         'gop_vao_lich_id',
         'da_gop',
+        'da_checkin_khoi_hanh',
     ];
 
     protected $casts = [

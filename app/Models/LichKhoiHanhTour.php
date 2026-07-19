@@ -176,7 +176,11 @@ class LichKhoiHanhTour extends Model
     }
     public function phanCong()
     {
-        return $this->hasOne(PhanCong::class);
+        return $this->hasOne(
+            PhanCong::class,
+            'lich_khoi_hanh_id',
+            'id'
+        );
     }
 
     public function checkIns()

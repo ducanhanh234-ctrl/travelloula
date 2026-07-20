@@ -51,6 +51,13 @@ Route::get('/tour', [TourClientController::class, 'index'])
 Route::get('/tour/{id}', [TourClientController::class, 'show'])
     ->name('Client.danh_sach_tour.show');
 
+Route::middleware(['auth'])->group(function () {
+    Route::post(
+        '/tour/{tour}/danh-gia',
+        [DanhGiaController::class, 'store']
+    )->name('Client.danh_gia.store');
+});
+
 Route::get('/bai_viet', [BaiVietClientController::class, 'index'])
     ->name('Client.bai_viet.index');
 
@@ -319,11 +326,34 @@ Route::prefix('Admin')->name('Admin.')->middleware(['auth', \App\Http\Middleware
         Route::put('/{id}', [ThanhToanController::class, 'updateStatus'])->name('update_status');
         Route::delete('/{id}', [ThanhToanController::class, 'destroy'])->name('destroy');
     });
-    Route::prefix('/danh_gias')->name('danh_gias.')->group(function () {
-        Route::get('/', [DanhGiaController::class, 'index'])->name('index');
-        Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
-        Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
-    });
+    Route::prefix('/danh_gias')
+        ->name('danh_gias.')
+        ->group(function () {
+            Route::get(
+                '/',
+                [DanhGiaController::class, 'index']
+            )->name('index');
+
+            Route::get(
+                '/{id}',
+                [DanhGiaController::class, 'show']
+            )->name('show');
+
+            Route::patch(
+                '/{id}/duyet',
+                [DanhGiaController::class, 'approve']
+            )->name('approve');
+
+            Route::patch(
+                '/{id}/an',
+                [DanhGiaController::class, 'hide']
+            )->name('hide');
+
+            Route::delete(
+                '/{id}',
+                [DanhGiaController::class, 'destroy']
+            )->name('destroy');
+        });
     Route::prefix('/thong_ke')->name('thong_ke.')->group(function () {
         Route::get('/', [ThongKeController::class, 'index'])->name('index');
         Route::get('/export', [ThongKeController::class, 'export'])->name('export');

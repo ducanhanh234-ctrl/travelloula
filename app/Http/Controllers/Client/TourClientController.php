@@ -20,7 +20,7 @@ class TourClientController extends Controller
             ->where('trang_thai', 'active');
 
         if ($request->filled('keyword')) {
-            $keyword = $request->keyword;
+            $keyword = trim((string) $request->keyword);
 
             $query->where(function ($q) use ($keyword) {
                 $q->where('ten_tour', 'like', "%{$keyword}%")
@@ -42,7 +42,11 @@ class TourClientController extends Controller
         }
 
         if ($request->filled('phuong_tien')) {
-            $query->where('phuong_tien', 'like', '%' . $request->phuong_tien . '%');
+            $query->where(
+                'phuong_tien',
+                'like',
+                '%' . trim((string) $request->phuong_tien) . '%'
+            );
         }
 
         if ($request->filled('ngay_khoi_hanh')) {
@@ -52,23 +56,25 @@ class TourClientController extends Controller
         }
 
         if ($request->sort === 'price_asc') {
-            $query->orderBy('gia_tour', 'asc');
+            $query->orderBy('gia_tour');
         } elseif ($request->sort === 'price_desc') {
-            $query->orderBy('gia_tour', 'desc');
+            $query->orderByDesc('gia_tour');
         } else {
-            $query->latest();
+            $query->latest('id');
         }
 
         $tours = $query->paginate(12)->withQueryString();
 
-        $danhMucs = DanhMuc::where('trang_thai', 'active')
+        $danhMucs = DanhMuc::query()
+            ->where('trang_thai', 'active')
             ->orderBy('ten_danh_muc')
             ->get();
 
         $favoriteTourIds = [];
 
         if (Auth::check()) {
-            $favoriteTourIds = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+            $favoriteTourIds = DanhSachTourYeuThich::query()
+                ->where('nguoi_dung_id', Auth::id())
                 ->pluck('tour_id')
                 ->toArray();
         }
@@ -86,31 +92,48 @@ class TourClientController extends Controller
             'danhMuc',
             'hinhAnhTours',
             'lichTrinhTours',
-            'lichKhoiHanhTours',
+
+            'lichKhoiHanhTours' => function ($query) {
+                $query->orderBy('ngay_khoi_hanh');
+            },
+
+            'danhGia' => function ($query) {
+                $query
+                    ->where('hien_thi', 1)
+                    ->with([
+                        'user',
+                        'khachHangDatTour',
+                    ])
+                    ->orderByDesc('thoi_gian_danh_gia');
+            },
         ])
             ->where('trang_thai', 'active')
             ->findOrFail($id);
 
         $lichGanNhat = $tour->lichKhoiHanhTours
-            ->where('trang_thai', 'available')
+            ->filter(function ($lich) {
+                return $lich->trang_thai === 'available'
+                    && (int) $lich->so_cho_con_lai > 0;
+            })
             ->sortBy('ngay_khoi_hanh')
             ->first();
 
-        $soSaoTrungBinh = 0;
-        $soLuotDat = 0;
+        $soSaoTrungBinh = round(
+            (float) ($tour->danhGia->avg('so_sao') ?? 0),
+            1
+        );
 
-        if (method_exists($tour, 'danhGia')) {
-            $soSaoTrungBinh = $tour->danhGia()->avg('so_sao') ?? 0;
-        }
+        $tongDanhGia = $tour->danhGia->count();
 
-        if (method_exists($tour, 'datTours')) {
-            $soLuotDat = $tour->datTours()->count();
-        }
+        $soLuotDat = method_exists($tour, 'datTours')
+            ? $tour->datTours()->count()
+            : 0;
 
         $isFavorite = false;
 
         if (Auth::check()) {
-            $isFavorite = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+            $isFavorite = DanhSachTourYeuThich::query()
+                ->where('nguoi_dung_id', Auth::id())
                 ->where('tour_id', $tour->id)
                 ->exists();
         }
@@ -119,6 +142,7 @@ class TourClientController extends Controller
             'tour',
             'lichGanNhat',
             'soSaoTrungBinh',
+            'tongDanhGia',
             'soLuotDat',
             'isFavorite'
         ));

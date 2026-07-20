@@ -27,6 +27,7 @@
         ->first();
 
     $soSaoTrungBinh = $soSaoTrungBinh ?? $tour->danhGia->avg('so_sao');
+    $tongDanhGia = $tongDanhGia ?? $tour->danhGia->count();
     $soLuotDat = $soLuotDat ?? $tour->datTours()->count();
 @endphp
 
@@ -58,7 +59,12 @@
 
                 <div>
                     <i class="fa-solid fa-star"></i>
-                    {{ $soSaoTrungBinh ? number_format($soSaoTrungBinh, 1) : 'Chưa có' }} đánh giá
+                    @if($tongDanhGia > 0)
+                        {{ number_format($soSaoTrungBinh, 1) }}/5
+                        ({{ $tongDanhGia }} đánh giá)
+                    @else
+                        Chưa có đánh giá
+                    @endif
                 </div>
 
                 <div>
@@ -437,6 +443,198 @@
                     <i class="fa-solid fa-phone"></i>
                     Gọi tư vấn
                 </a>
+            </div>
+        </section>
+
+
+        <section class="review-section" id="danh-gia">
+            <div class="review-section-head">
+                <div>
+                    <span class="review-kicker">TRẢI NGHIỆM KHÁCH HÀNG</span>
+                    <h2>Đánh giá <span>TOUR</span></h2>
+                    <p>
+                        Chỉ những đánh giá đã được quản trị viên duyệt mới hiển thị công khai.
+                    </p>
+                </div>
+
+                <div class="review-score-box">
+                    <strong>{{ $tongDanhGia > 0 ? number_format($soSaoTrungBinh, 1) : '0.0' }}</strong>
+                    <div>
+                        <div class="review-score-stars">
+                            @for($star = 1; $star <= 5; $star++)
+                                <i class="fa-solid fa-star {{ $star <= round($soSaoTrungBinh) ? 'active' : '' }}"></i>
+                            @endfor
+                        </div>
+                        <span>{{ $tongDanhGia }} đánh giá đã duyệt</span>
+                    </div>
+                </div>
+            </div>
+
+            @if(session('success'))
+                <div class="review-alert review-alert-success">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="review-alert review-alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="review-alert review-alert-error">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>
+                        @foreach($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <div class="review-grid">
+                <div class="review-form-card">
+                    <h3>Gửi đánh giá của bạn</h3>
+                    <p class="review-form-description">
+                        Đánh giá sẽ được chuyển đến quản trị viên xét duyệt trước khi hiển thị.
+                    </p>
+
+                    @auth
+                        <form
+                            action="{{ route('Client.danh_gia.store', ['tour' => $tour->id]) }}"
+                            method="POST"
+                            class="review-form"
+                        >
+                            @csrf
+
+                            <div class="review-field">
+                                <label>Chọn số sao <span>*</span></label>
+
+                                <div class="star-rating-input">
+                                    @for($star = 5; $star >= 1; $star--)
+                                        <input
+                                            type="radio"
+                                            name="so_sao"
+                                            id="review-star-{{ $star }}"
+                                            value="{{ $star }}"
+                                            required
+                                            {{ (int) old('so_sao') === $star ? 'checked' : '' }}
+                                        >
+
+                                        <label
+                                            for="review-star-{{ $star }}"
+                                            title="{{ $star }} sao"
+                                        >
+                                            <i class="fa-solid fa-star"></i>
+                                        </label>
+                                    @endfor
+                                </div>
+                            </div>
+
+                            <div class="review-field">
+                                <label for="tieu_de">Tiêu đề</label>
+                                <input
+                                    type="text"
+                                    name="tieu_de"
+                                    id="tieu_de"
+                                    value="{{ old('tieu_de') }}"
+                                    maxlength="255"
+                                    placeholder="Ví dụ: Chuyến đi rất tuyệt vời"
+                                >
+                            </div>
+
+                            <div class="review-field">
+                                <label for="noi_dung_danh_gia">
+                                    Nội dung đánh giá <span>*</span>
+                                </label>
+
+                                <textarea
+                                    name="noi_dung_danh_gia"
+                                    id="noi_dung_danh_gia"
+                                    rows="6"
+                                    minlength="5"
+                                    maxlength="2000"
+                                    placeholder="Hãy chia sẻ trải nghiệm của bạn về tour..."
+                                    required
+                                >{{ old('noi_dung_danh_gia') }}</textarea>
+                            </div>
+
+                            <button type="submit" class="review-submit-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Gửi đánh giá
+                            </button>
+                        </form>
+                    @else
+                        <div class="review-login-box">
+                            <i class="fa-solid fa-user-lock"></i>
+                            <div>
+                                <strong>Bạn cần đăng nhập</strong>
+                                <p>Đăng nhập để gửi đánh giá cho tour đã đặt.</p>
+                            </div>
+
+                            <a href="{{ route('login') }}">
+                                Đăng nhập
+                            </a>
+                        </div>
+                    @endauth
+                </div>
+
+                <div class="review-list-card">
+                    <div class="review-list-head">
+                        <h3>Đánh giá đã duyệt</h3>
+                        <span>{{ $tongDanhGia }} đánh giá</span>
+                    </div>
+
+                    <div class="review-list">
+                        @forelse($tour->danhGia as $danhGia)
+                            <article class="review-item">
+                                <div class="review-item-top">
+                                    <div class="review-user">
+                                        <div class="review-avatar">
+                                            {{ mb_strtoupper(mb_substr($danhGia->khachHangDatTour->ho_ten ?? $danhGia->user->name ?? 'K', 0, 1)) }}
+                                        </div>
+
+                                        <div>
+                                            <strong>
+                                                {{ $danhGia->khachHangDatTour->ho_ten ?? $danhGia->user->name ?? 'Khách hàng' }}
+                                            </strong>
+
+                                            <div class="review-stars">
+                                                @for($star = 1; $star <= 5; $star++)
+                                                    <i class="fa-solid fa-star {{ $star <= $danhGia->so_sao ? 'active' : '' }}"></i>
+                                                @endfor
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <time>
+                                        {{ optional($danhGia->thoi_gian_danh_gia)->format('d/m/Y') }}
+                                    </time>
+                                </div>
+
+                                @if($danhGia->tieu_de)
+                                    <h4>{{ $danhGia->tieu_de }}</h4>
+                                @endif
+
+                                <p>{{ $danhGia->noi_dung_danh_gia }}</p>
+
+                                <span class="review-approved-badge">
+                                    <i class="fa-solid fa-shield-check"></i>
+                                    Đã được duyệt
+                                </span>
+                            </article>
+                        @empty
+                            <div class="review-empty">
+                                <i class="fa-regular fa-comment-dots"></i>
+                                <strong>Chưa có đánh giá nào</strong>
+                                <p>Hãy là người đầu tiên chia sẻ trải nghiệm về tour này.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -1107,7 +1305,449 @@ html{
     white-space:nowrap;
 }
 
+
+
+.review-section{
+    margin-top:56px;
+    padding:34px;
+    border:1px solid #dbe5f1;
+    border-radius:24px;
+    background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+    box-shadow:0 18px 54px rgba(7,87,216,.08);
+}
+
+.review-section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:28px;
+    margin-bottom:28px;
+}
+
+.review-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-bottom:10px;
+    color:var(--primary);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+}
+
+.review-kicker::before{
+    content:"";
+    width:26px;
+    height:3px;
+    border-radius:999px;
+    background:var(--primary);
+}
+
+.review-section h2{
+    margin:0;
+    color:#0f172a;
+    font-size:34px;
+    line-height:1.2;
+    font-weight:900;
+    letter-spacing:-.5px;
+}
+
+.review-section h2 span{
+    color:var(--primary);
+}
+
+.review-section-head p{
+    margin:9px 0 0;
+    max-width:680px;
+    color:#64748b;
+    font-size:15px;
+    line-height:1.7;
+}
+
+.review-score-box{
+    min-width:280px;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    border-radius:18px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    box-shadow:0 10px 26px rgba(7,87,216,.08);
+}
+
+.review-score-box > strong{
+    color:var(--primary);
+    font-size:44px;
+    line-height:1;
+    font-weight:900;
+}
+
+.review-score-box span{
+    display:block;
+    margin-top:5px;
+    color:#475569;
+    font-size:13px;
+    font-weight:800;
+}
+
+.review-score-stars,
+.review-stars{
+    display:flex;
+    gap:4px;
+}
+
+.review-score-stars i,
+.review-stars i{
+    color:#cbd5e1;
+}
+
+.review-score-stars i.active,
+.review-stars i.active{
+    color:#f59e0b;
+}
+
+.review-alert{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:18px;
+    padding:14px 16px;
+    border-radius:14px;
+    font-weight:800;
+    line-height:1.6;
+}
+
+.review-alert-success{
+    color:#047857;
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+}
+
+.review-error{
+    display:block;
+    margin-top:7px;
+    color:#dc2626;
+    font-size:12px;
+    font-weight:700;
+}
+
+.review-alert-error{
+    color:#b91c1c;
+    background:#fef2f2;
+    border:1px solid #fecaca;
+}
+
+.review-grid{
+    display:grid;
+    grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+    gap:24px;
+    align-items:start;
+}
+
+.review-form-card,
+.review-list-card{
+    padding:26px;
+    border:1px solid #dbe5f1;
+    border-radius:20px;
+    background:#fff;
+    box-shadow:0 12px 32px rgba(15,23,42,.05);
+}
+
+.review-form-card{
+    background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+}
+
+.review-form-card h3,
+.review-list-head h3{
+    margin:0;
+    color:#0f172a;
+    font-size:22px;
+    font-weight:900;
+    letter-spacing:-.2px;
+}
+
+.review-form-description{
+    margin:8px 0 22px;
+    color:#64748b;
+    font-size:14px;
+    line-height:1.7;
+}
+
+.review-field{
+    margin-bottom:18px;
+}
+
+.review-field > label{
+    display:block;
+    margin-bottom:8px;
+    color:#0f172a;
+    font-size:14px;
+    font-weight:800;
+}
+
+.review-field > label span{
+    color:#dc2626;
+}
+
+.review-field input[type="text"],
+.review-field textarea{
+    width:100%;
+    border:1px solid #cbd5e1;
+    border-radius:12px;
+    padding:13px 14px;
+    color:#0f172a;
+    background:#fff;
+    font-family:inherit;
+    font-size:15px;
+    outline:none;
+    transition:.2s ease;
+}
+
+.review-field input[type="text"]::placeholder,
+.review-field textarea::placeholder{
+    color:#94a3b8;
+}
+
+.review-field input[type="text"]:focus,
+.review-field textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(7,87,216,.10);
+}
+
+.review-field textarea{
+    min-height:138px;
+    resize:vertical;
+}
+
+.star-rating-input{
+    display:inline-flex;
+    flex-direction:row-reverse;
+    gap:8px;
+    padding:4px 0;
+}
+
+.star-rating-input input{
+    position:absolute;
+    opacity:0;
+    pointer-events:none;
+}
+
+.star-rating-input label{
+    color:#cbd5e1;
+    font-size:29px;
+    cursor:pointer;
+    transition:.18s ease;
+}
+
+.star-rating-input label:hover,
+.star-rating-input label:hover ~ label,
+.star-rating-input input:checked ~ label{
+    color:#f59e0b;
+    transform:translateY(-2px) scale(1.04);
+}
+
+.review-submit-btn{
+    width:100%;
+    min-height:52px;
+    border:0;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    background:var(--primary);
+    color:#fff;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 12px 24px rgba(7,87,216,.20);
+    transition:.2s ease;
+}
+
+.review-submit-btn:hover{
+    background:#0044c7;
+    transform:translateY(-1px);
+}
+
+.review-login-box{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:18px;
+    border-radius:16px;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+}
+
+.review-login-box > i{
+    color:var(--primary);
+    font-size:28px;
+}
+
+.review-login-box strong{
+    display:block;
+    color:#0f172a;
+}
+
+.review-login-box p{
+    margin:4px 0 0;
+    color:#64748b;
+    font-size:14px;
+}
+
+.review-login-box a{
+    margin-left:auto;
+    padding:10px 16px;
+    border-radius:10px;
+    background:var(--primary);
+    color:#fff;
+    font-weight:900;
+    text-decoration:none;
+    white-space:nowrap;
+}
+
+.review-list-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding-bottom:16px;
+    border-bottom:1px solid #e2e8f0;
+}
+
+.review-list-head span{
+    padding:6px 10px;
+    border-radius:999px;
+    color:var(--primary);
+    background:#eff6ff;
+    font-size:12px;
+    font-weight:900;
+}
+
+.review-list{
+    display:grid;
+    gap:14px;
+    margin-top:16px;
+}
+
+.review-item{
+    padding:18px;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    background:#fff;
+    transition:.2s ease;
+}
+
+.review-item:hover{
+    border-color:#bfdbfe;
+    box-shadow:0 10px 24px rgba(7,87,216,.06);
+}
+
+.review-item-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.review-user{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.review-avatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),#60a5fa);
+    font-weight:900;
+    box-shadow:0 8px 18px rgba(7,87,216,.18);
+}
+
+.review-user strong{
+    display:block;
+    margin-bottom:5px;
+    color:#0f172a;
+    font-weight:900;
+}
+
+.review-item time{
+    color:#94a3b8;
+    font-size:13px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.review-item h4{
+    margin:16px 0 7px;
+    color:#0f172a;
+    font-size:17px;
+    font-weight:900;
+}
+
+.review-item p{
+    margin:0;
+    color:#475569;
+    font-size:15px;
+    line-height:1.75;
+}
+
+.review-approved-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:14px;
+    padding:5px 9px;
+    border-radius:999px;
+    color:#047857;
+    background:#ecfdf5;
+    font-size:11px;
+    font-weight:900;
+}
+
+.review-empty{
+    min-height:260px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#64748b;
+    border:1px dashed #cbd5e1;
+    border-radius:16px;
+    background:#f8fafc;
+}
+
+.review-empty i{
+    margin-bottom:12px;
+    color:#93c5fd;
+    font-size:42px;
+}
+
+.review-empty strong{
+    color:#0f172a;
+    font-size:18px;
+    font-weight:900;
+}
+
+.review-empty p{
+    margin:6px 0 0;
+    max-width:360px;
+    line-height:1.6;
+}
+
 @media(max-width:1200px){
+    .review-grid{
+        grid-template-columns:1fr;
+    }
+
     .detail-top-grid{
         grid-template-columns:1fr;
     }
@@ -1126,6 +1766,31 @@ html{
 }
 
 @media(max-width:768px){
+    .review-section{
+        padding:22px;
+    }
+
+    .review-section-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .review-score-box{
+        width:100%;
+        min-width:0;
+    }
+
+    .review-login-box{
+        align-items:flex-start;
+        flex-wrap:wrap;
+    }
+
+    .review-login-box a{
+        width:100%;
+        margin-left:0;
+        text-align:center;
+    }
+
     .tour-detail-container{
         width:calc(100% - 24px);
     }

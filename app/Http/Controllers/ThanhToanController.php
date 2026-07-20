@@ -196,7 +196,7 @@ public function vnpayReturn(Request $request)
 
     if (!isset($inputData['vnp_SecureHash'])) {
         return redirect()
-            ->route('client.home')
+            ->route('home')
             ->with('error', 'Không nhận được chữ ký từ VNPAY.');
     }
 
@@ -230,7 +230,7 @@ public function vnpayReturn(Request $request)
     if ($secureHash !== $vnp_SecureHash) {
 
         return redirect()
-            ->route('client.home')
+            ->route('home')
             ->with('error', 'Sai chữ ký bảo mật.');
     }
 
@@ -242,7 +242,7 @@ public function vnpayReturn(Request $request)
     if (!$payment) {
 
         return redirect()
-            ->route('client.home')
+            ->route('home')
             ->with('error', 'Không tìm thấy giao dịch.');
     }
 
@@ -268,7 +268,7 @@ public function vnpayReturn(Request $request)
         ]);
 
         return redirect()
-            ->route('client.home')
+            ->route('home')
             ->with('success', 'Thanh toán thành công.');
     }
 
@@ -280,7 +280,7 @@ public function vnpayReturn(Request $request)
     ]);
 
     return redirect()
-        ->route('client.home')
+        ->route('home')
         ->with('error', 'Thanh toán thất bại.');
 }
 public function paymentHistory()

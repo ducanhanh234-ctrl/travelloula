@@ -683,7 +683,7 @@ class QuanLyDatTourController extends Controller
         $tour = Tour::findOrFail($tourId);
         $tours = Tour::all();
         $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
-            ->where('trang_thai', 'available')
+        ->whereIn('trang_thai', ['available', 'closed', 'full'])
             ->orderBy('ngay_khoi_hanh')
             ->get();
         $lichDuocChon = [
@@ -701,18 +701,80 @@ class QuanLyDatTourController extends Controller
     public function store_dat_tour(Request $request)
     {
         $request->validate([
-            'tour_id'                => 'required|exists:danh_sach_tours,id',
-            'lich_khoi_hanh_id'      => 'required|exists:lich_khoi_hanh_tours,id',
 
-            'so_nguoi_lon'           => 'required|integer|min:1',
-            'so_tre_em'              => 'nullable|integer|min:0',
-            'so_em_be'               => 'nullable|integer|min:0',
+    'tour_id' => 'required|exists:danh_sach_tours,id',
 
-            'phuong_thuc_thanh_toan' => 'required|string',
+    'lich_khoi_hanh_id' => 'required|exists:lich_khoi_hanh_tours,id',
 
-            'hanh_khach'             => 'required|array|min:1',
-            'hanh_khach.*.ho_ten'    => 'required|string|max:255',
-        ]);
+    'so_nguoi_lon' => 'required|integer|min:1',
+
+    'so_tre_em' => 'nullable|integer|min:0',
+
+    'so_em_be' => 'nullable|integer|min:0',
+
+    'phuong_thuc_thanh_toan' => 'required',
+
+    'hanh_khach' => 'required|array|min:1',
+
+    // Họ tên
+    'hanh_khach.*.ho_ten' => [
+        'required',
+        'string',
+        'min:2',
+        'max:100'
+    ],
+
+    // Giới tính
+    'hanh_khach.*.gioi_tinh' => [
+        'required',
+        'in:Nam,Nữ'
+    ],
+
+    // Ngày sinh
+    'hanh_khach.*.ngay_sinh' => [
+        'required',
+        'date',
+        'before:today'
+    ],
+
+    // Quốc tịch
+    'hanh_khach.*.quoc_tich' => [
+        'required',
+        'string',
+        'max:100'
+    ],
+
+    // Loại hành khách
+    'hanh_khach.*.loai_hanh_khach' => [
+        'required',
+        'in:adult,child,baby'
+    ],
+
+    // Loại giấy tờ
+    'hanh_khach.*.loai_giay_to' => [
+        'required',
+        'in:CCCD,Hộ chiếu,Giấy khai sinh'
+    ],
+
+    // Số giấy tờ
+    'hanh_khach.*.so_giay_to' => [
+        'required',
+        'string',
+        'max:30'
+    ],
+
+    // Điện thoại
+    'hanh_khach.*.so_dien_thoai' => [
+        'nullable',
+        'regex:/^(0|\+84)[0-9]{9,10}$/'
+    ],
+
+    'hanh_khach.*.yeu_cau_dac_biet' => [
+        'nullable',
+        'max:500'
+    ],
+
+]);
 
         DB::beginTransaction();
 
@@ -721,7 +783,15 @@ class QuanLyDatTourController extends Controller
             // Khóa bản ghi lịch khởi hành để tránh nhiều người đặt cùng lúc
             $lich = LichKhoiHanhTour::lockForUpdate()
                 ->findOrFail($request->lich_khoi_hanh_id);
+// Chỉ cho phép đặt khi lịch đang mở bán
+if ($lich->trang_thai !== 'available') {
 
+    DB::rollBack();
+
+    return back()
+        ->withInput()
+        ->with('error', 'Lịch khởi hành này hiện không mở bán.');
+}
             $tour = Tour::findOrFail($request->tour_id);
 
             $soNguoiLon = (int) $request->so_nguoi_lon;
@@ -729,7 +799,61 @@ class QuanLyDatTourController extends Controller
             $soEmBe     = (int) ($request->so_em_be ?? 0);
 
             $tongKhach = $soNguoiLon + $soTreEm + $soEmBe;
+// Kiểm tra số lượng hành khách nhập có khớp không
+if (count($request->hanh_khach) != $tongKhach) {
 
+    DB::rollBack();
+
+    return back()
+        ->withInput()
+        ->with('error', 'Số lượng hành khách không khớp với số lượng đã chọn.');
+}
+
+// Kiểm tra tuổi và giấy tờ của từng hành khách
+foreach ($request->hanh_khach as $hk) {
+
+    $tuoi = \Carbon\Carbon::parse($hk['ngay_sinh'])->age;
+
+    switch ($hk['loai_hanh_khach']) {
+
+        case 'adult':
+
+            if ($tuoi < 12) {
+                DB::rollBack();
+
+                return back()
+                    ->withInput()
+                    ->with('error', 'Người lớn phải từ 12 tuổi trở lên.');
+            }
+
+            break;
+
+        case 'child':
+
+            if ($tuoi < 2 || $tuoi > 11) {
+                DB::rollBack();
+
+                return back()
+                    ->withInput()
+                    ->with('error', 'Trẻ em phải từ 2 đến 11 tuổi.');
+            }
+
+            break;
+    }
+
+    // Kiểm tra CCCD
+    if (
+        $hk['loai_giay_to'] == 'CCCD' &&
+        !preg_match('/^[0-9]{12}$/', $hk['so_giay_to'])
+    ) {
+
+        DB::rollBack();
+
+        return back()
+            ->withInput()
+            ->with('error', 'CCCD phải gồm đúng 12 chữ số.');
+    }
+}
             // Kiểm tra số chỗ còn lại
             if ($lich->so_cho_con_lai < $tongKhach) {
 

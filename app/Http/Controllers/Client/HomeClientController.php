@@ -15,77 +15,131 @@ class HomeClientController extends Controller
 {
     public function index()
     {
-        $tours = DanhSachTour::with([
-            'danhMuc',
-            'lichKhoiHanhTours',
-        ])
+        /*
+        |--------------------------------------------------------------------------
+        | Tour hiển thị trên trang chủ
+        |--------------------------------------------------------------------------
+        | Theo database:
+        | - danh_sach_tours.trang_thai = active
+        | - Tour phải có ít nhất một bản ghi trong lich_trinh_tours
+        */
+        $tourTrangChuQuery = DanhSachTour::query()
             ->where('trang_thai', 'active')
-            ->latest()
-            ->take(4)
+            ->whereHas('lichTrinhTours');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tour và lịch khởi hành
+        |--------------------------------------------------------------------------
+        | Database dùng đúng các trạng thái:
+        | available, running, full, closed.
+        */
+        $tours = (clone $tourTrangChuQuery)
+            ->with([
+                'danhMuc',
+                'lichTrinhTours',
+                'lichKhoiHanhTours' => function ($query) {
+                    $query
+                        ->whereIn('trang_thai', [
+                            'available',
+                            'running',
+                            'full',
+                            'closed',
+                        ])
+                        ->orderBy('ngay_khoi_hanh')
+                        ->orderBy('id');
+                },
+            ])
+            ->latest('id')
+            ->take(8)
             ->get();
 
-        $diemDens = DanhSachTour::where('trang_thai', 'active')
+        /*
+        |--------------------------------------------------------------------------
+        | Điểm đến nổi bật
+        |--------------------------------------------------------------------------
+        */
+        $diemDens = DanhSachTour::query()
+            ->where('trang_thai', 'active')
+            ->whereHas('lichTrinhTours')
             ->whereNotNull('diem_den')
-            ->selectRaw('MIN(id) as id, diem_den, MIN(anh_dai_dien) as anh_dai_dien')
+            ->where('diem_den', '<>', '')
+            ->selectRaw(
+                'MIN(id) AS id, diem_den, MIN(anh_dai_dien) AS anh_dai_dien'
+            )
             ->groupBy('diem_den')
+            ->orderBy('diem_den')
             ->take(6)
             ->get();
 
-        $danhMucs = DanhMuc::where('trang_thai', 'active')
+        $danhMucs = DanhMuc::query()
+            ->where('trang_thai', 'active')
             ->orderBy('ten_danh_muc')
-            ->take(6)
             ->get();
 
-        $totalTours = DanhSachTour::where('trang_thai', 'active')->count();
+        $totalTours = (clone $tourTrangChuQuery)->count();
 
-        $totalDiemDen = DanhSachTour::where('trang_thai', 'active')
+        $totalDiemDen = DanhSachTour::query()
+            ->where('trang_thai', 'active')
+            ->whereHas('lichTrinhTours')
             ->whereNotNull('diem_den')
-            ->distinct('diem_den')
+            ->where('diem_den', '<>', '')
+            ->distinct()
             ->count('diem_den');
 
-        $totalKhachHang = 0;
+        $totalKhachHang = Schema::hasTable('khach_hang_dat_tours')
+            ? KhachHangDatTour::count()
+            : 0;
 
-        if (Schema::hasTable('khach_hang_dat_tours')) {
-            $totalKhachHang = KhachHangDatTour::count();
-        }
+        /*
+        |--------------------------------------------------------------------------
+        | Đánh giá đã được phép hiển thị
+        |--------------------------------------------------------------------------
+        | Database dùng danh_gia.hien_thi = 1.
+        */
+        $avgRating = 0.0;
 
-        $avgRating = 4.9;
+        if (
+            Schema::hasTable('danh_gia')
+            && Schema::hasColumn('danh_gia', 'so_sao')
+        ) {
+            $ratingQuery = DB::table('danh_gia');
 
-        if (Schema::hasTable('danh_gia') && Schema::hasColumn('danh_gia', 'so_sao')) {
-            $rating = DB::table('danh_gia')->avg('so_sao');
-
-            if ($rating) {
-                $avgRating = round($rating, 1);
+            if (Schema::hasColumn('danh_gia', 'hien_thi')) {
+                $ratingQuery->where('hien_thi', 1);
             }
+
+            $avgRating = round(
+                (float) ($ratingQuery->avg('so_sao') ?? 0),
+                1
+            );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | Khuyến mãi còn hiệu lực
+        |--------------------------------------------------------------------------
+        */
         $khuyenMais = collect();
 
         if (Schema::hasTable('khuyen_mais')) {
-            $query = DB::table('khuyen_mais');
-
-            if (Schema::hasColumn('khuyen_mais', 'trang_thai')) {
-                $query->where(function ($q) {
-                    $q->whereNull('trang_thai')
-                        ->orWhere('trang_thai', 'active')
-                        ->orWhere('trang_thai', 'hoat_dong')
-                        ->orWhere('trang_thai', 1);
-                });
-            }
-
-            if (Schema::hasColumn('khuyen_mais', 'created_at')) {
-                $query->orderByDesc('created_at');
-            }
-
-            $khuyenMais = $query->take(2)->get();
+            $khuyenMais = DB::table('khuyen_mais')
+                ->where('trang_thai', 'active')
+                ->whereDate('ngay_bat_dau', '<=', now()->toDateString())
+                ->whereDate('ngay_ket_thuc', '>=', now()->toDateString())
+                ->orderBy('ngay_ket_thuc')
+                ->take(2)
+                ->get();
         }
 
         $favoriteTourIds = [];
 
         if (Auth::check()) {
-            $favoriteTourIds = DanhSachTourYeuThich::where('nguoi_dung_id', Auth::id())
+            $favoriteTourIds = DanhSachTourYeuThich::query()
+                ->where('nguoi_dung_id', Auth::id())
                 ->pluck('tour_id')
-                ->toArray();
+                ->map(fn($tourId) => (int) $tourId)
+                ->all();
         }
 
         return view('Client.trang_chu.index', compact(

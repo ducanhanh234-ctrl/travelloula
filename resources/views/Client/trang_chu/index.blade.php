@@ -390,6 +390,197 @@ a{
     color:#fff;
 }
 
+
+/* LỊCH KHỞI HÀNH GỌN TRÊN CARD */
+.departure-summary{
+    margin:14px 0 18px;
+    padding:12px;
+    border:1px solid #dbe5f1;
+    border-radius:14px;
+    background:linear-gradient(180deg,#f8fbff,#fff);
+}
+
+.departure-summary-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+}
+
+.departure-summary-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#0f172a;
+    font-size:12px;
+    font-weight:900;
+}
+
+.departure-summary-title i{
+    color:#0757d8;
+}
+
+.departure-summary-count{
+    color:#64748b;
+    font-size:11px;
+    font-weight:800;
+}
+
+.departure-nearest{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+}
+
+.departure-nearest-date{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#334155;
+    font-size:12px;
+    font-weight:800;
+}
+
+.departure-nearest-date i{
+    color:#0757d8;
+}
+
+.departure-status{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:82px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:10px;
+    font-weight:900;
+    white-space:nowrap;
+}
+
+.status-available{
+    color:#047857;
+    background:#d1fae5;
+}
+
+.status-running{
+    color:#0369a1;
+    background:#e0f2fe;
+}
+
+.status-full{
+    color:#b45309;
+    background:#fef3c7;
+}
+
+.status-closed{
+    color:#475569;
+    background:#e2e8f0;
+}
+
+.status-unknown{
+    color:#64748b;
+    background:#e2e8f0;
+}
+
+.book-now-button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1.5px solid #0757d8;
+    background:#0757d8;
+    color:#fff;
+    border-radius:9px;
+    padding:9px 12px;
+    font-size:13px;
+    font-weight:900;
+    transition:.25s;
+    white-space:nowrap;
+    cursor:pointer;
+    font-family:inherit;
+    text-decoration:none;
+}
+
+.book-now-button:hover{
+    background:#0044c7;
+}
+
+.tour-message-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(15,23,42,.58);
+    backdrop-filter:blur(4px);
+}
+
+.tour-message-modal.show{
+    display:flex;
+}
+
+.tour-message-dialog{
+    width:min(440px,100%);
+    border-radius:20px;
+    background:#fff;
+    padding:26px;
+    box-shadow:0 30px 80px rgba(15,23,42,.28);
+}
+
+.tour-message-icon{
+    width:54px;
+    height:54px;
+    margin-bottom:16px;
+    display:grid;
+    place-items:center;
+    border-radius:16px;
+    color:#0757d8;
+    background:#eff6ff;
+    font-size:24px;
+}
+
+.tour-message-dialog h3{
+    margin-bottom:10px;
+    font-size:22px;
+    font-weight:900;
+}
+
+.tour-message-dialog p{
+    margin-bottom:20px;
+    color:#475569;
+    line-height:1.65;
+}
+
+.tour-message-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.tour-message-actions button{
+    border:0;
+    border-radius:10px;
+    padding:10px 17px;
+    background:#0757d8;
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
+}
+
+@media(max-width:640px){
+    .departure-nearest{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .tour-actions button{
+        flex:1;
+    }
+}
+
 /* DESTINATIONS */
 
 .destination-grid{
@@ -823,9 +1014,121 @@ a{
                             <span><i class="fa-solid fa-users"></i> {{ $tour->so_khach_toi_da ?? 0 }} chỗ</span>
                         </div>
 
+                        @php
+                            /*
+                             * Database lich_khoi_hanh_tours dùng đúng 4 mã:
+                             * available, running, full, closed.
+                             */
+                            $lichKhoiHanhs = collect($tour->lichKhoiHanhTours ?? [])
+                                ->filter(function ($lich) {
+                                    return in_array($lich->trang_thai, [
+                                        'available',
+                                        'running',
+                                        'full',
+                                        'closed',
+                                    ], true);
+                                })
+                                ->sortBy('ngay_khoi_hanh')
+                                ->values();
+
+                            /*
+                             * Ưu tiên hiển thị lịch mở bán gần nhất.
+                             * Nếu không có thì lấy lịch gần nhất bất kỳ.
+                             */
+                            $lichGanNhat = $lichKhoiHanhs
+                                ->firstWhere('trang_thai', 'available')
+                                ?? $lichKhoiHanhs->first();
+
+                            $coLichMoBan = $lichKhoiHanhs->contains(function ($lich) {
+                                return $lich->trang_thai === 'available'
+                                    && (int) $lich->so_cho_con_lai > 0;
+                            });
+
+                            $lyDoKhongDat = 'Tour hiện chưa có lịch khởi hành có thể đặt.';
+
+                            if ($lichKhoiHanhs->isEmpty()) {
+                                $lyDoKhongDat = 'Tour hiện chưa có lịch khởi hành.';
+                            } elseif ($lichKhoiHanhs->every(fn($lich) => $lich->trang_thai === 'closed')) {
+                                $lyDoKhongDat = 'Tất cả lịch khởi hành của tour đã đóng.';
+                            } elseif ($lichKhoiHanhs->every(fn($lich) => $lich->trang_thai === 'full')) {
+                                $lyDoKhongDat = 'Tất cả lịch khởi hành của tour đã hết chỗ.';
+                            } elseif ($lichKhoiHanhs->contains(fn($lich) => $lich->trang_thai === 'running')) {
+                                $lyDoKhongDat = 'Tour đang diễn ra nên không thể nhận thêm khách ở lịch này.';
+                            } elseif (!$coLichMoBan) {
+                                $lyDoKhongDat = 'Hiện chưa có lịch mở bán và còn chỗ.';
+                            }
+
+                            $statusMap = [
+                                'available' => [
+                                    'label' => 'Đã mở',
+                                    'class' => 'status-available',
+                                ],
+                                'running' => [
+                                    'label' => 'Đang diễn ra',
+                                    'class' => 'status-running',
+                                ],
+                                'full' => [
+                                    'label' => 'Hết chỗ',
+                                    'class' => 'status-full',
+                                ],
+                                'closed' => [
+                                    'label' => 'Đã đóng',
+                                    'class' => 'status-closed',
+                                ],
+                            ];
+
+                            $statusConfig = $lichGanNhat
+                                ? ($statusMap[$lichGanNhat->trang_thai] ?? [
+                                    'label' => 'Chưa cập nhật',
+                                    'class' => 'status-unknown',
+                                ])
+                                : [
+                                    'label' => 'Chưa có lịch',
+                                    'class' => 'status-unknown',
+                                ];
+                        @endphp
+
+                        <div class="departure-summary">
+                            <div class="departure-summary-head">
+                                <span class="departure-summary-title">
+                                    <i class="fa-regular fa-calendar-days"></i>
+                                    Lịch khởi hành gần nhất
+                                </span>
+
+                                <span class="departure-summary-count">
+                                    {{ $lichKhoiHanhs->count() }} lịch
+                                </span>
+                            </div>
+
+                            <div class="departure-nearest">
+                                <span class="departure-nearest-date">
+                                    <i class="fa-regular fa-calendar"></i>
+
+                                    @if($lichGanNhat)
+                                        {{ \Carbon\Carbon::parse($lichGanNhat->ngay_khoi_hanh)->format('d/m/Y') }}
+                                    @else
+                                        Chưa cập nhật
+                                    @endif
+                                </span>
+
+                                <span class="departure-status {{ $statusConfig['class'] }}">
+                                    {{ $statusConfig['label'] }}
+                                </span>
+                            </div>
+                        </div>
+
                         <div class="tour-bottom">
                             <div>
-                                <strong>{{ number_format($tour->gia_tour ?? 0, 0, ',', '.') }}đ</strong>
+                                <strong>
+                                    {{ number_format(
+                                        $lichGanNhat && (int) $lichGanNhat->gia_nguoi_lon > 0
+                                            ? $lichGanNhat->gia_nguoi_lon
+                                            : ($tour->gia_nguoi_lon > 0 ? $tour->gia_nguoi_lon : $tour->gia_tour),
+                                        0,
+                                        ',',
+                                        '.'
+                                    ) }}đ
+                                </strong>
                             </div>
 
                             <div class="tour-actions">
@@ -833,7 +1136,14 @@ a{
                                     Xem chi tiết
                                 </a>
 
-                                <a href="{{ route('Client.danh_sach_tour.show', $tour->id) }}#dat-tour" class="book-now-btn">
+                                <a
+                                    href="{{ route('Client.danh_sach_tour.show', $tour->id) }}#dat-tour"
+                                    class="{{ $coLichMoBan ? 'book-now-btn' : 'book-now-button js-tour-message' }}"
+                                    @unless($coLichMoBan)
+                                        data-message="{{ $lyDoKhongDat }}"
+                                        data-block-booking="1"
+                                    @endunless
+                                >
                                     Đặt tour
                                 </a>
                             </div>
@@ -1004,6 +1314,63 @@ a{
         </div>
     </div>
 </section>
+
+
+<div class="tour-message-modal" id="tourMessageModal" aria-hidden="true">
+    <div class="tour-message-dialog" role="dialog" aria-modal="true" aria-labelledby="tourMessageTitle">
+        <div class="tour-message-icon">
+            <i class="fa-solid fa-circle-info"></i>
+        </div>
+
+        <h3 id="tourMessageTitle">Chưa thể đặt tour</h3>
+        <p id="tourMessageText">Tour hiện chưa thể đặt.</p>
+
+        <div class="tour-message-actions">
+            <button type="button" id="closeTourMessageModal">Đã hiểu</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('tourMessageModal');
+    const messageText = document.getElementById('tourMessageText');
+    const closeButton = document.getElementById('closeTourMessageModal');
+
+    document.querySelectorAll('.js-tour-message').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            if (button.dataset.blockBooking === '1') {
+                event.preventDefault();
+
+                messageText.textContent =
+                    button.dataset.message || 'Tour hiện chưa thể đặt.';
+
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+        });
+    });
+
+    function closeModal() {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+
+    closeButton.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+});
+</script>
 
 </main>
 

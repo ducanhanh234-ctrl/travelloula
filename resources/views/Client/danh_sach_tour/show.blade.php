@@ -202,21 +202,73 @@
                     </div>
                 @endif
 
-                @if($tour->lichKhoiHanhTours->count())
-                    <div class="schedule-mini">
-                        <h3>Lịch khởi hành</h3>
+                @php
+                    $statusMap = [
+                        'available' => ['label' => 'Đang mở', 'class' => 'schedule-status-available'],
+                        'running' => ['label' => 'Đang diễn ra', 'class' => 'schedule-status-running'],
+                        'full' => ['label' => 'Hết chỗ', 'class' => 'schedule-status-full'],
+                        'closed' => ['label' => 'Đã đóng', 'class' => 'schedule-status-closed'],
+                    ];
+                @endphp
 
-                        @foreach($tour->lichKhoiHanhTours->sortBy('ngay_khoi_hanh')->take(4) as $lich)
-                            <div class="schedule-mini-item">
-                                <span>
-                                    {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
-                                </span>
-
-                                <strong>Còn {{ $lich->so_cho_con_lai }} chỗ</strong>
-                            </div>
-                        @endforeach
+                <div class="schedule-mini schedule-mini-full">
+                    <div class="schedule-mini-heading">
+                        <div>
+                            <span>LỊCH KHỞI HÀNH</span>
+                            <h3>Chọn lịch phù hợp</h3>
+                        </div>
+                        <strong>{{ $tour->lichKhoiHanhTours->count() }} lịch</strong>
                     </div>
-                @endif
+
+                    <div class="schedule-mini-list">
+                        @forelse($tour->lichKhoiHanhTours->sortBy('ngay_khoi_hanh') as $lich)
+                            @php
+                                $status = $statusMap[$lich->trang_thai] ?? [
+                                    'label' => 'Chưa cập nhật',
+                                    'class' => 'schedule-status-unknown',
+                                ];
+                                $coTheDat = $lich->trang_thai === 'available'
+                                    && (int) $lich->so_cho_con_lai > 0;
+                            @endphp
+
+                            <div class="schedule-mini-item-full">
+                                <div class="schedule-mini-date">
+                                    <i class="fa-regular fa-calendar-days"></i>
+                                    <div>
+                                        <strong>
+                                            {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
+                                            @if($lich->ngay_ket_thuc)
+                                                - {{ \Carbon\Carbon::parse($lich->ngay_ket_thuc)->format('d/m/Y') }}
+                                            @endif
+                                        </strong>
+                                        <span>{{ $lich->so_cho_con_lai }} chỗ còn lại</span>
+                                    </div>
+                                </div>
+
+                                <div class="schedule-mini-actions">
+                                    <span class="schedule-status {{ $status['class'] }}">
+                                        {{ $status['label'] }}
+                                    </span>
+
+                                    @if($coTheDat)
+                                        <a href="#booking-form" class="schedule-select-btn">
+                                            Chọn lịch
+                                        </a>
+                                    @else
+                                        <span class="schedule-select-btn disabled">
+                                            Không thể đặt
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="schedule-mini-empty">
+                                <i class="fa-regular fa-calendar-xmark"></i>
+                                <span>Tour hiện chưa có lịch khởi hành.</span>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
 
                 <div class="booking-actions">
                     <a href="#booking-form" class="book-btn">
@@ -431,18 +483,112 @@
         </section>
 
         <section class="booking-form-section" id="booking-form">
-            <h2>Đặt tour <span>NGAY</span></h2>
+            <div class="booking-form-head">
+                <span>ĐẶT TOUR</span>
+                <h2>Chọn lịch khởi hành</h2>
+                <p>
+                    Chọn một lịch đang mở và còn chỗ. Các lịch đang diễn ra,
+                    hết chỗ hoặc đã đóng vẫn được hiển thị để khách theo dõi.
+                </p>
+            </div>
 
-            <div class="booking-form-card">
-                <div>
-                    <h3>{{ $tour->ten_tour }}</h3>
-                    <p>Vui lòng liên hệ tư vấn viên để được hỗ trợ đặt tour nhanh nhất.</p>
+            <div class="booking-schedule-list">
+                @forelse($tour->lichKhoiHanhTours->sortBy('ngay_khoi_hanh') as $lich)
+                    @php
+                        $status = $statusMap[$lich->trang_thai] ?? [
+                            'label' => 'Chưa cập nhật',
+                            'class' => 'schedule-status-unknown',
+                        ];
+
+                        $coTheDat = $lich->trang_thai === 'available'
+                            && (int) $lich->so_cho_con_lai > 0;
+
+                        $giaLich = (int) ($lich->gia_nguoi_lon ?? 0) > 0
+                            ? $lich->gia_nguoi_lon
+                            : $giaNguoiLon;
+                    @endphp
+
+                    <article class="booking-schedule-card {{ $coTheDat ? 'is-bookable' : 'is-disabled' }}">
+                        <div class="booking-schedule-icon">
+                            <i class="fa-regular fa-calendar-days"></i>
+                        </div>
+
+                        <div class="booking-schedule-main">
+                            <div class="booking-schedule-title">
+                                <strong>
+                                    {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
+                                    @if($lich->ngay_ket_thuc)
+                                        - {{ \Carbon\Carbon::parse($lich->ngay_ket_thuc)->format('d/m/Y') }}
+                                    @endif
+                                </strong>
+
+                                <span class="schedule-status {{ $status['class'] }}">
+                                    {{ $status['label'] }}
+                                </span>
+                            </div>
+
+                            <div class="booking-schedule-meta">
+                                <span>
+                                    <i class="fa-solid fa-users"></i>
+                                    Còn {{ $lich->so_cho_con_lai }} chỗ
+                                </span>
+
+                                <span>
+                                    <i class="fa-solid fa-tag"></i>
+                                    {{ number_format($giaLich, 0, ',', '.') }} đ/người lớn
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="booking-schedule-action">
+                            @if($coTheDat)
+                                <a href="tel:0965634066" class="booking-schedule-btn">
+                                    <i class="fa-solid fa-calendar-check"></i>
+                                    Đặt lịch này
+                                </a>
+                            @else
+                                <button type="button" class="booking-schedule-btn disabled" disabled>
+                                    Không thể đặt
+                                </button>
+                            @endif
+                        </div>
+                    </article>
+                @empty
+                    <div class="booking-schedule-empty">
+                        <i class="fa-regular fa-calendar-xmark"></i>
+                        <div>
+                            <strong>Chưa có lịch khởi hành</strong>
+                            <p>Tour hiện chưa có lịch cố định để đặt.</p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+
+            <div class="private-schedule-card">
+                <div class="private-schedule-icon">
+                    <i class="fa-solid fa-people-group"></i>
                 </div>
 
-                <a href="tel:0965634066">
-                    <i class="fa-solid fa-phone"></i>
-                    Gọi tư vấn
-                </a>
+                <div class="private-schedule-content">
+                    <span>LỊCH RIÊNG THEO YÊU CẦU</span>
+                    <h3>Bạn muốn khởi hành vào ngày khác?</h3>
+                    <p>
+                        Dành cho gia đình, nhóm riêng hoặc doanh nghiệp. Liên hệ để được
+                        tư vấn ngày khởi hành, số lượng khách và mức giá phù hợp.
+                    </p>
+                </div>
+
+                <div class="private-schedule-actions">
+                    <a href="tel:0965634066" class="private-call-btn">
+                        <i class="fa-solid fa-phone"></i>
+                        Gọi 0965634066
+                    </a>
+
+                    <a href="mailto:event@travelloula.vn" class="private-mail-btn">
+                        <i class="fa-regular fa-envelope"></i>
+                        Gửi yêu cầu
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -1867,6 +2013,581 @@ html{
         font-size:25px;
     }
 }
+
+/* =========================================================
+   ĐỒNG BỘ MÀU TOÀN BỘ TRANG CHI TIẾT TOUR THEO LAYOUT XANH
+   ========================================================= */
+:root{
+    --primary:#0757d8;
+    --primary-dark:#0044c7;
+    --primary-soft:#eff6ff;
+    --primary-line:#bfdbfe;
+    --accent:#f59e0b;
+    --text:#0f172a;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --soft:#f8fbff;
+
+    /* Ghi đè màu hồng cũ */
+    --pink:var(--primary);
+    --pink-dark:var(--primary-dark);
+    --orange:var(--accent);
+}
+
+/* Card thông tin đặt tour */
+.booking-card{
+    border:1px solid #dbe5f1;
+    box-shadow:0 18px 54px rgba(7,87,216,.09);
+}
+
+.booking-info-grid i{
+    color:var(--primary);
+}
+
+.price-box strong{
+    color:var(--primary);
+}
+
+.price-detail{
+    background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);
+    border-color:#dbeafe;
+}
+
+.nearest-date{
+    background:linear-gradient(135deg,#eff6ff,#f8fbff);
+    border-color:#bfdbfe;
+}
+
+.nearest-date small,
+.schedule-mini-item strong{
+    color:var(--primary);
+}
+
+.schedule-mini-item{
+    background:#f8fbff;
+    border-color:#dbeafe;
+}
+
+.book-btn{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 14px 30px rgba(7,87,216,.22);
+}
+
+.book-btn:hover{
+    background:var(--primary-dark);
+}
+
+.consult-btn{
+    border-color:var(--primary);
+    color:var(--primary);
+}
+
+.consult-btn:hover{
+    color:var(--primary-dark);
+    background:#eff6ff;
+}
+
+/* Lịch trình */
+.schedule-left h2 span,
+.schedule-right h2 span,
+.rules-section h2 span,
+.booking-form-section h2 span{
+    color:var(--primary);
+}
+
+.day-list,
+.timeline-detail{
+    border-left-color:var(--primary);
+}
+
+.day-item::before,
+.timeline-dot{
+    border-color:var(--primary);
+}
+
+.day-item span{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+}
+
+.timeline-text h3{
+    color:var(--primary);
+}
+
+.center-book-btn{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 16px 34px rgba(7,87,216,.22);
+}
+
+.center-book-btn:hover{
+    background:var(--primary-dark);
+    color:#fff;
+}
+
+/* Quy định dịch vụ */
+.rules-section{
+    padding:30px;
+    border:1px solid #dbe5f1;
+    border-radius:24px;
+    background:linear-gradient(180deg,#ffffff,#f8fbff);
+    box-shadow:0 18px 50px rgba(7,87,216,.06);
+}
+
+.accordion-box{
+    border-color:#dbe5f1;
+    box-shadow:0 12px 30px rgba(15,23,42,.04);
+}
+
+.accordion-box summary{
+    background:#fff;
+}
+
+.accordion-box details[open] summary{
+    color:var(--primary);
+    background:#f8fbff;
+}
+
+.accordion-content{
+    background:#fff;
+}
+
+/* Khối liên hệ đặt tour */
+.booking-form-card{
+    background:linear-gradient(135deg,#eff6ff,#ffffff);
+    border-color:#bfdbfe;
+    box-shadow:0 14px 34px rgba(7,87,216,.08);
+}
+
+.booking-form-card a{
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 12px 24px rgba(7,87,216,.20);
+}
+
+/* =========================================================
+   PHẦN ĐÁNH GIÁ TOUR
+   ========================================================= */
+.review-section{
+    position:relative;
+    overflow:hidden;
+    margin-top:64px;
+    padding:38px;
+    border:1px solid #cfe0f5;
+    border-radius:26px;
+    background:
+        radial-gradient(circle at top right,rgba(59,130,246,.10),transparent 34%),
+        linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+    box-shadow:0 22px 60px rgba(7,87,216,.09);
+}
+
+.review-section::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:5px;
+    background:linear-gradient(90deg,var(--primary),#38bdf8);
+}
+
+.review-section-head{
+    align-items:stretch;
+}
+
+.review-section-head > div:first-child{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.review-kicker{
+    color:var(--primary);
+}
+
+.review-kicker::before{
+    background:linear-gradient(90deg,var(--primary),#38bdf8);
+}
+
+.review-score-box{
+    min-width:300px;
+    padding:22px;
+    border-color:#bfdbfe;
+    background:linear-gradient(135deg,#eff6ff,#ffffff);
+    box-shadow:0 12px 28px rgba(7,87,216,.10);
+}
+
+.review-score-box > strong{
+    color:var(--primary);
+}
+
+.review-form-card,
+.review-list-card{
+    border-color:#dbe5f1;
+    box-shadow:0 14px 36px rgba(15,23,42,.06);
+}
+
+.review-form-card{
+    background:linear-gradient(180deg,#ffffff,#f8fbff);
+}
+
+.review-list-card{
+    background:#fff;
+}
+
+.review-field input[type="text"],
+.review-field textarea{
+    border-color:#cbd5e1;
+    background:#fff;
+}
+
+.review-field input[type="text"]:focus,
+.review-field textarea:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 4px rgba(7,87,216,.11);
+}
+
+.star-rating-input{
+    padding:8px 12px;
+    border:1px solid #dbe5f1;
+    border-radius:12px;
+    background:#fff;
+}
+
+.review-submit-btn{
+    min-height:54px;
+    border-radius:13px;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 14px 26px rgba(7,87,216,.20);
+}
+
+.review-submit-btn:hover{
+    background:var(--primary-dark);
+}
+
+.review-list-head{
+    padding-bottom:18px;
+}
+
+.review-list-head span{
+    color:var(--primary);
+    background:#eff6ff;
+    border:1px solid #dbeafe;
+}
+
+.review-item{
+    border-color:#e2e8f0;
+    background:linear-gradient(180deg,#ffffff,#fbfdff);
+}
+
+.review-item:hover{
+    transform:translateY(-2px);
+    border-color:#bfdbfe;
+    box-shadow:0 12px 26px rgba(7,87,216,.08);
+}
+
+.review-avatar{
+    background:linear-gradient(135deg,var(--primary),#38bdf8);
+}
+
+.review-approved-badge{
+    color:#047857;
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+}
+
+.review-empty{
+    min-height:300px;
+    border-color:#bfdbfe;
+    background:linear-gradient(180deg,#f8fbff,#ffffff);
+}
+
+.review-empty i{
+    color:var(--primary);
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .rules-section{
+        padding:22px;
+    }
+
+    .review-section{
+        padding:24px;
+    }
+
+    .review-score-box{
+        min-width:0;
+    }
+}
+
+
+/* =========================================================
+   REDESIGN PHẦN ĐÁNH GIÁ - GỌN, CÂN ĐỐI, KHÔNG BỊ PHÓNG TO
+   ========================================================= */
+.review-section{
+    margin-top:56px;
+    padding:28px;
+    border:1px solid #dbe5f1;
+    border-radius:20px;
+    background:#fff;
+    box-shadow:0 14px 40px rgba(15,23,42,.07);
+}
+
+.review-section::before{
+    height:4px;
+    background:linear-gradient(90deg,#0757d8,#38bdf8);
+}
+
+.review-section-head{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:center;
+    gap:24px;
+    margin-bottom:24px;
+}
+
+.review-kicker{
+    margin-bottom:6px;
+    font-size:11px;
+    letter-spacing:1px;
+}
+
+.review-section h2{
+    font-size:30px;
+    line-height:1.15;
+}
+
+.review-section-head p{
+    margin-top:7px;
+    font-size:14px;
+    line-height:1.55;
+}
+
+.review-score-box{
+    min-width:230px;
+    padding:15px 18px;
+    border-radius:14px;
+    gap:13px;
+    background:#f8fbff;
+    border:1px solid #d6e5fb;
+    box-shadow:none;
+}
+
+.review-score-box > strong{
+    font-size:38px;
+}
+
+.review-score-box span{
+    font-size:12px;
+}
+
+.review-grid{
+    display:grid;
+    grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+    gap:20px;
+    align-items:stretch;
+}
+
+.review-form-card,
+.review-list-card{
+    padding:22px;
+    border-radius:16px;
+    border:1px solid #e2e8f0;
+    box-shadow:none;
+}
+
+.review-form-card{
+    background:#fbfdff;
+}
+
+.review-list-card{
+    background:#fff;
+}
+
+.review-form-card h3,
+.review-list-head h3{
+    font-size:20px;
+}
+
+.review-form-description{
+    margin:6px 0 18px;
+    font-size:13px;
+}
+
+.review-field{
+    margin-bottom:15px;
+}
+
+.review-field > label{
+    margin-bottom:7px;
+    font-size:13px;
+}
+
+.review-field input[type="text"],
+.review-field textarea{
+    border-radius:10px;
+    padding:11px 12px;
+    font-size:14px;
+}
+
+.review-field textarea{
+    min-height:118px;
+}
+
+.star-rating-input{
+    display:flex;
+    width:max-content;
+    padding:7px 10px;
+    gap:5px;
+    border-radius:10px;
+    background:#fff;
+}
+
+.star-rating-input label{
+    font-size:25px;
+}
+
+.review-submit-btn{
+    min-height:46px;
+    border-radius:10px;
+    font-size:14px;
+    box-shadow:none;
+}
+
+.review-list-head{
+    padding-bottom:13px;
+}
+
+.review-list{
+    gap:12px;
+    margin-top:14px;
+}
+
+.review-item{
+    padding:15px;
+    border-radius:13px;
+}
+
+.review-avatar{
+    width:40px;
+    height:40px;
+}
+
+.review-item h4{
+    margin:13px 0 6px;
+    font-size:16px;
+}
+
+.review-item p{
+    font-size:14px;
+    line-height:1.65;
+}
+
+.review-empty{
+    min-height:230px;
+    border-radius:13px;
+    background:#fbfdff;
+}
+
+.review-empty i{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.review-empty strong{
+    font-size:17px;
+}
+
+.review-empty p{
+    font-size:14px;
+}
+
+@media(max-width:1200px){
+    .review-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:768px){
+    .review-section{
+        padding:20px;
+    }
+
+    .review-section-head{
+        grid-template-columns:1fr;
+    }
+
+    .review-score-box{
+        width:100%;
+        min-width:0;
+    }
+}
+
+
+/* FULL LỊCH KHỞI HÀNH + LỊCH RIÊNG */
+.schedule-mini-full{margin:18px 0 0;}
+.schedule-mini-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px;}
+.schedule-mini-heading span{display:block;margin-bottom:4px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.8px;}
+.schedule-mini-heading h3{margin:0;color:#0f172a;font-size:18px;}
+.schedule-mini-heading>strong{padding:6px 10px;border-radius:999px;color:var(--primary);background:#eff6ff;border:1px solid #dbeafe;font-size:11px;}
+.schedule-mini-list{display:grid;gap:9px;max-height:330px;overflow:auto;padding-right:4px;}
+.schedule-mini-item-full{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #dbe5f1;border-radius:13px;background:#fbfdff;}
+.schedule-mini-date{display:flex;align-items:center;gap:10px;min-width:0;}
+.schedule-mini-date>i{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;color:var(--primary);background:#eff6ff;}
+.schedule-mini-date strong{display:block;color:#0f172a;font-size:13px;}
+.schedule-mini-date span{display:block;margin-top:3px;color:#64748b;font-size:11px;}
+.schedule-mini-actions{display:flex;align-items:flex-end;flex-direction:column;gap:6px;}
+.schedule-status{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:6px 10px;border-radius:999px;border:1px solid transparent;font-size:10px;font-weight:900;white-space:nowrap;}
+.schedule-status-available{color:#047857;background:#dcfce7;border-color:#bbf7d0;}
+.schedule-status-running{color:#0369a1;background:#e0f2fe;border-color:#bae6fd;}
+.schedule-status-full{color:#b45309;background:#fef3c7;border-color:#fde68a;}
+.schedule-status-closed{color:#475569;background:#e2e8f0;border-color:#cbd5e1;}
+.schedule-status-unknown{color:#64748b;background:#f1f5f9;border-color:#e2e8f0;}
+.schedule-select-btn{color:var(--primary);font-size:11px;font-weight:900;text-decoration:none;}
+.schedule-select-btn.disabled{color:#94a3b8;cursor:not-allowed;}
+.schedule-mini-empty{display:flex;align-items:center;gap:9px;padding:14px;color:#64748b;border:1px dashed #cbd5e1;border-radius:13px;background:#f8fafc;}
+
+.booking-form-section{margin-top:58px;padding:30px;border:1px solid #dbe5f1;border-radius:24px;background:linear-gradient(180deg,#ffffff,#f8fbff);box-shadow:0 18px 50px rgba(7,87,216,.07);}
+.booking-form-head{margin-bottom:22px;}
+.booking-form-head>span{display:block;margin-bottom:5px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:1px;}
+.booking-form-head h2{margin:0 0 8px;color:#0f172a;font-size:30px;}
+.booking-form-head p{max-width:850px;margin:0;color:#64748b;line-height:1.65;}
+.booking-schedule-list{display:grid;gap:12px;}
+.booking-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px 18px;border:1px solid #dbe5f1;border-radius:16px;background:#fff;transition:.2s ease;}
+.booking-schedule-card.is-bookable:hover{transform:translateY(-2px);border-color:#93c5fd;box-shadow:0 12px 26px rgba(7,87,216,.08);}
+.booking-schedule-card.is-disabled{background:#f8fafc;opacity:.78;}
+.booking-schedule-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;color:var(--primary);background:#eff6ff;font-size:19px;}
+.booking-schedule-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.booking-schedule-title>strong{color:#0f172a;font-size:17px;}
+.booking-schedule-meta{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:7px;color:#64748b;font-size:13px;}
+.booking-schedule-meta span{display:inline-flex;align-items:center;gap:6px;}
+.booking-schedule-meta i{color:var(--primary);}
+.booking-schedule-btn{min-width:150px;height:44px;padding:0 18px;border:0;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-dark));font-weight:900;text-decoration:none;cursor:pointer;}
+.booking-schedule-btn.disabled{color:#64748b;background:#e2e8f0;cursor:not-allowed;}
+.booking-schedule-empty{display:flex;align-items:center;gap:14px;padding:20px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;}
+
+.private-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;margin-top:22px;padding:22px;border:1px solid #bfdbfe;border-radius:18px;background:radial-gradient(circle at top right,rgba(56,189,248,.13),transparent 38%),linear-gradient(135deg,#eff6ff,#ffffff);}
+.private-schedule-icon{width:56px;height:56px;display:grid;place-items:center;border-radius:16px;color:#fff;background:linear-gradient(135deg,var(--primary),#38bdf8);font-size:22px;}
+.private-schedule-content>span{display:block;margin-bottom:4px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.9px;}
+.private-schedule-content h3{margin:0 0 7px;color:#0f172a;font-size:21px;}
+.private-schedule-content p{margin:0;color:#64748b;line-height:1.6;}
+.private-schedule-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+.private-schedule-actions a{min-height:42px;padding:0 15px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:900;text-decoration:none;}
+.private-call-btn{color:#fff;background:var(--primary);}
+.private-mail-btn{color:var(--primary);background:#fff;border:1px solid #93c5fd;}
+
+@media(max-width:900px){
+    .booking-schedule-card,.private-schedule-card{grid-template-columns:1fr;}
+    .booking-schedule-action,.private-schedule-actions{width:100%;justify-content:flex-start;}
+    .booking-schedule-btn{width:100%;}
+}
+@media(max-width:560px){
+    .booking-form-section{padding:20px;}
+    .schedule-mini-item-full{align-items:flex-start;flex-direction:column;}
+    .schedule-mini-actions{width:100%;align-items:flex-start;}
+    .booking-schedule-title{align-items:flex-start;flex-direction:column;}
+    .private-schedule-actions{flex-direction:column;}
+    .private-schedule-actions a{width:100%;}
+}
+
 </style>
 
 @endsection

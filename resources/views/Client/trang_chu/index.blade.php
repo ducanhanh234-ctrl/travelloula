@@ -212,15 +212,21 @@ a{
 
 .tour-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(4,minmax(0,1fr));
     gap:28px;
+    align-items:stretch;
 }
 
 .tour-card{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    min-width:0;
     background:#fff;
     border-radius:18px;
     overflow:hidden;
     box-shadow:0 18px 45px rgba(15,23,42,.10);
+    border:1px solid #e8eef7;
     transition:.3s;
 }
 
@@ -230,8 +236,11 @@ a{
 
 .tour-img{
     position:relative;
-    height:190px;
+    width:100%;
+    height:182px;
+    flex:0 0 182px;
     overflow:hidden;
+    background:#eef2f7;
 }
 
 .tour-img img{
@@ -305,14 +314,19 @@ a{
 }
 
 .tour-body{
-    padding:20px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    min-width:0;
+    padding:18px 20px 20px;
 }
 
 .tour-body h3{
     font-size:18px;
     margin-bottom:8px;
     line-height:1.35;
-    min-height:48px;
+    height:46px;
+    min-height:46px;
     display:-webkit-box;
     -webkit-line-clamp:2;
     -webkit-box-orient:vertical;
@@ -320,6 +334,10 @@ a{
 }
 
 .rating{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    min-height:20px;
     color:#475569;
     font-size:13px;
     margin-bottom:12px;
@@ -331,19 +349,24 @@ a{
 
 .tour-meta{
     display:flex;
+    align-content:flex-start;
     flex-wrap:wrap;
-    gap:12px;
+    gap:8px 12px;
+    min-height:34px;
     font-size:12px;
+    line-height:1.45;
     color:#64748b;
-    margin-bottom:18px;
+    margin-bottom:8px;
 }
 
 .tour-bottom{
     display:flex;
-    align-items:center;
+    align-items:flex-end;
     justify-content:space-between;
     gap:12px;
     flex-wrap:wrap;
+    margin-top:0;
+    padding-top:0;
 }
 
 .tour-bottom strong{
@@ -356,16 +379,22 @@ a{
     display:flex;
     align-items:center;
     gap:8px;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
 }
 
 .tour-actions a{
-    border-radius:9px;
-    padding:9px 12px;
+    min-width:92px;
+    height:40px;
+    border-radius:10px;
+    padding:0 14px;
     font-size:13px;
     font-weight:900;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
     transition:.25s;
     white-space:nowrap;
+    text-align:center;
 }
 
 .detail-btn{
@@ -383,6 +412,7 @@ a{
     border:1.5px solid #0757d8;
     background:#0757d8;
     color:#fff;
+    cursor:pointer;
 }
 
 .book-now-btn:hover{
@@ -391,121 +421,7 @@ a{
 }
 
 
-/* LỊCH KHỞI HÀNH GỌN TRÊN CARD */
-.departure-summary{
-    margin:14px 0 18px;
-    padding:12px;
-    border:1px solid #dbe5f1;
-    border-radius:14px;
-    background:linear-gradient(180deg,#f8fbff,#fff);
-}
-
-.departure-summary-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin-bottom:10px;
-}
-
-.departure-summary-title{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    color:#0f172a;
-    font-size:12px;
-    font-weight:900;
-}
-
-.departure-summary-title i{
-    color:#0757d8;
-}
-
-.departure-summary-count{
-    color:#64748b;
-    font-size:11px;
-    font-weight:800;
-}
-
-.departure-nearest{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-}
-
-.departure-nearest-date{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    color:#334155;
-    font-size:12px;
-    font-weight:800;
-}
-
-.departure-nearest-date i{
-    color:#0757d8;
-}
-
-.departure-status{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-width:82px;
-    padding:6px 10px;
-    border-radius:999px;
-    font-size:10px;
-    font-weight:900;
-    white-space:nowrap;
-}
-
-.status-available{
-    color:#047857;
-    background:#d1fae5;
-}
-
-.status-running{
-    color:#0369a1;
-    background:#e0f2fe;
-}
-
-.status-full{
-    color:#b45309;
-    background:#fef3c7;
-}
-
-.status-closed{
-    color:#475569;
-    background:#e2e8f0;
-}
-
-.status-unknown{
-    color:#64748b;
-    background:#e2e8f0;
-}
-
-.book-now-button{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    border:1.5px solid #0757d8;
-    background:#0757d8;
-    color:#fff;
-    border-radius:9px;
-    padding:9px 12px;
-    font-size:13px;
-    font-weight:900;
-    transition:.25s;
-    white-space:nowrap;
-    cursor:pointer;
-    font-family:inherit;
-    text-decoration:none;
-}
-
-.book-now-button:hover{
-    background:#0044c7;
-}
-
+/* THÔNG BÁO KHI TOUR CHƯA THỂ ĐẶT */
 .tour-message-modal{
     display:none;
     position:fixed;
@@ -571,13 +487,36 @@ a{
 }
 
 @media(max-width:640px){
+
     .departure-nearest{
         align-items:flex-start;
         flex-direction:column;
     }
 
+    .departure-status{
+        min-width:0;
+    }
+
     .tour-actions button{
         flex:1;
+    }
+}
+
+
+.tour-bottom > div:first-child{
+    display:flex;
+    align-items:center;
+    min-height:38px;
+}
+
+.tour-bottom strong{
+    line-height:1;
+    margin:0;
+}
+
+@media(min-width:1181px){
+    .tour-card{
+        min-height:0;
     }
 }
 
@@ -799,6 +738,29 @@ a{
 }
 
 @media(max-width:640px){
+    .tour-card{
+        min-height:0;
+    }
+
+    .tour-body h3,
+    .tour-meta{
+        height:auto;
+        min-height:0;
+    }
+
+    .tour-bottom{
+        align-items:stretch;
+        flex-direction:column;
+    }
+
+    .tour-actions{
+        width:100%;
+    }
+
+    .tour-actions a{
+        flex:1;
+    }
+
     .home-container,
     .hero-content{
         width:calc(100% - 28px);
@@ -1088,35 +1050,6 @@ a{
                                 ];
                         @endphp
 
-                        <div class="departure-summary">
-                            <div class="departure-summary-head">
-                                <span class="departure-summary-title">
-                                    <i class="fa-regular fa-calendar-days"></i>
-                                    Lịch khởi hành gần nhất
-                                </span>
-
-                                <span class="departure-summary-count">
-                                    {{ $lichKhoiHanhs->count() }} lịch
-                                </span>
-                            </div>
-
-                            <div class="departure-nearest">
-                                <span class="departure-nearest-date">
-                                    <i class="fa-regular fa-calendar"></i>
-
-                                    @if($lichGanNhat)
-                                        {{ \Carbon\Carbon::parse($lichGanNhat->ngay_khoi_hanh)->format('d/m/Y') }}
-                                    @else
-                                        Chưa cập nhật
-                                    @endif
-                                </span>
-
-                                <span class="departure-status {{ $statusConfig['class'] }}">
-                                    {{ $statusConfig['label'] }}
-                                </span>
-                            </div>
-                        </div>
-
                         <div class="tour-bottom">
                             <div>
                                 <strong>
@@ -1138,7 +1071,7 @@ a{
 
                                 <a
                                     href="{{ route('Client.danh_sach_tour.show', $tour->id) }}#dat-tour"
-                                    class="{{ $coLichMoBan ? 'book-now-btn' : 'book-now-button js-tour-message' }}"
+                                    class="book-now-btn{{ $coLichMoBan ? '' : ' js-tour-message' }}"
                                     @unless($coLichMoBan)
                                         data-message="{{ $lyDoKhongDat }}"
                                         data-block-booking="1"

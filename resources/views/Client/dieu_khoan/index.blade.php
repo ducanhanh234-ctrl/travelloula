@@ -128,7 +128,7 @@
 
                 <div class="terms-sidebar-line"></div>
 
-                <a class="terms-link-home" href="{{ route('Client.home') }}">
+                <a class="terms-link-home" href="{{ route('Client.trang_chu.index') }}">
                     <i class="fa-solid fa-house"></i>
                     Về trang chủ
                 </a>

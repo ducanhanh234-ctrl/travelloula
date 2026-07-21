@@ -3121,7 +3121,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const lightboxNext = lightbox?.querySelector('.lightbox-next');
 
     let currentIndex = 0;
-    let autoplayTimer = null;
 
     function showSlide(index) {
         if (!slides.length) {
@@ -3179,23 +3178,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     prevButton?.addEventListener('click', function () {
         previousSlide();
-        startAutoplay();
     });
 
     nextButton?.addEventListener('click', function () {
         nextSlide();
-        startAutoplay();
     });
 
     thumbs.forEach(function (thumb) {
         thumb.addEventListener('click', function () {
             showSlide(Number(thumb.dataset.slideTo));
-            startAutoplay();
         });
     });
-
-    slideshow.addEventListener('mouseenter', stopAutoplay);
-    slideshow.addEventListener('mouseleave', startAutoplay);
 
     openLightboxButton?.addEventListener('click', function () {
         if (!lightbox || !lightboxImage || !slides.length) {
@@ -3206,7 +3199,6 @@ document.addEventListener('DOMContentLoaded', function () {
         lightbox.classList.add('show');
         lightbox.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        stopAutoplay();
     });
 
     function closeLightbox() {
@@ -3217,7 +3209,6 @@ document.addEventListener('DOMContentLoaded', function () {
         lightbox.classList.remove('show');
         lightbox.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
-        startAutoplay();
     }
 
     closeLightboxButton?.addEventListener('click', closeLightbox);
@@ -3265,12 +3256,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             nextSlide();
         }
-
-        startAutoplay();
     }, { passive: true });
 
     showSlide(0);
-    startAutoplay();
 });
 </script>
 

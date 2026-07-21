@@ -1414,6 +1414,21 @@
                             </span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a
+                            href="{{ route('Admin.bai_viets.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.bai_viets*') ? 'active' : '' }}"
+                            title="Bài viết"
+                        >
+                            <span class="nav-icon">
+                                <i class="fas fa-file-contract"></i>
+                            </span>
+
+                            <span class="nav-text">
+                               Bài viết
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
 

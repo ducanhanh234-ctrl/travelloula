@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\DanhGia;
 use App\Models\DanhMuc;
 use App\Models\DanhSachTour;
 use App\Models\DanhSachTourYeuThich;
@@ -94,26 +93,92 @@ class HomeClientController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Đánh giá đã được phép hiển thị
+        | Đánh giá thật đã được quản trị viên duyệt
         |--------------------------------------------------------------------------
-        | Database dùng danh_gia.hien_thi = 1.
+        | Chỉ lấy danh_gia.hien_thi = 1.
+        | Bảng danh_gia liên kết khách hàng qua khach_hang_dat_tour_id,
+        | không sử dụng user_id.
         */
         $avgRating = 0.0;
+        $totalReviews = 0;
+        $homeReviews = collect();
+        $reviewStatsByTour = collect();
 
         if (
             Schema::hasTable('danh_gia')
             && Schema::hasColumn('danh_gia', 'so_sao')
         ) {
-            $ratingQuery = DB::table('danh_gia');
+            $approvedReviewsQuery = DB::table('danh_gia');
 
             if (Schema::hasColumn('danh_gia', 'hien_thi')) {
-                $ratingQuery->where('hien_thi', 1);
+                $approvedReviewsQuery->where('hien_thi', 1);
             }
 
             $avgRating = round(
-                (float) ($ratingQuery->avg('so_sao') ?? 0),
+                (float) ((clone $approvedReviewsQuery)->avg('so_sao') ?? 0),
                 1
             );
+
+            $totalReviews = (clone $approvedReviewsQuery)->count();
+
+            if (Schema::hasColumn('danh_gia', 'tour_id')) {
+                $reviewStatsQuery = DB::table('danh_gia')
+                    ->selectRaw(
+                        'tour_id, COUNT(*) AS tong_danh_gia, AVG(so_sao) AS diem_trung_binh'
+                    )
+                    ->whereNotNull('tour_id');
+
+                if (Schema::hasColumn('danh_gia', 'hien_thi')) {
+                    $reviewStatsQuery->where('hien_thi', 1);
+                }
+
+                $reviewStatsByTour = $reviewStatsQuery
+                    ->groupBy('tour_id')
+                    ->get()
+                    ->keyBy('tour_id');
+            }
+
+            if (
+                Schema::hasTable('khach_hang_dat_tours')
+                && Schema::hasTable('danh_sach_tours')
+                && Schema::hasColumn('danh_gia', 'khach_hang_dat_tour_id')
+                && Schema::hasColumn('danh_gia', 'tour_id')
+            ) {
+                $homeReviewsQuery = DB::table('danh_gia as dg')
+                    ->leftJoin(
+                        'khach_hang_dat_tours as kh',
+                        'kh.id',
+                        '=',
+                        'dg.khach_hang_dat_tour_id'
+                    )
+                    ->leftJoin(
+                        'danh_sach_tours as tour',
+                        'tour.id',
+                        '=',
+                        'dg.tour_id'
+                    )
+                    ->whereNotNull('dg.noi_dung_danh_gia');
+
+                if (Schema::hasColumn('danh_gia', 'hien_thi')) {
+                    $homeReviewsQuery->where('dg.hien_thi', 1);
+                }
+
+                $homeReviews = $homeReviewsQuery
+                    ->select([
+                        'dg.id',
+                        'dg.tour_id',
+                        'dg.so_sao',
+                        'dg.tieu_de',
+                        'dg.noi_dung_danh_gia',
+                        'dg.thoi_gian_danh_gia',
+                        'kh.ho_ten',
+                        'tour.ten_tour',
+                    ])
+                    ->orderByDesc('dg.thoi_gian_danh_gia')
+                    ->orderByDesc('dg.id')
+                    ->take(6)
+                    ->get();
+            }
         }
 
         /*
@@ -151,6 +216,9 @@ class HomeClientController extends Controller
             'totalDiemDen',
             'totalKhachHang',
             'avgRating',
+            'totalReviews',
+            'homeReviews',
+            'reviewStatsByTour',
             'khuyenMais',
             'favoriteTourIds'
         ));
@@ -185,33 +253,87 @@ class HomeClientController extends Controller
             ];
         });
 
-        $reviews = DanhGia::query()
-            ->where('hien_thi', true)
-            ->whereNotNull('noi_dung_danh_gia')
-            ->latest('thoi_gian_danh_gia')
-            ->take(6)
-            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Đánh giá thật cho landing page
+        |--------------------------------------------------------------------------
+        */
+        $landingReviews = collect();
 
-        $reviewGroups = $reviews->isEmpty()
+        if (
+            Schema::hasTable('danh_gia')
+            && Schema::hasTable('khach_hang_dat_tours')
+            && Schema::hasTable('danh_sach_tours')
+            && Schema::hasColumn('danh_gia', 'khach_hang_dat_tour_id')
+            && Schema::hasColumn('danh_gia', 'tour_id')
+        ) {
+            $landingReviewsQuery = DB::table('danh_gia as dg')
+                ->leftJoin(
+                    'khach_hang_dat_tours as kh',
+                    'kh.id',
+                    '=',
+                    'dg.khach_hang_dat_tour_id'
+                )
+                ->leftJoin(
+                    'danh_sach_tours as tour',
+                    'tour.id',
+                    '=',
+                    'dg.tour_id'
+                )
+                ->whereNotNull('dg.noi_dung_danh_gia');
+
+            if (Schema::hasColumn('danh_gia', 'hien_thi')) {
+                $landingReviewsQuery->where('dg.hien_thi', 1);
+            }
+
+            $landingReviews = $landingReviewsQuery
+                ->select([
+                    'dg.so_sao',
+                    'dg.noi_dung_danh_gia',
+                    'dg.thoi_gian_danh_gia',
+                    'kh.ho_ten',
+                    'tour.ten_tour',
+                ])
+                ->orderByDesc('dg.thoi_gian_danh_gia')
+                ->orderByDesc('dg.id')
+                ->take(6)
+                ->get();
+        }
+
+        $reviewGroups = $landingReviews->isEmpty()
             ? []
-            : $reviews->map(function ($review, $index) {
-                return [
-                    'name' => 'Khách hàng ' . ($index + 1),
-                    'role' => 'Khách hàng đã đặt tour',
-                    'quote' => $review->noi_dung_danh_gia,
-                    'stars' => (int) $review->so_sao,
-                ];
-            })->chunk(3);
+            : $landingReviews
+                ->map(function ($review) {
+                    return [
+                        'name' => $review->ho_ten ?: 'Khách hàng',
+                        'role' => $review->ten_tour
+                            ? 'Đã trải nghiệm ' . $review->ten_tour
+                            : 'Khách hàng đã đặt tour',
+                        'quote' => $review->noi_dung_danh_gia,
+                        'stars' => (int) $review->so_sao,
+                    ];
+                })
+                ->chunk(3);
 
         $totalTours = DanhSachTour::where('trang_thai', 'active')->count();
         $totalKhachHang = Schema::hasTable('khach_hang_dat_tours') ? KhachHangDatTour::count() : 0;
 
-        $avgRating = 4.9;
-        if (Schema::hasTable('danh_gia') && Schema::hasColumn('danh_gia', 'so_sao')) {
-            $rating = DB::table('danh_gia')->avg('so_sao');
-            if ($rating) {
-                $avgRating = round($rating, 1);
+        $avgRating = 0.0;
+
+        if (
+            Schema::hasTable('danh_gia')
+            && Schema::hasColumn('danh_gia', 'so_sao')
+        ) {
+            $landingRatingQuery = DB::table('danh_gia');
+
+            if (Schema::hasColumn('danh_gia', 'hien_thi')) {
+                $landingRatingQuery->where('hien_thi', 1);
             }
+
+            $avgRating = round(
+                (float) ($landingRatingQuery->avg('so_sao') ?? 0),
+                1
+            );
         }
 
         $highlights = [

@@ -6,20 +6,11 @@
 
 
 @php
-    /*
-     * Lấy toàn bộ ID tour yêu thích của tài khoản hiện tại chỉ bằng 1 truy vấn.
-     * Nhờ vậy trái tim hiển thị đúng ngay cả khi controller chưa truyền
-     * biến $favoriteTourIds sang view.
-     */
-    $favoriteTourIds = [];
-
-    if (auth()->check()) {
-        $favoriteTourIds = \Illuminate\Support\Facades\DB::table('danh_sach_tours_yeu_thich')
-            ->where('nguoi_dung_id', auth()->id())
-            ->pluck('tour_id')
-            ->map(fn ($id) => (int) $id)
-            ->all();
-    }
+    $favoriteTourIds = $favoriteTourIds ?? [];
+    $homeReviews = $homeReviews ?? collect();
+    $reviewStatsByTour = $reviewStatsByTour ?? collect();
+    $totalReviews = $totalReviews ?? 0;
+    $avgRating = (float) ($avgRating ?? 0);
 @endphp
 
 
@@ -1186,6 +1177,525 @@ a{
     pointer-events:none;
 }
 
+
+/* =========================================================
+   TRANG CHỦ RESPONSIVE MỌI THIẾT BỊ
+   TV / DESKTOP / LAPTOP / TABLET / MOBILE
+   ========================================================= */
+html,
+body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+.home-container,
+.hero-content{
+    width:min(1680px,calc(100% - clamp(28px,5vw,120px))) !important;
+    max-width:1680px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.home-hero-static{
+    min-height:clamp(520px,40vw,720px) !important;
+    padding:clamp(54px,6vw,92px) 0;
+}
+
+.home-hero-static .hero-content{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.hero-content h1{
+    font-size:clamp(40px,4.2vw,70px);
+}
+
+.hero-content h2{
+    font-size:clamp(31px,3.6vw,58px);
+}
+
+.hero-content p{
+    font-size:clamp(16px,1.25vw,21px);
+}
+
+/* Tìm kiếm */
+.search-box{
+    width:100%;
+    grid-template-columns:
+        minmax(220px,1.25fr)
+        minmax(170px,1fr)
+        minmax(180px,1fr)
+        minmax(140px,.8fr)
+        minmax(180px,.9fr);
+}
+
+.search-item{
+    min-width:0;
+    padding:
+        clamp(17px,1.6vw,25px)
+        clamp(18px,1.7vw,30px);
+}
+
+.search-item > div{
+    min-width:0;
+    width:100%;
+}
+
+.search-item input{
+    min-width:0;
+}
+
+/* Thống kê */
+.stats-box{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    padding:
+        clamp(22px,2vw,34px)
+        clamp(18px,2.4vw,42px);
+}
+
+.stat-item{
+    min-width:0;
+    padding:0 clamp(15px,2vw,34px);
+}
+
+.stat-item h3{
+    font-size:clamp(24px,2vw,34px);
+}
+
+/* Tour */
+.tour-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:clamp(20px,2vw,32px);
+}
+
+.tour-card{
+    min-width:0;
+}
+
+.tour-img{
+    height:auto;
+    flex-basis:auto;
+    aspect-ratio:16/10;
+}
+
+.tour-body h3{
+    height:auto;
+    min-height:2.7em;
+}
+
+.rating span{
+    color:#64748b;
+}
+
+.tour-bottom{
+    margin-top:auto;
+}
+
+/* Điểm đến */
+.destination-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+}
+
+/* Review thật */
+.review-section{
+    padding:clamp(58px,6vw,96px) 0;
+}
+
+.review-section-heading{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    align-items:end;
+    gap:28px;
+    margin-bottom:32px;
+}
+
+.review-section-heading > div:first-child > span{
+    display:block;
+    margin-bottom:8px;
+    color:#0757d8;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:1.1px;
+}
+
+.review-section-heading .big-title{
+    margin:0;
+    text-align:left;
+    font-size:clamp(30px,2.7vw,46px);
+}
+
+.review-section-heading p{
+    max-width:720px;
+    margin:10px 0 0;
+    color:#64748b;
+    line-height:1.7;
+}
+
+.review-summary{
+    min-width:250px;
+    padding:17px 20px;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    background:#fff;
+    border:1px solid #bfdbfe;
+    box-shadow:0 12px 30px rgba(7,87,216,.08);
+}
+
+.review-summary > strong{
+    color:#0757d8;
+    font-size:42px;
+    line-height:1;
+}
+
+.review-summary-stars,
+.review-stars{
+    display:flex;
+    gap:4px;
+}
+
+.review-summary-stars i,
+.review-stars i{
+    color:#cbd5e1;
+}
+
+.review-summary-stars i.active,
+.review-stars i.active{
+    color:#f59e0b;
+}
+
+.review-summary span{
+    display:block;
+    margin-top:5px;
+    color:#64748b;
+    font-size:12px;
+    font-weight:800;
+}
+
+.review-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    align-items:stretch;
+    gap:clamp(18px,2vw,28px);
+}
+
+.review-card{
+    min-width:0;
+    height:100%;
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    border:1px solid #dbe5f1;
+    background:linear-gradient(180deg,#fff,#fbfdff);
+}
+
+.review-card-top{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:11px;
+}
+
+.review-avatar{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:linear-gradient(135deg,#0757d8,#38bdf8);
+    font-weight:900;
+}
+
+.review-person{
+    min-width:0;
+}
+
+.review-person h4{
+    margin:0 0 5px;
+    color:#0f172a;
+    font-size:15px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.review-card time{
+    color:#94a3b8;
+    font-size:12px;
+    white-space:nowrap;
+}
+
+.review-card > h3{
+    margin:17px 0 7px;
+    color:#0f172a;
+    font-size:18px;
+}
+
+.review-content{
+    margin:14px 0 20px !important;
+    color:#475569;
+    display:-webkit-box;
+    -webkit-line-clamp:4;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+.review-tour-link{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:#0757d8;
+    font-size:13px;
+    font-weight:900;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.review-empty-state{
+    padding:50px 24px;
+    border:1px dashed #bfdbfe;
+    border-radius:20px;
+    text-align:center;
+    background:#fff;
+}
+
+.review-empty-state i{
+    color:#0757d8;
+    font-size:42px;
+}
+
+.review-empty-state h3{
+    margin:13px 0 7px;
+}
+
+.review-empty-state p{
+    color:#64748b;
+}
+
+/* TV lớn */
+@media(min-width:1920px){
+    .home-container,
+    .hero-content{
+        width:min(1840px,calc(100% - 140px)) !important;
+        max-width:1840px;
+    }
+
+    .tour-grid{
+        grid-template-columns:repeat(5,minmax(0,1fr));
+    }
+
+    .destination-grid{
+        grid-template-columns:repeat(8,minmax(0,1fr));
+    }
+}
+
+/* Laptop nhỏ */
+@media(max-width:1366px){
+    .home-container,
+    .hero-content{
+        width:calc(100% - 48px) !important;
+    }
+
+    .search-box{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .search-btn{
+        grid-column:1/-1;
+    }
+
+    .stats-box{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .stat-item{
+        border-right:0;
+        padding:18px 24px;
+    }
+
+    .stat-item:nth-child(odd){
+        border-right:1px solid #e5e7eb;
+    }
+
+    .stat-item:nth-child(-n+2){
+        border-bottom:1px solid #e5e7eb;
+    }
+
+    .tour-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .destination-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+}
+
+/* Tablet */
+@media(max-width:960px){
+    .home-hero-static{
+        min-height:auto !important;
+        padding:70px 0 115px;
+    }
+
+    .stats-wrap{
+        margin-top:-76px;
+    }
+
+    .tour-grid,
+    .why-grid,
+    .review-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .destination-grid{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .promo-section{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .review-section-heading{
+        grid-template-columns:1fr;
+        align-items:start;
+    }
+
+    .review-summary{
+        width:100%;
+        min-width:0;
+    }
+}
+
+/* Điện thoại */
+@media(max-width:640px){
+    .home-container,
+    .hero-content{
+        width:calc(100% - 24px) !important;
+    }
+
+    .home-hero-static{
+        padding:54px 0 34px;
+    }
+
+    .hero-content h1{
+        font-size:36px;
+    }
+
+    .hero-content h2{
+        margin-top:6px;
+        font-size:29px;
+    }
+
+    .hero-content h2 i{
+        margin-left:8px;
+        font-size:24px;
+    }
+
+    .hero-content p{
+        margin-bottom:24px;
+        font-size:15px;
+    }
+
+    .search-box{
+        grid-template-columns:1fr;
+        border-radius:14px;
+    }
+
+    .search-item{
+        border-right:0;
+        border-bottom:1px solid #e5e7eb;
+        padding:16px 18px;
+    }
+
+    .search-btn{
+        grid-column:auto;
+        width:auto;
+        height:54px;
+    }
+
+    .stats-wrap{
+        margin-top:20px;
+    }
+
+    .stats-box{
+        grid-template-columns:1fr;
+        padding:10px 18px;
+    }
+
+    .stat-item,
+    .stat-item:nth-child(odd),
+    .stat-item:nth-child(-n+2){
+        border-right:0;
+        border-bottom:1px solid #e5e7eb;
+        padding:18px 4px;
+    }
+
+    .stat-item:last-child{
+        border-bottom:0;
+    }
+
+    .home-section{
+        padding-top:48px;
+    }
+
+    .section-head{
+        align-items:flex-start;
+        gap:12px;
+    }
+
+    .section-head h2{
+        font-size:25px;
+    }
+
+    .tour-grid,
+    .destination-grid,
+    .why-grid,
+    .review-grid,
+    .promo-section{
+        grid-template-columns:1fr;
+    }
+
+    .destination-card{
+        height:105px;
+    }
+
+    .tour-actions{
+        width:100%;
+    }
+
+    .tour-actions a{
+        flex:1;
+    }
+
+    .review-section-heading .big-title{
+        font-size:30px;
+    }
+
+    .review-card-top{
+        grid-template-columns:auto minmax(0,1fr);
+    }
+
+    .review-card time{
+        grid-column:2;
+    }
+
+    .review-summary{
+        align-items:flex-start;
+    }
+
+    .favorite-toast{
+        left:16px;
+        right:16px;
+        bottom:16px;
+        max-width:none;
+    }
+}
+
 </style>
 
 <main>
@@ -1276,7 +1786,7 @@ a{
             <div class="stat-item">
                 <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
                 <div>
-                    <h3>{{ number_format($avgRating ?? 4.9, 1) }}/5</h3>
+                    <h3>{{ number_format($avgRating, 1) }}/5</h3>
                     <p>Đánh giá trung bình</p>
                 </div>
             </div>
@@ -1316,6 +1826,10 @@ a{
                     $isFavorite = auth()->check()
                         ? in_array((int) $tour->id, $favoriteTourIds, true)
                         : false;
+
+                    $tourReviewStat = $reviewStatsByTour->get($tour->id);
+                    $tourAverageRating = (float) ($tourReviewStat->diem_trung_binh ?? 0);
+                    $tourReviewCount = (int) ($tourReviewStat->tong_danh_gia ?? 0);
                 @endphp
 
                 <article
@@ -1378,7 +1892,13 @@ a{
 
                         <p class="rating">
                             <i class="fa-solid fa-star"></i>
-                            {{ number_format($avgRating ?? 4.8, 1) }} đánh giá
+
+                            @if($tourReviewCount > 0)
+                                {{ number_format($tourAverageRating, 1) }}/5
+                                <span>({{ $tourReviewCount }} đánh giá)</span>
+                            @else
+                                <span>Chưa có đánh giá</span>
+                            @endif
                         </p>
 
                         <div class="tour-meta">
@@ -1638,24 +2158,84 @@ a{
 
 <section class="review-section">
     <div class="home-container">
-        <h2 class="big-title">Khách Hàng Đánh Giá</h2>
-
-        <div class="review-grid">
-            <div class="review-card">
-                <p>"Tour rất tuyệt vời, dịch vụ chuyên nghiệp."</p>
-                <h4>Nguyễn Văn A</h4>
+        <div class="review-section-heading">
+            <div>
+                <span>ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT</span>
+                <h2 class="big-title">Khách Hàng Đánh Giá</h2>
+                <p>
+                    Dữ liệu được lấy trực tiếp từ những đánh giá tour đã được
+                    quản trị viên xét duyệt.
+                </p>
             </div>
 
-            <div class="review-card">
-                <p>"Giá tốt, lịch trình hợp lý và hướng dẫn viên nhiệt tình."</p>
-                <h4>Trần Thị B</h4>
-            </div>
+            <div class="review-summary">
+                <strong>{{ number_format($avgRating, 1) }}</strong>
 
-            <div class="review-card">
-                <p>"Tôi sẽ tiếp tục đặt tour tại Travelloula."</p>
-                <h4>Lê Văn C</h4>
+                <div>
+                    <div class="review-summary-stars">
+                        @for($star = 1; $star <= 5; $star++)
+                            <i class="fa-solid fa-star {{ $star <= round($avgRating) ? 'active' : '' }}"></i>
+                        @endfor
+                    </div>
+
+                    <span>{{ $totalReviews }} đánh giá đã duyệt</span>
+                </div>
             </div>
         </div>
+
+        @if($homeReviews->count())
+            <div class="review-grid">
+                @foreach($homeReviews as $review)
+                    <article class="review-card">
+                        <div class="review-card-top">
+                            <div class="review-avatar">
+                                {{ mb_strtoupper(mb_substr($review->ho_ten ?? 'K', 0, 1)) }}
+                            </div>
+
+                            <div class="review-person">
+                                <h4>{{ $review->ho_ten ?? 'Khách hàng' }}</h4>
+
+                                <div class="review-stars">
+                                    @for($star = 1; $star <= 5; $star++)
+                                        <i class="fa-solid fa-star {{ $star <= (int) $review->so_sao ? 'active' : '' }}"></i>
+                                    @endfor
+                                </div>
+                            </div>
+
+                            @if($review->thoi_gian_danh_gia)
+                                <time>
+                                    {{ \Carbon\Carbon::parse($review->thoi_gian_danh_gia)->format('d/m/Y') }}
+                                </time>
+                            @endif
+                        </div>
+
+                        @if(!empty($review->tieu_de))
+                            <h3>{{ $review->tieu_de }}</h3>
+                        @endif
+
+                        <p class="review-content">
+                            “{{ $review->noi_dung_danh_gia ?? 'Khách hàng chưa nhập nội dung đánh giá.' }}”
+                        </p>
+
+                        @if(!empty($review->ten_tour))
+                            <a
+                                href="{{ route('Client.danh_sach_tour.show', $review->tour_id) }}#danh-gia"
+                                class="review-tour-link"
+                            >
+                                <i class="fa-solid fa-location-dot"></i>
+                                {{ $review->ten_tour }}
+                            </a>
+                        @endif
+                    </article>
+                @endforeach
+            </div>
+        @else
+            <div class="review-empty-state">
+                <i class="fa-regular fa-comment-dots"></i>
+                <h3>Chưa có đánh giá đã duyệt</h3>
+                <p>Các đánh giá thật của khách hàng sẽ được hiển thị tại đây.</p>
+            </div>
+        @endif
     </div>
 </section>
 

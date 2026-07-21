@@ -198,7 +198,13 @@
                             : false;
                     @endphp
 
-                    <article class="tour-card">
+                    <article
+                        class="tour-card tour-card-clickable"
+                        role="link"
+                        tabindex="0"
+                        data-detail-url="{{ route('Client.danh_sach_tour.show', $tour->id) }}"
+                        aria-label="Xem chi tiết tour {{ $tour->ten_tour }}"
+                    >
                         <div class="tour-img">
                             <img src="{{ $srcAnh }}"
                                  alt="{{ $tour->ten_tour }}"
@@ -1413,6 +1419,75 @@
         width:100%;
     }
 }
+
+/* TOÀN BỘ CARD TOUR CÓ THỂ BẤM */
+.tour-card-clickable{
+    cursor:pointer;
+}
+
+.tour-card-clickable:focus-visible{
+    outline:3px solid rgba(7,87,216,.25);
+    outline-offset:5px;
+}
+
+.tour-card-clickable a,
+.tour-card-clickable button,
+.tour-card-clickable form,
+.tour-card-clickable input,
+.tour-card-clickable select,
+.tour-card-clickable textarea,
+.tour-card-clickable label{
+    position:relative;
+    z-index:6;
+}
+
 </style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.tour-card-clickable').forEach(function (card) {
+        const detailUrl = card.dataset.detailUrl;
+
+        function openDetail() {
+            if (detailUrl) {
+                window.location.href = detailUrl;
+            }
+        }
+
+        card.addEventListener('click', function (event) {
+            /*
+             * Không chuyển sang trang chi tiết khi người dùng bấm:
+             * - nút yêu thích
+             * - nút Xem chi tiết
+             * - nút Đặt tour
+             * - bất kỳ form/nút nhập liệu nào trong card
+             */
+            if (event.target.closest(
+                'a, button, form, input, select, textarea, label'
+            )) {
+                return;
+            }
+
+            openDetail();
+        });
+
+        card.addEventListener('keydown', function (event) {
+            if (event.key !== 'Enter' && event.key !== ' ') {
+                return;
+            }
+
+            if (event.target.closest(
+                'a, button, form, input, select, textarea, label'
+            )) {
+                return;
+            }
+
+            event.preventDefault();
+            openDetail();
+        });
+    });
+});
+</script>
 
 @endsection

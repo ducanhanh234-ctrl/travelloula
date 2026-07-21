@@ -29,19 +29,139 @@ a{
 /* HERO */
 
 .home-hero{
-    min-height:560px;
-    background:
-        linear-gradient(90deg,rgba(0,43,104,.68),rgba(0,0,0,.05)),
-        url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    min-height:590px;
+    position:relative;
     display:flex;
     align-items:center;
-    position:relative;
+    overflow:hidden;
+    background:#0f172a;
+}
+
+.hero-slides{
+    position:absolute;
+    inset:0;
+    z-index:0;
+}
+
+.hero-slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    visibility:hidden;
+    transform:scale(1.06);
+    transition:opacity .9s ease, transform 6s ease, visibility .9s ease;
+}
+
+.hero-slide.active{
+    opacity:1;
+    visibility:visible;
+    transform:scale(1);
+}
+
+.hero-slide::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(90deg,rgba(3,28,72,.88) 0%,rgba(3,37,92,.64) 42%,rgba(2,6,23,.18) 72%,rgba(2,6,23,.08) 100%),
+        linear-gradient(180deg,rgba(15,23,42,.10),rgba(15,23,42,.28));
+}
+
+.hero-slide img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
 }
 
 .hero-content{
     width:min(1380px,calc(100% - 56px));
     margin:0 auto;
     color:#fff;
+    position:relative;
+    z-index:4;
+}
+
+.hero-copy{
+    max-width:820px;
+}
+
+.hero-copy-item{
+    display:none;
+    animation:heroTextIn .65s ease both;
+}
+
+.hero-copy-item.active{
+    display:block;
+}
+
+@keyframes heroTextIn{
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.hero-slide-nav{
+    position:absolute;
+    top:50%;
+    z-index:6;
+    width:48px;
+    height:48px;
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:rgba(15,23,42,.28);
+    backdrop-filter:blur(8px);
+    cursor:pointer;
+    transform:translateY(-50%);
+    transition:.25s ease;
+}
+
+.hero-slide-nav:hover{
+    background:#0757d8;
+    border-color:#0757d8;
+}
+
+.hero-slide-prev{
+    left:22px;
+}
+
+.hero-slide-next{
+    right:22px;
+}
+
+.hero-dots{
+    position:absolute;
+    left:50%;
+    bottom:24px;
+    z-index:6;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    transform:translateX(-50%);
+}
+
+.hero-dot{
+    width:9px;
+    height:9px;
+    padding:0;
+    border:0;
+    border-radius:999px;
+    background:rgba(255,255,255,.56);
+    cursor:pointer;
+    transition:.25s ease;
+}
+
+.hero-dot.active{
+    width:30px;
+    background:#ffd629;
 }
 
 .hero-content h1{
@@ -799,15 +919,126 @@ a{
         text-align:center;
     }
 }
+
+/* TOÀN BỘ CARD TOUR CÓ THỂ BẤM */
+.tour-card-clickable{
+    cursor:pointer;
+}
+
+.tour-card-clickable:focus-visible{
+    outline:3px solid rgba(7,87,216,.25);
+    outline-offset:4px;
+}
+
+.tour-card-clickable .tour-img,
+.tour-card-clickable .tour-body h3,
+.tour-card-clickable .rating,
+.tour-card-clickable .tour-meta{
+    cursor:pointer;
+}
+
+/* Những nút riêng vẫn hoạt động độc lập */
+.tour-card-clickable a,
+.tour-card-clickable button,
+.tour-card-clickable form{
+    position:relative;
+    z-index:3;
+}
+
+
+@media(max-width:900px){
+    .home-hero{
+        min-height:680px;
+    }
+
+    .hero-slide-nav{
+        width:42px;
+        height:42px;
+    }
+
+    .hero-slide-prev{
+        left:10px;
+    }
+
+    .hero-slide-next{
+        right:10px;
+    }
+}
+
+@media(max-width:640px){
+    .home-hero{
+        min-height:760px;
+    }
+
+    .hero-slide-nav{
+        top:36%;
+    }
+
+    .hero-content{
+        width:calc(100% - 28px);
+    }
+
+    .hero-dots{
+        bottom:14px;
+    }
+}
+
 </style>
 
 <main>
 
-<section class="home-hero">
+<section class="home-hero" id="homeHeroSlider">
+    <div class="hero-slides">
+        <div class="hero-slide active">
+            <img
+                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=88"
+                alt="Du lịch biển cùng Travelloula"
+            >
+        </div>
+
+        <div class="hero-slide">
+            <img
+                src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=88"
+                alt="Khám phá thiên nhiên cùng Travelloula"
+            >
+        </div>
+
+        <div class="hero-slide">
+            <img
+                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1920&q=88"
+                alt="Hành trình trải nghiệm cùng Travelloula"
+            >
+        </div>
+    </div>
+
+    <button type="button" class="hero-slide-nav hero-slide-prev" aria-label="Banner trước">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button type="button" class="hero-slide-nav hero-slide-next" aria-label="Banner tiếp theo">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+
     <div class="hero-content">
-        <h1>Khám phá thế giới</h1>
-        <h2>Cùng Travelloula <i class="fa-solid fa-plane"></i></h2>
-        <p>Những hành trình tuyệt vời đang chờ bạn trải nghiệm!</p>
+        <div class="hero-copy">
+            <div class="hero-copy-item active">
+                <h1>Khám phá thế giới</h1>
+                <h2>Cùng Travelloula <i class="fa-solid fa-plane"></i></h2>
+                <p>Những hành trình tuyệt vời đang chờ bạn trải nghiệm!</p>
+            </div>
+
+            <div class="hero-copy-item">
+                <h1>Chạm tới thiên nhiên</h1>
+                <h2>Đi để yêu thêm <i class="fa-solid fa-mountain-sun"></i></h2>
+                <p>Khám phá những vùng đất mới với dịch vụ chu đáo và hành trình đáng nhớ.</p>
+            </div>
+
+            <div class="hero-copy-item">
+                <h1>Tận hưởng kỳ nghỉ</h1>
+                <h2>Theo cách của bạn <i class="fa-solid fa-umbrella-beach"></i></h2>
+                <p>Chọn tour phù hợp, lên lịch dễ dàng và bắt đầu chuyến đi ngay hôm nay.</p>
+            </div>
+        </div>
 
         <form action="{{ route('Client.danh_sach_tour.index') }}" method="GET" class="search-box">
             <div class="search-item">
@@ -847,6 +1078,12 @@ a{
                 Tìm kiếm
             </button>
         </form>
+    </div>
+
+    <div class="hero-dots" aria-label="Chọn banner">
+        <button type="button" class="hero-dot active" data-hero-slide="0" aria-label="Banner 1"></button>
+        <button type="button" class="hero-dot" data-hero-slide="1" aria-label="Banner 2"></button>
+        <button type="button" class="hero-dot" data-hero-slide="2" aria-label="Banner 3"></button>
     </div>
 </section>
 
@@ -922,7 +1159,13 @@ a{
                         : false;
                 @endphp
 
-                <article class="tour-card">
+                <article
+                    class="tour-card tour-card-clickable"
+                    role="link"
+                    tabindex="0"
+                    data-detail-url="{{ route('Client.danh_sach_tour.show', $tour->id) }}"
+                    aria-label="Xem chi tiết tour {{ $tour->ten_tour }}"
+                >
                     <div class="tour-img">
                         <img src="{{ $tourImage }}"
                              alt="{{ $tour->ten_tour }}"
@@ -1305,6 +1548,151 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.tour-card-clickable').forEach(function (card) {
+        const detailUrl = card.dataset.detailUrl;
+
+        function goToDetail() {
+            if (detailUrl) {
+                window.location.href = detailUrl;
+            }
+        }
+
+        card.addEventListener('click', function (event) {
+            /*
+             * Không chuyển trang khi khách bấm vào:
+             * - nút yêu thích
+             * - nút xem chi tiết
+             * - nút đặt tour
+             * - form hoặc nút riêng trong card
+             */
+            if (event.target.closest('a, button, form, input, select, textarea, label')) {
+                return;
+            }
+
+            goToDetail();
+        });
+
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                if (event.target.closest('a, button, form, input, select, textarea, label')) {
+                    return;
+                }
+
+                event.preventDefault();
+                goToDetail();
+            }
+        });
+    });
+});
+</script>
+
 </main>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const hero = document.getElementById('homeHeroSlider');
+
+    if (!hero) {
+        return;
+    }
+
+    const slides = Array.from(hero.querySelectorAll('.hero-slide'));
+    const copyItems = Array.from(hero.querySelectorAll('.hero-copy-item'));
+    const dots = Array.from(hero.querySelectorAll('.hero-dot'));
+    const prevButton = hero.querySelector('.hero-slide-prev');
+    const nextButton = hero.querySelector('.hero-slide-next');
+
+    let currentIndex = 0;
+    let autoplayTimer = null;
+
+    function showHeroSlide(index) {
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach(function (slide, slideIndex) {
+            slide.classList.toggle('active', slideIndex === currentIndex);
+        });
+
+        copyItems.forEach(function (copy, copyIndex) {
+            copy.classList.toggle('active', copyIndex === currentIndex);
+        });
+
+        dots.forEach(function (dot, dotIndex) {
+            dot.classList.toggle('active', dotIndex === currentIndex);
+        });
+    }
+
+    function nextHeroSlide() {
+        showHeroSlide(currentIndex + 1);
+    }
+
+    function previousHeroSlide() {
+        showHeroSlide(currentIndex - 1);
+    }
+
+    function stopAutoplay() {
+        if (autoplayTimer) {
+            window.clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    function startAutoplay() {
+        stopAutoplay();
+
+        if (slides.length > 1) {
+            autoplayTimer = window.setInterval(nextHeroSlide, 5500);
+        }
+    }
+
+    prevButton?.addEventListener('click', function () {
+        previousHeroSlide();
+        startAutoplay();
+    });
+
+    nextButton?.addEventListener('click', function () {
+        nextHeroSlide();
+        startAutoplay();
+    });
+
+    dots.forEach(function (dot) {
+        dot.addEventListener('click', function () {
+            showHeroSlide(Number(dot.dataset.heroSlide));
+            startAutoplay();
+        });
+    });
+
+    hero.addEventListener('mouseenter', stopAutoplay);
+    hero.addEventListener('mouseleave', startAutoplay);
+
+    let touchStartX = 0;
+
+    hero.addEventListener('touchstart', function (event) {
+        touchStartX = event.changedTouches[0].screenX;
+    }, { passive: true });
+
+    hero.addEventListener('touchend', function (event) {
+        const distance = event.changedTouches[0].screenX - touchStartX;
+
+        if (Math.abs(distance) < 45) {
+            return;
+        }
+
+        if (distance > 0) {
+            previousHeroSlide();
+        } else {
+            nextHeroSlide();
+        }
+
+        startAutoplay();
+    }, { passive: true });
+
+    showHeroSlide(0);
+    startAutoplay();
+});
+</script>
 
 @endsection

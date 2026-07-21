@@ -76,40 +76,110 @@
 
         <div class="detail-top-grid">
             <div class="detail-left">
-                <div class="main-image">
-                    <img src="{{ $mainImage }}"
-                         alt="{{ $tour->ten_tour }}"
-                         onerror="this.onerror=null;this.src='{{ $fallbackImage }}';">
+                @php
+                    $slideImages = collect([$mainImage]);
 
-                    <button type="button" class="zoom-btn">
+                    foreach ($tour->hinhAnhTours as $image) {
+                        /*
+                         * Hỗ trợ nhiều tên cột ảnh thường dùng.
+                         * Ưu tiên duong_dan_anh, sau đó thử các cột còn lại.
+                         */
+                        $imagePath = $image->duong_dan_anh
+                            ?? $image->hinh_anh
+                            ?? $image->anh
+                            ?? $image->image_path
+                            ?? $image->url
+                            ?? null;
+
+                        if (!empty($imagePath)) {
+                            $slideImage = \Illuminate\Support\Str::startsWith(
+                                $imagePath,
+                                ['http://', 'https://']
+                            )
+                                ? $imagePath
+                                : asset($imagePath);
+
+                            $slideImages->push($slideImage);
+                        }
+                    }
+
+                    $slideImages = $slideImages
+                        ->filter()
+                        ->unique()
+                        ->values();
+                @endphp
+
+                <div class="tour-slideshow" id="tourSlideshow">
+                    <div class="tour-slides">
+                        @foreach($slideImages as $index => $slideImage)
+                            <div class="tour-slide {{ $index === 0 ? 'active' : '' }}"
+                                 data-slide-index="{{ $index }}">
+                                <img
+                                    src="{{ $slideImage }}"
+                                    alt="{{ $tour->ten_tour }} - ảnh {{ $index + 1 }}"
+                                    onerror="this.onerror=null;this.src='{{ $fallbackImage }}';"
+                                >
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if($slideImages->count() > 1)
+                        <button
+                            type="button"
+                            class="slide-nav slide-prev"
+                            aria-label="Ảnh trước"
+                        >
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="slide-nav slide-next"
+                            aria-label="Ảnh tiếp theo"
+                        >
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+
+                        <div class="slide-counter">
+                            <span id="currentSlideNumber">1</span>
+                            /
+                            <span>{{ $slideImages->count() }}</span>
+                        </div>
+                    @endif
+
+                    <button type="button" class="zoom-btn" id="openSlideLightbox">
                         <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
                     </button>
                 </div>
 
-                <div class="gallery-thumbs">
-                    <img src="{{ $mainImage }}"
-                         alt="{{ $tour->ten_tour }}"
-                         onerror="this.onerror=null;this.src='{{ $fallbackImage }}';">
+                <div class="gallery-thumbs-wrap">
+                    <div class="gallery-thumbs-head">
+                        <strong>Hình ảnh tour</strong>
+                        <span>{{ $slideImages->count() }} ảnh</span>
+                    </div>
 
-                    @foreach($tour->hinhAnhTours->take(6) as $image)
-                        @php
-                            $galleryImage = null;
+                    <div class="gallery-thumbs" id="galleryThumbs">
+                        @foreach($slideImages as $index => $slideImage)
+                            <button
+                                type="button"
+                                class="gallery-thumb {{ $index === 0 ? 'active' : '' }}"
+                                data-slide-to="{{ $index }}"
+                                aria-label="Xem ảnh {{ $index + 1 }}"
+                            >
+                                <img
+                                    src="{{ $slideImage }}"
+                                    alt="{{ $tour->ten_tour }} - ảnh nhỏ {{ $index + 1 }}"
+                                    onerror="this.onerror=null;this.src='{{ $fallbackImage }}';"
+                                >
+                            </button>
+                        @endforeach
+                    </div>
 
-                            if (!empty($image->duong_dan_anh)) {
-                                if (\Illuminate\Support\Str::startsWith($image->duong_dan_anh, ['http://', 'https://'])) {
-                                    $galleryImage = $image->duong_dan_anh;
-                                } else {
-                                    $galleryImage = asset($image->duong_dan_anh);
-                                }
-                            }
-                        @endphp
-
-                        @if($galleryImage)
-                            <img src="{{ $galleryImage }}"
-                                 alt="{{ $tour->ten_tour }}"
-                                 onerror="this.style.display='none';">
-                        @endif
-                    @endforeach
+                    @if($slideImages->count() === 1)
+                        <p class="gallery-single-note">
+                            Tour hiện mới có 1 ảnh. Thêm ảnh trong mục hình ảnh tour để slideshow hiển thị nhiều ảnh hơn.
+                        </p>
+                    @endif
                 </div>
             </div>
 
@@ -786,6 +856,22 @@
 
     </div>
 </section>
+
+<div class="slide-lightbox" id="slideLightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" aria-label="Đóng">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <button type="button" class="lightbox-nav lightbox-prev" aria-label="Ảnh trước">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <img id="lightboxImage" src="" alt="{{ $tour->ten_tour }}">
+
+    <button type="button" class="lightbox-nav lightbox-next" aria-label="Ảnh tiếp theo">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+</div>
 
 <style>
 :root{
@@ -2588,6 +2674,470 @@ html{
     .private-schedule-actions a{width:100%;}
 }
 
+
+/* SLIDESHOW ẢNH TOUR */
+.tour-slideshow{
+    position:relative;
+    height:560px;
+    overflow:hidden;
+    border-radius:16px;
+    background:#e5e7eb;
+    box-shadow:0 16px 42px rgba(15,23,42,.13);
+}
+
+.tour-slides,
+.tour-slide{
+    width:100%;
+    height:100%;
+}
+
+.tour-slide{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    visibility:hidden;
+    transform:scale(1.02);
+    transition:opacity .45s ease, transform .6s ease, visibility .45s ease;
+}
+
+.tour-slide.active{
+    opacity:1;
+    visibility:visible;
+    transform:scale(1);
+}
+
+.tour-slide img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.slide-nav{
+    position:absolute;
+    top:50%;
+    z-index:4;
+    width:46px;
+    height:46px;
+    border:0;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#0757d8;
+    background:rgba(255,255,255,.94);
+    box-shadow:0 10px 24px rgba(15,23,42,.18);
+    cursor:pointer;
+    transform:translateY(-50%);
+    transition:.2s ease;
+}
+
+.slide-nav:hover{
+    color:#fff;
+    background:#0757d8;
+}
+
+.slide-prev{
+    left:18px;
+}
+
+.slide-next{
+    right:18px;
+}
+
+.slide-counter{
+    position:absolute;
+    left:18px;
+    bottom:18px;
+    z-index:4;
+    padding:7px 12px;
+    border-radius:999px;
+    color:#fff;
+    background:rgba(15,23,42,.66);
+    font-size:13px;
+    font-weight:900;
+    backdrop-filter:blur(5px);
+}
+
+.gallery-thumbs{
+    margin-top:14px;
+    position:relative;
+    z-index:3;
+    display:flex;
+    justify-content:flex-start;
+    gap:10px;
+    padding:0;
+    overflow-x:auto;
+    scrollbar-width:thin;
+}
+
+.gallery-thumb{
+    width:78px;
+    height:58px;
+    flex:0 0 78px;
+    padding:0;
+    overflow:hidden;
+    border:2px solid transparent;
+    border-radius:10px;
+    background:#fff;
+    box-shadow:0 7px 16px rgba(15,23,42,.12);
+    cursor:pointer;
+    opacity:.72;
+    transition:.2s ease;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.active{
+    opacity:1;
+    border-color:#0757d8;
+    transform:translateY(-2px);
+}
+
+.gallery-thumb img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.slide-lightbox{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    background:rgba(2,6,23,.92);
+    backdrop-filter:blur(7px);
+}
+
+.slide-lightbox.show{
+    display:flex;
+}
+
+.slide-lightbox > img{
+    max-width:min(1180px,calc(100vw - 160px));
+    max-height:calc(100vh - 80px);
+    border-radius:14px;
+    object-fit:contain;
+    box-shadow:0 26px 70px rgba(0,0,0,.45);
+}
+
+.lightbox-close{
+    position:absolute;
+    top:22px;
+    right:22px;
+    width:46px;
+    height:46px;
+    border:0;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:rgba(255,255,255,.16);
+    font-size:20px;
+    cursor:pointer;
+}
+
+.lightbox-nav{
+    position:absolute;
+    top:50%;
+    width:50px;
+    height:50px;
+    border:0;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    background:rgba(255,255,255,.16);
+    font-size:20px;
+    cursor:pointer;
+    transform:translateY(-50%);
+}
+
+.lightbox-prev{
+    left:26px;
+}
+
+.lightbox-next{
+    right:26px;
+}
+
+@media(max-width:768px){
+    .tour-slideshow{
+        height:320px;
+    }
+
+    .slide-nav{
+        width:40px;
+        height:40px;
+    }
+
+    .slide-prev{
+        left:10px;
+    }
+
+    .slide-next{
+        right:10px;
+    }
+
+    .slide-lightbox{
+        padding:18px;
+    }
+
+    .slide-lightbox > img{
+        max-width:calc(100vw - 36px);
+        max-height:calc(100vh - 110px);
+    }
+
+    .lightbox-nav{
+        width:42px;
+        height:42px;
+    }
+
+    .lightbox-prev{
+        left:12px;
+    }
+
+    .lightbox-next{
+        right:12px;
+    }
+}
+
+@media(max-width:480px){
+    .tour-slideshow{
+        height:260px;
+    }
+
+    .gallery-thumb{
+        width:66px;
+        height:50px;
+        flex-basis:66px;
+    }
+}
+
+
+/* KHUNG ẢNH NHỎ LUÔN HIỂN THỊ */
+.gallery-thumbs-wrap{
+    margin-top:14px;
+    padding:14px;
+    border:1px solid #dbe5f1;
+    border-radius:15px;
+    background:#fff;
+    box-shadow:0 10px 26px rgba(15,23,42,.05);
+}
+
+.gallery-thumbs-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:10px;
+}
+
+.gallery-thumbs-head strong{
+    color:#0f172a;
+    font-size:14px;
+    font-weight:900;
+}
+
+.gallery-thumbs-head span{
+    padding:5px 9px;
+    border-radius:999px;
+    color:var(--primary);
+    background:#eff6ff;
+    border:1px solid #dbeafe;
+    font-size:11px;
+    font-weight:900;
+}
+
+.gallery-thumbs-wrap .gallery-thumbs{
+    margin-top:0;
+}
+
+.gallery-single-note{
+    margin:10px 0 0;
+    color:#64748b;
+    font-size:12px;
+    line-height:1.55;
+}
+
 </style>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const slideshow = document.getElementById('tourSlideshow');
+
+    if (!slideshow) {
+        return;
+    }
+
+    const slides = Array.from(slideshow.querySelectorAll('.tour-slide'));
+    const thumbs = Array.from(document.querySelectorAll('[data-slide-to]'));
+    const prevButton = slideshow.querySelector('.slide-prev');
+    const nextButton = slideshow.querySelector('.slide-next');
+    const currentNumber = document.getElementById('currentSlideNumber');
+
+    const lightbox = document.getElementById('slideLightbox');
+    const lightboxImage = document.getElementById('lightboxImage');
+    const openLightboxButton = document.getElementById('openSlideLightbox');
+    const closeLightboxButton = lightbox?.querySelector('.lightbox-close');
+    const lightboxPrev = lightbox?.querySelector('.lightbox-prev');
+    const lightboxNext = lightbox?.querySelector('.lightbox-next');
+
+    let currentIndex = 0;
+    let autoplayTimer = null;
+
+    function showSlide(index) {
+        if (!slides.length) {
+            return;
+        }
+
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach(function (slide, slideIndex) {
+            slide.classList.toggle('active', slideIndex === currentIndex);
+        });
+
+        thumbs.forEach(function (thumb, thumbIndex) {
+            thumb.classList.toggle('active', thumbIndex === currentIndex);
+        });
+
+        if (currentNumber) {
+            currentNumber.textContent = String(currentIndex + 1);
+        }
+
+        if (lightbox?.classList.contains('show') && lightboxImage) {
+            lightboxImage.src = slides[currentIndex].querySelector('img').src;
+        }
+
+        thumbs[currentIndex]?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+        });
+    }
+
+    function nextSlide() {
+        showSlide(currentIndex + 1);
+    }
+
+    function previousSlide() {
+        showSlide(currentIndex - 1);
+    }
+
+    function startAutoplay() {
+        if (slides.length <= 1) {
+            return;
+        }
+
+        stopAutoplay();
+        autoplayTimer = window.setInterval(nextSlide, 4500);
+    }
+
+    function stopAutoplay() {
+        if (autoplayTimer) {
+            window.clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    prevButton?.addEventListener('click', function () {
+        previousSlide();
+        startAutoplay();
+    });
+
+    nextButton?.addEventListener('click', function () {
+        nextSlide();
+        startAutoplay();
+    });
+
+    thumbs.forEach(function (thumb) {
+        thumb.addEventListener('click', function () {
+            showSlide(Number(thumb.dataset.slideTo));
+            startAutoplay();
+        });
+    });
+
+    slideshow.addEventListener('mouseenter', stopAutoplay);
+    slideshow.addEventListener('mouseleave', startAutoplay);
+
+    openLightboxButton?.addEventListener('click', function () {
+        if (!lightbox || !lightboxImage || !slides.length) {
+            return;
+        }
+
+        lightboxImage.src = slides[currentIndex].querySelector('img').src;
+        lightbox.classList.add('show');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        stopAutoplay();
+    });
+
+    function closeLightbox() {
+        if (!lightbox) {
+            return;
+        }
+
+        lightbox.classList.remove('show');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        startAutoplay();
+    }
+
+    closeLightboxButton?.addEventListener('click', closeLightbox);
+    lightboxPrev?.addEventListener('click', previousSlide);
+    lightboxNext?.addEventListener('click', nextSlide);
+
+    lightbox?.addEventListener('click', function (event) {
+        if (event.target === lightbox) {
+            closeLightbox();
+        }
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeLightbox();
+        }
+
+        if (lightbox?.classList.contains('show')) {
+            if (event.key === 'ArrowLeft') {
+                previousSlide();
+            }
+
+            if (event.key === 'ArrowRight') {
+                nextSlide();
+            }
+        }
+    });
+
+    let touchStartX = 0;
+
+    slideshow.addEventListener('touchstart', function (event) {
+        touchStartX = event.changedTouches[0].screenX;
+    }, { passive: true });
+
+    slideshow.addEventListener('touchend', function (event) {
+        const touchEndX = event.changedTouches[0].screenX;
+        const distance = touchEndX - touchStartX;
+
+        if (Math.abs(distance) < 45) {
+            return;
+        }
+
+        if (distance > 0) {
+            previousSlide();
+        } else {
+            nextSlide();
+        }
+
+        startAutoplay();
+    }, { passive: true });
+
+    showSlide(0);
+    startAutoplay();
+});
+</script>
 
 @endsection

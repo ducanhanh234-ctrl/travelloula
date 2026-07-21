@@ -1441,6 +1441,88 @@
     z-index:6;
 }
 
+
+/* =========================================================
+   SỬA TRÁI TIM YÊU THÍCH TRÊN TRANG DANH SÁCH TOUR
+   Rule cuối trang đang ép form/button thành position:relative,
+   nên cần ghi đè lại vị trí tuyệt đối trong khung ảnh.
+   ========================================================= */
+.tour-card-clickable .tour-img{
+    position:relative !important;
+}
+
+.tour-card-clickable .favorite-form{
+    position:absolute !important;
+    top:18px !important;
+    right:18px !important;
+    z-index:20 !important;
+    width:46px;
+    height:46px;
+    margin:0 !important;
+    padding:0 !important;
+    display:block !important;
+}
+
+.tour-card-clickable .favorite-form .heart-btn{
+    position:absolute !important;
+    inset:0 !important;
+    z-index:21 !important;
+    width:46px !important;
+    height:46px !important;
+    min-width:46px !important;
+    min-height:46px !important;
+    padding:0 !important;
+    margin:0 !important;
+    border-radius:50% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    opacity:1 !important;
+    visibility:visible !important;
+}
+
+.tour-card-clickable .tour-img > a.heart-btn{
+    position:absolute !important;
+    top:18px !important;
+    right:18px !important;
+    z-index:21 !important;
+    width:46px !important;
+    height:46px !important;
+    min-width:46px !important;
+    min-height:46px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    opacity:1 !important;
+    visibility:visible !important;
+}
+
+.tour-card-clickable .heart-btn i{
+    pointer-events:none;
+}
+
+@media(max-width:760px){
+    .tour-card-clickable .favorite-form{
+        top:14px !important;
+        right:14px !important;
+        width:42px;
+        height:42px;
+    }
+
+    .tour-card-clickable .favorite-form .heart-btn,
+    .tour-card-clickable .tour-img > a.heart-btn{
+        width:42px !important;
+        height:42px !important;
+        min-width:42px !important;
+        min-height:42px !important;
+    }
+
+    .tour-card-clickable .tour-img > a.heart-btn{
+        top:14px !important;
+        right:14px !important;
+    }
+}
+
 </style>
 
 
@@ -1485,6 +1567,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
             event.preventDefault();
             openDetail();
+        });
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.favorite-form, .heart-btn').forEach(function (element) {
+        element.addEventListener('click', function (event) {
+            event.stopPropagation();
         });
     });
 });

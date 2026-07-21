@@ -4,6 +4,25 @@
 
 @section('content')
 
+
+@php
+    /*
+     * Lấy toàn bộ ID tour yêu thích của tài khoản hiện tại chỉ bằng 1 truy vấn.
+     * Nhờ vậy trái tim hiển thị đúng ngay cả khi controller chưa truyền
+     * biến $favoriteTourIds sang view.
+     */
+    $favoriteTourIds = [];
+
+    if (auth()->check()) {
+        $favoriteTourIds = \Illuminate\Support\Facades\DB::table('danh_sach_tours_yeu_thich')
+            ->where('nguoi_dung_id', auth()->id())
+            ->pluck('tour_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+    }
+@endphp
+
+
 <style>
 *{
     margin:0;
@@ -431,6 +450,53 @@ a{
 .heart.active:hover{
     color:#fff;
     background:#e11d48;
+}
+
+
+.heart.is-loading{
+    pointer-events:none;
+    opacity:.68;
+}
+
+.heart.is-loading i{
+    animation:favoritePulse .7s ease infinite alternate;
+}
+
+@keyframes favoritePulse{
+    from{ transform:scale(.84); }
+    to{ transform:scale(1.12); }
+}
+
+.favorite-toast{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    z-index:10050;
+    max-width:min(360px,calc(100vw - 32px));
+    padding:13px 16px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#fff;
+    background:#0757d8;
+    font-size:14px;
+    font-weight:800;
+    box-shadow:0 16px 38px rgba(15,23,42,.24);
+    opacity:0;
+    visibility:hidden;
+    transform:translateY(12px);
+    transition:.22s ease;
+}
+
+.favorite-toast.show{
+    opacity:1;
+    visibility:visible;
+    transform:translateY(0);
+}
+
+.favorite-toast.error{
+    background:#dc2626;
 }
 
 .tour-body{
@@ -983,61 +1049,160 @@ a{
     }
 }
 
+
+/* BANNER TĨNH - ĐÃ BỎ SLIDESHOW */
+.home-hero-static{
+    min-height:590px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    background:#0f172a;
+}
+
+.hero-static-image{
+    position:absolute;
+    inset:0;
+    z-index:0;
+}
+
+.hero-static-image::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(90deg,rgba(3,28,72,.88) 0%,rgba(3,37,92,.64) 42%,rgba(2,6,23,.18) 72%,rgba(2,6,23,.08) 100%),
+        linear-gradient(180deg,rgba(15,23,42,.10),rgba(15,23,42,.28));
+}
+
+.hero-static-image img{
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:cover;
+}
+
+.home-hero-static .hero-content{
+    position:relative;
+    z-index:2;
+}
+
+.home-hero-static .hero-copy{
+    max-width:820px;
+}
+
+/* Ẩn hoàn toàn thành phần slideshow cũ nếu trình duyệt còn cache */
+.hero-slides,
+.hero-slide-nav,
+.hero-dots,
+.hero-copy-item{
+    display:none !important;
+}
+
+@media(max-width:900px){
+    .home-hero-static{
+        min-height:680px;
+    }
+}
+
+@media(max-width:640px){
+    .home-hero-static{
+        min-height:760px;
+    }
+}
+
+
+/* =========================================================
+   SỬA NÚT TRÁI TIM BỊ ẨN DO RULE .tour-card-clickable
+   ========================================================= */
+.tour-card-clickable .tour-img{
+    position:relative !important;
+}
+
+.tour-card-clickable .home-favorite-form{
+    position:absolute !important;
+    top:13px !important;
+    right:13px !important;
+    z-index:20 !important;
+    width:38px;
+    height:38px;
+    margin:0 !important;
+    padding:0 !important;
+    display:block !important;
+}
+
+.tour-card-clickable .home-favorite-form .heart,
+.tour-card-clickable .tour-img > .heart{
+    position:absolute !important;
+    top:0 !important;
+    right:0 !important;
+    z-index:21 !important;
+    width:38px !important;
+    height:38px !important;
+    min-width:38px !important;
+    min-height:38px !important;
+    padding:0 !important;
+    margin:0 !important;
+    border:0 !important;
+    border-radius:50% !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    color:#0757d8 !important;
+    background:#ffffff !important;
+    box-shadow:0 8px 22px rgba(15,23,42,.22) !important;
+    font-size:17px !important;
+    line-height:1 !important;
+    cursor:pointer;
+    text-decoration:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    transform:none;
+}
+
+.tour-card-clickable .home-favorite-form .heart:hover,
+.tour-card-clickable .tour-img > .heart:hover{
+    color:#e11d48 !important;
+    transform:scale(1.08) !important;
+}
+
+.tour-card-clickable .home-favorite-form .heart.active{
+    color:#ffffff !important;
+    background:#e11d48 !important;
+}
+
+.tour-card-clickable .home-favorite-form .heart.active:hover{
+    color:#ffffff !important;
+    background:#be123c !important;
+}
+
+/* Link đăng nhập cũng phải nằm đúng góc ảnh */
+.tour-card-clickable .tour-img > a.heart{
+    top:13px !important;
+    right:13px !important;
+}
+
+.tour-card-clickable .heart i{
+    pointer-events:none;
+}
+
 </style>
 
 <main>
 
-<section class="home-hero" id="homeHeroSlider">
-    <div class="hero-slides">
-        <div class="hero-slide active">
-            <img
-                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=88"
-                alt="Du lịch biển cùng Travelloula"
-            >
-        </div>
-
-        <div class="hero-slide">
-            <img
-                src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=88"
-                alt="Khám phá thiên nhiên cùng Travelloula"
-            >
-        </div>
-
-        <div class="hero-slide">
-            <img
-                src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1920&q=88"
-                alt="Hành trình trải nghiệm cùng Travelloula"
-            >
-        </div>
+<section class="home-hero home-hero-static">
+    <div class="hero-static-image">
+        <img
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=88"
+            alt="Du lịch biển cùng Travelloula"
+        >
     </div>
-
-    <button type="button" class="hero-slide-nav hero-slide-prev" aria-label="Banner trước">
-        <i class="fa-solid fa-chevron-left"></i>
-    </button>
-
-    <button type="button" class="hero-slide-nav hero-slide-next" aria-label="Banner tiếp theo">
-        <i class="fa-solid fa-chevron-right"></i>
-    </button>
 
     <div class="hero-content">
         <div class="hero-copy">
-            <div class="hero-copy-item active">
-                <h1>Khám phá thế giới</h1>
-                <h2>Cùng Travelloula <i class="fa-solid fa-plane"></i></h2>
-                <p>Những hành trình tuyệt vời đang chờ bạn trải nghiệm!</p>
-            </div>
-
-            <div class="hero-copy-item">
-                <h1>Chạm tới thiên nhiên</h1>
-                <h2>Đi để yêu thêm <i class="fa-solid fa-mountain-sun"></i></h2>
-                <p>Khám phá những vùng đất mới với dịch vụ chu đáo và hành trình đáng nhớ.</p>
-            </div>
-
-            <div class="hero-copy-item">
-                <h1>Tận hưởng kỳ nghỉ</h1>
-                <h2>Theo cách của bạn <i class="fa-solid fa-umbrella-beach"></i></h2>
-                <p>Chọn tour phù hợp, lên lịch dễ dàng và bắt đầu chuyến đi ngay hôm nay.</p>
-            </div>
+            <h1>Khám phá thế giới</h1>
+            <h2>Cùng Travelloula <i class="fa-solid fa-plane"></i></h2>
+            <p>Những hành trình tuyệt vời đang chờ bạn trải nghiệm!</p>
         </div>
 
         <form action="{{ route('Client.danh_sach_tour.index') }}" method="GET" class="search-box">
@@ -1078,12 +1243,6 @@ a{
                 Tìm kiếm
             </button>
         </form>
-    </div>
-
-    <div class="hero-dots" aria-label="Chọn banner">
-        <button type="button" class="hero-dot active" data-hero-slide="0" aria-label="Banner 1"></button>
-        <button type="button" class="hero-dot" data-hero-slide="1" aria-label="Banner 2"></button>
-        <button type="button" class="hero-dot" data-hero-slide="2" aria-label="Banner 3"></button>
     </div>
 </section>
 
@@ -1155,7 +1314,7 @@ a{
                     }
 
                     $isFavorite = auth()->check()
-                        ? in_array($tour->id, $favoriteTourIds ?? [])
+                        ? in_array((int) $tour->id, $favoriteTourIds, true)
                         : false;
                 @endphp
 
@@ -1176,30 +1335,39 @@ a{
                         </span>
 
                         @auth
-                            @if($isFavorite)
-                                <form action="{{ route('Client.tour_yeu_thich.destroy', $tour->id) }}"
-                                      method="POST"
-                                      class="home-favorite-form">
-                                    @csrf
-                                    @method('DELETE')
+                            <form
+                                action="{{ $isFavorite
+                                    ? route('Client.tour_yeu_thich.destroy', $tour->id)
+                                    : route('Client.tour_yeu_thich.store', $tour->id) }}"
+                                method="POST"
+                                class="home-favorite-form js-home-favorite-form"
+                                data-store-url="{{ route('Client.tour_yeu_thich.store', $tour->id) }}"
+                                data-destroy-url="{{ route('Client.tour_yeu_thich.destroy', $tour->id) }}"
+                                data-favorite="{{ $isFavorite ? '1' : '0' }}"
+                            >
+                                @csrf
 
-                                    <button class="heart active" type="submit" title="Bỏ yêu thích">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                </form>
-                            @else
-                                <form action="{{ route('Client.tour_yeu_thich.store', $tour->id) }}"
-                                      method="POST"
-                                      class="home-favorite-form">
-                                    @csrf
+                                @if($isFavorite)
+                                    <input type="hidden" name="_method" value="DELETE" class="favorite-method-input">
+                                @endif
 
-                                    <button class="heart" type="submit" title="Thêm vào yêu thích">
-                                        <i class="fa-regular fa-heart"></i>
-                                    </button>
-                                </form>
-                            @endif
+                                <button
+                                    class="heart {{ $isFavorite ? 'active' : '' }}"
+                                    type="submit"
+                                    title="{{ $isFavorite ? 'Bỏ yêu thích' : 'Thêm vào yêu thích' }}"
+                                    aria-label="{{ $isFavorite ? 'Bỏ yêu thích' : 'Thêm vào yêu thích' }}"
+                                    aria-pressed="{{ $isFavorite ? 'true' : 'false' }}"
+                                >
+                                    <i class="{{ $isFavorite ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+                                </button>
+                            </form>
                         @else
-                            <a href="{{ route('login') }}" class="heart" title="Đăng nhập để thêm yêu thích">
+                            <a
+                                href="{{ route('login') }}"
+                                class="heart"
+                                title="Đăng nhập để thêm yêu thích"
+                                aria-label="Đăng nhập để thêm yêu thích"
+                            >
                                 <i class="fa-regular fa-heart"></i>
                             </a>
                         @endauth
@@ -1507,6 +1675,12 @@ a{
     </div>
 </div>
 
+
+<div class="favorite-toast" id="favoriteToast" role="status" aria-live="polite">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="favoriteToastText">Đã cập nhật tour yêu thích.</span>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('tourMessageModal');
@@ -1589,110 +1763,122 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-</main>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const hero = document.getElementById('homeHeroSlider');
+    const toast = document.getElementById('favoriteToast');
+    const toastText = document.getElementById('favoriteToastText');
+    let toastTimer = null;
 
-    if (!hero) {
-        return;
-    }
-
-    const slides = Array.from(hero.querySelectorAll('.hero-slide'));
-    const copyItems = Array.from(hero.querySelectorAll('.hero-copy-item'));
-    const dots = Array.from(hero.querySelectorAll('.hero-dot'));
-    const prevButton = hero.querySelector('.hero-slide-prev');
-    const nextButton = hero.querySelector('.hero-slide-next');
-
-    let currentIndex = 0;
-    let autoplayTimer = null;
-
-    function showHeroSlide(index) {
-        currentIndex = (index + slides.length) % slides.length;
-
-        slides.forEach(function (slide, slideIndex) {
-            slide.classList.toggle('active', slideIndex === currentIndex);
-        });
-
-        copyItems.forEach(function (copy, copyIndex) {
-            copy.classList.toggle('active', copyIndex === currentIndex);
-        });
-
-        dots.forEach(function (dot, dotIndex) {
-            dot.classList.toggle('active', dotIndex === currentIndex);
-        });
-    }
-
-    function nextHeroSlide() {
-        showHeroSlide(currentIndex + 1);
-    }
-
-    function previousHeroSlide() {
-        showHeroSlide(currentIndex - 1);
-    }
-
-    function stopAutoplay() {
-        if (autoplayTimer) {
-            window.clearInterval(autoplayTimer);
-            autoplayTimer = null;
-        }
-    }
-
-    function startAutoplay() {
-        stopAutoplay();
-
-        if (slides.length > 1) {
-            autoplayTimer = window.setInterval(nextHeroSlide, 5500);
-        }
-    }
-
-    prevButton?.addEventListener('click', function () {
-        previousHeroSlide();
-        startAutoplay();
-    });
-
-    nextButton?.addEventListener('click', function () {
-        nextHeroSlide();
-        startAutoplay();
-    });
-
-    dots.forEach(function (dot) {
-        dot.addEventListener('click', function () {
-            showHeroSlide(Number(dot.dataset.heroSlide));
-            startAutoplay();
-        });
-    });
-
-    hero.addEventListener('mouseenter', stopAutoplay);
-    hero.addEventListener('mouseleave', startAutoplay);
-
-    let touchStartX = 0;
-
-    hero.addEventListener('touchstart', function (event) {
-        touchStartX = event.changedTouches[0].screenX;
-    }, { passive: true });
-
-    hero.addEventListener('touchend', function (event) {
-        const distance = event.changedTouches[0].screenX - touchStartX;
-
-        if (Math.abs(distance) < 45) {
+    function showFavoriteToast(message, isError = false) {
+        if (!toast || !toastText) {
             return;
         }
 
-        if (distance > 0) {
-            previousHeroSlide();
-        } else {
-            nextHeroSlide();
-        }
+        toastText.textContent = message;
+        toast.classList.toggle('error', isError);
+        toast.querySelector('i').className = isError
+            ? 'fa-solid fa-circle-exclamation'
+            : 'fa-solid fa-circle-check';
 
-        startAutoplay();
-    }, { passive: true });
+        toast.classList.add('show');
 
-    showHeroSlide(0);
-    startAutoplay();
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () {
+            toast.classList.remove('show');
+        }, 2200);
+    }
+
+    document.querySelectorAll('.js-home-favorite-form').forEach(function (form) {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const button = form.querySelector('.heart');
+            const icon = button?.querySelector('i');
+
+            if (!button || !icon || button.classList.contains('is-loading')) {
+                return;
+            }
+
+            const isFavorite = form.dataset.favorite === '1';
+            button.classList.add('is-loading');
+            button.disabled = true;
+
+            try {
+                const formData = new FormData(form);
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json, text/html'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Không thể cập nhật tour yêu thích.');
+                }
+
+                const nextFavoriteState = !isFavorite;
+                form.dataset.favorite = nextFavoriteState ? '1' : '0';
+                form.action = nextFavoriteState
+                    ? form.dataset.destroyUrl
+                    : form.dataset.storeUrl;
+
+                let methodInput = form.querySelector('.favorite-method-input');
+
+                if (nextFavoriteState) {
+                    if (!methodInput) {
+                        methodInput = document.createElement('input');
+                        methodInput.type = 'hidden';
+                        methodInput.name = '_method';
+                        methodInput.value = 'DELETE';
+                        methodInput.className = 'favorite-method-input';
+                        form.appendChild(methodInput);
+                    }
+                } else {
+                    methodInput?.remove();
+                }
+
+                button.classList.toggle('active', nextFavoriteState);
+                button.setAttribute('aria-pressed', nextFavoriteState ? 'true' : 'false');
+                button.title = nextFavoriteState
+                    ? 'Bỏ yêu thích'
+                    : 'Thêm vào yêu thích';
+                button.setAttribute(
+                    'aria-label',
+                    nextFavoriteState ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'
+                );
+
+                icon.classList.toggle('fa-solid', nextFavoriteState);
+                icon.classList.toggle('fa-regular', !nextFavoriteState);
+
+                showFavoriteToast(
+                    nextFavoriteState
+                        ? 'Đã lưu tour vào danh sách yêu thích.'
+                        : 'Đã xóa tour khỏi danh sách yêu thích.'
+                );
+            } catch (error) {
+                showFavoriteToast(
+                    'Cập nhật yêu thích thất bại. Hãy tải lại trang rồi thử lại.',
+                    true
+                );
+            } finally {
+                button.classList.remove('is-loading');
+                button.disabled = false;
+            }
+        });
+    });
 });
 </script>
+
+
+</main>
+
+
+
 
 @endsection

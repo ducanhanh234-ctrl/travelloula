@@ -13,6 +13,15 @@ use Illuminate\Support\Str;
 
 class TourController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:tours.view')->only(['index', 'show']);
+        $this->middleware('permission:tours.create')->only(['create', 'store']);
+        $this->middleware('permission:tours.edit')->only(['edit', 'update']);
+        $this->middleware('permission:tours.delete')->only(['destroy']);
+    }
+
+
     public function index(Request $request)
     {
         // Thống kê
@@ -318,3 +327,4 @@ class TourController extends Controller
             ->with('success', 'Xóa thành công');
     }
 }
+

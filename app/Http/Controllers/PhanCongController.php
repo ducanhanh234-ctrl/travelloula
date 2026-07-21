@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class PhanCongController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:phan_cong.view')->only(['index', 'show']);
+        $this->middleware('permission:phan_cong.create')->only(['create', 'store']);
+        $this->middleware('permission:phan_cong.edit')->only(['edit', 'update']);
+        $this->middleware('permission:phan_cong.delete')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $keyword = $request->keyword;
@@ -43,7 +51,9 @@ class PhanCongController extends Controller
     }
     public function create()
     {
-        $lichKhoiHanhs = LichKhoiHanhTour::where('trang_thai', '1')->get();
+
+        $lichKhoiHanhs = LichKhoiHanhTour::where('trang_thai', 'closed')->get();
+
         $huongDanViens = HuongDanVien::where('trang_thai', 'san_sang')->get();
         $phuongTiens = PhuongTien::where('trang_thai', '1')->get();
         return view('Admin.phan_cong.create', compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens'));
@@ -142,6 +152,7 @@ class PhanCongController extends Controller
 
         // Cập nhật trạng thái lịch
         $lich->update([
+            'huong_dan_vien_id' => $request->hdv_id,
             'trang_thai' => 2 // Đã phân công
         ]);
 

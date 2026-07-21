@@ -112,11 +112,17 @@
                 <div class="tour-slideshow" id="tourSlideshow">
                     <div class="tour-slides">
                         @foreach($slideImages as $index => $slideImage)
-                            <div class="tour-slide {{ $index === 0 ? 'active' : '' }}"
-                                 data-slide-index="{{ $index }}">
+                            <div
+                                class="tour-slide {{ $index === 0 ? 'active' : '' }}"
+                                data-slide-index="{{ $index }}"
+                                style="--slide-bg: url('{{ $slideImage }}');"
+                            >
                                 <img
+                                    class="tour-slide-image"
                                     src="{{ $slideImage }}"
                                     alt="{{ $tour->ten_tour }} - ảnh {{ $index + 1 }}"
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                    decoding="async"
                                     onerror="this.onerror=null;this.src='{{ $fallbackImage }}';"
                                 >
                             </div>
@@ -152,34 +158,21 @@
                     </button>
                 </div>
 
-                <div class="gallery-thumbs-wrap">
-                    <div class="gallery-thumbs-head">
-                        <strong>Hình ảnh tour</strong>
-                        <span>{{ $slideImages->count() }} ảnh</span>
-                    </div>
-
-                    <div class="gallery-thumbs" id="galleryThumbs">
-                        @foreach($slideImages as $index => $slideImage)
-                            <button
-                                type="button"
-                                class="gallery-thumb {{ $index === 0 ? 'active' : '' }}"
-                                data-slide-to="{{ $index }}"
-                                aria-label="Xem ảnh {{ $index + 1 }}"
+                <div class="gallery-thumbs" id="galleryThumbs">
+                    @foreach($slideImages->take(5) as $index => $slideImage)
+                        <button
+                            type="button"
+                            class="gallery-thumb {{ $index === 0 ? 'active' : '' }}"
+                            data-slide-to="{{ $index }}"
+                            aria-label="Xem ảnh {{ $index + 1 }}"
+                        >
+                            <img
+                                src="{{ $slideImage }}"
+                                alt="{{ $tour->ten_tour }} - ảnh nhỏ {{ $index + 1 }}"
+                                onerror="this.onerror=null;this.src='{{ $fallbackImage }}';"
                             >
-                                <img
-                                    src="{{ $slideImage }}"
-                                    alt="{{ $tour->ten_tour }} - ảnh nhỏ {{ $index + 1 }}"
-                                    onerror="this.onerror=null;this.src='{{ $fallbackImage }}';"
-                                >
-                            </button>
-                        @endforeach
-                    </div>
-
-                    @if($slideImages->count() === 1)
-                        <p class="gallery-single-note">
-                            Tour hiện mới có 1 ảnh. Thêm ảnh trong mục hình ảnh tour để slideshow hiển thị nhiều ảnh hơn.
-                        </p>
-                    @endif
+                        </button>
+                    @endforeach
                 </div>
             </div>
 
@@ -2962,6 +2955,147 @@ html{
     line-height:1.55;
 }
 
+
+/* =========================================================
+   HIỂN THỊ ẢNH THẤP ĐỘ PHÂN GIẢI KHÔNG BỊ PHÓNG VỠ
+   ========================================================= */
+.tour-slide{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    isolation:isolate;
+    background:#dbe5f1;
+}
+
+.tour-slide::before{
+    content:"";
+    position:absolute;
+    inset:-28px;
+    z-index:0;
+    background-image:var(--slide-bg);
+    background-position:center;
+    background-size:cover;
+    background-repeat:no-repeat;
+    filter:blur(24px) brightness(.78) saturate(1.08);
+    transform:scale(1.10);
+    opacity:.72;
+}
+
+.tour-slide::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:linear-gradient(
+        180deg,
+        rgba(15,23,42,.08),
+        rgba(15,23,42,.16)
+    );
+    pointer-events:none;
+}
+
+.tour-slide-image{
+    position:relative;
+    z-index:2;
+    width:auto !important;
+    height:auto !important;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain !important;
+    object-position:center;
+    image-rendering:auto;
+    box-shadow:0 16px 38px rgba(15,23,42,.18);
+}
+
+/* Ảnh đủ lớn mới được phép phủ kín khung */
+.tour-slide.high-resolution .tour-slide-image{
+    width:100% !important;
+    height:100% !important;
+    max-width:none;
+    max-height:none;
+    object-fit:cover !important;
+    box-shadow:none;
+}
+
+.tour-slide.high-resolution::before{
+    opacity:0;
+}
+
+.tour-slide.low-resolution .tour-slide-image{
+    border-radius:10px;
+}
+
+/* Ảnh nhỏ trong gallery luôn sắc nét, không bị kéo méo */
+.gallery-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    image-rendering:auto;
+}
+
+
+/* 5 ẢNH NHỎ NẰM NGAY DƯỚI ẢNH LỚN */
+.gallery-thumbs-wrap,
+.gallery-thumbs-head,
+.gallery-single-note{
+    display:none !important;
+}
+
+.detail-left > .gallery-thumbs{
+    margin-top:8px !important;
+    padding:0 !important;
+    display:grid !important;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:8px;
+    overflow:visible;
+}
+
+.detail-left > .gallery-thumbs .gallery-thumb{
+    width:100% !important;
+    height:76px !important;
+    min-width:0;
+    flex:initial !important;
+    border-radius:10px;
+    border:2px solid transparent;
+    box-shadow:0 6px 16px rgba(15,23,42,.10);
+}
+
+.detail-left > .gallery-thumbs .gallery-thumb.active{
+    border-color:var(--primary);
+    box-shadow:0 0 0 2px rgba(7,87,216,.10);
+}
+
+.detail-left > .gallery-thumbs .gallery-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+@media(max-width:768px){
+    .detail-left > .gallery-thumbs{
+        grid-template-columns:repeat(5,88px);
+        overflow-x:auto;
+        padding-bottom:4px !important;
+    }
+
+    .detail-left > .gallery-thumbs .gallery-thumb{
+        height:64px !important;
+    }
+}
+
+@media(max-width:480px){
+    .detail-left > .gallery-thumbs{
+        grid-template-columns:repeat(5,74px);
+        gap:7px;
+    }
+
+    .detail-left > .gallery-thumbs .gallery-thumb{
+        height:54px !important;
+    }
+}
+
 </style>
 
 
@@ -3137,6 +3271,66 @@ document.addEventListener('DOMContentLoaded', function () {
 
     showSlide(0);
     startAutoplay();
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const slideshow = document.getElementById('tourSlideshow');
+
+    if (!slideshow) {
+        return;
+    }
+
+    const evaluateImageQuality = function (slide) {
+        const image = slide.querySelector('.tour-slide-image');
+
+        if (!image || !image.naturalWidth || !image.naturalHeight) {
+            return;
+        }
+
+        const frameWidth = slideshow.clientWidth || 1;
+        const frameHeight = slideshow.clientHeight || 1;
+
+        /*
+         * Chỉ cho ảnh phủ kín khung khi độ phân giải thực đủ lớn.
+         * Ảnh nhỏ sẽ giữ kích thước tự nhiên và dùng nền mờ phía sau,
+         * tránh bị kéo giãn dẫn đến vỡ hạt.
+         */
+        const enoughWidth = image.naturalWidth >= frameWidth * 0.9;
+        const enoughHeight = image.naturalHeight >= frameHeight * 0.9;
+
+        slide.classList.toggle('high-resolution', enoughWidth && enoughHeight);
+        slide.classList.toggle('low-resolution', !(enoughWidth && enoughHeight));
+    };
+
+    const evaluateAllImages = function () {
+        slideshow.querySelectorAll('.tour-slide').forEach(function (slide) {
+            const image = slide.querySelector('.tour-slide-image');
+
+            if (!image) {
+                return;
+            }
+
+            if (image.complete) {
+                evaluateImageQuality(slide);
+            } else {
+                image.addEventListener('load', function () {
+                    evaluateImageQuality(slide);
+                }, { once: true });
+            }
+        });
+    };
+
+    evaluateAllImages();
+
+    let resizeTimer = null;
+
+    window.addEventListener('resize', function () {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(evaluateAllImages, 160);
+    });
 });
 </script>
 

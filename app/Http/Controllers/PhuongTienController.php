@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class PhuongTienController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:phuong_tiens.view')->only(['index', 'show']);
+        $this->middleware('permission:phuong_tiens.create')->only(['create', 'store']);
+        $this->middleware('permission:phuong_tiens.edit')->only(['edit', 'update']);
+        $this->middleware('permission:phuong_tiens.delete')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $query = PhuongTien::query();
@@ -55,6 +63,19 @@ class PhuongTienController extends Controller
             'so_dien_thoai_tai_xe' => 'required|max:255',
             'ghi_chu' => 'nullable|string',
         ]);
+        switch ($data['loai_phuong_tien']) {
+            case 'xe_16_cho':
+                $data['so_cho'] = 16;
+                break;
+
+            case 'xe_29_cho':
+                $data['so_cho'] = 29;
+                break;
+
+            case 'xe_45_cho':
+                $data['so_cho'] = 45;
+                break;
+        }
 
         PhuongTien::create($data);
 
@@ -94,6 +115,19 @@ class PhuongTienController extends Controller
             'so_dien_thoai_tai_xe' => 'required|max:255',
             'ghi_chu' => 'nullable|string',
         ]);
+        switch ($data['loai_phuong_tien']) {
+            case 'xe_16_cho':
+                $data['so_cho'] = 16;
+                break;
+
+            case 'xe_29_cho':
+                $data['so_cho'] = 29;
+                break;
+
+            case 'xe_45_cho':
+                $data['so_cho'] = 45;
+                break;
+        }
 
         $phuongTien->update($data);
 

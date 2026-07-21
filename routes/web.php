@@ -235,6 +235,8 @@ Route::prefix('Guide')
             ->name('checkin.checkinTatCa');
         Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
             ->name('checkin.checkoutTatCa');
+        Route::post('/check-in/undo-tat-ca', [CheckInController::class, 'undoCheckInTatCa'])
+            ->name('checkin.undoTatCa');
         Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
         Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
         Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');

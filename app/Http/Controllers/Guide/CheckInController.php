@@ -248,7 +248,19 @@ class CheckInController extends Controller
         $checkIn->thoi_gian_check_out = now();
         $checkIn->trang_thai = 'da_check_out';
         $checkIn->save();
+        // Nếu đây là lần check-in đầu tiên của chuyến thì đánh dấu đã khởi hành
+        // Kiểm tra còn ai chưa checkout không
+        $conLai = CheckInKhachHang::where('lich_khoi_hanh_id', $checkIn->lich_khoi_hanh_id)
+            ->where('chi_tiet_lich_trinh_id', $checkIn->chi_tiet_lich_trinh_id)
+            ->where('trang_thai', '!=', 'da_check_out')
+            ->exists();
 
+        if (!$conLai) {
+            LichKhoiHanhTour::where('id', $checkIn->lich_khoi_hanh_id)
+                ->update([
+                    'da_checkin_khoi_hanh' => 1
+                ]);
+        }
         $khach = $checkIn->khachHang;
 
         $chiTiet = ChiTietLichTrinh::findOrFail(
@@ -268,9 +280,23 @@ class CheckInController extends Controller
                 '"'
         ]);
 
-        return back()->with(
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($checkIn->lich_khoi_hanh_id);
+
+        $lichTrinhNgay1 = LichTrinhTour::where('tour_id', $lichKhoiHanh->tour_id)
+            ->where('ngay_thu', 1)
+            ->with('chiTiets')
+            ->first();
+
+        $chiTiet = $lichTrinhNgay1->chiTiets->first();
+        return redirect()->route(
+            'Guide.checkin.show',
+            [
+                $lichKhoiHanh->id,
+                $chiTiet->id
+            ]
+        )->with(
             'success',
-            'Check-out thành công.'
+            'Đã hoàn tất Check-in khởi hành. Bắt đầu Check-in ngày 1.'
         );
     }
 
@@ -332,7 +358,6 @@ class CheckInController extends Controller
                 }
             }
         }
-
         return back()->with(
             'success',
             'Đã check-in toàn bộ hành khách.'
@@ -362,7 +387,6 @@ class CheckInController extends Controller
                 'trang_thai' => 'da_check_out',
                 'thoi_gian_check_out' => now(),
             ]);
-
             NhatKyHuongDanVien::create([
                 'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
                 'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
@@ -376,10 +400,31 @@ class CheckInController extends Controller
                     '"'
             ]);
         }
+        // Sau khi tất cả đã checkout
+        LichKhoiHanhTour::where(
+            'id',
+            $request->lich_khoi_hanh_id
+        )->update([
+            'da_checkin_khoi_hanh' => 1
+        ]);
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
 
-        return back()->with(
+        $lichTrinhNgay1 = LichTrinhTour::where('tour_id', $lichKhoiHanh->tour_id)
+            ->where('ngay_thu', 1)
+            ->with('chiTiets')
+            ->first();
+
+        $chiTiet = $lichTrinhNgay1->chiTiets->first();
+
+        return redirect()->route(
+            'Guide.checkin.show',
+            [
+                $lichKhoiHanh->id,
+                $chiTiet->id
+            ]
+        )->with(
             'success',
-            'Đã check-out toàn bộ hành khách.'
+            'Đã hoàn tất Check-in khởi hành. Chuyển sang Ngày 1.'
         );
     }
 
@@ -428,6 +473,38 @@ class CheckInController extends Controller
         return back()->with(
             'success',
             'Đã hoàn tác Check-in.'
+        );
+    }
+
+    public function undoCheckInTatCa(Request $request)
+    {
+        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
+
+        $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
+            ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
+            ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
+            ->get();
+
+        foreach ($checkIns as $checkIn) {
+            $checkIn->update([
+                'trang_thai' => 'chua_check_in',
+                'thoi_gian_check_in' => null,
+                'thoi_gian_check_out' => null,
+            ]);
+
+            NhatKyHuongDanVien::create([
+                'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
+                'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
+                'khach_hang_dat_tour_id' => $checkIn->khach_hang_dat_tour_id,
+                'huong_dan_vien_id' => $guide->id,
+                'hanh_dong' => 'UNDO_CHECKIN_ALL',
+                'noi_dung' => 'Hoàn tác tất cả trạng thái Check-in/Check-out của hành khách "' . $checkIn->khachHang->ho_ten . '"'
+            ]);
+        }
+
+        return back()->with(
+            'success',
+            'Đã hoàn tác tất cả hành khách về trạng thái chưa check-in.'
         );
     }
 
@@ -569,18 +646,5 @@ class CheckInController extends Controller
             'chuaCheck',
             'lichKhoiHanhId'
         ));
-    }
-    public function storeXuatPhat(
-        Request $request,
-        LichKhoiHanhTour $lichKhoiHanh
-    ) {
-        // Ghi nhận đã thực hiện check-in khởi hành (mở quyền check-in ngày 1)
-        $lichKhoiHanh->update([
-            'da_checkin_khoi_hanh' => true,
-        ]);
-
-        return redirect()
-            ->route('Guide.checkin.xuatPhat', $lichKhoiHanh->id)
-            ->with('success', 'Đã xác nhận Check-in khởi hành. Bây giờ có thể Check-in ngày 1.');
     }
 }

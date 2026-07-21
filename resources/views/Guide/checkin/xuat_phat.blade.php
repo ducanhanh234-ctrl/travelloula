@@ -1361,11 +1361,25 @@ max($phanTramCheckIn, 0),
         <form action="{{ route('Guide.checkin.checkoutTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn Check-out tất cả hành khách?');">
             @csrf
 
+            <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
+
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
             <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 ? 'disabled' : '' }}>
                 <i class="fas fa-sign-out-alt"></i>
                 Check-out tất cả
+            </button>
+        </form>
+        <form action="{{ route('Guide.checkin.undoTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn hoàn tác tất cả trạng thái Check-in và Check-out của hành khách?');">
+            @csrf
+
+            <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
+
+            <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+
+            <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none">
+                <i class="fas fa-rotate-left"></i>
+                Hoàn tác tất cả
             </button>
         </form>
     </div>

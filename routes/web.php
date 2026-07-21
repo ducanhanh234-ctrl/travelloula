@@ -196,7 +196,10 @@ Route::prefix('Admin')
             ->name('chi_tiet_lich_trinhs.update');
         Route::delete('chi_tiet_lich_trinhs/{chiTiet}', [ChiTietLichTrinhController::class, 'destroy'])
             ->name('chi_tiet_lich_trinhs.destroy');
-
+        Route::post(
+            '/admin/lich-trinh/{id}/import',
+            [ChiTietLichTrinhController::class, 'import']
+        )->name('chi-tiet.import');
         Route::resource('nhat_ky_tours', NhatKyTourController::class)->only(['index', 'show']);
     });
 

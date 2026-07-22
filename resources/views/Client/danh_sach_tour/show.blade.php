@@ -29,6 +29,7 @@
     $tongDanhGia = $tongDanhGia ?? $tour->danhGia->count();
     $soLuotDat = $soLuotDat ?? $tour->datTours()->count();
 
+
     $statusMap = [
         'available' => [
             'label' => 'Đang mở',
@@ -498,7 +499,7 @@
                     <span class="review-kicker">TRẢI NGHIỆM KHÁCH HÀNG</span>
                     <h2>ĐÁNH GIÁ <span>TOUR</span></h2>
                     <p>
-                        Chỉ những đánh giá đã được quản trị viên duyệt mới hiển thị công khai.
+                        Mọi tài khoản đã đăng nhập đều có thể đánh giá tour. Đánh giá hiển thị ngay sau khi gửi.
                     </p>
                 </div>
 
@@ -510,7 +511,7 @@
                                 <i class="fa-solid fa-star {{ $star <= round($soSaoTrungBinh) ? 'active' : '' }}"></i>
                             @endfor
                         </div>
-                        <span>{{ $tongDanhGia }} đánh giá đã duyệt</span>
+                        <span>{{ $tongDanhGia }} đánh giá</span>
                     </div>
                 </div>
             </div>
@@ -544,7 +545,7 @@
                 <div class="review-form-card">
                     <h3>Gửi đánh giá của bạn</h3>
                     <p class="review-form-description">
-                        Đánh giá sẽ được chuyển đến quản trị viên xét duyệt trước khi hiển thị.
+                        Bạn có thể gửi nhiều đánh giá cho tour này. Mỗi lần gửi sẽ tạo một đánh giá mới.
                     </p>
 
                     @auth
@@ -609,7 +610,7 @@
 
                             <button type="submit" class="review-submit-btn">
                                 <i class="fa-solid fa-paper-plane"></i>
-                                Gửi đánh giá
+                                Gửi đánh giá mới
                             </button>
                         </form>
                     @else
@@ -617,7 +618,7 @@
                             <i class="fa-solid fa-user-lock"></i>
                             <div>
                                 <strong>Bạn cần đăng nhập</strong>
-                                <p>Đăng nhập để gửi đánh giá cho tour đã đặt.</p>
+                                <p>Đăng nhập để gửi đánh giá cho tour này.</p>
                             </div>
 
                             <a href="{{ route('login') }}">
@@ -629,7 +630,7 @@
 
                 <div class="review-list-card">
                     <div class="review-list-head">
-                        <h3>Đánh giá đã duyệt</h3>
+                        <h3>Đánh giá khách hàng</h3>
                         <span>{{ $tongDanhGia }} đánh giá</span>
                     </div>
 
@@ -639,12 +640,20 @@
                                 <div class="review-item-top">
                                     <div class="review-user">
                                         <div class="review-avatar">
-                                            {{ mb_strtoupper(mb_substr($danhGia->khachHangDatTour->ho_ten ?? $danhGia->user->name ?? 'K', 0, 1)) }}
+                                            {{ mb_strtoupper(mb_substr(
+                                                $danhGia->user?->name
+                                                    ?? $danhGia->khachHangDatTour?->ho_ten
+                                                    ?? 'K',
+                                                0,
+                                                1
+                                            )) }}
                                         </div>
 
                                         <div>
                                             <strong>
-                                                {{ $danhGia->khachHangDatTour->ho_ten ?? $danhGia->user->name ?? 'Khách hàng' }}
+                                                {{ $danhGia->user?->name
+                                                    ?? $danhGia->khachHangDatTour?->ho_ten
+                                                    ?? 'Khách hàng' }}
                                             </strong>
 
                                             <div class="review-stars">
@@ -666,9 +675,9 @@
 
                                 <p>{{ $danhGia->noi_dung_danh_gia }}</p>
 
-                                <span class="review-approved-badge">
-                                    <i class="fa-solid fa-shield-check"></i>
-                                    Đã được duyệt
+                                <span class="review-public-badge">
+                                    <i class="fa-solid fa-eye"></i>
+                                    Đang hiển thị công khai
                                 </span>
                             </article>
                         @empty
@@ -1793,7 +1802,7 @@ html{
     line-height:1.75;
 }
 
-.review-approved-badge{
+.review-public-badge{
     display:inline-flex;
     align-items:center;
     gap:6px;
@@ -2235,7 +2244,7 @@ html{
     background:linear-gradient(135deg,var(--primary),#38bdf8);
 }
 
-.review-approved-badge{
+.review-public-badge{
     color:#047857;
     background:#ecfdf5;
     border:1px solid #a7f3d0;
@@ -3935,6 +3944,21 @@ body{
     .consultation-content h2{
         font-size:23px;
     }
+}
+
+
+.review-public-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    margin-top:14px;
+    padding:5px 9px;
+    border-radius:999px;
+    color:#0757d8;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    font-size:11px;
+    font-weight:900;
 }
 
 </style>

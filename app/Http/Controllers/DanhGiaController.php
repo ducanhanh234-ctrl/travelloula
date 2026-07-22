@@ -78,8 +78,8 @@ class DanhGiaController extends Controller
     /**
      * Người dùng chỉ cần đăng nhập là có thể đánh giá tour.
      *
-     * Mỗi tài khoản có một đánh giá trên mỗi tour.
-     * Gửi lại sẽ cập nhật đánh giá hiện có.
+     * Không giới hạn số lần đánh giá.
+     * Mỗi lần gửi sẽ tạo một bản ghi đánh giá mới.
      */
     public function store(
         Request $request,
@@ -111,21 +111,18 @@ class DanhGiaController extends Controller
         ]);
 
         try {
-            $danhGia = DanhGia::query()->updateOrCreate(
-                [
-                    'nguoi_dung_id' => Auth::id(),
-                    'tour_id' => $tour->id,
-                ],
-                [
-                    'so_sao' => (int) $validated['so_sao'],
-                    'tieu_de' => $validated['tieu_de'] ?? null,
-                    'noi_dung_danh_gia' => trim(
-                        $validated['noi_dung_danh_gia']
-                    ),
-                    'hien_thi' => 1,
-                    'thoi_gian_danh_gia' => now(),
-                ]
-            );
+            DanhGia::query()->create([
+                'nguoi_dung_id' => Auth::id(),
+                'khach_hang_dat_tour_id' => null,
+                'tour_id' => $tour->id,
+                'so_sao' => (int) $validated['so_sao'],
+                'tieu_de' => $validated['tieu_de'] ?? null,
+                'noi_dung_danh_gia' => trim(
+                    $validated['noi_dung_danh_gia']
+                ),
+                'hien_thi' => 1,
+                'thoi_gian_danh_gia' => now(),
+            ]);
         } catch (\Throwable $exception) {
             report($exception);
 
@@ -139,9 +136,7 @@ class DanhGiaController extends Controller
         return $this->quayLaiDanhGia(
             $tour,
             'success',
-            $danhGia->wasRecentlyCreated
-                ? 'Đánh giá đã được đăng và hiển thị ngay.'
-                : 'Đánh giá của bạn đã được cập nhật.'
+            'Đánh giá mới đã được đăng và hiển thị ngay.'
         );
     }
 
@@ -170,7 +165,7 @@ class DanhGiaController extends Controller
         $danh_gia->delete();
 
         return redirect()
-            ->route('Admin.danh_gia.index')
+            ->route('Admin.danh_gias.index')
             ->with('success', 'Đánh giá đã được xóa thành công.');
     }
 
@@ -179,12 +174,22 @@ class DanhGiaController extends Controller
         string $loai,
         string $noiDung
     ): RedirectResponse {
+        $url = route('Client.danh_sach_tour.show', $tour->id)
+            . '#danh-gia';
+
+        /*
+         * Chỉ giữ lại dữ liệu form khi có lỗi.
+         * Khi gửi thành công, không gọi withInput() để form tải lại trống.
+         */
+        if ($loai === 'error') {
+            return redirect()
+                ->to($url)
+                ->withInput()
+                ->with($loai, $noiDung);
+        }
+
         return redirect()
-            ->to(
-                route('Client.danh_sach_tour.show', $tour->id)
-                . '#danh-gia'
-            )
-            ->withInput()
+            ->to($url)
             ->with($loai, $noiDung);
     }
 }

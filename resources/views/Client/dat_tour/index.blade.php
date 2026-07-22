@@ -7,11 +7,11 @@
         <form id="bookingForm" method="POST" action="{{ route('store_dat_tour') }}">
             @csrf
             @if (session('error')
-                
-        )  
-        <div class="alert alert-danger">
-        {{session('error')}}    
-        </div>      
+
+            )
+            <div class="alert alert-danger">
+                {{session('error')}}
+            </div>
             @endif
             <div class="row g-5">
                 <!-- LEFT - Thông tin chính -->
@@ -29,25 +29,23 @@
                     <h4 class="fw-semibold mb-3 text-dark">
                         <i class="fa fa-info-circle me-2"></i>Thông tin Tour
                     </h4>
-                   <input type="hidden" name="tour_id" value="{{ $tour->id }}">
-    <input type="hidden" name="trang_thai" value="cho_thanh_toan">
-    <input type="hidden" name="so_tien_da_thanh_toan" value="0">
+                    <input type="hidden" name="tour_id" value="{{ $tour->id }}">
+                    <input type="hidden" name="trang_thai" value="cho_thanh_toan">
+                    <input type="hidden" name="so_tien_da_thanh_toan" value="0">
                     <div class="card border-0 shadow-sm mb-5">
                         <div class="row g-0">
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/'.$tour->anh_dai_dien) }}"
-                                     class="img-fluid h-100 w-100 object-fit-cover rounded-start"
-                                     style="min-height: 220px;" alt="{{ $tour->ten_tour }}">
+                                <img src="{{ asset('storage/'.$tour->anh_dai_dien) }}" class="img-fluid h-100 w-100 object-fit-cover rounded-start" style="min-height: 220px;" alt="{{ $tour->ten_tour }}">
                             </div>
                             <div class="col-md-8 p-4">
                                 <h4 class="fw-bold">{{ $tour->ten_tour }}</h4>
                                 <p class="mb-2 text-muted">
-                                    <i class="fa fa-location-dot text-danger"></i> 
+                                    <i class="fa fa-location-dot text-danger"></i>
                                     {{ $tour->dia_diem_khoi_hanh }}
                                 </p>
                                 <p class="mb-3">
-                                    <i class="fa fa-clock text-primary"></i> 
-                                    {{ $tour->thoi_luong }} 
+                                    <i class="fa fa-clock text-primary"></i>
+                                    {{ $tour->thoi_luong }}
                                 </p>
                                 <h4 class="text-primary fw-bold mb-0">
                                     {{ number_format($tour->gia_nguoi_lon) }}đ <small class="fs-6 text-muted">/người lớn</small>
@@ -62,23 +60,17 @@
                     </h4>
                     <div class="mb-5">
                         @foreach($lichKhoiHanhs as $lich)
-                        <label class="card border mb-3 p-4 cursor-pointer hover-shadow transition-all"
-                               style="cursor: pointer;">
+                        <label class="card border mb-3 p-4 cursor-pointer hover-shadow transition-all" style="cursor: pointer;">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center gap-3">
-                                    <input class="form-check-input mt-0" 
-                                           type="radio" 
-                                           name="lich_khoi_hanh_id" 
-                                           value="{{ $lich->id }}"
-                                           required
-                                           @checked(old('lich_khoi_hanh_id') == $lich->id)>
+                                    <input class="form-check-input mt-0" type="radio" name="lich_khoi_hanh_id" value="{{ $lich->id }}" required @checked(old('lich_khoi_hanh_id')==$lich->id)>
                                     <div>
                                         <strong class="fs-5">
                                             {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
                                         </strong>
                                         <br>
                                         <small class="text-success">
-                                            <i class="fa fa-users"></i> 
+                                            <i class="fa fa-users"></i>
                                             Còn <strong>{{ $lich->so_cho }}</strong> chỗ
                                         </small>
                                     </div>
@@ -101,23 +93,19 @@
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Họ và tên</label>
-                                <input type="text" class="form-control form-control-lg bg-light" 
-                                       value="{{ auth()->user()->name }}" readonly>
+                                <input type="text" class="form-control form-control-lg bg-light" value="{{ auth()->user()->name }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Email</label>
-                                <input type="email" class="form-control form-control-lg bg-light" 
-                                       value="{{ auth()->user()->email }}" readonly>
+                                <input type="email" class="form-control form-control-lg bg-light" value="{{ auth()->user()->email }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Số điện thoại</label>
-                                <input type="tel" name="nguoi_dat_phone" class="form-control form-control-lg bg-light" 
-                                       value="{{ auth()->user()->phone ?? '' }}" readonly>
+                                <input type="tel" name="nguoi_dat_phone" class="form-control form-control-lg bg-light" value="{{ auth()->user()->phone ?? '' }}" readonly>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium">Địa Chỉ</label>
-                                <input type="text" class="form-control form-control-lg bg-light" 
-                                       value="{{ auth()->user()->address ?? '' }}" readonly>
+                                <input type="text" class="form-control form-control-lg bg-light" value="{{ auth()->user()->address ?? '' }}" readonly>
                             </div>
                         </div>
                     </div>
@@ -158,7 +146,7 @@
                         <div class="card border-0 shadow-lg">
                             <div class="card-body p-5">
                                 <h3 class="fw-bold mb-4">Tóm tắt đơn hàng</h3>
-                                
+
                                 <div class="bg-light rounded-3 p-4 mb-4">
                                     <small class="text-muted">Tour đã chọn</small>
                                     <h2 class="fw-bold text-primary my-3">
@@ -213,7 +201,7 @@
                                 </button>
 
                                 <p class="text-center text-muted small mt-4 mb-0">
-                                    Bằng việc thanh toán, bạn đồng ý với 
+                                    Bằng việc thanh toán, bạn đồng ý với
                                     <a href="#" class="text-decoration-underline">Điều khoản dịch vụ</a> của Travelloula.
                                 </p>
                             </div>
@@ -221,32 +209,36 @@
                     </div>
                 </div>
             </div>
-            
+
         </form> <!-- END FORM -->
     </div>
 </div>
 
 <style>
-.hover-shadow:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
-    transition: all 0.3s ease;
-}
-.cursor-pointer:hover {
-    background-color: #f8f9fa;
-}
-.order-summary {
-    position: sticky;
-    top: 110px;
-    z-index: 1020;
-}
-.passenger-card {
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-}
+    .hover-shadow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.3s ease;
+    }
+
+    .cursor-pointer:hover {
+        background-color: #f8f9fa;
+    }
+
+    .order-summary {
+        position: sticky;
+        top: 110px;
+        z-index: 1020;
+    }
+
+    .passenger-card {
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
 </style>
 
 @endsection
@@ -255,24 +247,36 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Lấy giá cơ bản từ Tour truyền qua Blade
-        const priceAdult = {{ $tour->gia_nguoi_lon ?? 0 }};
-        const priceChild = {{ $tour->gia_tre_em ?? 0 }};
-        const priceBaby =  {{ $tour->gia_em_be ?? 0 }};
+        const priceAdult = {
+            {
+                $tour - > gia_nguoi_lon ? ? 0
+            }
+        };
+        const priceChild = {
+            {
+                $tour - > gia_tre_em ? ? 0
+            }
+        };
+        const priceBaby = {
+            {
+                $tour - > gia_em_be ? ? 0
+            }
+        };
 
         // DOM elements form inputs
         const elQtyAdult = document.getElementById('qty_adult');
         const elQtyChild = document.getElementById('qty_child');
-        const elQtyBaby  = document.getElementById('qty_baby');
-        
+        const elQtyBaby = document.getElementById('qty_baby');
+
         // DOM elements for Order Summary
         const elTxtAdultCount = document.getElementById('txt_adult_count');
         const elTxtChildCount = document.getElementById('txt_child_count');
         const elTxtBabyCount = document.getElementById('txt_baby_count');
-        
+
         const elTxtAdultTotal = document.getElementById('txt_adult_total');
         const elTxtChildTotal = document.getElementById('txt_child_total');
         const elTxtBabyTotal = document.getElementById('txt_baby_total');
-        
+
         const elTxtGrandTotal = document.getElementById('txt_grand_total');
         const elInputGrandTotal = document.getElementById('input_grand_total');
 
@@ -344,7 +348,10 @@
             let babies = parseInt(elQtyBaby.value) || 0;
 
             // Đảm bảo có ít nhất 1 người lớn
-            if(adults < 1) { adults = 1; elQtyAdult.value = 1; }
+            if (adults < 1) {
+                adults = 1;
+                elQtyAdult.value = 1;
+            }
 
             // Update Summary Counts
             elTxtAdultCount.textContent = adults;
@@ -361,7 +368,7 @@
             elTxtAdultTotal.textContent = formatVND(totalAdult);
             elTxtChildTotal.textContent = formatVND(totalChild);
             elTxtBabyTotal.textContent = formatVND(totalBaby);
-            
+
             elTxtGrandTotal.textContent = formatVND(grandTotal);
             elInputGrandTotal.value = grandTotal;
 
@@ -370,17 +377,17 @@
             let passengerIndex = 0;
 
             // Render Adults
-            for(let i = 0; i < adults; i++) {
+            for (let i = 0; i < adults; i++) {
                 formsHTML += getPassengerFormTemplate(passengerIndex, 'Người lớn', 'adult');
                 passengerIndex++;
             }
             // Render Children
-            for(let i = 0; i < children; i++) {
+            for (let i = 0; i < children; i++) {
                 formsHTML += getPassengerFormTemplate(passengerIndex, 'Trẻ em', 'child');
                 passengerIndex++;
             }
             // Render Babies
-            for(let i = 0; i < babies; i++) {
+            for (let i = 0; i < babies; i++) {
                 formsHTML += getPassengerFormTemplate(passengerIndex, 'Em bé', 'baby');
                 passengerIndex++;
             }
@@ -396,5 +403,6 @@
         // Khởi chạy lần đầu để render
         updateBookingDetails();
     });
+
 </script>
 @endsection

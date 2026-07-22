@@ -6,17 +6,9 @@
 
     <title>@yield('title', 'Travelloula')</title>
 
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
-        crossorigin="anonymous"
-    >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
     @stack('styles')
     @yield('styles')
@@ -26,47 +18,29 @@
     <header class="client-header">
         <div class="client-container header-inner">
             <a href="{{ route('Client.trang_chu.index') }}" class="brand">
-                <img
-                    src="{{ asset('images/logo_ngang.png') }}"
-                    alt="Travelloula"
-                >
+                <img src="{{ asset('images/logo_ngang.png') }}" alt="Travelloula">
             </a>
 
             <nav class="main-menu">
-                <a
-                    href="{{ route('Client.trang_chu.index') }}"
-                    class="{{ request()->is('/') || request()->is('trang_chu') ? 'active' : '' }}"
-                >
+                <a href="{{ route('Client.trang_chu.index') }}" class="{{ request()->is('/') || request()->is('trang_chu') ? 'active' : '' }}">
                     Trang chủ
                 </a>
 
-                <a
-                    href="{{ route('Client.danh_sach_tour.index') }}"
-                    class="{{ request()->is('tour*') ? 'active' : '' }}"
-                >
+                <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour*') ? 'active' : '' }}">
                     Tour
                 </a>
 
                 @auth
-                    <a
-                        href="{{ route('Client.tour_yeu_thich.index') }}"
-                        class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}"
-                    >
-                        Tour yêu thích
-                    </a>
+                <a href="{{ route('Client.tour_yeu_thich.index') }}" class="{{ request()->is('tour_yeu_thich*') ? 'active' : '' }}">
+                    Tour yêu thích
+                </a>
                 @endauth
 
-                <a
-                    href="{{ route('Client.dieu_khoan.index') }}"
-                    class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}"
-                >
+                <a href="{{ route('Client.dieu_khoan.index') }}" class="{{ request()->is('dieu_khoan*') ? 'active' : '' }}">
                     Điều khoản
                 </a>
 
-                <a
-                    href="{{ route('Client.bai_viet.index') }}"
-                    class="{{ request()->is('bai_viet*') ? 'active' : '' }}"
-                >
+                <a href="{{ route('Client.bai_viet.index') }}" class="{{ request()->is('bai_viet*') ? 'active' : '' }}">
                     Bài viết
                 </a>
 
@@ -78,64 +52,55 @@
                     Liên hệ
                 </a>
 
-                <a
-                    href="{{ route('Client.ve_chung_toi.index') }}"
-                    class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}"
-                >
+                <a href="{{ route('Client.ve_chung_toi.index') }}" class="{{ request()->is('ve_chung_toi*') ? 'active' : '' }}">
                     Về chúng tôi
                 </a>
             </nav>
 
             <div class="header-actions">
                 @auth
-                    <div class="user-dropdown">
-                        <button
-                            type="button"
-                            class="user-btn"
-                            id="userMenuButton"
-                            aria-expanded="false"
-                            aria-controls="userMenu"
-                        >
-                            <i class="fa-regular fa-user"></i>
-                            <span>{{ auth()->user()->name }}</span>
-                            <i class="fa-solid fa-angle-down"></i>
-                        </button>
-
-                        <div class="user-menu" id="userMenu">
-                            <a href="{{ route('profile') }}">
-                                <i class="fa-regular fa-id-card"></i>
-                                Hồ sơ cá nhân
-                            </a>
-
-                            <a href="{{ route('Client.tour_yeu_thich.index') }}">
-                                <i class="fa-solid fa-heart"></i>
-                                Tour yêu thích
-                            </a>
-
-                            <a href="{{ route('Client.danh_sach_tour.index') }}">
-                                <i class="fa-solid fa-suitcase-rolling"></i>
-                                Danh sách tour
-                            </a>
-
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-
-                                <button type="submit">
-                                    <i class="fa-solid fa-right-from-bracket"></i>
-                                    Đăng xuất
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                @else
-                    <a href="{{ route('register') }}" class="register-btn">
-                        Đăng ký
-                    </a>
-
-                    <a href="{{ route('login') }}" class="login-btn">
+                <div class="user-dropdown">
+                    <button type="button" class="user-btn" id="userMenuButton" aria-expanded="false" aria-controls="userMenu">
                         <i class="fa-regular fa-user"></i>
-                        Đăng nhập
-                    </a>
+                        <span>{{ auth()->user()->name }}</span>
+                        <i class="fa-solid fa-angle-down"></i>
+                    </button>
+
+                    <div class="user-menu" id="userMenu">
+                        <a href="{{ route('profile') }}">
+                            <i class="fa-regular fa-id-card"></i>
+                            Hồ sơ cá nhân
+                        </a>
+
+                        <a href="{{ route('Client.tour_yeu_thich.index') }}">
+                            <i class="fa-solid fa-heart"></i>
+                            Tour yêu thích
+                        </a>
+
+                        <a href="{{ route('Client.danh_sach_tour.index') }}">
+                            <i class="fa-solid fa-suitcase-rolling"></i>
+                            Danh sách tour
+                        </a>
+
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+
+                            <button type="submit">
+                                <i class="fa-solid fa-right-from-bracket"></i>
+                                Đăng xuất
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @else
+                <a href="{{ route('register') }}" class="register-btn">
+                    Đăng ký
+                </a>
+
+                <a href="{{ route('login') }}" class="login-btn">
+                    <i class="fa-regular fa-user"></i>
+                    Đăng nhập
+                </a>
                 @endauth
             </div>
         </div>
@@ -159,10 +124,7 @@
         <div class="client-container footer-content">
             <div class="footer-brand">
                 <a href="{{ route('Client.trang_chu.index') }}" class="footer-logo">
-                    <img
-                        src="{{ asset('images/travelloula_logo_only_clean_v2.png') }}"
-                        alt="Travelloula"
-                    >
+                    <img src="{{ asset('images/travelloula_logo_only_clean_v2.png') }}" alt="Travelloula">
                 </a>
 
                 <p>
@@ -203,10 +165,10 @@
                 </a>
 
                 @auth
-                    <a href="{{ route('Client.tour_yeu_thich.index') }}">
-                        <i class="fa-solid fa-angle-right"></i>
-                        Tour yêu thích
-                    </a>
+                <a href="{{ route('Client.tour_yeu_thich.index') }}">
+                    <i class="fa-solid fa-angle-right"></i>
+                    Tour yêu thích
+                </a>
                 @endauth
 
                 <a href="{{ route('Client.bai_viet.index') }}">
@@ -261,12 +223,7 @@
                 </p>
 
                 <form action="#" method="GET" class="footer-form">
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Nhập email của bạn"
-                        aria-label="Email đăng ký nhận tin"
-                    >
+                    <input type="email" name="email" placeholder="Nhập email của bạn" aria-label="Email đăng ký nhận tin">
 
                     <button type="submit">
                         Đăng ký
@@ -526,14 +483,12 @@
         .footer-top-line {
             width: 100%;
             height: 7px;
-            background: linear-gradient(
-                90deg,
-                #0757d8 0%,
-                #00b4d8 45%,
-                #6ee7b7 68%,
-                #facc15 84%,
-                #f59e0b 100%
-            );
+            background: linear-gradient(90deg,
+                    #0757d8 0%,
+                    #00b4d8 45%,
+                    #6ee7b7 68%,
+                    #facc15 84%,
+                    #f59e0b 100%);
         }
 
         .client-footer::before {
@@ -592,8 +547,7 @@
             box-shadow: none;
             object-fit: contain;
             filter:
-                drop-shadow(0 8px 16px rgba(0, 0, 0, .28))
-                drop-shadow(0 0 10px rgba(0, 180, 216, .18));
+                drop-shadow(0 8px 16px rgba(0, 0, 0, .28)) drop-shadow(0 0 10px rgba(0, 180, 216, .18));
         }
 
         .footer-brand p,
@@ -883,22 +837,20 @@
             width: 96px;
             height: 70px;
             background: #031b40;
-            clip-path: polygon(
-                50% 50%,
-                0 25%,
-                42% 42%,
-                18% 0,
-                55% 34%,
-                72% 0,
-                68% 40%,
-                100% 20%,
-                72% 52%,
-                100% 70%,
-                60% 62%,
-                40% 100%,
-                38% 62%,
-                0 80%
-            );
+            clip-path: polygon(50% 50%,
+                    0 25%,
+                    42% 42%,
+                    18% 0,
+                    55% 34%,
+                    72% 0,
+                    68% 40%,
+                    100% 20%,
+                    72% 52%,
+                    100% 70%,
+                    60% 62%,
+                    40% 100%,
+                    38% 62%,
+                    0 80%);
         }
 
         .palm-one {
@@ -1174,28 +1126,17 @@
                 display: none;
             }
         }
+
     </style>
 
-    <script
-        src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"
-    ></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const button = document.getElementById('userMenuButton');
             const menu = document.getElementById('userMenu');
 
@@ -1203,29 +1144,30 @@
                 return;
             }
 
-            button.addEventListener('click', function (event) {
+            button.addEventListener('click', function(event) {
                 event.stopPropagation();
 
                 const isOpen = menu.classList.toggle('show');
                 button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             });
 
-            menu.addEventListener('click', function (event) {
+            menu.addEventListener('click', function(event) {
                 event.stopPropagation();
             });
 
-            document.addEventListener('click', function () {
+            document.addEventListener('click', function() {
                 menu.classList.remove('show');
                 button.setAttribute('aria-expanded', 'false');
             });
 
-            document.addEventListener('keydown', function (event) {
+            document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     menu.classList.remove('show');
                     button.setAttribute('aria-expanded', 'false');
                 }
             });
         });
+
     </script>
 
     @yield('scripts')

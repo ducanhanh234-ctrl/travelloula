@@ -217,20 +217,29 @@ class CheckInController extends Controller
             $tongKhach += $datTour->khachHangs->count();
         }
 
+        $diemDanhs = DiemDanhKhachHang::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanhId
+        )
+            ->where('ngay_thu', $ngayThu)
+            ->get()
+            ->keyBy('khach_hang_dat_tour_id');
+
         return view(
             'Guide.checkin.diemdanh',
             compact(
                 'datTours',
                 'lichKhoiHanhId',
                 'ngayThu',
-                'tongKhach'
+                'tongKhach',
+                'diemDanhs'
             )
         );
     }
 
     public function luuDiemDanh(Request $request)
     {
-        dd($request->all());
+        
     }
 
     public function checkOut($id)

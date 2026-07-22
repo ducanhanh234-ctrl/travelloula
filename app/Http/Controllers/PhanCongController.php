@@ -51,12 +51,17 @@ class PhanCongController extends Controller
     }
     public function create()
     {
-
-        $lichKhoiHanhs = LichKhoiHanhTour::where('trang_thai', 'closed')->get();
-
+        $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
+            ->where('trang_thai', 'available')
+            ->get();
+// php artisan make:migration add_ngay_thu_to_diem_danh_khach_hangs_table --table=diem_danh_khach_hangs
         $huongDanViens = HuongDanVien::where('trang_thai', 'san_sang')->get();
-        $phuongTiens = PhuongTien::where('trang_thai', '1')->get();
-        return view('Admin.phan_cong.create', compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens'));
+        $phuongTiens = PhuongTien::where('trang_thai', 1)->get();
+
+        return view(
+            'Admin.phan_cong.create',
+            compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens')
+        );
     }
     public function store(Request $request)
     {

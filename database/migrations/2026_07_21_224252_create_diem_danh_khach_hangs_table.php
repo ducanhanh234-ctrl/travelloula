@@ -30,6 +30,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             // Ngày điểm danh (mỗi ngày chỉ điểm danh 1 lần)
+            $table->unsignedTinyInteger('ngay_thu');
             $table->date('ngay_diem_danh');
             $table->enum('trang_thai', [
                 'chua_diem_danh',

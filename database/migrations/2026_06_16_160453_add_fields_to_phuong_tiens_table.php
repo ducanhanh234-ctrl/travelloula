@@ -10,19 +10,15 @@ return new class extends Migration
     {
         Schema::table('phuong_tiens', function (Blueprint $table) {
             if (!Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
-                $table->string('bien_so_xe')->after('id');
+                $table->string('bien_so_xe')->nullable()->after('id');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'loai_xe')) {
                 $table->string('loai_xe')->nullable()->after('bien_so_xe');
             }
 
-            if (!Schema::hasColumn('phuong_tiens', 'so_cho')) {
-                $table->integer('so_cho')->nullable()->after('loai_xe');
-            }
-
             if (!Schema::hasColumn('phuong_tiens', 'loai_phuong_tien')) {
-                $table->string('loai_phuong_tien')->nullable()->after('so_cho');
+                $table->string('loai_phuong_tien')->nullable()->after('loai_xe');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'hang_xe')) {
@@ -37,8 +33,12 @@ return new class extends Migration
                 $table->string('mau_xe')->nullable()->after('nam_san_xuat');
             }
 
+            if (!Schema::hasColumn('phuong_tiens', 'so_cho')) {
+                $table->unsignedInteger('so_cho')->nullable()->after('mau_xe');
+            }
+
             if (!Schema::hasColumn('phuong_tiens', 'trang_thai')) {
-                $table->tinyInteger('trang_thai')->default(1)->after('mau_xe');
+                $table->tinyInteger('trang_thai')->default(1)->after('so_cho');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'ten_tai_xe')) {
@@ -46,61 +46,41 @@ return new class extends Migration
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'so_dien_thoai_tai_xe')) {
-                $table->string('so_dien_thoai_tai_xe')->nullable()->after('ten_tai_xe');
+                $table->string('so_dien_thoai_tai_xe', 20)
+                    ->nullable()
+                    ->after('ten_tai_xe');
             }
 
             if (!Schema::hasColumn('phuong_tiens', 'ghi_chu')) {
-                $table->text('ghi_chu')->nullable()->after('so_dien_thoai_tai_xe');
+                $table->text('ghi_chu')
+                    ->nullable()
+                    ->after('so_dien_thoai_tai_xe');
             }
         });
     }
 
     public function down(): void
     {
-        Schema::table('phuong_tiens', function (Blueprint $table) {
-            if (Schema::hasColumn('phuong_tiens', 'ghi_chu')) {
-                $table->dropColumn('ghi_chu');
-            }
+        $columns = [
+            'ghi_chu',
+            'so_dien_thoai_tai_xe',
+            'ten_tai_xe',
+            'trang_thai',
+            'so_cho',
+            'mau_xe',
+            'nam_san_xuat',
+            'hang_xe',
+            'loai_phuong_tien',
+            'loai_xe',
+            'bien_so_xe',
+        ];
 
-            if (Schema::hasColumn('phuong_tiens', 'so_dien_thoai_tai_xe')) {
-                $table->dropColumn('so_dien_thoai_tai_xe');
+        foreach ($columns as $column) {
+            if (Schema::hasColumn('phuong_tiens', $column)) {
+                Schema::table('phuong_tiens', function (Blueprint $table) use ($column) {
+                    $table->dropColumn($column);
+                });
             }
-
-            if (Schema::hasColumn('phuong_tiens', 'ten_tai_xe')) {
-                $table->dropColumn('ten_tai_xe');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'trang_thai')) {
-                $table->dropColumn('trang_thai');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'mau_xe')) {
-                $table->dropColumn('mau_xe');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'nam_san_xuat')) {
-                $table->dropColumn('nam_san_xuat');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'hang_xe')) {
-                $table->dropColumn('hang_xe');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'loai_phuong_tien')) {
-                $table->dropColumn('loai_phuong_tien');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'so_cho')) {
-                $table->dropColumn('so_cho');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'loai_xe')) {
-                $table->dropColumn('loai_xe');
-            }
-
-            if (Schema::hasColumn('phuong_tiens', 'bien_so_xe')) {
-                $table->dropColumn('bien_so_xe');
-            }
-        });
+        }
     }
 };

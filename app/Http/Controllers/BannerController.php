@@ -11,7 +11,13 @@ use Illuminate\Http\Request;
 
 class BannerController extends Controller
 {
-
+    public function __construct()
+    {
+        $this->middleware('permission:banners.view')->only(['index', 'show']);
+        $this->middleware('permission:banners.create')->only(['create', 'store']);
+        $this->middleware('permission:banners.edit')->only(['edit', 'update']);
+        $this->middleware('permission:banners.delete')->only(['destroy']);
+    }
 
     public function index(Request $request)
     {

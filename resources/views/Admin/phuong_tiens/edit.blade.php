@@ -232,11 +232,11 @@
 
                 <div class="form-card-body">
                     <div class="row">
-                        <div class="col-md-4 mb-4">
+                        {{-- <div class="col-md-4 mb-4">
                             <label class="form-label">Tên phương tiện</label>
 
                             <input type="text" name="ten_phuong_tien" value="{{ old('ten_phuong_tien', $phuongTien->ten_phuong_tien) }}" class="input-control">
-                        </div>
+                        </div> --}}
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Biển số xe *</label>
                             <input type="text" name="bien_so_xe" class="input-control"

@@ -21,7 +21,7 @@
                             @foreach($tours as $tour)
                                 <option value="{{ $tour->id }}" data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
                                     data-adult-price="{{ $tour->gia_nguoi_lon }}" data-child-price="{{ $tour->gia_tre_em }}"
-                                    data-baby-price="{{ $tour->gia_em_be }}" {{ $booking->tour_id == $tour->id ? 'selected' : '' }}>
+                                    {{ $booking->tour_id == $tour->id ? 'selected' : '' }}>
                                     {{ $tour->ten_tour }}
                                 </option>
                             @endforeach
@@ -59,28 +59,16 @@
 
                     {{-- Số lượng khách --}}
                     <div class="row">
-                        <div class="col-md-4">
-                            <label>
-                                Người lớn
-                            </label>
+                        <div class="col-md-6">
+                            <label>Người lớn</label>
                             <input id="adult_count" name="so_nguoi_lon" type="number" min="0" class="form-control"
                                 value="{{ $booking->so_nguoi_lon }}">
                         </div>
 
-                        <div class="col-md-4">
-                            <label>
-                                Trẻ em
-                            </label>
+                        <div class="col-md-6">
+                            <label>Trẻ em</label>
                             <input id="child_count" name="so_tre_em" type="number" min="0" class="form-control"
                                 value="{{ $booking->so_tre_em }}">
-                        </div>
-
-                        <div class="col-md-4">
-                            <label>
-                                Em bé
-                            </label>
-                            <input id="baby_count" name="so_em_be" type="number" min="0" class="form-control"
-                                value="{{ $booking->so_em_be }}">
                         </div>
                     </div>
 
@@ -100,8 +88,6 @@
                                             Người lớn
                                         @elseif($hk->loai_hanh_khach == 'child')
                                             Trẻ em
-                                        @else
-                                            Em bé
                                         @endif
 
                                         #{{ $index + 1 }}
@@ -204,36 +190,34 @@
                             value="{{ number_format($booking->tong_tien, 0, ',', '.') }} VNĐ">
                     </div>
 
-                    <div class="mb-3">
-                        <label>
-                            Đã thanh toán
-                        </label>
-                        <input type="number" name="so_tien_da_thanh_toan" class="form-control"
-                            value="{{ $booking->so_tien_da_thanh_toan }}">
+                   <div class="mb-3">
+                        <label>Đã thanh toán</label>
+                        <input type="number" class="form-control"
+                            value="{{ $booking->so_tien_da_thanh_toan }}"
+                                readonly>
                     </div>
 
-                    <div class="mb-3">
-                        <label>
-                            Trạng thái
-                        </label>
-                        <select name="trang_thai" class="form-select">
-                            <option value="cho_xac_nhan">
-                                Chờ xác nhận
-                            </option>
+                   <div class="mb-3">
+    <label>Trạng thái</label>
 
-                            <option value="da_xac_nhan">
-                                Đã xác nhận
-                            </option>
+    <input
+        type="text"
+        class="form-control"
+        value="@switch($booking->trang_thai)
+            @case('cho_xac_nhan') Chờ xác nhận @break
+            @case('da_xac_nhan') Đã xác nhận @break
+            @case('da_thanh_toan') Đã thanh toán @break
+            @case('da_huy') Đã hủy @break
+        @endswitch"
+        readonly
+    >
 
-                            <option value="da_thanh_toan">
-                                Đã thanh toán
-                            </option>
-
-                            <option value="da_huy">
-                                Đã hủy
-                            </option>
-                        </select>
-                    </div>
+    <input
+        type="hidden"
+        name="trang_thai"
+        value="{{ $booking->trang_thai }}"
+    >
+</div>
 
                     <div class="mb-3">
                         <label>
@@ -256,7 +240,6 @@
         let oldPassengerCount = {{ count($hanhKhachs) }};
         // tạo form hành khách mới
        function createPassengerForm(index, title, type) {
-
     let colorClass = '';
 
     switch (type) {
@@ -267,21 +250,14 @@
         case 'child':
             colorClass = 'bg-warning text-dark';
             break;
-
-        case 'baby':
-            colorClass = 'bg-info text-dark';
-            break;
     }
-
     return `
         <div class="card mb-3 border-success">
-
             <div class="card-header ${colorClass}">
                 ${title}
             </div>
 
             <div class="card-body">
-
                 <input
                     type="hidden"
                     name="hanh_khach_moi[${index}][loai_hanh_khach]"
@@ -289,10 +265,8 @@
                 >
 
                 <div class="row">
-
                     <div class="col-md-4">
                         <label>Họ tên</label>
-
                         <input
                             type="text"
                             class="form-control"
@@ -301,109 +275,76 @@
                     </div>
 
                     <div class="col-md-4">
-
                         <label>Giới tính</label>
-
                         <select
                             class="form-select"
                             name="hanh_khach_moi[${index}][gioi_tinh]">
 
                             <option value="Nam">Nam</option>
                             <option value="Nữ">Nữ</option>
-
                         </select>
-
                     </div>
 
                     <div class="col-md-4">
-
                         <label>Ngày sinh</label>
-
                         <input
                             type="date"
                             class="form-control"
                             name="hanh_khach_moi[${index}][ngay_sinh]"
                         >
-
                     </div>
-
                 </div>
 
-
                 <div class="row mt-3">
-
                     <div class="col-md-3">
-
                         <label>Quốc tịch</label>
-
                         <input
                             type="text"
                             class="form-control"
                             name="hanh_khach_moi[${index}][quoc_tich]"
                             value="Việt Nam"
                         >
-
                     </div>
 
                     <div class="col-md-3">
-
                         <label>Loại giấy tờ</label>
-
                         <select
                             class="form-select"
                             name="hanh_khach_moi[${index}][loai_giay_to]">
-
                             <option value="CCCD">CCCD</option>
                             <option value="Hộ chiếu">Hộ chiếu</option>
-
                         </select>
-
                     </div>
 
                     <div class="col-md-3">
-
                         <label>Số giấy tờ</label>
-
                         <input
                             type="text"
                             class="form-control"
                             name="hanh_khach_moi[${index}][so_giay_to]"
                         >
-
                     </div>
 
                     <div class="col-md-3">
-
                         <label>Số điện thoại</label>
-
                         <input
                             type="text"
                             class="form-control"
                             name="hanh_khach_moi[${index}][so_dien_thoai]"
                         >
-
                     </div>
-
                 </div>
 
-
                 <div class="row mt-3">
-
                     <div class="col-md-12">
-
                         <label>Yêu cầu đặc biệt</label>
-
                         <textarea
                             class="form-control"
                             rows="2"
                             name="hanh_khach_moi[${index}][yeu_cau_dac_biet]"></textarea>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
     `;
 }
@@ -414,10 +355,6 @@
 
             let child =
                 Number(document.getElementById('child_count').value) || 0;
-
-            let baby =
-                Number(document.getElementById('baby_count').value) || 0;
-
             let container =
                 document.getElementById('new-passenger-container');
             container.innerHTML = '';
@@ -425,7 +362,6 @@
             // đếm hành khách cũ theo từng loại
             let oldAdult = 0;
             let oldChild = 0;
-            let oldBaby = 0;
             document.querySelectorAll(
                 '#passenger-container .passenger-card'
             ).forEach(card => {
@@ -438,10 +374,6 @@
 
                 if (type === 'child') {
                     oldChild++;
-                }
-
-                if (type === 'baby') {
-                    oldBaby++;
                 }
             });
 
@@ -471,17 +403,6 @@
                     );
                 index++;
             }
-
-            // EM BÉ
-            for (let i = oldBaby; i < baby; i++) {
-                container.innerHTML +=
-                    createPassengerForm(
-                        index,
-                        `Em bé #${i + 1}`,
-                        'baby'
-                    );
-                index++;
-            }
         }
 
         // chạy khi thay đổi số lượng
@@ -507,17 +428,6 @@
                                 updateTotalPrice();
                             }
                         );
-
-                document
-                    .getElementById('baby_count')
-                    .addEventListener(
-                        'input',
-                            function() {
-                                generateNewPassengers();
-                                updateTotalPrice();
-                            }
-                        );
-
                 generateNewPassengers();
                 updateEndDate();
                 updateTotalPrice();
@@ -589,9 +499,6 @@
     let childPrice =
         Number(option.dataset.childPrice || 0);
 
-    let babyPrice =
-        Number(option.dataset.babyPrice || 0);
-
     let adult =
         Number(
             document.getElementById('adult_count').value
@@ -602,14 +509,7 @@
             document.getElementById('child_count').value
         ) || 0;
 
-    let baby =
-        Number(
-            document.getElementById('baby_count').value
-        ) || 0;
-    let total =
-        (adult * adultPrice)
-        + (child * childPrice)
-        + (baby * babyPrice);
+    let total = (adult * adultPrice) + (child * childPrice);
     document.getElementById('tong_tien').value =
         total.toLocaleString('vi-VN') + ' VNĐ';
 }
@@ -625,11 +525,6 @@
 
     if (type === 'child') {
         let input = document.getElementById('child_count');
-        input.value = Number(input.value) - 1;
-    }
-
-    if (type === 'baby') {
-        let input = document.getElementById('baby_count');
         input.value = Number(input.value) - 1;
     }
 

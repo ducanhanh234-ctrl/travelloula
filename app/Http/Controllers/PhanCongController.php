@@ -10,6 +10,14 @@ use Illuminate\Http\Request;
 
 class PhanCongController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:phan_cong.view')->only(['index', 'show']);
+        $this->middleware('permission:phan_cong.create')->only(['create', 'store']);
+        $this->middleware('permission:phan_cong.edit')->only(['edit', 'update']);
+        $this->middleware('permission:phan_cong.delete')->only(['destroy']);
+    }
+
     public function index(Request $request)
     {
         $keyword = $request->keyword;
@@ -147,6 +155,7 @@ class PhanCongController extends Controller
             'huong_dan_vien_id' => $request->hdv_id,
             'phuong_tien_id'    => $request->phuong_tien_id,
             'trang_thai'        => 2,
+            'trang_thai' => 2 // Đã phân công
         ]);
 
         return redirect()

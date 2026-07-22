@@ -34,7 +34,7 @@ class LichTrinhTourController extends Controller
         }
 
         // Sắp xếp
-        $query->orderBy('ten_tour');
+        $query->orderBy('created_at', 'desc');
 
         $tours = $query->select(
             'id',
@@ -199,6 +199,4 @@ class LichTrinhTourController extends Controller
                 'Xóa thành công'
             );
     }
-
-    
 }

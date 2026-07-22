@@ -9,6 +9,7 @@ use App\Models\DatTour;
 use App\Models\HuongDanVien;
 use App\Models\KhachHangDatTour;
 use App\Models\LichKhoiHanhTour;
+use App\Models\DiemDanhKhachHang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,19 +22,30 @@ class CheckInController extends Controller
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
 
+        $today = now()->toDateString();
+
         $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
             ->where('huong_dan_vien_id', $guide->id)
-            ->orderByDesc('ngay_khoi_hanh')
+            // Ẩn tour đã kết thúc
+            ->whereDate('ngay_ket_thuc', '>=', $today)
+            // Tour đang diễn ra lên trước
+            ->orderByRaw("
+        CASE
+            WHEN ? BETWEEN ngay_khoi_hanh AND ngay_ket_thuc THEN 0
+            ELSE 1
+        END
+    ", [$today])
+            ->orderBy('ngay_khoi_hanh')
             ->paginate(10);
 
-        $tongTour = $lichKhoiHanhs->count();
+        $tongTour = $lichKhoiHanhs->total();
 
-        $dangDienRa = $lichKhoiHanhs
+        $dangDienRa = $lichKhoiHanhs->getCollection()
             ->where('ngay_khoi_hanh', '<=', now())
             ->where('ngay_ket_thuc', '>=', now())
             ->count();
 
-        $sapKhoiHanh = $lichKhoiHanhs
+        $sapKhoiHanh = $lichKhoiHanhs->getCollection()
             ->where('ngay_khoi_hanh', '>', now())
             ->count();
 
@@ -188,6 +200,37 @@ class CheckInController extends Controller
             'Guide.checkin.diadiem',
             compact('lichKhoiHanh')
         );
+    }
+
+    public function diemDanh($lichKhoiHanhId, $ngayThu)
+    {
+        $datTours = DatTour::with([
+            'nguoiDung',
+            'khachHangs'
+        ])
+            ->where('lich_khoi_hanh_id', $lichKhoiHanhId)
+            ->get();
+
+        $tongKhach = 0;
+
+        foreach ($datTours as $datTour) {
+            $tongKhach += $datTour->khachHangs->count();
+        }
+
+        return view(
+            'Guide.checkin.diemdanh',
+            compact(
+                'datTours',
+                'lichKhoiHanhId',
+                'ngayThu',
+                'tongKhach'
+            )
+        );
+    }
+
+    public function luuDiemDanh(Request $request)
+    {
+        dd($request->all());
     }
 
     public function checkOut($id)

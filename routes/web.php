@@ -241,6 +241,10 @@ Route::prefix('Guide')
         Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
         Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
 
+        // Lưu trạng thái điểm danh khởi hành (nút Lưu)
+        Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
+            ->name('checkin.saveLock');
+
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
 

@@ -524,6 +524,26 @@
                 #4c40d7);
     }
 
+    .btn-save {
+        color: var(--checkin-white);
+        background: #1f5fd9;
+        border-color: #1f5fd9;
+        box-shadow:
+            0 5px 14px rgba(31, 95, 217, 0.2);
+    }
+
+    .btn-save:hover {
+        color: var(--checkin-white);
+        background: #1749ad;
+        border-color: #1749ad;
+    }
+
+    .disabled-button {
+        opacity: 0.55;
+        cursor: not-allowed !important;
+        pointer-events: none;
+    }
+
     .btn-checkout-all {
         color: #704609;
         background: var(--checkin-warning-bg);
@@ -1358,6 +1378,11 @@ max($phanTramCheckIn, 0),
             </button>
         </form>
 
+        <button type="button" class="btn-checkin btn-save" id="save-lock-button">
+            <i class="fas fa-save"></i>
+            Lưu
+        </button>
+
         <form action="{{ route('Guide.checkin.checkoutTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn Check-out tất cả hành khách?');">
             @csrf
 
@@ -1618,6 +1643,98 @@ max($phanTramCheckIn, 0),
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const saveButton = document.getElementById('save-lock-button');
+        if (!saveButton) {
+            return;
+        }
+
+        const storageKey = 'checkin_saved_{{ $lichKhoiHanhId }}_{{ $chiTiet->id }}';
+
+        const disableAllButtons = function() {
+            const buttons = document.querySelectorAll('.checkin-main-actions button:not(.btn-save), .checkin-row-actions button, .btn-modal-save');
+            buttons.forEach(function(button) {
+                button.disabled = true;
+                button.classList.add('disabled-button');
+            });
+
+            saveButton.disabled = true;
+            saveButton.textContent = 'Đã lưu';
+            saveButton.classList.add('disabled-button');
+        };
+
+        // If server already marked this chiTiet as saved, enforce disabled state
+        const serverSaved = {
+            {
+                isset($saved) && $saved ? 'true' : 'false'
+            }
+        };
+
+        if (serverSaved === true || localStorage.getItem(storageKey) === 'true') {
+            if (!localStorage.getItem(storageKey)) {
+                localStorage.setItem(storageKey, 'true');
+            }
+            disableAllButtons();
+        }
+
+        saveButton.addEventListener('click', function() {
+            // optimistic UI: show spinner while saving
+            saveButton.disabled = true;
+            saveButton.classList.add('disabled-button');
+            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu';
+
+            const url = '{{ route("Guide.checkin.saveLock", $lichKhoiHanhId) }}';
+            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
+            const token = tokenMeta ? tokenMeta.getAttribute('content') : '{{ csrf_token() }}';
+
+            fetch(url, {
+                    method: 'POST'
+                    , headers: {
+                        'Content-Type': 'application/json'
+                        , 'X-CSRF-TOKEN': token
+                        , 'Accept': 'application/json'
+                    }
+                    , body: JSON.stringify({
+                        chi_tiet_id: {
+                            {
+                                $chiTiet - > id
+                            }
+                        }
+                        , action: 'CONFIRM_XUATPHAT'
+                    })
+                })
+                .then(function(res) {
+                    return res.json().then(function(json) {
+                        return {
+                            ok: res.ok
+                            , json: json
+                        };
+                    });
+                })
+                .then(function(result) {
+                    if (result.ok && result.json.success) {
+                        // For xuất phát we only mark saveButton as saved; do NOT disable day activity buttons
+                        saveButton.textContent = 'Đã lưu (xuất phát)';
+                        saveButton.classList.add('disabled-button');
+                    } else {
+                        saveButton.disabled = false;
+                        saveButton.classList.remove('disabled-button');
+                        saveButton.textContent = 'Lưu';
+                        alert(result.json.message || 'Lưu thất bại');
+                    }
+                })
+                .catch(function() {
+                    saveButton.disabled = false;
+                    saveButton.classList.remove('disabled-button');
+                    saveButton.textContent = 'Lưu';
+                    alert('Lưu thất bại, vui lòng thử lại.');
+                });
+        });
+    });
+
+</script>
 
 {{-- Modal ghi chú đặt ngoài Table để HTML hợp lệ --}}
 @foreach ($datTours as $datTour)

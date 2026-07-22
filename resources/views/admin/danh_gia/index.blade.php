@@ -759,6 +759,41 @@
                 text-align: center;
             }
         }
+
+        .review-customer-label {
+            max-width: 185px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .review-public-note {
+            margin-top: 10px;
+            padding: 11px 14px;
+            color: #3158ce;
+            background: #edf4ff;
+            border: 1px solid #cfe0ff;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        @media (max-width: 576px) {
+            .review-page-heading {
+                align-items: flex-start;
+            }
+
+            .review-stat-card {
+                min-height: 105px;
+                padding: 16px;
+            }
+
+            .review-card-footer nav {
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+        }
+
     </style>
 
     <div class="container-fluid review-page">
@@ -772,11 +807,30 @@
                     <h3>Quản lý Đánh giá</h3>
 
                     <p>
-                        Theo dõi phản hồi và mức độ hài lòng của khách hàng.
+                        Theo dõi các đánh giá được hiển thị ngay và xóa nội dung không phù hợp.
                     </p>
                 </div>
             </div>
         </div>
+
+        <div class="review-public-note">
+            <i class="fas fa-info-circle me-1"></i>
+            Đánh giá được hiển thị ngay sau khi người dùng gửi. Quản trị viên chỉ xem và xóa nội dung không phù hợp.
+        </div>
+
+        @if(session('success'))
+            <div class="alert alert-success mb-3">
+                <i class="fas fa-check-circle me-1"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger mb-3">
+                <i class="fas fa-exclamation-circle me-1"></i>
+                {{ session('error') }}
+            </div>
+        @endif
 
         <div class="review-stats-grid">
             <div class="review-stat-card">
@@ -951,16 +1005,30 @@
                                             <i class="fas fa-user"></i>
                                         </span>
 
+                                        @php
+                                            $reviewerName = $danh_gia->user?->name
+                                                ?? $danh_gia->khachHangDatTour?->ho_ten
+                                                ?? 'Không xác định';
+
+                                            $reviewerEmail = $danh_gia->user?->email;
+                                        @endphp
+
                                         <div>
                                             <div
                                                 class="review-customer-name"
-                                                title="{{ $danh_gia->khachHangDatTour->ho_ten ?? 'Không xác định' }}"
+                                                title="{{ $reviewerName }}"
                                             >
-                                                {{ $danh_gia->khachHangDatTour->ho_ten ?? 'Không xác định' }}
+                                                {{ $reviewerName }}
                                             </div>
 
                                             <div class="review-customer-label">
-                                                Khách hàng
+                                                @if($reviewerEmail)
+                                                    {{ $reviewerEmail }}
+                                                @elseif($danh_gia->khach_hang_dat_tour_id)
+                                                    Dữ liệu đánh giá cũ
+                                                @else
+                                                    Tài khoản không xác định
+                                                @endif
                                             </div>
                                         </div>
                                     </div>

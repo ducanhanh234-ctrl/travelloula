@@ -4,33 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Models\DanhGia;
 use App\Models\DanhSachTour;
-use App\Models\DatTour;
-use App\Models\KhachHangDatTour;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class DanhGiaController extends Controller
 {
     /**
-     * Danh sách đánh giá phía quản trị.
+     * Admin xem toàn bộ đánh giá.
+     * Không còn quy trình chờ duyệt, duyệt hoặc ẩn.
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = DanhGia::query()
             ->with([
+                'user',
                 'khachHangDatTour',
                 'tour',
             ]);
 
         if ($request->filled('search')) {
-            $search = trim((string) $request->search);
+            $search = trim((string) $request->input('search'));
 
             $query->where(function ($q) use ($search) {
-                $q->whereHas('khachHangDatTour', function ($subQuery) use ($search) {
-                    $subQuery->where('ho_ten', 'like', "%{$search}%");
+                $q->whereHas('user', function ($userQuery) use ($search) {
+                    $userQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 })
-                    ->orWhereHas('tour', function ($subQuery) use ($search) {
-                        $subQuery->where('ten_tour', 'like', "%{$search}%");
+                    ->orWhereHas('khachHangDatTour', function ($customerQuery) use ($search) {
+                        $customerQuery
+                            ->where('ho_ten', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('tour', function ($tourQuery) use ($search) {
+                        $tourQuery->where('ten_tour', 'like', "%{$search}%");
                     })
                     ->orWhere('tieu_de', 'like', "%{$search}%")
                     ->orWhere('noi_dung_danh_gia', 'like', "%{$search}%");
@@ -38,32 +47,17 @@ class DanhGiaController extends Controller
         }
 
         if ($request->filled('so_sao')) {
-            $query->where('so_sao', (int) $request->so_sao);
+            $query->where('so_sao', (int) $request->input('so_sao'));
         }
 
-        if ($request->filled('trang_thai')) {
-            if ($request->trang_thai === 'cho_duyet') {
-                $query->where('hien_thi', 0);
-            } elseif ($request->trang_thai === 'da_duyet') {
-                $query->where('hien_thi', 1);
-            }
-        }
-
-        $tongDanhGia = DanhGia::count();
-        $tongChoDuyet = DanhGia::where('hien_thi', 0)->count();
-        $tongDaDuyet = DanhGia::where('hien_thi', 1)->count();
+        $tongDanhGia = DanhGia::query()->count();
 
         $danhGia5Sao = DanhGia::query()
-            ->where('hien_thi', 1)
             ->where('so_sao', 5)
             ->count();
 
         $diemTrungBinh = round(
-            (float) (
-                DanhGia::query()
-                    ->where('hien_thi', 1)
-                    ->avg('so_sao') ?? 0
-            ),
+            (float) (DanhGia::query()->avg('so_sao') ?? 0),
             1
         );
 
@@ -76,21 +70,21 @@ class DanhGiaController extends Controller
         return view('Admin.danh_gia.index', compact(
             'danh_gias',
             'tongDanhGia',
-            'tongChoDuyet',
-            'tongDaDuyet',
             'danhGia5Sao',
             'diemTrungBinh'
         ));
     }
 
     /**
-     * Khách hàng gửi đánh giá.
+     * Người dùng chỉ cần đăng nhập là có thể đánh giá tour.
      *
-     * Bảng danh_gia hiện tại KHÔNG có cột user_id.
-     * Vì vậy đánh giá được liên kết qua khach_hang_dat_tour_id.
+     * Mỗi tài khoản có một đánh giá trên mỗi tour.
+     * Gửi lại sẽ cập nhật đánh giá hiện có.
      */
-    public function store(Request $request, DanhSachTour $tour)
-    {
+    public function store(
+        Request $request,
+        DanhSachTour $tour
+    ): RedirectResponse {
         if (!Auth::check()) {
             return redirect()
                 ->route('login')
@@ -100,7 +94,12 @@ class DanhGiaController extends Controller
         $validated = $request->validate([
             'so_sao' => ['required', 'integer', 'between:1,5'],
             'tieu_de' => ['nullable', 'string', 'max:255'],
-            'noi_dung_danh_gia' => ['required', 'string', 'min:5', 'max:2000'],
+            'noi_dung_danh_gia' => [
+                'required',
+                'string',
+                'min:5',
+                'max:2000',
+            ],
         ], [
             'so_sao.required' => 'Bạn chưa chọn số sao.',
             'so_sao.integer' => 'Số sao không hợp lệ.',
@@ -111,99 +110,49 @@ class DanhGiaController extends Controller
             'noi_dung_danh_gia.max' => 'Nội dung không được vượt quá 2000 ký tự.',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Tìm tất cả đơn của tài khoản đang đăng nhập cho tour hiện tại
-        |--------------------------------------------------------------------------
-        */
-        $datTourIds = DatTour::query()
-            ->where('nguoi_dung_id', Auth::id())
-            ->where('tour_id', $tour->id)
-            ->where('trang_thai', '<>', 'da_huy')
-            ->pluck('id');
-
-        if ($datTourIds->isEmpty()) {
-            return $this->quayLaiDanhGia(
-                $tour,
-                'error',
-                'Tài khoản của bạn chưa có đơn đặt tour này.'
-            );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Tìm hành khách thuộc các đơn đặt tour vừa tìm được
-        |--------------------------------------------------------------------------
-        */
-        $khachHangIds = KhachHangDatTour::query()
-            ->whereIn('dat_tour_id', $datTourIds)
-            ->pluck('id');
-
-        if ($khachHangIds->isEmpty()) {
-            return $this->quayLaiDanhGia(
-                $tour,
-                'error',
-                'Đơn đặt tour chưa có thông tin hành khách nên chưa thể đánh giá.'
-            );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Kiểm tra tài khoản đã đánh giá tour này chưa
-        |--------------------------------------------------------------------------
-        */
-        $daDanhGia = DanhGia::query()
-            ->where('tour_id', $tour->id)
-            ->whereIn('khach_hang_dat_tour_id', $khachHangIds)
-            ->exists();
-
-        if ($daDanhGia) {
-            return $this->quayLaiDanhGia(
-                $tour,
-                'error',
-                'Bạn đã gửi đánh giá cho tour này rồi.'
-            );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Dùng hành khách đầu tiên của đơn để liên kết đánh giá
-        |--------------------------------------------------------------------------
-        */
-        $khachHangId = $khachHangIds->first();
-
         try {
-            DanhGia::create([
-                'khach_hang_dat_tour_id' => $khachHangId,
-                'tour_id' => $tour->id,
-                'so_sao' => (int) $validated['so_sao'],
-                'tieu_de' => $validated['tieu_de'] ?? null,
-                'noi_dung_danh_gia' => $validated['noi_dung_danh_gia'],
-                'hien_thi' => 0,
-                'thoi_gian_danh_gia' => now(),
-            ]);
+            $danhGia = DanhGia::query()->updateOrCreate(
+                [
+                    'nguoi_dung_id' => Auth::id(),
+                    'tour_id' => $tour->id,
+                ],
+                [
+                    'so_sao' => (int) $validated['so_sao'],
+                    'tieu_de' => $validated['tieu_de'] ?? null,
+                    'noi_dung_danh_gia' => trim(
+                        $validated['noi_dung_danh_gia']
+                    ),
+                    'hien_thi' => 1,
+                    'thoi_gian_danh_gia' => now(),
+                ]
+            );
         } catch (\Throwable $exception) {
             report($exception);
 
             return $this->quayLaiDanhGia(
                 $tour,
                 'error',
-                'Không lưu được đánh giá: ' . $exception->getMessage()
+                'Không lưu được đánh giá. Hãy kiểm tra migration và cấu trúc bảng danh_gia.'
             );
         }
 
-        return redirect()
-            ->to(route('Client.danh_sach_tour.show', $tour->id) . '#danh-gia')
-            ->with(
-                'success',
-                'Đánh giá đã được gửi và đang chờ quản trị viên duyệt.'
-            );
+        return $this->quayLaiDanhGia(
+            $tour,
+            'success',
+            $danhGia->wasRecentlyCreated
+                ? 'Đánh giá đã được đăng và hiển thị ngay.'
+                : 'Đánh giá của bạn đã được cập nhật.'
+        );
     }
 
-    public function show($id)
+    /**
+     * Admin xem chi tiết đánh giá.
+     */
+    public function show(int $id): View
     {
         $danh_gia = DanhGia::query()
             ->with([
+                'user',
                 'khachHangDatTour',
                 'tour',
             ])
@@ -212,38 +161,16 @@ class DanhGiaController extends Controller
         return view('Admin.danh_gia.show', compact('danh_gia'));
     }
 
-    public function approve($id)
+    /**
+     * Admin chỉ xóa đánh giá không phù hợp.
+     */
+    public function destroy(int $id): RedirectResponse
     {
-        $danh_gia = DanhGia::findOrFail($id);
-
-        $danh_gia->update([
-            'hien_thi' => 1,
-        ]);
-
-        return back()->with('success', 'Đã duyệt đánh giá.');
-    }
-
-    public function hide($id)
-    {
-        $danh_gia = DanhGia::findOrFail($id);
-
-        $danh_gia->update([
-            'hien_thi' => 0,
-        ]);
-
-        return back()->with(
-            'success',
-            'Đã ẩn đánh giá khỏi trang khách hàng.'
-        );
-    }
-
-    public function destroy($id)
-    {
-        $danh_gia = DanhGia::findOrFail($id);
+        $danh_gia = DanhGia::query()->findOrFail($id);
         $danh_gia->delete();
 
         return redirect()
-            ->route('Admin.danh_gias.index')
+            ->route('Admin.danh_gia.index')
             ->with('success', 'Đánh giá đã được xóa thành công.');
     }
 
@@ -251,9 +178,12 @@ class DanhGiaController extends Controller
         DanhSachTour $tour,
         string $loai,
         string $noiDung
-    ) {
+    ): RedirectResponse {
         return redirect()
-            ->to(route('Client.danh_sach_tour.show', $tour->id) . '#danh-gia')
+            ->to(
+                route('Client.danh_sach_tour.show', $tour->id)
+                . '#danh-gia'
+            )
             ->withInput()
             ->with($loai, $noiDung);
     }

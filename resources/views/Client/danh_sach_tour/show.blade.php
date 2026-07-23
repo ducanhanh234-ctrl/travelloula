@@ -352,22 +352,128 @@
                                         </p>
                                     @endif
 
-                                    @if($lt->hoat_dong)
-                                        <p>{!! nl2br(e($lt->hoat_dong)) !!}</p>
+                                    @php
+                                        /*
+                                         * Ưu tiên dữ liệu trong bảng chi_tiet_lich_trinhs.
+                                         * Khi chưa có dữ liệu quan hệ, hệ thống tự tách
+                                         * các dòng giờ trong cột hoat_dong.
+                                         */
+                                        $chiTietLichTrinh = collect(
+                                            $lt->chiTietLichTrinhs ?? []
+                                        )->sortBy('thu_tu');
+
+                                        $hoatDongLines = preg_split(
+                                            '/\r\n|\r|\n/',
+                                            trim((string) ($lt->hoat_dong ?? ''))
+                                        );
+                                    @endphp
+
+                                    @if($chiTietLichTrinh->isNotEmpty())
+                                        <div class="tour-day-detail-list">
+                                            @foreach($chiTietLichTrinh as $chiTiet)
+                                                @php
+                                                    $gioBatDau = !empty($chiTiet->gio_bat_dau)
+                                                        ? substr((string) $chiTiet->gio_bat_dau, 0, 5)
+                                                        : null;
+
+                                                    $gioKetThuc = !empty($chiTiet->gio_ket_thuc)
+                                                        ? substr((string) $chiTiet->gio_ket_thuc, 0, 5)
+                                                        : null;
+                                                @endphp
+
+                                                <div class="tour-day-detail-item">
+                                                    <div class="tour-day-detail-time">
+                                                        <i class="fa-regular fa-clock"></i>
+
+                                                        <span>
+                                                            <strong>{{ $gioBatDau ?? '--:--' }}</strong>
+
+                                                            @if($gioKetThuc)
+                                                                <small>–</small>
+                                                                <strong>{{ $gioKetThuc }}</strong>
+                                                            @endif
+                                                        </span>
+                                                    </div>
+
+                                                    <div class="tour-day-detail-content">
+                                                        @if($chiTiet->tieu_de)
+                                                            <h4>{{ $chiTiet->tieu_de }}</h4>
+                                                        @endif
+
+                                                        @if($chiTiet->noi_dung)
+                                                            <p>{{ $chiTiet->noi_dung }}</p>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @elseif(!empty($lt->hoat_dong))
+                                        <div class="tour-day-detail-list">
+                                            @foreach($hoatDongLines as $line)
+                                                @php
+                                                    $line = trim($line);
+
+                                                    preg_match(
+                                                        '/^(\d{2}:\d{2})\s*[–-]\s*(\d{2}:\d{2})\s*\|\s*(.+)$/u',
+                                                        $line,
+                                                        $matches
+                                                    );
+                                                @endphp
+
+                                                @if(!empty($matches))
+                                                    <div class="tour-day-detail-item">
+                                                        <div class="tour-day-detail-time">
+                                                            <i class="fa-regular fa-clock"></i>
+
+                                                            <span>
+                                                                <strong>{{ $matches[1] }}</strong>
+                                                                <small>–</small>
+                                                                <strong>{{ $matches[2] }}</strong>
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="tour-day-detail-content">
+                                                            <p>{{ $matches[3] }}</p>
+                                                        </div>
+                                                    </div>
+                                                @elseif($line !== '')
+                                                    <div class="tour-day-detail-note">
+                                                        <i class="fa-solid fa-circle-info"></i>
+                                                        <span>{{ $line }}</span>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
                                     @endif
 
-                                    @if($lt->bua_an)
-                                        <p>
-                                            <strong>Bữa ăn:</strong>
-                                            {{ $lt->bua_an }}
-                                        </p>
-                                    @endif
+                                    @if($lt->bua_an || $lt->thong_tin_khach_san)
+                                        <div class="tour-day-service-grid">
+                                            @if($lt->bua_an)
+                                                <div class="tour-day-service-card">
+                                                    <span class="tour-day-service-icon">
+                                                        <i class="fa-solid fa-utensils"></i>
+                                                    </span>
 
-                                    @if($lt->thong_tin_khach_san)
-                                        <p>
-                                            <strong>Khách sạn:</strong>
-                                            {{ $lt->thong_tin_khach_san }}
-                                        </p>
+                                                    <div>
+                                                        <small>Bữa ăn trong ngày</small>
+                                                        <strong>{{ $lt->bua_an }}</strong>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if($lt->thong_tin_khach_san)
+                                                <div class="tour-day-service-card">
+                                                    <span class="tour-day-service-icon">
+                                                        <i class="fa-solid fa-hotel"></i>
+                                                    </span>
+
+                                                    <div>
+                                                        <small>Nơi lưu trú</small>
+                                                        <strong>{{ $lt->thong_tin_khach_san }}</strong>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     @endif
                                 </div>
                             </article>
@@ -746,7 +852,7 @@
 
 <style>
 :root{
-    --primary:#0757d8;
+    --primary:#2563eb;
     --pink:#ff2f6d;
     --pink-dark:#e91f5c;
     --orange:#ff5a1f;
@@ -995,7 +1101,7 @@ html{
     padding:15px;
     border-radius:16px;
     background:#f8fbff;
-    border:1px solid #dbeafe;
+    border:1px solid #eff6ff;
     margin-bottom:18px;
 }
 
@@ -1040,7 +1146,7 @@ html{
     padding:12px 14px;
     border-radius:12px;
     background:#f8fbff;
-    border:1px solid #dbeafe;
+    border:1px solid #eff6ff;
     margin-bottom:8px;
 }
 
@@ -1250,6 +1356,226 @@ html{
     margin:0 0 16px;
 }
 
+/* =========================================================
+   MỐC GIỜ CHI TIẾT TRONG TỪNG NGÀY
+   ========================================================= */
+.tour-day-detail-list{
+    display:grid;
+    gap:14px;
+    margin:20px 0 22px;
+}
+
+.tour-day-detail-item{
+    position:relative;
+    display:grid;
+    grid-template-columns:150px minmax(0,1fr);
+    gap:16px;
+    align-items:start;
+    padding:16px;
+    border:1px solid #eff6ff;
+    border-radius:16px;
+    background:linear-gradient(135deg,#f8fbff 0%,#ffffff 100%);
+    box-shadow:0 8px 22px rgba(37,99,235,.06);
+    transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+
+.tour-day-detail-item::before{
+    content:"";
+    position:absolute;
+    top:14px;
+    bottom:14px;
+    left:0;
+    width:4px;
+    border-radius:0 999px 999px 0;
+    background:linear-gradient(180deg,var(--primary),#38bdf8);
+}
+
+.tour-day-detail-item:hover{
+    transform:translateY(-2px);
+    border-color:#bfdbfe;
+    box-shadow:0 13px 30px rgba(37,99,235,.10);
+}
+
+.tour-day-detail-time{
+    min-height:62px;
+    padding:11px 12px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+    box-shadow:0 10px 22px rgba(37,99,235,.24);
+}
+
+.tour-day-detail-time > i{
+    flex:0 0 auto;
+    font-size:18px;
+}
+
+.tour-day-detail-time > span{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+    gap:5px;
+    font-size:16px;
+    line-height:1.25;
+    font-weight:1000;
+    letter-spacing:.2px;
+    text-align:center;
+}
+
+.tour-day-detail-time small{
+    opacity:.78;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+}
+
+.tour-day-detail-content{
+    min-width:0;
+    padding:3px 4px 0;
+}
+
+.tour-day-detail-content h4{
+    margin:0 0 7px;
+    color:#0f172a;
+    font-size:18px;
+    line-height:1.45;
+    font-weight:1000;
+}
+
+.tour-day-detail-content p{
+    margin:0;
+    color:#334155;
+    font-size:15px;
+    line-height:1.8;
+}
+
+.tour-day-detail-note{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:14px 16px;
+    border:1px solid #fde68a;
+    border-radius:14px;
+    color:#92400e;
+    background:#fffbeb;
+    line-height:1.75;
+}
+
+.tour-day-detail-note i{
+    margin-top:5px;
+    color:#f59e0b;
+}
+
+.tour-day-service-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-top:18px;
+}
+
+.tour-day-service-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+    padding:14px 16px;
+    border:1px solid #eff6ff;
+    border-radius:14px;
+    background:#eff6ff;
+}
+
+.tour-day-service-icon{
+    width:42px;
+    height:42px;
+    flex:0 0 42px;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),#38bdf8);
+}
+
+.tour-day-service-card div{
+    min-width:0;
+}
+
+.tour-day-service-card small{
+    display:block;
+    margin-bottom:3px;
+    color:#64748b;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+}
+
+.tour-day-service-card strong{
+    display:block;
+    color:#0f172a;
+    font-size:14px;
+    line-height:1.5;
+    font-weight:1000;
+    overflow-wrap:anywhere;
+}
+
+@media(max-width:768px){
+    .tour-day-detail-item{
+        grid-template-columns:1fr;
+        gap:11px;
+        padding:14px;
+    }
+
+    .tour-day-detail-time{
+        width:max-content;
+        min-width:150px;
+        min-height:48px;
+        justify-content:flex-start;
+        padding:9px 12px;
+    }
+
+    .tour-day-detail-time > span{
+        font-size:14px;
+    }
+
+    .tour-day-detail-content{
+        padding:0;
+    }
+
+    .tour-day-detail-content h4{
+        font-size:16px;
+    }
+
+    .tour-day-detail-content p{
+        font-size:14px;
+        line-height:1.7;
+    }
+
+    .tour-day-service-grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:480px){
+    .tour-day-detail-list{
+        gap:11px;
+    }
+
+    .tour-day-detail-item{
+        border-radius:13px;
+    }
+
+    .tour-day-detail-time{
+        width:100%;
+        min-width:0;
+        justify-content:center;
+    }
+}
+
 .center-book-btn{
     width:min(320px,100%);
     height:58px;
@@ -1413,10 +1739,10 @@ html{
 .review-section{
     margin-top:56px;
     padding:34px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:24px;
     background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
-    box-shadow:0 18px 54px rgba(7,87,216,.08);
+    box-shadow:0 18px 54px rgba(37,99,235,.08);
 }
 
 .review-section-head{
@@ -1476,8 +1802,8 @@ html{
     gap:16px;
     border-radius:18px;
     background:#eff6ff;
-    border:1px solid #bfdbfe;
-    box-shadow:0 10px 26px rgba(7,87,216,.08);
+    border:1px solid #dbeafe;
+    box-shadow:0 10px 26px rgba(37,99,235,.08);
 }
 
 .review-score-box > strong{
@@ -1552,7 +1878,7 @@ html{
 .review-form-card,
 .review-list-card{
     padding:26px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:20px;
     background:#fff;
     box-shadow:0 12px 32px rgba(15,23,42,.05);
@@ -1616,7 +1942,7 @@ html{
 .review-field input[type="text"]:focus,
 .review-field textarea:focus{
     border-color:var(--primary);
-    box-shadow:0 0 0 4px rgba(7,87,216,.10);
+    box-shadow:0 0 0 4px rgba(37,99,235,.10);
 }
 
 .review-field textarea{
@@ -1666,12 +1992,12 @@ html{
     font-size:15px;
     font-weight:900;
     cursor:pointer;
-    box-shadow:0 12px 24px rgba(7,87,216,.20);
+    box-shadow:0 12px 24px rgba(37,99,235,.20);
     transition:.2s ease;
 }
 
 .review-submit-btn:hover{
-    background:#0044c7;
+    background:#1d4ed8;
     transform:translateY(-1px);
 }
 
@@ -1682,7 +2008,7 @@ html{
     padding:18px;
     border-radius:16px;
     background:#eff6ff;
-    border:1px solid #bfdbfe;
+    border:1px solid #dbeafe;
 }
 
 .review-login-box > i{
@@ -1745,8 +2071,8 @@ html{
 }
 
 .review-item:hover{
-    border-color:#bfdbfe;
-    box-shadow:0 10px 24px rgba(7,87,216,.06);
+    border-color:#dbeafe;
+    box-shadow:0 10px 24px rgba(37,99,235,.06);
 }
 
 .review-item-top{
@@ -1769,9 +2095,9 @@ html{
     display:grid;
     place-items:center;
     color:#fff;
-    background:linear-gradient(135deg,var(--primary),#60a5fa);
+    background:linear-gradient(135deg,var(--primary),#bfdbfe);
     font-weight:900;
-    box-shadow:0 8px 18px rgba(7,87,216,.18);
+    box-shadow:0 8px 18px rgba(37,99,235,.18);
 }
 
 .review-user strong{
@@ -1830,7 +2156,7 @@ html{
 
 .review-empty i{
     margin-bottom:12px;
-    color:#93c5fd;
+    color:#bfdbfe;
     font-size:42px;
 }
 
@@ -1975,10 +2301,10 @@ html{
    ĐỒNG BỘ MÀU TOÀN BỘ TRANG CHI TIẾT TOUR THEO LAYOUT XANH
    ========================================================= */
 :root{
-    --primary:#0757d8;
-    --primary-dark:#0044c7;
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
     --primary-soft:#eff6ff;
-    --primary-line:#bfdbfe;
+    --primary-line:#dbeafe;
     --accent:#f59e0b;
     --text:#0f172a;
     --muted:#64748b;
@@ -1993,8 +2319,8 @@ html{
 
 /* Card thông tin đặt tour */
 .booking-card{
-    border:1px solid #dbe5f1;
-    box-shadow:0 18px 54px rgba(7,87,216,.09);
+    border:1px solid #f1f5f9;
+    box-shadow:0 18px 54px rgba(37,99,235,.09);
 }
 
 .booking-info-grid i{
@@ -2007,12 +2333,12 @@ html{
 
 .price-detail{
     background:linear-gradient(180deg,#f8fbff 0%,#ffffff 100%);
-    border-color:#dbeafe;
+    border-color:#eff6ff;
 }
 
 .nearest-date{
     background:linear-gradient(135deg,#eff6ff,#f8fbff);
-    border-color:#bfdbfe;
+    border-color:#dbeafe;
 }
 
 .nearest-date small,
@@ -2022,12 +2348,12 @@ html{
 
 .schedule-mini-item{
     background:#f8fbff;
-    border-color:#dbeafe;
+    border-color:#eff6ff;
 }
 
 .book-btn{
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 14px 30px rgba(7,87,216,.22);
+    box-shadow:0 14px 30px rgba(37,99,235,.22);
 }
 
 .book-btn:hover{
@@ -2072,7 +2398,7 @@ html{
 
 .center-book-btn{
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 16px 34px rgba(7,87,216,.22);
+    box-shadow:0 16px 34px rgba(37,99,235,.22);
 }
 
 .center-book-btn:hover{
@@ -2083,14 +2409,14 @@ html{
 /* Quy định dịch vụ */
 .rules-section{
     padding:30px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:24px;
     background:linear-gradient(180deg,#ffffff,#f8fbff);
-    box-shadow:0 18px 50px rgba(7,87,216,.06);
+    box-shadow:0 18px 50px rgba(37,99,235,.06);
 }
 
 .accordion-box{
-    border-color:#dbe5f1;
+    border-color:#f1f5f9;
     box-shadow:0 12px 30px rgba(15,23,42,.04);
 }
 
@@ -2110,13 +2436,13 @@ html{
 /* Khối liên hệ đặt tour */
 .booking-form-card{
     background:linear-gradient(135deg,#eff6ff,#ffffff);
-    border-color:#bfdbfe;
-    box-shadow:0 14px 34px rgba(7,87,216,.08);
+    border-color:#dbeafe;
+    box-shadow:0 14px 34px rgba(37,99,235,.08);
 }
 
 .booking-form-card a{
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 12px 24px rgba(7,87,216,.20);
+    box-shadow:0 12px 24px rgba(37,99,235,.20);
 }
 
 /* =========================================================
@@ -2127,12 +2453,12 @@ html{
     overflow:hidden;
     margin-top:64px;
     padding:38px;
-    border:1px solid #cfe0f5;
+    border:1px solid #eff6ff;
     border-radius:26px;
     background:
-        radial-gradient(circle at top right,rgba(59,130,246,.10),transparent 34%),
+        radial-gradient(circle at top right,rgba(37,99,235,.10),transparent 34%),
         linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
-    box-shadow:0 22px 60px rgba(7,87,216,.09);
+    box-shadow:0 22px 60px rgba(37,99,235,.09);
 }
 
 .review-section::before{
@@ -2166,9 +2492,9 @@ html{
 .review-score-box{
     min-width:300px;
     padding:22px;
-    border-color:#bfdbfe;
+    border-color:#dbeafe;
     background:linear-gradient(135deg,#eff6ff,#ffffff);
-    box-shadow:0 12px 28px rgba(7,87,216,.10);
+    box-shadow:0 12px 28px rgba(37,99,235,.10);
 }
 
 .review-score-box > strong{
@@ -2177,7 +2503,7 @@ html{
 
 .review-form-card,
 .review-list-card{
-    border-color:#dbe5f1;
+    border-color:#f1f5f9;
     box-shadow:0 14px 36px rgba(15,23,42,.06);
 }
 
@@ -2198,12 +2524,12 @@ html{
 .review-field input[type="text"]:focus,
 .review-field textarea:focus{
     border-color:var(--primary);
-    box-shadow:0 0 0 4px rgba(7,87,216,.11);
+    box-shadow:0 0 0 4px rgba(37,99,235,.11);
 }
 
 .star-rating-input{
     padding:8px 12px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:12px;
     background:#fff;
 }
@@ -2212,7 +2538,7 @@ html{
     min-height:54px;
     border-radius:13px;
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 14px 26px rgba(7,87,216,.20);
+    box-shadow:0 14px 26px rgba(37,99,235,.20);
 }
 
 .review-submit-btn:hover{
@@ -2226,7 +2552,7 @@ html{
 .review-list-head span{
     color:var(--primary);
     background:#eff6ff;
-    border:1px solid #dbeafe;
+    border:1px solid #eff6ff;
 }
 
 .review-item{
@@ -2236,8 +2562,8 @@ html{
 
 .review-item:hover{
     transform:translateY(-2px);
-    border-color:#bfdbfe;
-    box-shadow:0 12px 26px rgba(7,87,216,.08);
+    border-color:#dbeafe;
+    box-shadow:0 12px 26px rgba(37,99,235,.08);
 }
 
 .review-avatar{
@@ -2252,7 +2578,7 @@ html{
 
 .review-empty{
     min-height:300px;
-    border-color:#bfdbfe;
+    border-color:#dbeafe;
     background:linear-gradient(180deg,#f8fbff,#ffffff);
 }
 
@@ -2282,7 +2608,7 @@ html{
 .review-section{
     margin-top:56px;
     padding:28px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:20px;
     background:#fff;
     box-shadow:0 14px 40px rgba(15,23,42,.07);
@@ -2290,7 +2616,7 @@ html{
 
 .review-section::before{
     height:4px;
-    background:linear-gradient(90deg,#0757d8,#38bdf8);
+    background:linear-gradient(90deg,#2563eb,#38bdf8);
 }
 
 .review-section-head{
@@ -2324,7 +2650,7 @@ html{
     border-radius:14px;
     gap:13px;
     background:#f8fbff;
-    border:1px solid #d6e5fb;
+    border:1px solid #eff6ff;
     box-shadow:none;
 }
 
@@ -2484,9 +2810,9 @@ html{
 .schedule-mini-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px;}
 .schedule-mini-heading span{display:block;margin-bottom:4px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.8px;}
 .schedule-mini-heading h3{margin:0;color:#0f172a;font-size:18px;}
-.schedule-mini-heading>strong{padding:6px 10px;border-radius:999px;color:var(--primary);background:#eff6ff;border:1px solid #dbeafe;font-size:11px;}
+.schedule-mini-heading>strong{padding:6px 10px;border-radius:999px;color:var(--primary);background:#eff6ff;border:1px solid #eff6ff;font-size:11px;}
 .schedule-mini-list{display:grid;gap:9px;max-height:330px;overflow:auto;padding-right:4px;}
-.schedule-mini-item-full{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #dbe5f1;border-radius:13px;background:#fbfdff;}
+.schedule-mini-item-full{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #f1f5f9;border-radius:13px;background:#fbfdff;}
 .schedule-mini-date{display:flex;align-items:center;gap:10px;min-width:0;}
 .schedule-mini-date>i{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;color:var(--primary);background:#eff6ff;}
 .schedule-mini-date strong{display:block;color:#0f172a;font-size:13px;}
@@ -2494,7 +2820,7 @@ html{
 .schedule-mini-actions{display:flex;align-items:flex-end;flex-direction:column;gap:6px;}
 .schedule-status{display:inline-flex;align-items:center;justify-content:center;min-width:92px;padding:6px 10px;border-radius:999px;border:1px solid transparent;font-size:10px;font-weight:900;white-space:nowrap;}
 .schedule-status-available{color:#047857;background:#dcfce7;border-color:#bbf7d0;}
-.schedule-status-running{color:#0369a1;background:#e0f2fe;border-color:#bae6fd;}
+.schedule-status-running{color:#0369a1;background:#f0f9ff;border-color:#e0f2fe;}
 .schedule-status-full{color:#b45309;background:#fef3c7;border-color:#fde68a;}
 .schedule-status-closed{color:#475569;background:#e2e8f0;border-color:#cbd5e1;}
 .schedule-status-unknown{color:#64748b;background:#f1f5f9;border-color:#e2e8f0;}
@@ -2502,14 +2828,14 @@ html{
 .schedule-select-btn.disabled{color:#94a3b8;cursor:not-allowed;}
 .schedule-mini-empty{display:flex;align-items:center;gap:9px;padding:14px;color:#64748b;border:1px dashed #cbd5e1;border-radius:13px;background:#f8fafc;}
 
-.booking-form-section{margin-top:58px;padding:30px;border:1px solid #dbe5f1;border-radius:24px;background:linear-gradient(180deg,#ffffff,#f8fbff);box-shadow:0 18px 50px rgba(7,87,216,.07);}
+.booking-form-section{margin-top:58px;padding:30px;border:1px solid #f1f5f9;border-radius:24px;background:linear-gradient(180deg,#ffffff,#f8fbff);box-shadow:0 18px 50px rgba(37,99,235,.07);}
 .booking-form-head{margin-bottom:22px;}
 .booking-form-head>span{display:block;margin-bottom:5px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:1px;}
 .booking-form-head h2{margin:0 0 8px;color:#0f172a;font-size:30px;}
 .booking-form-head p{max-width:850px;margin:0;color:#64748b;line-height:1.65;}
 .booking-schedule-list{display:grid;gap:12px;}
-.booking-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px 18px;border:1px solid #dbe5f1;border-radius:16px;background:#fff;transition:.2s ease;}
-.booking-schedule-card.is-bookable:hover{transform:translateY(-2px);border-color:#93c5fd;box-shadow:0 12px 26px rgba(7,87,216,.08);}
+.booking-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;padding:16px 18px;border:1px solid #f1f5f9;border-radius:16px;background:#fff;transition:.2s ease;}
+.booking-schedule-card.is-bookable:hover{transform:translateY(-2px);border-color:#bfdbfe;box-shadow:0 12px 26px rgba(37,99,235,.08);}
 .booking-schedule-card.is-disabled{background:#f8fafc;opacity:.78;}
 .booking-schedule-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;color:var(--primary);background:#eff6ff;font-size:19px;}
 .booking-schedule-title{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
@@ -2521,7 +2847,7 @@ html{
 .booking-schedule-btn.disabled{color:#64748b;background:#e2e8f0;cursor:not-allowed;}
 .booking-schedule-empty{display:flex;align-items:center;gap:14px;padding:20px;border:1px dashed #cbd5e1;border-radius:16px;background:#f8fafc;}
 
-.private-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;margin-top:22px;padding:22px;border:1px solid #bfdbfe;border-radius:18px;background:radial-gradient(circle at top right,rgba(56,189,248,.13),transparent 38%),linear-gradient(135deg,#eff6ff,#ffffff);}
+.private-schedule-card{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:18px;margin-top:22px;padding:22px;border:1px solid #dbeafe;border-radius:18px;background:radial-gradient(circle at top right,rgba(56,189,248,.13),transparent 38%),linear-gradient(135deg,#eff6ff,#ffffff);}
 .private-schedule-icon{width:56px;height:56px;display:grid;place-items:center;border-radius:16px;color:#fff;background:linear-gradient(135deg,var(--primary),#38bdf8);font-size:22px;}
 .private-schedule-content>span{display:block;margin-bottom:4px;color:var(--primary);font-size:11px;font-weight:900;letter-spacing:.9px;}
 .private-schedule-content h3{margin:0 0 7px;color:#0f172a;font-size:21px;}
@@ -2529,7 +2855,7 @@ html{
 .private-schedule-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
 .private-schedule-actions a{min-height:42px;padding:0 15px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:900;text-decoration:none;}
 .private-call-btn{color:#fff;background:var(--primary);}
-.private-mail-btn{color:var(--primary);background:#fff;border:1px solid #93c5fd;}
+.private-mail-btn{color:var(--primary);background:#fff;border:1px solid #bfdbfe;}
 
 @media(max-width:900px){
     .booking-schedule-card,.private-schedule-card{grid-template-columns:1fr;}
@@ -2594,7 +2920,7 @@ html{
     border-radius:50%;
     display:grid;
     place-items:center;
-    color:#0757d8;
+    color:#2563eb;
     background:rgba(255,255,255,.94);
     box-shadow:0 10px 24px rgba(15,23,42,.18);
     cursor:pointer;
@@ -2604,7 +2930,7 @@ html{
 
 .slide-nav:hover{
     color:#fff;
-    background:#0757d8;
+    background:#2563eb;
 }
 
 .slide-prev{
@@ -2659,7 +2985,7 @@ html{
 .gallery-thumb:hover,
 .gallery-thumb.active{
     opacity:1;
-    border-color:#0757d8;
+    border-color:#2563eb;
     transform:translateY(-2px);
 }
 
@@ -2792,7 +3118,7 @@ html{
 .gallery-thumbs-wrap{
     margin-top:14px;
     padding:14px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:15px;
     background:#fff;
     box-shadow:0 10px 26px rgba(15,23,42,.05);
@@ -2817,7 +3143,7 @@ html{
     border-radius:999px;
     color:var(--primary);
     background:#eff6ff;
-    border:1px solid #dbeafe;
+    border:1px solid #eff6ff;
     font-size:11px;
     font-weight:900;
 }
@@ -2842,7 +3168,7 @@ html{
     align-items:center;
     justify-content:center;
     isolation:isolate;
-    background:#dbe5f1;
+    background:#f1f5f9;
 }
 
 .tour-slide::before{
@@ -2941,7 +3267,7 @@ html{
 
 .detail-left > .gallery-thumbs .gallery-thumb.active{
     border-color:var(--primary);
-    box-shadow:0 0 0 2px rgba(7,87,216,.10);
+    box-shadow:0 0 0 2px rgba(37,99,235,.10);
 }
 
 .detail-left > .gallery-thumbs .gallery-thumb img{
@@ -3472,10 +3798,10 @@ body{
     width:100%;
     margin-top:clamp(36px,4vw,68px);
     padding:clamp(20px,2.2vw,38px);
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:clamp(18px,1.6vw,28px);
     background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
-    box-shadow:0 18px 50px rgba(7,87,216,.07);
+    box-shadow:0 18px 50px rgba(37,99,235,.07);
 }
 
 .departure-section-head{
@@ -3515,7 +3841,7 @@ body{
     border-radius:999px;
     color:var(--primary);
     background:#eff6ff;
-    border:1px solid #bfdbfe;
+    border:1px solid #dbeafe;
     font-size:13px;
     white-space:nowrap;
 }
@@ -3532,7 +3858,7 @@ body{
     gap:18px;
     min-width:0;
     padding:16px 18px;
-    border:1px solid #dbe5f1;
+    border:1px solid #f1f5f9;
     border-radius:18px;
     background:#fff;
     transition:.22s ease;
@@ -3540,8 +3866,8 @@ body{
 
 .departure-card.is-open:hover{
     transform:translateY(-2px);
-    border-color:#93c5fd;
-    box-shadow:0 14px 30px rgba(7,87,216,.08);
+    border-color:#bfdbfe;
+    box-shadow:0 14px 30px rgba(37,99,235,.08);
 }
 
 .departure-card.is-unavailable{
@@ -3560,7 +3886,7 @@ body{
     justify-content:center;
     color:#fff;
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 10px 22px rgba(7,87,216,.20);
+    box-shadow:0 10px 22px rgba(37,99,235,.20);
 }
 
 .departure-date-box span{
@@ -3625,8 +3951,8 @@ body{
 
 .departure-status-running{
     color:#0369a1;
-    background:#e0f2fe;
-    border-color:#7dd3fc;
+    background:#f0f9ff;
+    border-color:#bae6fd;
 }
 
 .departure-status-full{
@@ -3681,7 +4007,7 @@ body{
 .departure-card-action a{
     color:#fff;
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 10px 22px rgba(7,87,216,.20);
+    box-shadow:0 10px 22px rgba(37,99,235,.20);
 }
 
 .departure-card-action > span{
@@ -3692,7 +4018,7 @@ body{
 .departure-empty{
     min-height:150px;
     padding:24px;
-    border:1px dashed #bfdbfe;
+    border:1px dashed #dbeafe;
     border-radius:18px;
     display:flex;
     align-items:center;
@@ -3724,7 +4050,7 @@ body{
     width:100%;
     margin-top:clamp(28px,3vw,48px);
     padding:clamp(22px,2.3vw,40px);
-    border:1px solid #bfdbfe;
+    border:1px solid #dbeafe;
     border-radius:clamp(18px,1.6vw,28px);
     display:grid;
     grid-template-columns:auto minmax(0,1fr) auto;
@@ -3733,7 +4059,7 @@ body{
     background:
         radial-gradient(circle at top right,rgba(56,189,248,.16),transparent 35%),
         linear-gradient(135deg,#eff6ff,#ffffff);
-    box-shadow:0 18px 48px rgba(7,87,216,.08);
+    box-shadow:0 18px 48px rgba(37,99,235,.08);
 }
 
 .consultation-icon{
@@ -3745,7 +4071,7 @@ body{
     color:#fff;
     background:linear-gradient(135deg,var(--primary),#38bdf8);
     font-size:30px;
-    box-shadow:0 14px 30px rgba(7,87,216,.20);
+    box-shadow:0 14px 30px rgba(37,99,235,.20);
 }
 
 .consultation-content{
@@ -3801,13 +4127,13 @@ body{
 .consultation-call{
     color:#fff;
     background:linear-gradient(135deg,var(--primary),var(--primary-dark));
-    box-shadow:0 12px 24px rgba(7,87,216,.20);
+    box-shadow:0 12px 24px rgba(37,99,235,.20);
 }
 
 .consultation-mail{
     color:var(--primary);
     background:#fff;
-    border:1px solid #93c5fd;
+    border:1px solid #bfdbfe;
 }
 
 .consultation-actions i{
@@ -3954,11 +4280,394 @@ body{
     margin-top:14px;
     padding:5px 9px;
     border-radius:999px;
-    color:#0757d8;
+    color:#2563eb;
     background:#eff6ff;
-    border:1px solid #bfdbfe;
+    border:1px solid #dbeafe;
     font-size:11px;
     font-weight:900;
+}
+
+
+
+/* =========================================================
+   GIAO DIỆN XANH - TRẮNG TRẺ TRUNG, HIỆN ĐẠI
+   ========================================================= */
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --primary-light:#3b82f6;
+    --primary-soft:#eff6ff;
+    --primary-pale:#f8fbff;
+    --primary-line:#bfdbfe;
+    --cyan:#38bdf8;
+    --cyan-soft:#e0f2fe;
+    --white:#ffffff;
+    --text-main:#0f172a;
+    --text-body:#334155;
+    --text-muted:#64748b;
+    --line:#e2e8f0;
+    --pink:#2563eb;
+    --pink-dark:#1d4ed8;
+    --orange:#38bdf8;
+}
+
+/* Nền tổng thể */
+body,
+.tour-detail-page,
+.tour-page,
+.main-content{
+    background:
+        radial-gradient(circle at top left,rgba(37,99,235,.06),transparent 28%),
+        linear-gradient(180deg,#ffffff 0%,#f8fbff 100%) !important;
+}
+
+/* Các khối chính */
+.tour-summary-card,
+.tour-gallery,
+.tour-info-card,
+.booking-card,
+.booking-form-card,
+.schedule-section,
+.rules-section,
+.review-section,
+.departure-section,
+.private-schedule-card,
+.consultation-section,
+.review-form-card,
+.review-item,
+.price-detail,
+.nearest-date,
+.timeline-text,
+.schedule-left,
+.schedule-right{
+    background:#ffffff !important;
+    border-color:#dbeafe !important;
+    box-shadow:0 14px 38px rgba(37,99,235,.08) !important;
+}
+
+/* Nút chính */
+.book-btn,
+.center-book-btn,
+.review-submit-btn,
+.booking-schedule-btn,
+.private-call-btn,
+.departure-card-action a,
+.consultation-call,
+.day-item span,
+.tour-day-detail-time,
+.tour-day-service-icon,
+.consultation-icon,
+.departure-date-box,
+.review-avatar{
+    color:#ffffff !important;
+    background:linear-gradient(135deg,#3b82f6 0%,#2563eb 58%,#1d4ed8 100%) !important;
+    border-color:transparent !important;
+    box-shadow:0 10px 24px rgba(37,99,235,.24) !important;
+}
+
+.book-btn:hover,
+.center-book-btn:hover,
+.review-submit-btn:hover,
+.booking-schedule-btn:hover,
+.private-call-btn:hover,
+.departure-card-action a:hover,
+.consultation-call:hover{
+    color:#ffffff !important;
+    background:linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+    box-shadow:0 14px 30px rgba(37,99,235,.30) !important;
+    transform:translateY(-2px);
+}
+
+/* Nút phụ */
+.consult-btn,
+.btn-outline-primary,
+.review-login-box a{
+    color:#2563eb !important;
+    background:#ffffff !important;
+    border-color:#93c5fd !important;
+}
+
+.consult-btn:hover,
+.btn-outline-primary:hover,
+.review-login-box a:hover{
+    color:#ffffff !important;
+    background:#2563eb !important;
+    border-color:#2563eb !important;
+}
+
+/* Tiêu đề và icon xanh */
+.timeline-text h3,
+.schedule-left h2 span,
+.schedule-right h2 span,
+.rules-section h2 span,
+.review-section h2 span,
+.review-kicker,
+.review-score-box > strong,
+.price-box strong,
+.nearest-date i,
+.tour-title-meta i,
+.breadcrumb a,
+.schedule-mini-heading > strong,
+.departure-section-head > strong,
+.review-list-head span,
+.tour-day-detail-content h4,
+.tour-day-service-card small{
+    color:#2563eb !important;
+}
+
+/* Timeline */
+.day-list,
+.timeline-detail{
+    border-left-color:#60a5fa !important;
+}
+
+.day-item::before,
+.timeline-dot{
+    border-color:#3b82f6 !important;
+    background:#ffffff !important;
+}
+
+.day-item span{
+    border:1px solid rgba(255,255,255,.45) !important;
+}
+
+/* Khung giờ chi tiết */
+.tour-day-detail-list{
+    gap:16px !important;
+}
+
+.tour-day-detail-item{
+    background:linear-gradient(135deg,#ffffff 0%,#f8fbff 100%) !important;
+    border-color:#dbeafe !important;
+    box-shadow:0 10px 26px rgba(37,99,235,.08) !important;
+}
+
+.tour-day-detail-item::before{
+    background:linear-gradient(180deg,#2563eb,#38bdf8) !important;
+}
+
+.tour-day-detail-item:hover{
+    border-color:#93c5fd !important;
+    box-shadow:0 16px 34px rgba(37,99,235,.14) !important;
+}
+
+.tour-day-detail-time{
+    background:linear-gradient(135deg,#3b82f6,#2563eb) !important;
+}
+
+.tour-day-detail-content p{
+    color:#334155 !important;
+}
+
+/* Thẻ dịch vụ */
+.tour-day-service-card{
+    background:linear-gradient(135deg,#eff6ff,#ffffff) !important;
+    border-color:#bfdbfe !important;
+}
+
+.tour-day-service-icon{
+    background:linear-gradient(135deg,#38bdf8,#2563eb) !important;
+}
+
+/* Badge và hộp xanh nhạt */
+.review-public-badge,
+.departure-section-head > strong,
+.review-list-head span,
+.schedule-mini-heading > strong,
+.review-login-box,
+.review-score-box,
+.nearest-date,
+.price-detail,
+.private-schedule-card,
+.consultation-section,
+.tour-day-detail-note{
+    color:#1d4ed8 !important;
+    background:linear-gradient(135deg,#eff6ff,#ffffff) !important;
+    border-color:#bfdbfe !important;
+}
+
+/* Input */
+.booking-form-card input,
+.booking-form-card select,
+.booking-form-card textarea,
+.review-form-card input,
+.review-form-card textarea,
+.review-form-card select{
+    color:#0f172a !important;
+    background:#ffffff !important;
+    border-color:#cbd5e1 !important;
+}
+
+.booking-form-card input:focus,
+.booking-form-card select:focus,
+.booking-form-card textarea:focus,
+.review-form-card input:focus,
+.review-form-card textarea:focus,
+.review-form-card select:focus{
+    border-color:#3b82f6 !important;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
+}
+
+/* Gallery */
+.gallery-thumb{
+    border-color:#e2e8f0 !important;
+    background:#ffffff !important;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.active{
+    border-color:#3b82f6 !important;
+    box-shadow:0 7px 18px rgba(37,99,235,.16) !important;
+}
+
+/* Giá và thông tin quan trọng */
+.price-box,
+.booking-price,
+.tour-price{
+    color:#1d4ed8 !important;
+}
+
+/* Sao đánh giá vẫn giữ vàng để dễ phân biệt */
+.review-stars,
+.rating-stars,
+.star-rating label,
+.review-card-stars{
+    color:#f59e0b !important;
+}
+
+/* Liên kết */
+a:hover{
+    text-decoration-color:#2563eb;
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .tour-day-detail-time{
+        background:linear-gradient(135deg,#3b82f6,#2563eb) !important;
+    }
+
+    .tour-day-detail-item{
+        background:#ffffff !important;
+    }
+}
+
+
+/* =========================================================
+   KHUNG GIỜ GỌN – DỄ ĐỌC – KHÔNG XUỐNG 2 DÒNG
+   ========================================================= */
+.tour-day-detail-item{
+    grid-template-columns:168px minmax(0,1fr) !important;
+    gap:18px !important;
+    align-items:stretch !important;
+    padding:15px 18px !important;
+}
+
+.tour-day-detail-time{
+    width:168px !important;
+    min-width:168px !important;
+    min-height:58px !important;
+    height:auto !important;
+    align-self:center !important;
+    padding:11px 14px !important;
+    border-radius:14px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:10px !important;
+    white-space:nowrap !important;
+    background:linear-gradient(135deg,#3b82f6,#2563eb) !important;
+    box-shadow:0 9px 20px rgba(37,99,235,.20) !important;
+}
+
+.tour-day-detail-time > i{
+    width:20px !important;
+    flex:0 0 20px !important;
+    font-size:20px !important;
+}
+
+.tour-day-detail-time > span{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-wrap:nowrap !important;
+    gap:6px !important;
+    font-size:16px !important;
+    line-height:1 !important;
+    letter-spacing:0 !important;
+    white-space:nowrap !important;
+}
+
+.tour-day-detail-time > span strong{
+    font-size:16px !important;
+    line-height:1 !important;
+    font-weight:900 !important;
+}
+
+.tour-day-detail-time > span small{
+    opacity:.9 !important;
+    font-size:15px !important;
+    line-height:1 !important;
+    font-weight:900 !important;
+    text-transform:none !important;
+}
+
+.tour-day-detail-content{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    min-height:58px !important;
+    padding:2px 0 !important;
+}
+
+.tour-day-detail-content h4{
+    margin:0 0 6px !important;
+    font-size:17px !important;
+    line-height:1.4 !important;
+}
+
+.tour-day-detail-content p{
+    margin:0 !important;
+    font-size:15px !important;
+    line-height:1.72 !important;
+}
+
+/* Bỏ cảm giác khung giờ quá nặng và đường timeline quá sát */
+.timeline-detail{
+    padding-left:30px !important;
+}
+
+.tour-day-detail-list{
+    gap:12px !important;
+}
+
+@media(max-width:900px){
+    .tour-day-detail-item{
+        grid-template-columns:1fr !important;
+        gap:12px !important;
+    }
+
+    .tour-day-detail-time{
+        width:max-content !important;
+        min-width:168px !important;
+        justify-content:flex-start !important;
+    }
+}
+
+@media(max-width:520px){
+    .tour-day-detail-item{
+        padding:13px !important;
+    }
+
+    .tour-day-detail-time{
+        width:100% !important;
+        min-width:0 !important;
+        justify-content:center !important;
+    }
+
+    .tour-day-detail-time > span,
+    .tour-day-detail-time > span strong{
+        font-size:15px !important;
+    }
 }
 
 </style>

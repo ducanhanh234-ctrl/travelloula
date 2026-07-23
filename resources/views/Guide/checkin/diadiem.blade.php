@@ -922,22 +922,57 @@ return $ngay->chiTiets->count();
                     </div>
 
                     <div class="location-place-action">
-                        @if ($ngay->ngay_thu == 1 && !$lichKhoiHanh->da_checkin_khoi_hanh)
-                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Bạn cần Check-in khởi hành trước">
+                        @if ($ngay->ngay_thu == 1 && ! $lichKhoiHanh->da_checkin_khoi_hanh)
+                        @if($firstDayOneActivity && $firstDayOneActivity->id === $chiTiet->id && $departureCanCheckIn)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Check-in khởi hành">
                             <i class="fas fa-user-check"></i>
                             Check-in
                         </a>
                         @else
+                        @if($departureExpired)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Đã đóng">
+                            <i class="fas fa-user-check"></i>
+                            Đã đóng
+                        </a>
+                        @else
+                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in xuất phát">
+                            <i class="fas fa-user-check"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
+                        @endif
+                        @else
+                        @php $expired = $activityWindows[$chiTiet->id]['expired'] ?? false; @endphp
+                        @if($activityWindows[$chiTiet->id]['can_checkin'] ?? false)
                         <a href="{{ route(
-                            'Guide.checkin.show',
-                            [
-                                'lichKhoiHanh' => $lichKhoiHanh->id,
-                                'chiTiet' => $chiTiet->id,
-                            ]
-                        ) }}" class="btn-location-checkin">
+                                    'Guide.checkin.show',
+                                    [
+                                        'lichKhoiHanh' => $lichKhoiHanh->id,
+                                        'chiTiet' => $chiTiet->id,
+                                    ]
+                                ) }}" class="btn-location-checkin">
                             <i class="fas fa-user-check"></i>
                             Check-in
                         </a>
+                        @else
+                        @if($expired)
+                        <a href="{{ route(
+                                    'Guide.checkin.show',
+                                    [
+                                        'lichKhoiHanh' => $lichKhoiHanh->id,
+                                        'chiTiet' => $chiTiet->id,
+                                    ]
+                                ) }}" class="btn-location-checkin" title="Đã đóng">
+                            <i class="fas fa-user-check"></i>
+                            Đã đóng
+                        </a>
+                        @else
+                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in">
+                            <i class="fas fa-user-check"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
+                        @endif
                         @endif
                     </div>
                 </div>

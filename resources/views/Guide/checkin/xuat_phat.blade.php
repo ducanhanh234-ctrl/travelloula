@@ -1372,16 +1372,11 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 ? 'disabled' : '' }}>
+            <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !$canCheckIn ? 'disabled' : '' }} title="{{ ! $canCheckIn && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                 <i class="fas fa-user-check"></i>
                 Check-in tất cả
             </button>
         </form>
-
-        <button type="button" class="btn-checkin btn-save" id="save-lock-button">
-            <i class="fas fa-save"></i>
-            Lưu
-        </button>
 
         <form action="{{ route('Guide.checkin.checkoutTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn Check-out tất cả hành khách?');">
             @csrf
@@ -1390,7 +1385,7 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 ? 'disabled' : '' }}>
+            <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-sign-out-alt"></i>
                 Check-out tất cả
             </button>
@@ -1402,7 +1397,7 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none">
+            <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-rotate-left"></i>
                 Hoàn tác tất cả
             </button>
@@ -1528,12 +1523,20 @@ max($phanTramCheckIn, 0),
                         </td>
 
                         <td>
-                            @if (
+                            @if ($checkinExpired ?? false)
+                            <div class="checkin-row-actions">
+                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="Đã đóng">
+                                    <i class="fas fa-user-check"></i>
+                                    Đã đóng
+                                </button>
+                            </div>
+                            @elseif (
                             !$checkIn ||
                             $checkIn->trang_thai
                             === 'chua_check_in'
                             )
                             <div class="checkin-row-actions">
+                                @if($canCheckIn)
                                 <form action="{{ route('Guide.checkin.store') }}" method="POST">
                                     @csrf
 
@@ -1548,10 +1551,15 @@ max($phanTramCheckIn, 0),
                                         Check-in
                                     </button>
                                 </form>
+                                @else
+                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}">
+                                    <i class="fas fa-user-check"></i>
+                                    {{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}
+                                </button>
+                                @endif
 
                                 <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
                                     <i class="fas fa-pen"></i>
-
                                     {{
                                                             $checkIn &&
                                                             $checkIn->ghi_chu
@@ -1572,7 +1580,7 @@ max($phanTramCheckIn, 0),
                                     @csrf
                                     @method('PATCH')
 
-                                    <button type="submit" class="btn-checkin-row btn-row-checkout">
+                                    <button type="submit" class="btn-checkin-row btn-row-checkout" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                                         <i class="fas fa-sign-out-alt"></i>
                                         Check-out
                                     </button>
@@ -1584,12 +1592,12 @@ max($phanTramCheckIn, 0),
                                                         ) }}" method="POST">
                                     @csrf
 
-                                    <button type="submit" class="btn-checkin-row btn-row-undo" title="Hoàn tác Check-in" onclick="return confirm('Hoàn tác trạng thái Check-in của hành khách này?');">
+                                    <button type="submit" class="btn-checkin-row btn-row-undo" title="Hoàn tác Check-in" onclick="return confirm('Hoàn tác trạng thái Check-in của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                         <i class="fas fa-rotate-left"></i>
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
+                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                     <i class="fas fa-pen"></i>
                                     Ghi chú
                                 </button>
@@ -1605,13 +1613,13 @@ max($phanTramCheckIn, 0),
                                                         ) }}" method="POST">
                                     @csrf
 
-                                    <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');">
+                                    <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                         <i class="fas fa-rotate-left"></i>
                                         Hoàn tác
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
+                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                     <i class="fas fa-pen"></i>
                                     Ghi chú
                                 </button>
@@ -1644,99 +1652,9 @@ max($phanTramCheckIn, 0),
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const saveButton = document.getElementById('save-lock-button');
-        if (!saveButton) {
-            return;
-        }
-
-        const storageKey = 'checkin_saved_{{ $lichKhoiHanhId }}_{{ $chiTiet->id }}';
-
-        const disableAllButtons = function() {
-            const buttons = document.querySelectorAll('.checkin-main-actions button:not(.btn-save), .checkin-row-actions button, .btn-modal-save');
-            buttons.forEach(function(button) {
-                button.disabled = true;
-                button.classList.add('disabled-button');
-            });
-
-            saveButton.disabled = true;
-            saveButton.textContent = 'Đã lưu';
-            saveButton.classList.add('disabled-button');
-        };
-
-        // If server already marked this chiTiet as saved, enforce disabled state
-        const serverSaved = {
-            {
-                isset($saved) && $saved ? 'true' : 'false'
-            }
-        };
-
-        if (serverSaved === true || localStorage.getItem(storageKey) === 'true') {
-            if (!localStorage.getItem(storageKey)) {
-                localStorage.setItem(storageKey, 'true');
-            }
-            disableAllButtons();
-        }
-
-        saveButton.addEventListener('click', function() {
-            // optimistic UI: show spinner while saving
-            saveButton.disabled = true;
-            saveButton.classList.add('disabled-button');
-            saveButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang lưu';
-
-            const url = '{{ route("Guide.checkin.saveLock", $lichKhoiHanhId) }}';
-            const tokenMeta = document.querySelector('meta[name="csrf-token"]');
-            const token = tokenMeta ? tokenMeta.getAttribute('content') : '{{ csrf_token() }}';
-
-            fetch(url, {
-                    method: 'POST'
-                    , headers: {
-                        'Content-Type': 'application/json'
-                        , 'X-CSRF-TOKEN': token
-                        , 'Accept': 'application/json'
-                    }
-                    , body: JSON.stringify({
-                        chi_tiet_id: {
-                            {
-                                $chiTiet - > id
-                            }
-                        }
-                        , action: 'CONFIRM_XUATPHAT'
-                    })
-                })
-                .then(function(res) {
-                    return res.json().then(function(json) {
-                        return {
-                            ok: res.ok
-                            , json: json
-                        };
-                    });
-                })
-                .then(function(result) {
-                    if (result.ok && result.json.success) {
-                        // For xuất phát we only mark saveButton as saved; do NOT disable day activity buttons
-                        saveButton.textContent = 'Đã lưu (xuất phát)';
-                        saveButton.classList.add('disabled-button');
-                    } else {
-                        saveButton.disabled = false;
-                        saveButton.classList.remove('disabled-button');
-                        saveButton.textContent = 'Lưu';
-                        alert(result.json.message || 'Lưu thất bại');
-                    }
-                })
-                .catch(function() {
-                    saveButton.disabled = false;
-                    saveButton.classList.remove('disabled-button');
-                    saveButton.textContent = 'Lưu';
-                    alert('Lưu thất bại, vui lòng thử lại.');
-                });
-        });
-    });
-
-</script>
-
 {{-- Modal ghi chú đặt ngoài Table để HTML hợp lệ --}}
+
+@foreach ($datTours as $datTour)
 @foreach ($datTours as $datTour)
 @foreach ($datTour->khachHangs as $khach)
 @php
@@ -1792,6 +1710,7 @@ $checkIn = $checkIns[$khach->id] ?? null;
         </div>
     </div>
 </div>
+@endforeach
 @endforeach
 @endforeach
 @endsection

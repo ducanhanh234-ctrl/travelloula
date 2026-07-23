@@ -1012,5 +1012,56 @@ return $ngay->chiTiets->count();
         </div>
     </div>
     @endforelse
+    <div class="location-day-card">
+        <div class="location-day-header">
+            <div class="location-day-title">
+                <span class="location-day-title-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </span>
+
+                Checkin Kết Thúc
+            </div>
+
+            <span class="location-day-count">
+                1 địa điểm
+            </span>
+        </div>
+
+        <div class="location-day-body">
+
+            <div class="location-place-list">
+
+                <div class="location-place-card">
+                    <div class="location-place-main">
+                        <span class="location-place-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </span>
+
+                        <div class="location-place-content">
+                            <h5 class="location-place-title">
+                                Lúc Kết Thúc
+                            </h5>
+
+
+                        </div>
+                    </div>
+
+                    <div class="location-place-action">
+                        <a href="{{ route(
+    'Guide.checkin.ketThuc',
+    $lichKhoiHanh->id
+) }}" class="btn-location-checkin">
+                            <i class="fas fa-user-check"></i>
+                            Check-in
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
 </div>
 @endsection

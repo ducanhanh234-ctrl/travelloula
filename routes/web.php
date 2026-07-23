@@ -276,4 +276,14 @@ Route::prefix('Guide')
             '/checkin/{lichKhoiHanh}/xuat-phat',
             [CheckInController::class, 'storeXuatPhat']
         )->name('checkin.storeXuatPhat');
+
+        Route::get(
+            '/checkin/{lichKhoiHanh}/ket-thuc',
+            [CheckInController::class, 'showKetThuc']
+        )->name('checkin.ketThuc');
+
+        Route::post(
+            '/checkin/{lichKhoiHanh}/ket-thuc',
+            [CheckInController::class, 'storeKetThuc']
+        )->name('checkin.storeKetThuc');
     });

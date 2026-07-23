@@ -995,7 +995,7 @@ foreach ($request->hanh_khach as $hk) {
 
             // Thanh toán tiền mặt
             return redirect()
-                ->route('Client.home')
+                ->route('home')
                 ->with(
                     'success',
                     'Đặt tour thành công. Vui lòng thanh toán khi nhận dịch vụ.'

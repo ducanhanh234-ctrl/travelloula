@@ -322,62 +322,40 @@
 
                 <div class="card-header">
                     <i class="fas fa-history me-2"></i>
-                    Lịch sử giao dịch
+                    Tải Xuống Hóa Đơn
                 </div>
 
                 <div class="card-body">
 
                     <div class="border-start ps-3">
 
-                        {{-- <div class="mb-4">
-                            <h6 class="mb-1">
-                                Tạo giao dịch
-                            </h6>
+                        @if($thanh_toan->hoa_don_pdf)
 
-                            <small class="text-muted">
-                                10/06/2026 - 15:20
-                            </small>
+                        <div class="d-grid gap-2">
+
+                            <a href="{{ route('thanh-toan.download',$thanh_toan->id) }}" class="btn btn-danger">
+
+                                <i class="fas fa-download"></i>
+                                Tải xuống hóa đơn
+
+                            </a>
+
+                            <a href="{{ route('thanh-toan.view',$thanh_toan->id) }}" target="_blank" class="btn btn-primary">
+
+                                <i class="fas fa-eye"></i>
+                                Xem hóa đơn
+
+                            </a>
+
                         </div>
 
-                        <div class="mb-4">
-                            <h6 class="mb-1 text-primary">
-                                Chuyển tới VNPay
-                            </h6>
+                        @else
 
-                            <small class="text-muted">
-                                10/06/2026 - 15:25
-                            </small>
-                        </div>
+                        <button class="btn btn-secondary w-100" disabled>
+                            Chưa có hóa đơn
+                        </button>
 
-                        <div>
-                            <h6 class="mb-1">
-                                @if ($thanh_toan->trang_thai == 1)
-                                <span class="badge badge-success">
-                                    Đã thanh toán
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 2)
-                                <span class="badge badge-warning">
-                                    Chờ xử lý
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 3)
-                                <span class="badge badge-danger">
-                                    Thất bại
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 4)
-                                <span class="badge badge-info">
-                                    Hoàn tiền
-                                </span>
-                                @else
-                                <span class="badge badge-secondary">
-                                    Không xác định
-                                </span>
-                                @endif
-                            </h6>
-
-                            <small class="text-muted">
-                                10/06/2026 - 15:30
-                            </small>
-                        </div> --}}
+                        @endif
 
                     </div>
 

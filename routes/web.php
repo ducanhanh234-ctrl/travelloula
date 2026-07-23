@@ -66,6 +66,12 @@ Route::post(
     '/admin/thanh-toan/{id}/gui-hoa-don',
     [ThanhToanController::class, 'guiHoaDon']
 )->name('thanh-toan.guiHoaDon');
+Route::get(
+    '/thanh-toan/{id}/download',
+    [ThanhToanController::class, 'downloadHoaDon']
+)->name('thanh-toan.download');
+Route::get('/thanh-toan/{id}/view', [ThanhToanController::class, 'viewHoaDon'])
+    ->name('thanh-toan.view');
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES

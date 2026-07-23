@@ -9,6 +9,7 @@ use App\Models\ThanhToan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Services\HoaDonService;
+use Illuminate\Support\Facades\Storage;
 
 class ThanhToanController extends Controller
 {
@@ -323,5 +324,38 @@ class ThanhToanController extends Controller
             ->send(new HoaDonMail($payment));
 
         return back()->with('success', 'Đã gửi lại hóa đơn.');
+    }
+    public function downloadHoaDon($id)
+    {
+        $thanhToan = ThanhToan::findOrFail($id);
+
+        if (!$thanhToan->hoa_don_pdf) {
+            return back()->with('error', 'Hóa đơn chưa được tạo.');
+        }
+
+        if (!Storage::disk('public')->exists($thanhToan->hoa_don_pdf)) {
+            return back()->with('error', 'Không tìm thấy file hóa đơn.');
+        }
+
+        return Storage::disk('public')->download(
+            $thanhToan->hoa_don_pdf,
+            'HoaDon_' . $thanhToan->ma_giao_dich . '.pdf'
+        );
+    }
+    public function viewHoaDon($id)
+    {
+        $thanhToan = ThanhToan::findOrFail($id);
+
+        if (!$thanhToan->hoa_don_pdf) {
+            return back()->with('error', 'Hóa đơn chưa tồn tại.');
+        }
+
+        if (!Storage::disk('public')->exists($thanhToan->hoa_don_pdf)) {
+            return back()->with('error', 'Không tìm thấy file.');
+        }
+
+        return response()->file(
+            Storage::disk('public')->path($thanhToan->hoa_don_pdf)
+        );
     }
 }

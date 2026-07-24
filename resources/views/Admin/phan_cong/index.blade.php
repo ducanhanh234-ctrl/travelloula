@@ -3,9 +3,9 @@
 @section('title', 'Quản lý Phân công')
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active">
-        Quản lý Phân công
-    </li>
+<li class="breadcrumb-item active">
+    Quản lý Phân công
+</li>
 @endsection
 
 @section('content')
@@ -926,220 +926,220 @@
                 </div>
 
             </div>
-        @endif
+            @endif
 
-        <div class="assignment-card">
-            <div class="assignment-card-header">
-                <div class="assignment-card-heading">
-                    <span class="assignment-card-icon">
-                        <i class="fas fa-user-check"></i>
-                    </span>
+            <div class="assignment-card">
+                <div class="assignment-card-header">
+                    <div class="assignment-card-heading">
+                        <span class="assignment-card-icon">
+                            <i class="fas fa-user-check"></i>
+                        </span>
 
-                    <div>
-                        <h4>Danh sách phân công</h4>
+                        <div>
+                            <h4>Danh sách phân công</h4>
 
-                        <p>
-                            Theo dõi lịch khởi hành, hướng dẫn viên và phương
-                            tiện được bố trí.
-                        </p>
-                    </div>
-                </div>
-
-
-            <div class="assignment-total">
-                <strong>{{ $phanCongs->total() }}</strong>
-                <span>Phân công</span>
-
-            </div>
-        </div>
-
-
-        <div class="assignment-card-body">
-            <div class="assignment-filter-box">
-                <div class="assignment-filter-title">
-                    <i class="fas fa-filter"></i>
-                    Bộ lọc tìm kiếm
-                </div>
-
-                <form method="GET" action="{{ route('Admin.phan-cong.index') }}" class="assignment-filter-form">
-                    <div class="assignment-filter-field">
-                        <label for="keyword">
-                            Tìm kiếm phân công
-                        </label>
-
-                        <div class="assignment-filter-control">
-                            <i class="fas fa-search assignment-filter-icon"></i>
-
-                            <input type="text" name="keyword" id="keyword" class="form-control" value="{{ request('keyword') }}" placeholder="Tên hướng dẫn viên hoặc biển số xe..." autocomplete="off">
+                            <p>
+                                Theo dõi lịch khởi hành, hướng dẫn viên và phương
+                                tiện được bố trí.
+                            </p>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-filter-action btn-filter">
-                        <i class="fas fa-search"></i>
-                        Tìm kiếm
-                    </button>
 
-                    <a href="{{ route('Admin.phan-cong.index') }}" class="btn-filter-action btn-reset" title="Đặt lại bộ lọc">
-                        <i class="fas fa-redo-alt"></i>
-                        Đặt lại
-                    </a>
-                </form>
-            </div>
+                    <div class="assignment-total">
+                        <strong>{{ $phanCongs->total() }}</strong>
+                        <span>Phân công</span>
 
-            <div class="assignment-table-wrapper">
-                <table class="table assignment-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tour</th>
-                            <th>Thời gian</th>
-                            <th>Ngày phân công</th>
-                            <th>Số Lượng</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
+                    </div>
+                </div>
 
-                    <tbody>
-                        @forelse ($phanCongs as $phanCong)
-                        @php
-                        $hdvs = optional($phanCong->phanCong)->hdvList ?? collect();
-                        $vehicles = optional($phanCong->phanCong)->phuongTienList ?? collect();
-                        $guideName = $hdvs->pluck('ho_ten')->join(', ');
-                        $vehiclePlate = $vehicles->pluck('bien_so_xe')->join(', ');
-                        $vehicleType = $vehicles->pluck('loai_phuong_tien')->join(', ');
-                        @endphp
 
-                        <tr>
-                            <td>
-                                <span class="assignment-id">
-                                    #{{ $phanCong->id }}
-                                </span>
-                            </td>
+                <div class="assignment-card-body">
+                    <div class="assignment-filter-box">
+                        <div class="assignment-filter-title">
+                            <i class="fas fa-filter"></i>
+                            Bộ lọc tìm kiếm
+                        </div>
 
-                            <td>
-                                <div class="d-flex flex-column">
-                                    <!-- Tên tour -->
-                                    <span class="fw-bold text-dark text-truncate" style="max-width:250px;" title="{{ $phanCong->tour->ten_tour ?? 'Không có Tour' }}">
-                                        {{ $phanCong->tour->ten_tour ?? 'Không có Tour' }}
-                                    </span>
+                        <form method="GET" action="{{ route('Admin.phan-cong.index') }}" class="assignment-filter-form">
+                            <div class="assignment-filter-field">
+                                <label for="keyword">
+                                    Tìm kiếm phân công
+                                </label>
 
-                                    <!-- Giá -->
-                                    <small class="text-success mt-1">
-                                        <i class="fas fa-money-bill-wave me-1"></i>
-                                        {{ number_format($phanCong->tour->gia_tour ?? 0, 0, ',', '.') }} VNĐ
-                                    </small>
+                                <div class="assignment-filter-control">
+                                    <i class="fas fa-search assignment-filter-icon"></i>
 
-                                    <!-- Trạng thái -->
-                                    <span class="mt-2">
-                                        @php
-                                        $status = $phanCong->trang_thai ?? '';
-                                        @endphp
-
-                                        @if($status == 'finalized')
-                                        <span class="badge bg-success ">Đã Chốt</span>
-                                        @elseif($status == 'assigned')
-                                        <span class="badge bg-danger">Đã Phân Công</span>
-                                        @elseif($status == 'running')
-                                        <span class="badge bg-warning">Đang Chạy</span>
-                                        @else
-                                        <span class="badge bg-secondary">Chưa Chốt</span>
-                                        @endif
-                                    </span>
+                                    <input type="text" name="keyword" id="keyword" class="form-control" value="{{ request('keyword') }}" placeholder="Tên hướng dẫn viên hoặc biển số xe..." autocomplete="off">
                                 </div>
-                            </td>
-                            <td>
-                                <div class="departure-date">
-                                    <i class="fas fa-calendar-alt"></i>
+                            </div>
 
-                                    {{ \Carbon\Carbon::parse(
+                            <button type="submit" class="btn-filter-action btn-filter">
+                                <i class="fas fa-search"></i>
+                                Tìm kiếm
+                            </button>
+
+                            <a href="{{ route('Admin.phan-cong.index') }}" class="btn-filter-action btn-reset" title="Đặt lại bộ lọc">
+                                <i class="fas fa-redo-alt"></i>
+                                Đặt lại
+                            </a>
+                        </form>
+                    </div>
+
+                    <div class="assignment-table-wrapper">
+                        <table class="table assignment-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tour</th>
+                                    <th>Thời gian</th>
+                                    <th>Ngày phân công</th>
+                                    <th>Số Lượng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @forelse ($phanCongs as $phanCong)
+                                @php
+                                $hdvs = optional($phanCong->phanCong)->hdvList ?? collect();
+                                $vehicles = optional($phanCong->phanCong)->phuongTienList ?? collect();
+                                $guideName = $hdvs->pluck('ho_ten')->join(', ');
+                                $vehiclePlate = $vehicles->pluck('bien_so_xe')->join(', ');
+                                $vehicleType = $vehicles->pluck('loai_phuong_tien')->join(', ');
+                                @endphp
+
+                                <tr>
+                                    <td>
+                                        <span class="assignment-id">
+                                            #{{ $phanCong->id }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <!-- Tên tour -->
+                                            <span class="fw-bold text-dark text-truncate" style="max-width:250px;" title="{{ $phanCong->tour->ten_tour ?? 'Không có Tour' }}">
+                                                {{ $phanCong->tour->ten_tour ?? 'Không có Tour' }}
+                                            </span>
+
+                                            <!-- Giá -->
+                                            <small class="text-success mt-1">
+                                                <i class="fas fa-money-bill-wave me-1"></i>
+                                                {{ number_format($phanCong->tour->gia_tour ?? 0, 0, ',', '.') }} VNĐ
+                                            </small>
+
+                                            <!-- Trạng thái -->
+                                            <span class="mt-2">
+                                                @php
+                                                $status = $phanCong->trang_thai ?? '';
+                                                @endphp
+
+                                                @if($status == 'finalized')
+                                                <span class="badge bg-success ">Đã Chốt</span>
+                                                @elseif($status == 'assigned')
+                                                <span class="badge bg-danger">Đã Phân Công</span>
+                                                @elseif($status == 'running')
+                                                <span class="badge bg-warning">Đang Chạy</span>
+                                                @else
+                                                <span class="badge bg-secondary">Chưa Chốt</span>
+                                                @endif
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="departure-date">
+                                            <i class="fas fa-calendar-alt"></i>
+
+                                            {{ \Carbon\Carbon::parse(
                                                 $phanCong->ngay_khoi_hanh
                                             )->format('d/m/Y') }}
-                                </div>
+                                        </div>
 
-                                <div class="departure-end-date">
-                                    đến
-                                    {{ \Carbon\Carbon::parse(
+                                        <div class="departure-end-date">
+                                            đến
+                                            {{ \Carbon\Carbon::parse(
                                                 $phanCong->ngay_ket_thuc
                                             )->format('d/m/Y') }}
-                                </div>
-                            </td>
+                                        </div>
+                                    </td>
 
 
 
-                            <td>
-                                @if($phanCong->phanCong)
-                                <span class="assignment-date">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    {{ \Carbon\Carbon::parse($phanCong->phanCong->ngay_phan_cong)->format('d/m/Y') }}
-                                </span>
-                                @else
-                                <span class="text-muted">
-                                    Chưa phân công
-                                </span>
-                                @endif
-                            </td>
+                                    <td>
+                                        @if($phanCong->phanCong)
+                                        <span class="assignment-date">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            {{ \Carbon\Carbon::parse($phanCong->phanCong->ngay_phan_cong)->format('d/m/Y') }}
+                                        </span>
+                                        @else
+                                        <span class="text-muted">
+                                            Chưa phân công
+                                        </span>
+                                        @endif
+                                    </td>
 
-                            <td>
-                                @if($phanCong)
-                                <span class="badge bg-primary">
-                                    {{$phanCong->so_cho_da_dat}}/{{$phanCong->so_cho}}
-                                </span>
-                                @else
-                                <span class="text-muted">
-                                    Chưa có thông tin
-                                </span>
-                                @endif
-                            </td>
-                            <td>
-                                <div class="assignment-actions">
-                                    <a href="{{ route('Admin.phan-cong.show', $phanCong->id) }}" class="btn-table-action btn-view" title="Xem chi tiết">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    @if($phanCong->trang_thai === 'finalized')
-                                    <a href="{{ route('Admin.phan-cong.create', ['id' => $phanCong->id]) }}" class="btn-table-action btn-edit" title="phân công">
-                                        <i class="fas fa-user-plus"></i>
-                                    </a>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="assignment-empty-row">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-clipboard-list"></i>
-                                </div>
+                                    <td>
+                                        @if($phanCong)
+                                        <span class="badge bg-primary">
+                                            {{$phanCong->so_cho_da_dat}}/{{$phanCong->so_cho}}
+                                        </span>
+                                        @else
+                                        <span class="text-muted">
+                                            Chưa có thông tin
+                                        </span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="assignment-actions">
+                                            <a href="{{ route('Admin.phan-cong.show', $phanCong->id) }}" class="btn-table-action btn-view" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if($phanCong->trang_thai === 'finalized')
+                                            <a href="{{ route('Admin.phan-cong.create', ['id' => $phanCong->id]) }}" class="btn-table-action btn-edit" title="phân công">
+                                                <i class="fas fa-user-plus"></i>
+                                            </a>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="assignment-empty-row">
+                                        <div class="empty-state-icon">
+                                            <i class="fas fa-clipboard-list"></i>
+                                        </div>
 
-                                <div class="empty-state-title">
-                                    Chưa có dữ liệu phân công
-                                </div>
+                                        <div class="empty-state-title">
+                                            Chưa có dữ liệu phân công
+                                        </div>
 
-                                <div class="empty-state-text">
-                                    Không tìm thấy phân công phù hợp với
-                                    điều kiện tìm kiếm.
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                        <div class="empty-state-text">
+                                            Không tìm thấy phân công phù hợp với
+                                            điều kiện tìm kiếm.
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="assignment-card-footer">
+                    <div class="assignment-result-info">
+                        @if ($phanCongs->total() > 0)
+                        Hiển thị {{ $phanCongs->firstItem() }}
+                        đến {{ $phanCongs->lastItem() }}
+                        trong tổng số {{ $phanCongs->total() }} phân công
+                        @else
+                        Không có phân công nào
+                        @endif
+                    </div>
+
+                    {{ $phanCongs->withQueryString()->links() }}
+                </div>
             </div>
         </div>
 
-        <div class="assignment-card-footer">
-            <div class="assignment-result-info">
-                @if ($phanCongs->total() > 0)
-                Hiển thị {{ $phanCongs->firstItem() }}
-                đến {{ $phanCongs->lastItem() }}
-                trong tổng số {{ $phanCongs->total() }} phân công
-                @else
-                Không có phân công nào
-                @endif
-            </div>
-
-            {{ $phanCongs->withQueryString()->links() }}
-        </div>
-    </div>
-</div>
-
-@endsection
+        @endsection

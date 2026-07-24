@@ -48,7 +48,21 @@ use App\Http\Controllers\Admin\ImportKhachHangController;
 
 Route::get('/', [HomeClientController::class, 'index'])->name('home');
 Route::get('/trang_chu', [HomeClientController::class, 'index'])->name('Client.trang_chu.index');
+Route::post('/tour/{tour}/danh-gia', [DanhGiaController::class, 'store'])
+    ->name('Client.danh_gia.store');
+Route::prefix('danh_gias')->name('danh_gias.')->group(function () {
+    Route::get('/', [DanhGiaController::class, 'index'])->name('index');
 
+    Route::patch('/{id}/approve', [DanhGiaController::class, 'approve'])
+        ->name('approve');
+
+
+    Route::patch('/{id}/hide', [DanhGiaController::class, 'hide'])
+        ->name('hide');
+
+    Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
+    Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
+});
 
 Route::get('/tour', [TourClientController::class, 'index'])->name('Client.danh_sach_tour.index');
 Route::get('/tour/{id}', [TourClientController::class, 'show'])->name('Client.danh_sach_tour.show');
@@ -217,7 +231,6 @@ Route::prefix('Admin')
 
         Route::post('/import-hanh-khach', [ImportKhachHangController::class, 'import'])
             ->name('import_hanh_khach');
-
     });
 
 /*
@@ -304,5 +317,4 @@ Route::prefix('Guide')
             '/checkin/{lichKhoiHanh}/ket-thuc',
             [CheckInController::class, 'storeKetThuc']
         )->name('checkin.storeKetThuc');
-
     });

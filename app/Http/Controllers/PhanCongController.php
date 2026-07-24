@@ -344,7 +344,6 @@ class PhanCongController extends Controller
                 'error' => 'Đã xảy ra lỗi khi cập nhật phân công: ' . $e->getMessage()
             ]);
         }
-
     }
     public function destroy(PhanCong $phanCong)
     {

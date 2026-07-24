@@ -1,7 +1,6 @@
 @extends('Layouts.guide')
 
 @section('content')
-
 <div class="container">
     <div class="card shadow">
         <div class="card-header bg-success text-white">

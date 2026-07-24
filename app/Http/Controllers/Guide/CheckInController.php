@@ -23,6 +23,8 @@ class CheckInController extends Controller
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
 
+
+
         // Lấy ID các lịch khởi hành mà HDV được phân công
         $lichKhoiHanhIds = PhanCong::whereJsonContains('hdv_ids', (string)$guide->id)
             ->pluck('lich_khoi_hanh_id');
@@ -31,12 +33,15 @@ class CheckInController extends Controller
         $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
             ->whereIn('id', $lichKhoiHanhIds)
             ->where('trang_thai', 'running')
+
             ->orderBy('ngay_khoi_hanh')
             ->paginate(10);
 
         $tongTour = $lichKhoiHanhs->total();
+
         $dangDienRa = $tongTour;
         $sapKhoiHanh = 0;
+
 
         return view(
             'Guide.checkin.index',
@@ -126,7 +131,9 @@ class CheckInController extends Controller
             ->where('lich_khoi_hanh_id', $lichKhoiHanhId)
             ->get();
 
+
         $chiTiet = $chiTietObj;
+
 
         $checkedIds = CheckInKhachHang::where(
             'chi_tiet_lich_trinh_id',
@@ -153,8 +160,8 @@ class CheckInController extends Controller
         }
 
         $daCheck = count($checkedIds);
-
         $chuaCheck = $tongKhach - $daCheck;
+
         // Server-side saved flag for this lich/chiTiet (from CheckinSave)
         $saved = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
             ->where('chi_tiet_lich_trinh_id', $chiTietId)
@@ -164,6 +171,7 @@ class CheckInController extends Controller
         [$checkinWindowStart, $checkinWindowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet);
         $canCheckIn = $this->isCheckinWindowOpen($lichKhoiHanh, $chiTiet);
         $checkinExpired = $this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet);
+
 
         return view(
             'Guide.checkin.show',
@@ -342,6 +350,7 @@ class CheckInController extends Controller
 
     public function checkIn(Request $request)
     {
+
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
         $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
@@ -366,6 +375,7 @@ class CheckInController extends Controller
                 'chi_tiet_lich_trinh_id',
                 $request->chi_tiet_lich_trinh_id
             )
+
             ->first();
 
         if ($checkIn && $checkIn->trang_thai == 'da_check_in') {
@@ -550,9 +560,8 @@ class CheckInController extends Controller
     }
     public function diaDiem($lichKhoiHanhId)
     {
-        $lichKhoiHanh = LichKhoiHanhTour::with(
-            'tour.lichTrinhTours.chiTiets'
-        )->findOrFail($lichKhoiHanhId);
+        $lichKhoiHanh = LichKhoiHanhTour::with('tour.lichTrinhTours.chiTiets')
+            ->findOrFail($lichKhoiHanhId);
 
         $activityWindows = [];
         $firstDayOneActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
@@ -602,6 +611,7 @@ class CheckInController extends Controller
             )
         );
     }
+
 
     public function checkOut($id)
     {
@@ -681,6 +691,7 @@ class CheckInController extends Controller
         );
     }
 
+
     public function checkInTatCa(Request $request)
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
@@ -697,6 +708,11 @@ class CheckInController extends Controller
                 'Không thể check-in tất cả vì chưa đúng thời gian cho hoạt động này.'
             );
         }
+
+        //chốt điểm danh mới đc checkin 2
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $request->chi_tiet_lich_trinh_id
+        );
 
         $datTours = DatTour::with('khachHangs')
             ->where(
@@ -826,10 +842,8 @@ class CheckInController extends Controller
     public function undoCheckIn($id)
     {
         $checkIn = CheckInKhachHang::findOrFail($id);
-
         // Chỉ hoàn tác khi đang ở trạng thái đã check-in
         if ($checkIn->trang_thai != 'da_check_in') {
-
             return back()->with(
                 'error',
                 'Không thể hoàn tác Check-in.'

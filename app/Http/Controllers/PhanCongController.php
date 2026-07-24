@@ -56,11 +56,17 @@ class PhanCongController extends Controller
     public function create(Request $request)
     {
 
+
         $lichKhoiHanhs = LichKhoiHanhTour::findOrFail($request->id);
 
+
         $huongDanViens = HuongDanVien::where('trang_thai', 'san_sang')->get();
-        $phuongTiens = PhuongTien::where('trang_thai', '1')->get();
-        return view('Admin.phan_cong.create', compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens'));
+        $phuongTiens = PhuongTien::where('trang_thai', 1)->get();
+
+        return view(
+            'Admin.phan_cong.create',
+            compact('lichKhoiHanhs', 'huongDanViens', 'phuongTiens')
+        );
     }
     public function store(Request $request)
     {
@@ -184,8 +190,10 @@ class PhanCongController extends Controller
 
         // Cập nhật trạng thái lịch
         $lich->update([
+
             'huong_dan_vien_id' => $selectedHdvIds[0],
             'trang_thai' => 'assigned' // Đã phân công
+
         ]);
 
         return redirect()
@@ -336,6 +344,7 @@ class PhanCongController extends Controller
                 'error' => 'Đã xảy ra lỗi khi cập nhật phân công: ' . $e->getMessage()
             ]);
         }
+
     }
     public function destroy(PhanCong $phanCong)
     {
@@ -353,8 +362,12 @@ class PhanCongController extends Controller
         $phanCong->delete();
 
         // Trả lịch về trạng thái Chờ phân công
+        $phanCong->delete();
+
         $lich->update([
-            'trang_thai' => 1
+            'huong_dan_vien_id' => null,
+            'phuong_tien_id'    => null,
+            'trang_thai'        => 1,
         ]);
 
         return redirect()

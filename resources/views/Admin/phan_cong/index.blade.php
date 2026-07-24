@@ -3,12 +3,13 @@
 @section('title', 'Quản lý Phân công')
 
 @section('breadcrumb')
-<li class="breadcrumb-item active">
-    Quản lý Phân công
-</li>
+    <li class="breadcrumb-item active">
+        Quản lý Phân công
+    </li>
 @endsection
 
 @section('content')
+
 <style>
     :root {
         --assignment-primary: #315be8;
@@ -923,13 +924,35 @@
                         tiện được bố trí.
                     </p>
                 </div>
+
             </div>
+        @endif
+
+        <div class="assignment-card">
+            <div class="assignment-card-header">
+                <div class="assignment-card-heading">
+                    <span class="assignment-card-icon">
+                        <i class="fas fa-user-check"></i>
+                    </span>
+
+                    <div>
+                        <h4>Danh sách phân công</h4>
+
+                        <p>
+                            Theo dõi lịch khởi hành, hướng dẫn viên và phương
+                            tiện được bố trí.
+                        </p>
+                    </div>
+                </div>
+
 
             <div class="assignment-total">
                 <strong>{{ $phanCongs->total() }}</strong>
                 <span>Phân công</span>
+
             </div>
         </div>
+
 
         <div class="assignment-card-body">
             <div class="assignment-filter-box">
@@ -1118,4 +1141,5 @@
         </div>
     </div>
 </div>
+
 @endsection

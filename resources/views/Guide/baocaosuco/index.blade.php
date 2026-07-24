@@ -137,20 +137,11 @@
                             @foreach($baoCaos as $baoCao)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $baoCao->lichKhoiHanh->tour->ten_tour }}</td>
                                     <td>
-                                        {{ $baoCao->lichKhoiHanh->tour->ten_tour }}
+                                        <strong>{{ $baoCao->tieu_de }}</strong>
                                     </td>
-
-                                    <td>
-                                        <strong>
-                                            {{ $baoCao->tieu_de }}
-                                        </strong>
-                                    </td>
-
-                                    <td>
-                                        {{ ucfirst(str_replace('_', ' ', $baoCao->loai_su_co)) }}
-                                    </td>
-
+                                    <td>{{ ucfirst(str_replace('_', ' ', $baoCao->loai_su_co)) }}</td>
                                     <td>
                                         @if($baoCao->muc_do == 'thap')
                                             <span class="badge rounded-pill bg-success">
@@ -167,7 +158,6 @@
                                                 Cao
                                             </span>
                                         @endif
-
                                     </td>
 
                                     <td>
@@ -188,28 +178,20 @@
                                         @endif
                                     </td>
 
-                                    <td>
-                                        {{ $baoCao->created_at->format('d/m/Y H:i') }}
-                                    </td>
+                                    <td>{{ $baoCao->created_at->format('d/m/Y H:i') }}</td>
 
                                     <td class="text-center">
-
                                         {{-- Xem --}}
                                         <a href="{{ route('Guide.baocaosuco.show', $baoCao->id) }}"
                                             class="btn btn-outline-success btn-sm" title="Xem">
-
                                             <i class="fas fa-eye"></i>
-
                                         </a>
 
                                         @if($baoCao->trang_thai == 'cho_xu_ly')
-
                                             {{-- Sửa --}}
                                             <a href="{{ route('Guide.baocaosuco.edit', $baoCao->id) }}"
                                                 class="btn btn-outline-warning btn-sm" title="Chỉnh sửa">
-
                                                 <i class="fas fa-edit"></i>
-
                                             </a>
 
                                             {{-- Xóa --}}
@@ -217,7 +199,6 @@
                                                 class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-
                                                 <button type="submit" class="btn btn-outline-danger btn-sm"
                                                     onclick="return confirm('Bạn có chắc muốn xóa báo cáo này không?')" title="Xóa">
                                                     <i class="fas fa-trash"></i>

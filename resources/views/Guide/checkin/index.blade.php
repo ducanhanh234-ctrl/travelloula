@@ -1,4 +1,11 @@
 @extends('Layouts.guide')
+@section('title', 'Check-in hành khách')
+@section('guide', 'Check-in hành khách')
+@section('breadcrumb')
+    <li class="breadcrumb-item active">
+        Check-in hành khách
+    </li>
+@endsection
 
 @section('title', 'Check-in hành khách')
 
@@ -11,6 +18,7 @@
 @endsection
 
 @section('content')
+
 <style>
     :root {
         --checkin-primary: #315be8;
@@ -621,9 +629,11 @@
 
                     <p>
                         Chọn lịch khởi hành để tiếp tục chọn địa điểm Check-in.
+
                     </p>
                 </div>
             </div>
+
 
 
         </div>
@@ -754,4 +764,5 @@
         @endif
     </div>
 </div>
+
 @endsection

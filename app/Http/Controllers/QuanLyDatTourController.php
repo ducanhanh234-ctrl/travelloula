@@ -4,16 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\DatTour;
 use App\Models\HuongDanVien;
+use App\Models\KhachHangDatTour;
 use App\Models\LichKhoiHanhTour;
+use App\Models\ThanhToan;
 use App\Models\Tour;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Models\KhachHangDatTour;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\ThanhToan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class QuanLyDatTourController extends Controller
 {
@@ -98,30 +98,11 @@ class QuanLyDatTourController extends Controller
             'huong_dan_vien_id' => 'required'
         ]);
         $booking = DatTour::findOrFail($id);
-        $oldTotal =
-            $booking->so_nguoi_lon +
-            $booking->so_tre_em +
-            $booking->so_em_be;
 
-        $newTotal =
-            $request->so_nguoi_lon +
-            $request->so_tre_em +
-            $request->so_em_be;
+        $oldTotal = $booking->so_nguoi_lon + $booking->so_tre_em;
+        $newTotal = $request->so_nguoi_lon + $request->so_tre_em;
 
         $diff = $newTotal - $oldTotal;
-
-        //         dd([
-        //     'oldTotal' => $oldTotal,
-        //     'newTotal' => $newTotal,
-        //     'diff' => $diff,
-
-        //     'adult_request' => $request->so_nguoi_lon,
-        //     'child_request' => $request->so_tre_em,
-        //     'baby_request' => $request->so_em_be,
-
-        //     'delete_ids' => $request->hanh_khach_xoa,
-        // ]);
-
         if ($booking->lichKhoiHanh) {
             if ($diff > 0) {
                 // thêm khách -> trừ chỗ
@@ -163,10 +144,7 @@ class QuanLyDatTourController extends Controller
 
         $lich = $datTour->lichKhoiHanh;
         if ($lich) {
-            $tongKhach =
-                $datTour->so_nguoi_lon +
-                $datTour->so_tre_em +
-                $datTour->so_em_be;
+            $tongKhach = $datTour->so_nguoi_lon + $datTour->so_tre_em;
             $lich->update([
                 'so_cho_con_lai' =>
                 $lich->so_cho_con_lai + $tongKhach,
@@ -184,13 +162,20 @@ class QuanLyDatTourController extends Controller
         );
     }
 
-    // Form thêm booking thủ công
+    // Form admin tạo đơn đặt tour thủ công
     public function create()
     {
         $user = Auth::user();
-        $tours = Tour::with('lichTrinh')->get();
-        $users = User::orderBy('name')->get();
+        $tours = Tour::has('lichTrinh')
+            ->with('lichTrinh')
+            ->orderByDesc('created_at')
+            ->get();
 
+        $users = User::whereHas('vaiTros', function ($query) {
+            $query->where('ten_vai_tro', 'User');
+        })
+            ->orderBy('name')
+            ->get();
         return view(
             'Admin.quan_ly_dat_tours.create',
             compact(
@@ -226,19 +211,12 @@ class QuanLyDatTourController extends Controller
             // ]);
             $tour = Tour::with('lichTrinh')
                 ->findOrFail($request->tour_id);
-            $tongKhach =
-                (int) $request->so_nguoi_lon +
-                (int) $request->so_tre_em +
-                (int) $request->so_em_be;
+            $tongKhach = (int) $request->so_nguoi_lon + (int) $request->so_tre_em;
 
             $soNguoiLon = (int) $request->so_nguoi_lon;
             $soTreEm = (int) $request->so_tre_em;
-            $soEmBe = (int) $request->so_em_be;
 
-            $tongTien =
-                ($soNguoiLon * $tour->gia_nguoi_lon) +
-                ($soTreEm * $tour->gia_tre_em) +
-                ($soEmBe * $tour->gia_em_be);
+            $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
 
             $lichKhoiHanh = LichKhoiHanhTour::where('id', $request->lich_khoi_hanh_id)
                 ->where('tour_id', $request->tour_id)
@@ -263,7 +241,6 @@ class QuanLyDatTourController extends Controller
                 'BK' . strtoupper(Str::random(6)),
                 'so_nguoi_lon' => $soNguoiLon,
                 'so_tre_em' => $soTreEm,
-                'so_em_be' => $soEmBe,
 
                 'tong_tien' => $tongTien,
                 'so_tien_da_thanh_toan' =>
@@ -401,10 +378,8 @@ class QuanLyDatTourController extends Controller
     {
         $booking = DatTour::findOrFail($id);
         if ($booking->trang_thai !== 'da_huy') {
-            $tongKhach =
-                $booking->so_nguoi_lon +
-                $booking->so_tre_em +
-                $booking->so_em_be;
+            $tongKhach = $booking->so_nguoi_lon + $booking->so_tre_em;
+
             if ($booking->lichKhoiHanh) {
                 $booking->lichKhoiHanh->update([
                     'so_cho_con_lai' =>
@@ -446,10 +421,7 @@ class QuanLyDatTourController extends Controller
     {
         $booking = DatTour::withTrashed()
             ->findOrFail($id);
-        $tongKhach =
-            $booking->so_nguoi_lon +
-            $booking->so_tre_em +
-            $booking->so_em_be;
+        $tongKhach = $booking->so_nguoi_lon + $booking->so_tre_em;
         if ($booking->lichKhoiHanh) {
             if (
                 $booking->lichKhoiHanh->so_cho_con_lai
@@ -494,6 +466,9 @@ class QuanLyDatTourController extends Controller
     {
         $lichs = LichKhoiHanhTour::where('tour_id', $tourId)
             ->get();
+        $lichs->each(function ($lich) {
+            $lich->capNhatTrangThai();
+        });
         $data = $lichs->map(function ($lich) {
             return [
                 'id' => $lich->id,
@@ -502,6 +477,8 @@ class QuanLyDatTourController extends Controller
                 'so_cho_con_lai' => $lich->so_cho_con_lai,
                 'so_cho_da_dat' => $lich->so_cho_da_dat,
                 'is_full' => $lich->so_cho_con_lai <= 0,
+                'trang_thai' => $lich->trang_thai,
+                'trang_thai_hien_thi' => $lich->trang_thai_hien_thi,
             ];
         });
         return response()->json($data);
@@ -538,18 +515,15 @@ class QuanLyDatTourController extends Controller
         $request->validate([
             'so_nguoi_lon' => 'required|integer|min:0',
             'so_tre_em' => 'required|integer|min:0',
-            'so_em_be' => 'required|integer|min:0',
         ]);
         $booking = DatTour::findOrFail($id);
         $oldTotal =
             $booking->so_nguoi_lon +
-            $booking->so_tre_em +
-            $booking->so_em_be;
+            $booking->so_tre_em;
 
         $newTotal =
             (int)$request->so_nguoi_lon +
-            (int)$request->so_tre_em +
-            (int)$request->so_em_be;
+            (int)$request->so_tre_em;
         $tour = Tour::findOrFail($request->tour_id);
         $diff = $newTotal - $oldTotal;
 
@@ -561,32 +535,14 @@ class QuanLyDatTourController extends Controller
 
         $tongTien =
             ($request->so_nguoi_lon * $tour->gia_nguoi_lon) +
-            ($request->so_tre_em * $tour->gia_tre_em) +
-            ($request->so_em_be * $tour->gia_em_be);
+            ($request->so_tre_em * $tour->gia_tre_em);
 
         $booking->update([
             'tour_id' => $request->tour_id,
-            // 'so_nguoi_lon' => $request->so_nguoi_lon,
-            // 'so_tre_em' => $request->so_tre_em,
-            // 'so_em_be' => $request->so_em_be,
             'tong_tien' => $tongTien,
-            'so_tien_da_thanh_toan'
-            => $request->so_tien_da_thanh_toan,
             'trang_thai' => $request->trang_thai,
             'ghi_chu' => $request->ghi_chu,
         ]);
-
-        // cập nhật thanh toán đầu tiên
-        $payment = $booking->thanhToans()->first();
-        if ($payment) {
-            $payment->update([
-                'so_tien' => $request->so_tien_da_thanh_toan,
-                'trang_thai' =>
-                $request->so_tien_da_thanh_toan >= $tongTien
-                    ? 'da_thanh_toan'
-                    : 'cho_thanh_toan'
-            ]);
-        }
 
         // xóa hành khách khi giảm số lượng
         if ($request->has('hanh_khach_xoa')) {
@@ -645,10 +601,6 @@ class QuanLyDatTourController extends Controller
             'so_tre_em' => $booking->khachHangs()
                 ->where('loai_hanh_khach', 'child')
                 ->count(),
-
-            'so_em_be' => $booking->khachHangs()
-                ->where('loai_hanh_khach', 'baby')
-                ->count(),
         ]);
 
         if ($booking->lichKhoiHanh) {
@@ -661,16 +613,6 @@ class QuanLyDatTourController extends Controller
             ]);
         }
 
-        //         dd([
-        //     'request_adult' => $request->so_nguoi_lon,
-        //     'request_child' => $request->so_tre_em,
-        //     'request_baby' => $request->so_em_be,
-
-        //     'booking_adult' => $booking->so_nguoi_lon,
-        //     'booking_child' => $booking->so_tre_em,
-        //     'booking_baby' => $booking->so_em_be,
-        // ]);
-
         return redirect()
             ->route('Admin.dat_tours.show', $booking->id)
             ->with(
@@ -678,6 +620,8 @@ class QuanLyDatTourController extends Controller
                 'Cập nhật booking thành công'
             );
     }
+
+    // Hiển thị form khách hàng đặt tour
     public function create_dat_tour($tourId)
     {
         $tour = Tour::findOrFail($tourId);
@@ -706,7 +650,6 @@ class QuanLyDatTourController extends Controller
 
             'so_nguoi_lon'           => 'required|integer|min:1',
             'so_tre_em'              => 'nullable|integer|min:0',
-            'so_em_be'               => 'nullable|integer|min:0',
 
             'phuong_thuc_thanh_toan' => 'required|string',
 
@@ -726,9 +669,8 @@ class QuanLyDatTourController extends Controller
 
             $soNguoiLon = (int) $request->so_nguoi_lon;
             $soTreEm    = (int) ($request->so_tre_em ?? 0);
-            $soEmBe     = (int) ($request->so_em_be ?? 0);
 
-            $tongKhach = $soNguoiLon + $soTreEm + $soEmBe;
+            $tongKhach = $soNguoiLon + $soTreEm;
 
             // Kiểm tra số chỗ còn lại
             if ($lich->so_cho_con_lai < $tongKhach) {
@@ -741,11 +683,7 @@ class QuanLyDatTourController extends Controller
             }
 
             // Tính tổng tiền từ dữ liệu tour
-            $tongTien =
-                ($soNguoiLon * $tour->gia_nguoi_lon) +
-                ($soTreEm * $tour->gia_tre_em) +
-                ($soEmBe * $tour->gia_em_be);
-
+            $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
             // Sinh mã đặt tour
             do {
                 $maDatTour = 'ATU' . strtoupper(Str::random(8));
@@ -755,29 +693,16 @@ class QuanLyDatTourController extends Controller
             // Tạo đơn đặt tour
             //==========================
             $booking = DatTour::create([
-
                 'nguoi_dung_id' => Auth::id(),
-
                 'tour_id' => $tour->id,
-
                 'lich_khoi_hanh_id' => $lich->id,
-
                 'ma_dat_tour' => $maDatTour,
-
                 'so_nguoi_lon' => $soNguoiLon,
-
                 'so_tre_em' => $soTreEm,
-
-                'so_em_be' => $soEmBe,
-
                 'tong_tien' => $tongTien,
-
                 'so_tien_da_thanh_toan' => 0,
-
                 'trang_thai' => 'cho_xac_nhan',
-
                 'ghi_chu' => $request->ghi_chu,
-
                 'ngay_dat' => now(),
             ]);
 
@@ -785,35 +710,20 @@ class QuanLyDatTourController extends Controller
             // Lưu hành khách
             //==========================
             foreach ($request->hanh_khach as $hk) {
-
                 KhachHangDatTour::create([
-
                     'dat_tour_id' => $booking->id,
-
                     'ho_ten' => $hk['ho_ten'],
-
                     'gioi_tinh' => $hk['gioi_tinh'] ?? null,
-
                     'ngay_sinh' => $hk['ngay_sinh'] ?? null,
-
                     'nam_sinh' => $hk['nam_sinh'] ?? null,
-
                     'quoc_tich' => $hk['quoc_tich'] ?? 'Việt Nam',
-
                     'loai_hanh_khach' => $hk['loai_hanh_khach'] ?? 'adult',
-
                     'loai_giay_to' => $hk['loai_giay_to'] ?? 'CCCD',
-
                     'so_giay_to' => $hk['so_giay_to'] ?? null,
-
                     'so_dien_thoai' => $hk['so_dien_thoai'] ?? null,
-
                     'yeu_cau_dac_biet' => $hk['yeu_cau_dac_biet'] ?? null,
-
                     'trang_thai_thanh_toan' => 'pending',
-
                     'tong_tien' => 0,
-
                     'so_tien_da_thanh_toan' => 0,
                 ]);
             }
@@ -822,22 +732,15 @@ class QuanLyDatTourController extends Controller
             // Tạo bản ghi thanh toán
             //==========================
             ThanhToan::create([
-
                 'dat_tour_id' => $booking->id,
-
                 'nguoi_dung_id' => Auth::id(),
-
                 'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan,
-
                 'so_tien' => $tongTien,
 
                 // Sẽ cập nhật sau khi tạo URL VNPay
                 'ma_giao_dich' => null,
-
                 'trang_thai' => 'cho_thanh_toan',
-
                 'ghi_chu' => 'Khởi tạo giao dịch.',
-
                 'thoi_gian_thanh_toan' => null,
             ]);
 

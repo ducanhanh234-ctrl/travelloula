@@ -1,4 +1,13 @@
 @extends('Layouts.guide')
+@section('title', 'Chọn địa điểm Check-in')
+@section('guide', 'Chọn địa điểm Check-in')
+@section('breadcrumb')
+    <li class="breadcrumb-item">
+        <a href="{{ route('Guide.checkin.index') }}">
+            Check-in
+        </a>
+    </li>
+
 
 @section('title', 'Chọn địa điểm Check-in')
 
@@ -730,6 +739,7 @@ return $ngay->chiTiets->count();
                         @else
                         Chưa cập nhật
                         @endif
+
                     </div>
                 </div>
             </div>
@@ -738,6 +748,7 @@ return $ngay->chiTiets->count();
                 <span class="location-info-icon">
                     <i class="fas fa-flag-checkered"></i>
                 </span>
+
 
                 <div class="location-info-content">
                     <div class="location-info-label">
@@ -754,9 +765,11 @@ return $ngay->chiTiets->count();
                         @else
                         Chưa cập nhật
                         @endif
+
                     </div>
                 </div>
             </div>
+
 
             <div class="location-info-item">
                 <span class="location-info-icon">
@@ -775,11 +788,12 @@ return $ngay->chiTiets->count();
                                     ->ho_ten
                                 ?? 'Chưa phân công'
                             }}
+
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+
 
     {{-- Thống kê --}}
     <div class="location-stats-grid">
@@ -807,7 +821,20 @@ return $ngay->chiTiets->count();
             <div class="location-stat-content">
                 <div class="location-stat-value">
                     {{ $tongDiaDiem }}
+
                 </div>
+            </div>
+
+            <div class="location-stat-card">
+                <span class="location-stat-icon location-stat-place">
+                    <i class="fas fa-map-marker-alt"></i>
+                </span>
+
+                <div class="location-stat-content">
+                    <div class="location-stat-value">
+                        {{ $tongDiaDiem }}
+                    </div>
+
 
                 <div class="location-stat-label">
                     Tổng địa điểm
@@ -917,9 +944,19 @@ return $ngay->chiTiets->count();
                                                         ?? '--:--'
                                                     }}
                                 </span>
+
                             </div>
                         </div>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="location-day-card">
+                <div class="location-empty">
+                    <div class="location-empty-icon">
+                        <i class="fas fa-calendar-times"></i>
                     </div>
+
 
                     <div class="location-place-action">
                         @if ($ngay->ngay_thu == 1 && ! $lichKhoiHanh->da_checkin_khoi_hanh)
@@ -1064,4 +1101,5 @@ return $ngay->chiTiets->count();
         </div>
     </div>
 </div>
+
 @endsection

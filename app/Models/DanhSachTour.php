@@ -34,7 +34,6 @@ class DanhSachTour extends Model
 
     public function lichKhoiHanh()
     {
-
         return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
     }
 
@@ -49,9 +48,6 @@ class DanhSachTour extends Model
         return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
     }
 
-
-
-
     public function lichTrinhs()
     {
         return $this->hasMany(
@@ -59,9 +55,6 @@ class DanhSachTour extends Model
             'tour_id'
         );
     }
-
-
-
 
     protected $casts = [
         'gia_tour' => 'decimal:2',
@@ -95,5 +88,13 @@ class DanhSachTour extends Model
     public function yeuThichs()
     {
         return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
+    }
+
+    public function bangGia()
+    {
+        return $this->hasMany(
+            BangGiaTour::class,
+            'tour_id'
+        );
     }
 }

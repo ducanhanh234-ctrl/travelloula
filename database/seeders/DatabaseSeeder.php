@@ -9,45 +9,55 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+
     public function run(): void
 
     {
-    $adminRole = VaiTro::firstOrCreate(
-        ['ten_vai_tro' => 'admin'],
-        ['mo_ta' => 'Quản trị viên hệ thống']
-    );
+        $this->call([
+            PermissionSeeder::class,
+        ]);
 
-    $guideRole = VaiTro::firstOrCreate(
-        ['ten_vai_tro' => 'guide'],
-        ['mo_ta' => 'Hướng dẫn viên']
-    );
+        $adminRole = VaiTro::firstOrCreate(
+            ['ten_vai_tro' => 'admin'],
+            ['mo_ta' => 'Quản trị viên hệ thống']
+        );
 
-    // Admin có toàn bộ quyền
-    $allPermissions = QuyenHan::pluck('id')->toArray();
-    $adminRole->quyenHans()->syncWithoutDetaching($allPermissions);
+        $guideRole = VaiTro::firstOrCreate(
+            ['ten_vai_tro' => 'guide'],
+            ['mo_ta' => 'Hướng dẫn viên']
+        );
 
-    // Guide chỉ có quyền vào khu vực Guide
-    $guidePermissionIds = QuyenHan::whereIn('ten', [
-        'vao_guide',
-        'phuong_tiens.view',
-    ])->pluck('id')->toArray();
+        // Admin có toàn bộ quyền
+        $allPermissions = QuyenHan::pluck('id')->toArray();
+        $adminRole->quyenHans()->syncWithoutDetaching($allPermissions);
 
-    $guideRole->quyenHans()->syncWithoutDetaching($guidePermissionIds);
+        // Guide chỉ có quyền vào khu vực Guide
+        $guidePermissionIds = QuyenHan::whereIn('ten', [
+            'vao_guide',
+            'phuong_tiens.view',
+        ])->pluck('id')->toArray();
 
-    $this->call([
-        DanhMucSeeder::class,
-        DanhSachTourSeeder::class,
-        UserSeeder::class,
-        HuongDanVienSeeder::class,
-        PhuongTienSeeder::class,
-        LichKhoiHanhTourSeeder::class,
-        DatTourSeeder::class,
-    ]);
+        $guideRole->quyenHans()->syncWithoutDetaching($guidePermissionIds);
+
+        $this->call([
+            DanhMucSeeder::class,
+            DanhSachTourSeeder::class,
+
+            BangGiaTourSeeder::class,
+
+            UserSeeder::class,
+            HuongDanVienSeeder::class,
+            PhuongTienSeeder::class,
+
+            LichKhoiHanhTourSeeder::class,
+
+            DatTourSeeder::class,
+        ]);
 
         $adminUser = User::where('email', 'admin@gmail.com')->first();
 
         if ($adminUser) {
             $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
         }
-        
     }
+}

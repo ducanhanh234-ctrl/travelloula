@@ -3,158 +3,102 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Admin Dashboard - Tour365')</title>
+    <meta name="description" content="Admin Dashboard - Tour365">
+    <meta name="theme-color" content="#6366F1">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
-    <title>
-        @yield('title', 'Admin Dashboard - Travelloula')
-    </title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <meta
-        name="theme-color"
-        content="#315be8"
-    >
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/feather-icons@4.29.0/dist/feather.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    <link
-        rel="icon"
-        type="image/x-icon"
-        href="/favicon.ico"
-    >
-
-    {{-- Fonts --}}
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
-    {{-- Bootstrap --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
-
-    {{-- Font Awesome --}}
-    <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        rel="stylesheet"
-    >
-
-    {{-- Bootstrap Icons --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet"
-    >
-
-    {{-- CSS dự án --}}
-    <link
-        href="{{ asset('css/admin.css') }}"
-        rel="stylesheet"
-    >
-
-    <link
-        href="{{ asset('css/admin-modern.css') }}"
-        rel="stylesheet"
-    >
-
-    <link
-        href="{{ asset('css/dashboard-professional.css') }}"
-        rel="stylesheet"
-    >
-
-    <link
-        href="{{ asset('css/admin-tables.css') }}"
-        rel="stylesheet"
-    >
-
-    <link
-        href="{{ asset('css/admin-tables-fixed.css') }}"
-        rel="stylesheet"
-    >
-
-    <link
-        href="{{ asset('css/admin-icons.css') }}"
-        rel="stylesheet"
-    >
+    <!-- CSS -->
+    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-modern.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/dashboard-professional.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-tables.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-tables-fixed.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/admin-icons.css') }}" rel="stylesheet">
 
     <style>
         :root {
-            --admin-primary-50: #edf4ff;
-            --admin-primary-100: #dce8ff;
-            --admin-primary-200: #c9d9ff;
-            --admin-primary-500: #315be8;
-            --admin-primary-600: #264ed4;
-            --admin-primary-700: #1f43bb;
+            /* Primary Colors */
+            --primary-50: #EEF2FF;
+            --primary-100: #E0E7FF;
+            --primary-200: #C7D2FE;
+            --primary-300: #A5B4FC;
+            --primary-400: #818CF8;
+            --primary-500: #6366F1;
+            --primary-600: #4F46E5;
+            --primary-700: #4338CA;
+            --primary-800: #3730A3;
+            --primary-900: #312E81;
 
-            --admin-purple: #5b4dea;
-            --admin-cyan: #18b9dc;
+            /* Gray Colors */
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
 
-            --admin-dark: #173576;
-            --admin-text: #344563;
-            --admin-muted: #6b7895;
-            --admin-light: #98a2b3;
+            /* Success Colors */
+            --success-50: #ECFDF5;
+            --success-500: #10B981;
+            --success-600: #059669;
 
-            --admin-gray-50: #f8faff;
-            --admin-gray-100: #f3f6fb;
-            --admin-gray-200: #e5ebf5;
-            --admin-gray-300: #d1dbea;
-            --admin-gray-400: #98a4b8;
-            --admin-gray-500: #6b7895;
-            --admin-gray-600: #4b5c78;
-            --admin-gray-700: #344563;
-            --admin-gray-800: #223654;
-            --admin-gray-900: #172b4d;
+            /* Warning Colors */
+            --warning-50: #FFFBEB;
+            --warning-500: #F59E0B;
+            --warning-600: #D97706;
 
-            --admin-white: #ffffff;
+            /* Error Colors */
+            --error-50: #FEF2F2;
+            --error-500: #EF4444;
+            --error-600: #DC2626;
 
-            --admin-success: #08754a;
-            --admin-success-bg: #eaf9f1;
+            /* Info Colors */
+            --info-50: #EFF6FF;
+            --info-500: #3B82F6;
+            --info-600: #2563EB;
 
-            --admin-warning: #ae6c0d;
-            --admin-warning-bg: #fff7e8;
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
-            --admin-danger: #c13d55;
-            --admin-danger-bg: #fff0f3;
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
 
-            --admin-info: #1975a8;
-            --admin-info-bg: #ebf8ff;
-
-            --admin-border: #dce6f5;
-            --admin-border-light: #e8eef8;
-
-            --admin-shadow-sm:
-                0 1px 2px rgba(24, 52, 103, 0.05);
-
-            --admin-shadow:
-                0 4px 16px rgba(28, 65, 139, 0.08);
-
-            --admin-shadow-md:
-                0 8px 28px rgba(28, 65, 139, 0.12);
-
-            --admin-radius: 9px;
-            --admin-radius-lg: 15px;
-
-            --admin-sidebar-width: 280px;
-            --admin-sidebar-collapsed-width: 80px;
-            --admin-header-height: 70px;
+            /* Spacing */
+            --sidebar-width: 280px;
+            --header-height: 70px;
         }
 
         * {
@@ -163,1047 +107,749 @@
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            min-height: 100vh;
-            margin: 0;
-            color: var(--admin-text);
-            background: #f7f9fd;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-900);
             line-height: 1.6;
+            font-size: 14px;
         }
 
-        body.sidebar-mobile-open {
-            overflow: hidden;
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font-family: inherit;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /* =========================
-           SIDEBAR
-        ========================= */
-
+        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000;
-
-            width: var(--admin-sidebar-width);
+            width: var(--sidebar-width);
             height: 100vh;
-
-            overflow: hidden;
-
-            background: var(--admin-white);
-            border-right: 1px solid var(--admin-border);
-            box-shadow: 2px 0 14px rgba(28, 65, 139, 0.05);
-
-            display: flex;
-            flex-direction: column;
-
-            transition:
-                width 0.3s ease,
-                transform 0.3s ease;
+            background: white;
+            color: #374151;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 0 0 0 1px #e5e7eb;
         }
 
         .sidebar.collapsed {
-            width: var(--admin-sidebar-collapsed-width);
+            width: 80px;
         }
 
-        /* Logo cố định */
         .sidebar-header {
-            flex: 0 0 auto;
-            padding: 14px;
-
-            background: var(--admin-white);
-            border-bottom: 1px solid var(--admin-border);
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .sidebar-logo {
-            min-height: 66px;
-            padding: 10px;
-
-            color: inherit;
-            border-radius: 12px;
-
             display: flex;
             align-items: center;
-            gap: 13px;
-
-            transition:
-                background-color 0.18s ease,
-                transform 0.18s ease;
+            gap: 1rem;
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin: 0.5rem;
         }
 
         .sidebar-logo:hover {
-            color: inherit;
-            background: var(--admin-primary-50);
+            background: #f8fafc;
+            transform: scale(1.02);
         }
 
         .logo-icon {
-            width: 47px;
-            height: 47px;
-            flex-shrink: 0;
-
-            color: var(--admin-white);
-
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
-
-            border: 1px solid rgba(255, 255, 255, 0.28);
-            border-radius: 12px;
-
-            box-shadow: 0 7px 17px rgba(49, 91, 232, 0.23);
-
-            font-size: 18px;
-
-            display: inline-flex;
+            width: 3rem;
+            height: 3rem;
+            background: white;
+            border-radius: 0.75rem;
+            display: flex;
             align-items: center;
             justify-content: center;
+            color: #3b82f6;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        .sidebar-logo:hover .logo-icon {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .logo-text {
-            min-width: 0;
-
             display: flex;
             flex-direction: column;
+            gap: 0.125rem;
         }
 
         .logo-title {
-            color: #203b73;
-            font-size: 20px;
-            font-weight: 800;
-            line-height: 1.1;
-            white-space: nowrap;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1;
         }
 
         .logo-subtitle {
-            margin-top: 5px;
-
-            color: var(--admin-muted);
-            font-size: 10px;
-            font-weight: 750;
-            letter-spacing: 0.09em;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
             text-transform: uppercase;
-            white-space: nowrap;
+            letter-spacing: 0.05em;
         }
 
-        /* Chỉ phần menu cuộn */
+        .sidebar.collapsed .logo-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
         .sidebar-nav {
-            flex: 1 1 auto;
-            min-height: 0;
-
-            padding: 15px 0 28px;
-
-            overflow-x: hidden;
-            overflow-y: auto;
-
-            overscroll-behavior: contain;
-
-            scrollbar-width: thin;
-            scrollbar-color: #b9c8e3 #f4f7fc;
+            padding: 1rem 0;
         }
 
-        .sidebar-nav::-webkit-scrollbar {
-            width: 5px;
+        .nav-section {
+            margin-bottom: 2rem;
         }
 
-        .sidebar-nav::-webkit-scrollbar-track {
-            background: #f4f7fc;
-        }
-
-        .sidebar-nav::-webkit-scrollbar-thumb {
-            background: #b9c8e3;
-            border-radius: 999px;
-        }
-
-        .sidebar-nav::-webkit-scrollbar-thumb:hover {
-            background: #8097bd;
-        }
-
-        /* =========================
-           NHÓM MENU
-        ========================= */
-
-        .sidebar .nav-section {
-            margin-bottom: 9px;
-        }
-
-        .sidebar .nav-section-toggle {
-            width: calc(100% - 26px);
-            min-height: 39px;
-            margin: 0 13px 4px;
-            padding: 8px 11px;
-
-            color: #71809b;
-            background: transparent;
-
-            border: 1px solid transparent;
-            border-radius: 8px;
-
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 0.055em;
-            text-align: left;
+        .nav-section-title {
+            padding: 0 1.5rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            transition: opacity 0.3s ease;
+        }
 
-            cursor: pointer;
+        .sidebar.collapsed .nav-section-title {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+        }
 
+        .nav-item {
+            margin: 0.25rem 0;
+        }
+
+        .nav-link {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 9px;
-
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease;
-        }
-
-        .sidebar .nav-section-toggle:hover {
-            color: var(--admin-primary-500);
-            background: var(--admin-primary-50);
-            border-color: #d5e2ff;
-        }
-
-        .sidebar .nav-section-toggle.has-active {
-            color: var(--admin-primary-500);
-            background: #f4f7ff;
-            border-color: #dce6fb;
-        }
-
-        .sidebar .nav-section-toggle-left {
-            min-width: 0;
-
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .sidebar .nav-section-toggle-icon {
-            width: 17px;
-            flex-shrink: 0;
-
-            color: #8392ad;
-            font-size: 10px;
-            text-align: center;
-        }
-
-        .sidebar .nav-section-toggle.has-active
-        .nav-section-toggle-icon {
-            color: var(--admin-primary-500);
-        }
-
-        .sidebar .nav-section-toggle-text {
-            min-width: 0;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .sidebar .nav-section-arrow {
-            flex-shrink: 0;
-
-            color: #93a0b7;
-            font-size: 9px;
-
-            transition: transform 0.22s ease;
-        }
-
-        .sidebar .nav-section-menu {
-            display: block;
-        }
-
-        .sidebar .nav-section.is-collapsed
-        .nav-section-menu {
-            display: none;
-        }
-
-        .sidebar .nav-section.is-collapsed
-        .nav-section-arrow {
-            transform: rotate(-90deg);
-        }
-
-        /* =========================
-           LINK MENU
-        ========================= */
-
-        .sidebar .nav-item {
-            margin: 2px 0;
-        }
-
-        .sidebar .nav-link {
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.3s ease;
             position: relative;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            margin: 0.25rem 1rem;
+        }
 
-            min-height: 43px;
-            margin: 3px 13px;
-            padding: 10px 14px;
+        .nav-link:hover {
+            background: #f3f4f6;
+            color: #374151;
+            transform: translateX(4px);
+        }
 
-            overflow: hidden;
+        .nav-link.active {
+            background: #eff6ff;
+            color: #3b82f6;
+            font-weight: 600;
+        }
 
-            color: #65738e;
-            background: transparent;
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #3b82f6;
+            border-radius: 0 2px 2px 0;
+        }
 
-            border: 1px solid transparent;
-            border-radius: 9px;
-
-            font-size: 12px;
-            font-weight: 620;
-            text-decoration: none;
-
+        .nav-icon {
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
-            gap: 11px;
-
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease,
-                transform 0.18s ease;
-        }
-
-        .sidebar .nav-link:hover {
-            color: var(--admin-primary-500);
-            background: var(--admin-primary-50);
-            border-color: #d5e2ff;
-
-            text-decoration: none;
-            transform: translateX(3px);
-        }
-
-        .sidebar .nav-link.active {
-            color: var(--admin-primary-500);
-
-            background: linear-gradient(
-                90deg,
-                #edf4ff 0%,
-                #f1efff 100%
-            );
-
-            border-color: #cfdcff;
-            font-weight: 750;
-        }
-
-        .sidebar .nav-link.active::before {
-            position: absolute;
-            top: 8px;
-            bottom: 8px;
-            left: -13px;
-
-            width: 4px;
-            content: "";
-
-            background: linear-gradient(
-                180deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
-
-            border-radius: 0 8px 8px 0;
-        }
-
-        .sidebar .nav-icon {
-            width: 21px;
-            height: 21px;
+            justify-content: center;
             flex-shrink: 0;
-
-            font-size: 13px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .sidebar .nav-text {
-            min-width: 0;
+        .nav-text {
+            transition: opacity 0.3s ease;
+        }
 
+        .sidebar.collapsed .nav-text {
+            opacity: 0;
+            width: 0;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
-        .sidebar .nav-badge {
-            min-width: 22px;
-            height: 20px;
+        .nav-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
             margin-left: auto;
-            padding: 0 6px;
-
-            color: var(--admin-white);
-            border-radius: 999px;
-
-            font-size: 9px;
-            font-weight: 800;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            transition: opacity 0.3s ease;
         }
 
-        .sidebar .nav-badge-danger {
-            background: var(--admin-danger);
-        }
-
-        .sidebar .nav-badge-warning {
-            color: #583600;
-            background: #f5b83f;
-        }
-
-        .sidebar .nav-link-disabled {
-            cursor: not-allowed;
-            opacity: 0.55;
-        }
-
-        .sidebar .nav-link-disabled:hover {
-            color: #65738e;
-            background: transparent;
-            border-color: transparent;
-            transform: none;
-        }
-
-        /* =========================
-           SIDEBAR THU GỌN
-        ========================= */
-
-        .sidebar.collapsed .sidebar-header {
-            padding-right: 9px;
-            padding-left: 9px;
-        }
-
-        .sidebar.collapsed .sidebar-logo {
-            padding-right: 6px;
-            padding-left: 6px;
-            justify-content: center;
-        }
-
-        .sidebar.collapsed .logo-text,
-        .sidebar.collapsed .nav-text,
-        .sidebar.collapsed .nav-section-toggle,
         .sidebar.collapsed .nav-badge {
-            display: none;
+            opacity: 0;
+            width: 0;
+            padding: 0;
+            margin: 0;
         }
 
-        .sidebar.collapsed .nav-section {
-            margin-bottom: 7px;
-        }
-
-        .sidebar.collapsed .nav-section-menu,
-        .sidebar.collapsed
-        .nav-section.is-collapsed
-        .nav-section-menu {
-            display: block;
-        }
-
-        .sidebar.collapsed .nav-link {
-            min-height: 44px;
-            margin-right: 11px;
-            margin-left: 11px;
-            padding-right: 10px;
-            padding-left: 10px;
-
-            justify-content: center;
-        }
-
-        .sidebar.collapsed .nav-link:hover {
-            transform: none;
-        }
-
-        .sidebar.collapsed .nav-link.active::before {
-            left: -11px;
-        }
-
-        .sidebar.collapsed .nav-icon {
-            width: 23px;
-            height: 23px;
-            font-size: 14px;
-        }
-
-        /* Overlay mobile */
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-
-            display: none;
-
-            background: rgba(23, 43, 77, 0.46);
-            backdrop-filter: blur(2px);
-        }
-
-        .sidebar-overlay.show {
-            display: block;
-        }
-
-        /* =========================
-           MAIN CONTENT
-        ========================= */
-
+        /* Main Content */
         .main-content {
+            margin-left: var(--sidebar-width);
             min-height: 100vh;
-            margin-left: var(--admin-sidebar-width);
-
             transition: margin-left 0.3s ease;
         }
 
-        .sidebar.collapsed ~ .main-content {
-            margin-left: var(--admin-sidebar-collapsed-width);
+        .sidebar.collapsed+.main-content {
+            margin-left: 80px;
         }
 
-        /* =========================
-           HEADER
-        ========================= */
-
+        /* Header */
         .header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-
-            height: var(--admin-header-height);
-            padding: 0 28px;
-
-            background: rgba(255, 255, 255, 0.96);
-            border-bottom: 1px solid var(--admin-border);
-            box-shadow: var(--admin-shadow-sm);
-
-            backdrop-filter: blur(10px);
-
+            height: var(--header-height);
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
-        }
-
-        .header-left,
-        .header-right,
-        .header-actions {
-            min-width: 0;
-
-            display: flex;
-            align-items: center;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
 
         .header-left {
-            gap: 15px;
-        }
-
-        .header-right {
-            gap: 13px;
-        }
-
-        .header-actions {
-            gap: 7px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .sidebar-toggle {
-            width: 40px;
-            height: 40px;
-            flex-shrink: 0;
-            padding: 0;
-
-            color: var(--admin-gray-600);
-            background: var(--admin-white);
-
-            border: 1px solid var(--admin-border);
-            border-radius: 9px;
-
-            font-size: 16px;
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1.25rem;
             cursor: pointer;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease,
-                transform 0.18s ease;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
         }
 
         .sidebar-toggle:hover {
-            color: var(--admin-primary-500);
-            background: var(--admin-primary-50);
-            border-color: var(--admin-primary-200);
-
-            transform: translateY(-1px);
+            background: var(--gray-100);
+            color: var(--gray-900);
         }
 
         .breadcrumb {
-            margin: 0;
-            padding: 0;
-
-            background: transparent;
-            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
         }
 
         .breadcrumb-item {
-            color: var(--admin-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .breadcrumb-item a {
-            color: var(--admin-primary-500);
-            font-weight: 650;
-            text-decoration: none;
-        }
-
-        .breadcrumb-item a:hover {
-            color: var(--admin-primary-600);
-            text-decoration: underline;
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: var(--gray-400);
         }
 
         .breadcrumb-item.active {
-            max-width: 340px;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
 
-            overflow: hidden;
-
-            color: #4b5c78;
-            font-weight: 650;
-
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .search-box {
             position: relative;
-            width: 285px;
-        }
-
-        .search-icon {
-            position: absolute;
-            top: 50%;
-            left: 13px;
-            z-index: 2;
-
-            color: var(--admin-gray-400);
-            font-size: 12px;
-
-            pointer-events: none;
-            transform: translateY(-50%);
+            width: 300px;
         }
 
         .search-input {
             width: 100%;
-            min-height: 40px;
-            padding: 9px 14px 9px 37px;
-
-            color: var(--admin-text);
-            background: var(--admin-gray-50);
-
-            border: 1px solid var(--admin-gray-300);
-            border-radius: 999px;
-
-            font-size: 12px;
-            outline: none;
-
-            transition:
-                background-color 0.18s ease,
-                border-color 0.18s ease,
-                box-shadow 0.18s ease;
-        }
-
-        .search-input::placeholder {
-            color: var(--admin-gray-400);
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 0.875rem;
+            background: var(--gray-50);
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            background: var(--admin-white);
-            border-color: var(--admin-primary-500);
-            box-shadow: 0 0 0 3px rgba(49, 91, 232, 0.1);
+            outline: none;
+            border-color: var(--primary-500);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 0.875rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .header-btn {
-            position: relative;
-
-            width: 39px;
-            height: 39px;
-            flex-shrink: 0;
-            padding: 0;
-
-            color: var(--admin-gray-600);
-            background: var(--admin-white);
-
-            border: 1px solid var(--admin-border);
-            border-radius: 9px;
-
-            font-size: 14px;
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            font-size: 1.125rem;
             cursor: pointer;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease,
-                transform 0.18s ease;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .header-btn:hover {
-            color: var(--admin-primary-500);
-            background: var(--admin-primary-50);
-            border-color: var(--admin-primary-200);
-
-            transform: translateY(-1px);
+            background: var(--gray-100);
+            color: var(--gray-900);
         }
 
         .notification-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-
-            min-width: 18px;
-            height: 18px;
-            padding: 0 4px;
-
-            color: var(--admin-white);
-            background: var(--admin-danger);
-
-            border: 2px solid var(--admin-white);
-            border-radius: 999px;
-
-            font-size: 8px;
-            font-weight: 800;
-
-            display: inline-flex;
+            top: 0.25rem;
+            right: 0.25rem;
+            background: var(--error-500);
+            color: white;
+            font-size: 0.625rem;
+            padding: 0.125rem 0.375rem;
+            border-radius: 50%;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* =========================
-           AVATAR
-        ========================= */
-
-        .user-menu-button {
-            padding: 0 !important;
-
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-
-        .user-avatar,
-        .user-avatar-img {
-            width: 42px;
-            height: 42px;
-            flex-shrink: 0;
-
-            border-radius: 50%;
+        .user-menu {
+            position: relative;
         }
 
         .user-avatar {
-            color: var(--admin-white);
-
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
-
-            border: 2px solid #dce6fb;
-            box-shadow: 0 5px 13px rgba(49, 91, 232, 0.18);
-
-            font-size: 14px;
-            font-weight: 800;
-
-            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-500);
+            display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .user-avatar-img {
-            object-fit: cover;
-
-            border: 2px solid #dce6fb;
-            box-shadow: 0 5px 13px rgba(28, 65, 139, 0.12);
-        }
-
-        .user-dropdown {
-            min-width: 260px;
-            padding: 8px;
-
-            border: 1px solid var(--admin-border) !important;
-            border-radius: 13px;
-
-            box-shadow:
-                0 13px 36px rgba(28, 65, 139, 0.15) !important;
-        }
-
-        .user-dropdown .dropdown-item {
-            padding: 10px 12px;
-
-            color: var(--admin-gray-700);
-            border-radius: 8px;
-
-            font-size: 12px;
+            color: white;
             font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .user-dropdown .dropdown-item:hover {
-            color: var(--admin-primary-500);
-            background: var(--admin-primary-50);
+        .user-avatar:hover {
+            background: var(--primary-600);
+            transform: scale(1.05);
         }
 
-        .user-dropdown .dropdown-item.text-danger:hover {
-            color: var(--admin-danger) !important;
-            background: var(--admin-danger-bg);
-        }
-
-        /* =========================
-           CONTENT
-        ========================= */
-
+        /* Content Area */
         .content {
-            min-height:
-                calc(100vh - var(--admin-header-height));
+            padding: 2rem;
         }
 
-        .content-container {
-            padding: 24px;
-        }
-
-        .content .card {
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
             overflow: hidden;
-
-            background: var(--admin-white);
-
-            border: 1px solid var(--admin-border);
-            border-radius: var(--admin-radius-lg);
-
-            box-shadow: var(--admin-shadow);
-
-            transition: box-shadow 0.18s ease;
+            transition: all 0.3s ease;
         }
 
-        .content .card:hover {
-            box-shadow: var(--admin-shadow-md);
+        .card:hover {
+            box-shadow: var(--shadow-md);
         }
 
-        .content .card-header {
-            min-height: 57px;
-            padding: 15px 18px;
-
-            color: #24417d;
-            background: #f1f6ff;
-
-            border-bottom: 1px solid var(--admin-border);
-
-            font-size: 14px;
-            font-weight: 750;
-
-            display: flex;
-            align-items: center;
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-50);
         }
 
-        .content .card-body {
-            padding: 20px;
+        .card-body {
+            padding: 1.5rem;
         }
 
-        .content .card-footer {
-            padding: 15px 20px;
-
-            background: #fafcff;
-            border-top: 1px solid var(--admin-border);
+        .card-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            background: var(--gray-50);
         }
 
-        /* Nút */
-        .content .btn {
-            min-height: 39px;
-            padding: 8px 14px;
-
-            border-radius: var(--admin-radius);
-
-            font-size: 12px;
-            font-weight: 700;
-            white-space: nowrap;
-
+        /* Buttons */
+        .btn {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 7px;
-
-            transition:
-                color 0.18s ease,
-                background-color 0.18s ease,
-                border-color 0.18s ease,
-                transform 0.18s ease;
-        }
-
-        .content .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .content .btn-primary {
-            color: var(--admin-white);
-
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
-
-            border-color: var(--admin-primary-500);
-
-            box-shadow:
-                0 5px 14px rgba(49, 91, 232, 0.2);
-        }
-
-        .content .btn-primary:hover {
-            color: var(--admin-white);
-
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-600),
-                #4c40d7
-            );
-
-            border-color: var(--admin-primary-600);
-        }
-
-        .content .btn-secondary {
-            color: #53698f;
-            background: var(--admin-white);
-            border-color: #ccd9ed;
-        }
-
-        .content .btn-secondary:hover {
-            color: #304d83;
-            background: #edf3fb;
-            border-color: #b9c9e0;
-        }
-
-        /* Form */
-        .content .form-control,
-        .content .form-select {
-            min-height: 42px;
-
-            color: var(--admin-text);
-            background-color: var(--admin-white);
-
-            border: 1px solid #cfdaec;
-            border-radius: var(--admin-radius);
-
-            font-size: 13px;
-            box-shadow: none;
-        }
-
-        .content .form-control:focus,
-        .content .form-select:focus {
-            border-color: var(--admin-primary-500);
-            box-shadow:
-                0 0 0 4px rgba(49, 91, 232, 0.1);
-        }
-
-        /* Table */
-        .content .table {
-            margin-bottom: 0;
-            vertical-align: middle;
-        }
-
-        .content .table thead th {
-            padding: 13px 14px;
-
-            color: #24417d;
-            background: #f7f9fd;
-
-            border-top: none;
-            border-bottom: 1px solid #d8e5f8;
-
-            font-size: 10px;
-            font-weight: 750;
-            letter-spacing: 0.025em;
-            text-transform: uppercase;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
             white-space: nowrap;
         }
 
-        .content .table tbody td {
-            padding: 13px 14px;
-
-            color: #4d5d7d;
-
-            border-bottom:
-                1px solid var(--admin-border-light);
-
-            font-size: 12px;
-            vertical-align: middle;
+        .btn-primary {
+            background: var(--primary-500);
+            color: white;
         }
 
-        .content .table tbody tr:hover {
-            background: #f3f7ff;
-
-            box-shadow:
-                inset 3px 0 0 var(--admin-primary-500);
+        .btn-primary:hover {
+            background: var(--primary-600);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
-        /* Pagination */
-        .content .pagination {
-            margin: 0;
-            gap: 4px;
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
         }
 
-        .content .page-link {
-            min-width: 34px;
-            height: 34px;
-            padding: 6px 10px;
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
 
-            color: #3158ce;
-            background: var(--admin-white);
+        .btn-success {
+            background: var(--success-500);
+            color: white;
+        }
 
-            border: 1px solid #d6e1f2;
-            border-radius: 7px !important;
+        .btn-success:hover {
+            background: var(--success-600);
+        }
 
-            font-size: 12px;
-            box-shadow: none;
+        .btn-warning {
+            background: var(--warning-500);
+            color: white;
+        }
 
+        .btn-warning:hover {
+            background: var(--warning-600);
+        }
+
+        .btn-danger {
+            background: var(--error-500);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--error-600);
+        }
+
+        .btn-outline-primary {
+            background: transparent;
+            color: var(--primary-500);
+            border: 1px solid var(--primary-500);
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-500);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: var(--success-50);
+            color: var(--success-600);
+        }
+
+        .badge-warning {
+            background: var(--warning-50);
+            color: var(--warning-600);
+        }
+
+        .badge-danger {
+            background: var(--error-50);
+            color: var(--error-600);
+        }
+
+        .badge-info {
+            background: var(--info-50);
+            color: var(--info-600);
+        }
+
+        .badge-primary {
+            background: var(--primary-50);
+            color: var(--primary-600);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: var(--success-50);
+            color: var(--success-600);
+            border: 1px solid var(--success-200);
+        }
+
+        .alert-warning {
+            background: var(--warning-50);
+            color: var(--warning-600);
+            border: 1px solid var(--warning-200);
+        }
+
+        .alert-danger {
+            background: var(--error-50);
+            color: var(--error-600);
+            border: 1px solid var(--error-200);
+        }
+
+        .alert-info {
+            background: var(--info-50);
+            color: var(--info-600);
+            border: 1px solid var(--info-200);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-        .content .page-link:hover {
-            color: var(--admin-white);
-            background: var(--admin-primary-500);
-            border-color: var(--admin-primary-500);
+        .stat-icon-primary {
+            background: var(--primary-50);
+            color: var(--primary-500);
         }
 
-        .content .page-item.active .page-link {
-            color: var(--admin-white);
-
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
-
-            border-color: var(--admin-primary-500);
+        .stat-icon-success {
+            background: var(--success-50);
+            color: var(--success-500);
         }
 
-        .content .page-item.disabled .page-link {
-            color: #aab3c5;
-            background: #f8f9fc;
+        .stat-icon-warning {
+            background: var(--warning-50);
+            color: var(--warning-500);
         }
 
-        /* Animation */
-        @keyframes adminFadeIn {
+        .stat-icon-info {
+            background: var(--info-50);
+            color: var(--info-500);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success-600);
+        }
+
+        .stat-change.negative {
+            color: var(--error-600);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 1rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .search-box {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(8px);
+                transform: translateY(10px);
             }
 
             to {
@@ -1213,746 +859,517 @@
         }
 
         .fade-in {
-            animation: adminFadeIn 0.3s ease-out;
+            animation: fadeIn 0.3s ease-out;
         }
 
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 1100px) {
-            .search-box {
-                width: 220px;
-            }
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
         }
 
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: var(--admin-sidebar-width);
-                transform: translateX(-100%);
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
-
-            .sidebar.collapsed {
-                width: var(--admin-sidebar-width);
-            }
-
-            .sidebar.collapsed .logo-text,
-            .sidebar.collapsed .nav-text,
-            .sidebar.collapsed .nav-section-toggle,
-            .sidebar.collapsed .nav-badge {
-                display: initial;
-            }
-
-            .sidebar.collapsed .logo-text {
-                display: flex;
-            }
-
-            .sidebar.collapsed .nav-section-toggle {
-                display: flex;
-            }
-
-            .sidebar.collapsed .sidebar-logo,
-            .sidebar.collapsed .nav-link {
-                justify-content: flex-start;
-            }
-
-            .sidebar.collapsed
-            .nav-section.is-collapsed
-            .nav-section-menu {
-                display: none;
-            }
-
-            .main-content,
-            .sidebar.collapsed ~ .main-content {
-                margin-left: 0;
-            }
-
-            .search-box {
-                display: none;
-            }
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
         }
 
-        @media (max-width: 768px) {
-            .header {
-                padding: 0 15px;
-            }
-
-            .header-actions {
-                display: none;
-            }
-
-            .content-container {
-                padding: 15px;
-            }
-
-            .breadcrumb-item:first-child {
-                display: none;
-            }
-
-            .breadcrumb-item +
-            .breadcrumb-item::before {
-                display: none;
-            }
-
-            .breadcrumb-item.active {
-                max-width: 210px;
-
-                color: #24417d;
-                font-size: 13px;
-                font-weight: 750;
-            }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
         }
 
-        @media (max-width: 480px) {
-            .header {
-                gap: 8px;
-            }
-
-            .header-left {
-                gap: 9px;
-            }
-
-            .sidebar {
-                width: min(280px, 87vw);
-            }
-
-            .user-avatar,
-            .user-avatar-img {
-                width: 38px;
-                height: 38px;
-            }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
     </style>
-
     @stack('styles')
     @yield('styles')
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
-    {{-- Sidebar --}}
-    <aside
-        class="sidebar"
-        id="sidebar"
-    >
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a
-                href="{{ route('Admin.dashboard') }}"
-                class="sidebar-logo"
-                title="Travelloula Admin"
-            >
-                <span class="logo-icon">
+
+            <a href="" class="sidebar-logo">
+
+                <div class="logo-icon">
                     <i class="fas fa-plane"></i>
-                </span>
-
-                <span class="logo-text">
-                    <span class="logo-title">
-                        Travelloula
-                    </span>
-
-                    <span class="logo-subtitle">
-                        Quản trị viên
-                    </span>
-                </span>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">Travelloula</span>
+                    <span class="logo-subtitle">Admin</span>
+                </div>
             </a>
         </div>
 
         <nav class="sidebar-nav">
-            {{-- Tổng quan --}}
-            <div
-                class="nav-section"
-                data-nav-section="tong-quan"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-home nav-section-toggle-icon"></i>
+            <!-- Dashboard -->
+            <div class="nav-section">
+                <div class="nav-section-title">Tổng quan</div>
+                <div class="nav-item">
 
-                        <span class="nav-section-toggle-text">
-                            Tổng quan
-                        </span>
-                    </span>
+                    <a href="" class="nav-link">
 
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
-
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.dashboard') }}"
-                            class="nav-link {{ request()->routeIs('Admin.dashboard') ? 'active' : '' }}"
-                            title="Dashboard"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-tachometer-alt"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Dashboard
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.trang_dieu_khoans.edit') }}"
-                            class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}"
-                            title="Điều khoản"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-file-contract"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Điều khoản
-                            </span>
-                        </a>
-                    </div>
+                        <div class="nav-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
                 </div>
             </div>
 
-            {{-- Quản lý Tour --}}
-            <div
-                class="nav-section"
-                data-nav-section="quan-ly-tour"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-map-marked-alt nav-section-toggle-icon"></i>
+            <!-- Tours Management -->
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý Tours</div>
+                <div class="nav-item">
 
-                        <span class="nav-section-toggle-text">
-                            Quản lý Tour
-                        </span>
-                    </span>
+                    <a href="{{ route('Admin.tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}">
 
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
+                        <div class="nav-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <span class="nav-text">Danh sách Tours</span>
+                    </a>
+                </div>
 
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.tours.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}"
-                            title="Danh sách Tour"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-map-marked-alt"></i>
-                            </span>
+                <div class="nav-item">
 
-                            <span class="nav-text">
-                                Danh sách Tour
-                            </span>
-                        </a>
+
+                    <a href="{{ route('Admin.lich_trinh_tours.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.lich-trinh*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <span class="nav-text">Quản lý lịch trình</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+
+                    <a href="{{ route('Admin.lich-khoi-hanh.index') }}" class="nav-link ">
+
+
+                        <div class="nav-icon">
+                            <i class="fas fa-plane-departure"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khởi hành</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{{ route('Admin.gop-doan.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.gop-doan.*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-object-group"></i>
+                        </div>
+                        <span class="nav-text">Quản lý gộp đoàn</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.gop-doan.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.yeu-cau-gop-doan.*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-object-group"></i>
+                        </div>
+                        <span class="nav-text">Yêu cầu gộp đoàn</span>
+                    </a>
+                </div>
+
+                <div class="nav-item">
+                    <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link ">
+                        <div class="nav-icon">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <span class="nav-text">Quản lý xe</span>
+                    </a>
+                </div>
+            </div>
+            <div class="nav-item">
+
+                <a href="{{ route('Admin.nhat_ky_tours.index') }}" class="nav-link ">
+
+                    <div class="nav-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <span class="nav-text">Nhật ký Tours</span>
+                </a>
+            </div>
+
+            <!-- Bookings & Operations -->
+
+            <div class="nav-item">
+
+                <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}">
+
+
+                    <div class="nav-icon">
+                        <i class="fas fa-calendar-check"></i>
                     </div>
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.lich_trinh_tours.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.lich_trinh_tours*') ? 'active' : '' }}"
-                            title="Quản lý lịch trình"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </span>
+                    <span class="nav-text">Quản lý Đặt tour</span>
 
-                            <span class="nav-text">
-                                Quản lý lịch trình
-                            </span>
-                        </a>
+                </a>
+
+
+            </div>
+            <div class="nav-item">
+
+                <a href="{{ route('Admin.phan-cong.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}">
+
+
+                    <div class="nav-icon">
+                        <i class="fas fa-user-friends"></i>
                     </div>
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.lich-khoi-hanh.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.lich-khoi-hanh*') ? 'active' : '' }}"
-                            title="Quản lý khởi hành"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-plane-departure"></i>
-                            </span>
+                    <span class="nav-text">Quản lý Phân Công</span>
 
-                            <span class="nav-text">
-                                Quản lý khởi hành
-                            </span>
+                </a>
+
+            </div>
+
+
+
+
+            <div class="nav-section">
+                <div class="nav-section-title">Quản lý Người dùng</div>
+                <div class="nav-item">
+
+
+
+                    <a href="{{ route('Admin.users.index') }}" class="nav-link ">
+
+
+
+
+
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                            <div class="nav-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="nav-text">Quản lý HDV</span>
                         </a>
-                    </div>
+                </div>
+                <div class="nav-item">
+                    <a href="{{ route('Admin.users.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Người dùng</span>
+                    </a>
+                </div>
+                <div class="nav-item">
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.gop-doan.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.gop-doan*') ? 'active' : '' }}"
-                            title="Gộp đoàn"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-object-group"></i>
-                            </span>
+                    <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý HDV</span>
+                    </a>
+                </div>
+                <div class="nav-item">
 
-                            <span class="nav-text">
-                                Gộp đoàn
-                            </span>
-                        </a>
-                    </div>
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.phuong-tiens.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.phuong-tiens*') ? 'active' : '' }}"
-                            title="Quản lý xe"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-bus"></i>
-                            </span>
+                    <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link ">
 
-                            <span class="nav-text">
-                                Quản lý xe
-                            </span>
-                        </a>
-                    </div>
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.nhat_ky_tours.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.nhat_ky_tours*') ? 'active' : '' }}"
-                            title="Nhật ký Tour"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-book"></i>
-                            </span>
+                        <div class="nav-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="nav-text">Quản lý Khách hàng</span>
+                    </a>
+                </div>
 
-                            <span class="nav-text">
-                                Nhật ký Tour
-                            </span>
-                        </a>
-                    </div>
+
+
+            </div>
+
+            <div class="nav-item">
+
+
+
+                <a href="{{ route('Admin.banners.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+                    Quản Lý Banner
+                </a>
+
+            </div>
+
+
+            <!-- Banners Management -->
+            <div class="nav-item">
+                <a href="{{ route('Admin.banners.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
+                    <i class="fas fa-image"></i>
+                    <span class="nav-text">Quản lý Banner</span>
+
+                </a>
+            </div>
+
+            <!-- Categories Management -->
+            <div class="nav-item">
+                <a href="{{ route('Admin.danh_mucs.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span class="nav-text">Quản lý Danh mục</span>
+                </a>
+            </div>
+            {{-- Đặt tour theo đoàn --}}
+            <li class="nav-item">
+                <a class="nav-link " href="">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Yêu cầu Tour đoàn</span>
+                </a>
+            </li>
+
+            <!-- Reviews Management -->
+            <div class="nav-item">
+                <a href="{{ route('Admin.danh_gias.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}">
+                    <i class="fas fa-star"></i>
+                    <span class="nav-text">Quản lý Đánh giá</span>
+                </a>
+            </div>
+
+            <!-- Payments Management -->
+            <div class="nav-item">
+                <a href="{{ route('Admin.thanh_toans.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i>
+                    <span class="nav-text">Quản lý Thanh toán</span>
+                </a>
+            </div>
+            <!-- Reports -->
+            <div class="nav-item">
+                <a href="{{ route('Admin.thong_ke.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="nav-text">Báo cáo & Thống kê</span>
+                </a>
+            </div>
+
+            <!-- Notifications -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-bell"></i>
+                    <span class="nav-text">Thông báo</span>
+                    <span class="badge badge-admin bg-danger ms-auto">3</span>
+                </a>
+            </div>
+
+
+            <!-- Support Tickets -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-headset"></i>
+                    <span class="nav-text">Hỗ trợ khách hàng</span>
+                    <span class="badge badge-admin bg-warning ms-auto">5</span>
+                </a>
+            </div>
+
+            <!-- Settings -->
+            <div class="nav-item">
+                <a href="" class="nav-link ">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Cài đặt hệ thống</span>
+                </a>
+            </div>
+
+
+
+            <!-- Reviews & Support -->
+            <div class="nav-section">
+                <div class="nav-section-title">Hỗ trợ</div>
+                <div class="nav-item">
+
+
+
+                    <a href="{{ route('Admin.danh_mucs.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}">
+
+
+
+                        <i class="fas fa-tags"></i>
+                        <span class="nav-text">Quản lý Danh mục</span>
+                    </a>
+                </div>
+
+                {{-- Đặt tour theo đoàn --}}
+                <li class="nav-item">
+
+
+                    <a class="nav-link {{ request()->routeIs('Admin.group-requests.*') ? 'active' : '' }}"
+                        href="">
+
+                        <i class="fas fa-users-cog"></i>
+                        <span>Yêu cầu Tour đoàn</span>
+                    </a>
+                </li>
+
+                <!-- Reviews Management -->
+                <div class="nav-item">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
+
+                        <i class="fas fa-star"></i>
+                        <span class="nav-text">Quản lý Đánh giá</span>
+
+                    </a>
+                </div>
+                <div class="nav-item">
+
+
+
+                    <a href="{{ route('Admin.thanh_toans.index') }}"
+                        class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}">
+
+
+
+                        <i class="fas fa-credit-card"></i>
+                        <span class="nav-text">Quản lý Thanh toán</span>
+                    </a>
+                </div>
+
+
+
+
+                <!-- Reports -->
+                <div class="nav-item">
+
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+
+                        <i class="fas fa-chart-bar"></i>
+                        <span class="nav-text">Báo cáo & Thống kê</span>
+                    </a>
+                </div>
+
+                <!-- Notifications -->
+                <div class="nav-item">
+
+                    <a href=""
+                        class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
+
+
+                        <i class="fas fa-bell"></i>
+
+                        <span class="nav-text">Thông báo</span>
+                    </a>
                 </div>
             </div>
 
-            {{-- Đặt Tour và vận hành --}}
-            <div
-                class="nav-section"
-                data-nav-section="dat-tour-van-hanh"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-briefcase nav-section-toggle-icon"></i>
 
-                        <span class="nav-section-toggle-text">
-                            Đặt Tour & Vận hành
-                        </span>
-                    </span>
+            <!-- Reports & Settings -->
+            <div class="nav-section">
+                <div class="nav-section-title">Hệ thống</div>
+                <div class="nav-item">
 
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
 
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.quan_ly_dat_tour.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}"
-                            title="Quản lý đặt Tour"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </span>
+                        <i class="fas fa-headset"></i>
+                        <span class="nav-text">Hỗ trợ khách hàng</span>
+                        <span class="badge badge-admin bg-warning ms-auto">5</span>
 
-                            <span class="nav-text">
-                                Quản lý đặt Tour
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.phan-cong.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}"
-                            title="Quản lý phân công"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user-friends"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quản lý phân công
-                            </span>
-                        </a>
-                    </div>
+                    </a>
                 </div>
-            </div>
+                <div class="nav-item">
 
-            {{-- Quản lý người dùng --}}
-            <div
-                class="nav-section"
-                data-nav-section="nguoi-dung"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-users-cog nav-section-toggle-icon"></i>
+                    <a href="" class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
 
-                        <span class="nav-section-toggle-text">
-                            Quản lý người dùng
-                        </span>
-                    </span>
-
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
-
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.huong-dan-viens.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}"
-                            title="Quản lý hướng dẫn viên"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user-tie"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quản lý HDV
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.users.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}"
-                            title="Người dùng"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Người dùng
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.khach-hang.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.khach-hang*') ? 'active' : '' }}"
-                            title="Quản lý khách hàng"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user-check"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quản lý khách hàng
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.vai-tros.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}"
-                            title="Vai trò"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user-tag"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Vai trò
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.quyen-hans.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}"
-                            title="Quyền"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-key"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quyền
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.role-permissions.matrix') }}"
-                            class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}"
-                            title="Phân quyền"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-th"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Phân quyền
-                            </span>
-                        </a>
-                    </div>
+                        <i class="fas fa-cog"></i>
+                        <span class="nav-text">Cài đặt hệ thống</span>
+                    </a>
                 </div>
-            </div>
 
-            {{-- Nội dung --}}
-            <div
-                class="nav-section"
-                data-nav-section="noi-dung"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-layer-group nav-section-toggle-icon"></i>
 
-                        <span class="nav-section-toggle-text">
-                            Nội dung
-                        </span>
-                    </span>
 
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
-
-                <div class="nav-section-menu">
+                <!-- Reviews & Support -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Hỗ trợ</div>
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.banners.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}"
-                            title="Quản lý Banner"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-image"></i>
-                            </span>
 
-                            <span class="nav-text">
-                                Quản lý Banner
-                            </span>
-                        </a>
-                    </div>
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reviews*') ? 'active' : '' }}">
 
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.danh_mucs.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}"
-                            title="Quản lý danh mục"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-tags"></i>
-                            </span>
 
-                            <span class="nav-text">
-                                Quản lý danh mục
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.danh_gias.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}"
-                            title="Quản lý đánh giá"
-                        >
-                            <span class="nav-icon">
+                            <div class="nav-icon">
                                 <i class="fas fa-star"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quản lý đánh giá
-                            </span>
+                            </div>
+                            <span class="nav-text">Đánh giá</span>
                         </a>
                     </div>
-
                     <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link nav-link-disabled"
-                            title="Chức năng chưa có route"
-                            onclick="return false;"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-user-tie"></i>
-                            </span>
 
-                            <span class="nav-text">
-                                Đánh giá hướng dẫn viên
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.support*') ? 'active' : '' }}">
 
-            {{-- Thanh toán và báo cáo --}}
-            <div
-                class="nav-section"
-                data-nav-section="thanh-toan-bao-cao"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-chart-line nav-section-toggle-icon"></i>
-
-                        <span class="nav-section-toggle-text">
-                            Thanh toán & Báo cáo
-                        </span>
-                    </span>
-
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
-
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.thanh_toans.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}"
-                            title="Quản lý thanh toán"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-credit-card"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Quản lý thanh toán
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.thong_ke.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}"
-                            title="Báo cáo và thống kê"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-chart-bar"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Báo cáo & Thống kê
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Hệ thống --}}
-            <div
-                class="nav-section"
-                data-nav-section="he-thong"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
-                    <span class="nav-section-toggle-left">
-                        <i class="fas fa-cog nav-section-toggle-icon"></i>
-
-                        <span class="nav-section-toggle-text">
-                            Hệ thống
-                        </span>
-                    </span>
-
-                    <i class="fas fa-chevron-down nav-section-arrow"></i>
-                </button>
-
-                <div class="nav-section-menu">
-                    <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link"
-                            title="Thông báo"
-                        >
-                            <span class="nav-icon">
-                                <i class="fas fa-bell"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Thông báo
-                            </span>
-
-                            <span class="nav-badge nav-badge-danger">
-                                3
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link"
-                            title="Hỗ trợ khách hàng"
-                        >
-                            <span class="nav-icon">
+                            <div class="nav-icon">
                                 <i class="fas fa-headset"></i>
-                            </span>
+                            </div>
+                            <span class="nav-text">Hỗ trợ</span>
+                        </a>
+                    </div>
+                    {{-- <div class="nav-item">
 
-                            <span class="nav-text">
-                                Hỗ trợ khách hàng
-                            </span>
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.notifications*') ? 'active' : '' }}">
 
-                            <span class="nav-badge nav-badge-warning">
-                                5
-                            </span>
+
+                                <div class="nav-icon">
+                                    <i class="fas fa-bell"></i>
+                                </div>
+                                <span class="nav-text">Thông báo</span>
+                    </a>
+                </div> --}}
+                </div>
+
+                <!-- Reports & Settings -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Hệ thống</div>
+                    <div class="nav-item">
+
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.reports*') ? 'active' : '' }}">
+
+
+                            <div class="nav-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <span class="nav-text">Báo cáo</span>
+                        </a>
+                    </div>
+                    <div class="nav-item">
+
+                        <a href=""
+                            class="nav-link {{ request()->routeIs('Admin.settings*') ? 'active' : '' }}">
+
+
+                            <div class="nav-icon">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <span class="nav-text">Cài đặt</span>
                         </a>
                     </div>
                 </div>
-            </div>
+
         </nav>
     </aside>
 
-    {{-- Overlay mobile --}}
-    <div
-        class="sidebar-overlay"
-        id="sidebarOverlay"
-    ></div>
-
-    {{-- Main --}}
+    <!-- Main Content -->
     <div class="main-content">
+        <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <button
-                    class="sidebar-toggle"
-                    id="sidebarToggle"
-                    type="button"
-                    title="Thu gọn hoặc mở menu"
-                    aria-label="Thu gọn hoặc mở menu"
-                    aria-controls="sidebar"
-                    aria-expanded="true"
-                >
+                <button class="sidebar-toggle" id="sidebarToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ route('Admin.dashboard') }}">
-                                Admin
-                            </a>
-                        </li>
+
+                        <li class="breadcrumb-item"><a href=""></a></li>
 
                         @yield('breadcrumb')
                     </ol>
@@ -1962,89 +1379,40 @@
             <div class="header-right">
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
-
-                    <input
-                        type="text"
-                        class="search-input"
-                        placeholder="Tìm kiếm..."
-                        autocomplete="off"
-                    >
+                    <input type="text" class="search-input" placeholder="Tìm kiếm...">
                 </div>
 
                 <div class="header-actions">
-                    <button
-                        class="header-btn"
-                        title="Thông báo"
-                        type="button"
-                    >
+                    <button class="header-btn" title="Thông báo">
                         <i class="fas fa-bell"></i>
-
-                        <span class="notification-badge">
-                            3
-                        </span>
+                        <span class="notification-badge">3</span>
                     </button>
-
-                    <button
-                        class="header-btn"
-                        title="Tin nhắn"
-                        type="button"
-                    >
+                    <button class="header-btn" title="Tin nhắn">
                         <i class="fas fa-envelope"></i>
-
-                        <span class="notification-badge">
-                            5
-                        </span>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    <button class="header-btn" title="Cài đặt">
+                        <i class="fas fa-cog"></i>
                     </button>
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button
-                        class="btn user-menu-button d-flex align-items-center"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
-                        @if (Auth::check() && Auth::user()->avatar)
-                            <img
-                                src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                alt="{{ Auth::user()->name }}"
-                                class="user-avatar-img"
-                                onerror="
-                                    this.style.display='none';
-                                    this.nextElementSibling.style.display='inline-flex';
-                                "
-                            >
+                    <button class="btn border-0 bg-transparent p-0 d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
 
-                            <span
-                                class="user-avatar"
-                                style="display:none;"
-                            >
-                                {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'A',
-                                        0,
-                                        1
-                                    )
-                                ) }}
-                            </span>
+                        @if (Auth::check() && Auth::user()->avatar)
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="user-avatar-img">
                         @else
-                            <span class="user-avatar">
-                                {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'A',
-                                        0,
-                                        1
-                                    )
-                                ) }}
-                            </span>
+                            <div class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            </div>
                         @endif
                     </button>
 
-                    <ul
-                        class="dropdown-menu dropdown-menu-end user-dropdown"
-                    >
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                         <li class="px-3 py-2">
-                            <div class="fw-bold text-dark">
+                            <div class="fw-bold">
                                 {{ Auth::user()->name ?? 'Administrator' }}
                             </div>
 
@@ -2058,30 +1426,21 @@
                         </li>
 
                         <li>
-                            <a
-                                class="dropdown-item"
-                                href="{{ route('profile') }}"
-                            >
+                            <a class="dropdown-item" href="">
                                 <i class="fas fa-user me-2"></i>
                                 Hồ sơ cá nhân
                             </a>
                         </li>
+
 
                         <li>
                             <hr class="dropdown-divider">
                         </li>
 
                         <li>
-                            <form
-                                method="POST"
-                                action="{{ route('logout') }}"
-                            >
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-
-                                <button
-                                    type="submit"
-                                    class="dropdown-item text-danger"
-                                >
+                                <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt me-2"></i>
                                     Đăng xuất
                                 </button>
@@ -2092,290 +1451,269 @@
             </div>
         </header>
 
+        <!-- Content -->
         <main class="content">
-            <div class="container-fluid content-container">
+            <div class="container-fluid p-4">
                 @yield('content')
             </div>
         </main>
     </div>
 
-    {{-- SweetAlert --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {{-- Bootstrap --}}
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- Custom Admin JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sidebar =
-                document.getElementById('sidebar');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+            const main = document.querySelector('.main-content');
 
-            const sidebarToggle =
-                document.getElementById('sidebarToggle');
-
-            const sidebarOverlay =
-                document.getElementById('sidebarOverlay');
-
-            if (!sidebar || !sidebarToggle) {
-                return;
-            }
-
-            const sidebarStorageKey =
-                'adminSidebarCollapsed';
-
-            function isMobile() {
-                return window.innerWidth <= 1024;
-            }
-
-            function updateSidebarToggleState() {
-                const isExpanded = isMobile()
-                    ? sidebar.classList.contains('open')
-                    : !sidebar.classList.contains('collapsed');
-
-                sidebarToggle.setAttribute(
-                    'aria-expanded',
-                    isExpanded ? 'true' : 'false'
-                );
-            }
-
-            function openMobileSidebar() {
-                sidebar.classList.add('open');
-
-                if (sidebarOverlay) {
-                    sidebarOverlay.classList.add('show');
-                }
-
-                document.body.classList.add(
-                    'sidebar-mobile-open'
-                );
-
-                updateSidebarToggleState();
-            }
-
-            function closeMobileSidebar() {
-                sidebar.classList.remove('open');
-
-                if (sidebarOverlay) {
-                    sidebarOverlay.classList.remove('show');
-                }
-
-                document.body.classList.remove(
-                    'sidebar-mobile-open'
-                );
-
-                updateSidebarToggleState();
-            }
-
-            function applyDesktopSidebarState() {
-                const isCollapsed =
-                    localStorage.getItem(
-                        sidebarStorageKey
-                    ) === 'true';
-
-                sidebar.classList.toggle(
-                    'collapsed',
-                    isCollapsed
-                );
-
-                updateSidebarToggleState();
-            }
-
-            if (isMobile()) {
-                sidebar.classList.remove('collapsed');
-                closeMobileSidebar();
-            } else {
-                applyDesktopSidebarState();
-            }
-
-            sidebarToggle.addEventListener(
-                'click',
-                function () {
-                    if (isMobile()) {
-                        if (sidebar.classList.contains('open')) {
-                            closeMobileSidebar();
-                        } else {
-                            openMobileSidebar();
-                        }
-
-                        return;
-                    }
-
+            if (sidebarToggle && sidebar && main) {
+                sidebarToggle.addEventListener('click', function() {
                     sidebar.classList.toggle('collapsed');
+                    main.classList.toggle('sidebar-collapsed');
 
-                    localStorage.setItem(
-                        sidebarStorageKey,
-                        sidebar.classList.contains(
-                            'collapsed'
-                        )
-                    );
+                    // Save state to localStorage
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    localStorage.setItem('adminSidebarCollapsed', isCollapsed);
+                });
 
-                    updateSidebarToggleState();
-                }
-            );
-
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener(
-                    'click',
-                    closeMobileSidebar
-                );
-            }
-
-            document.addEventListener(
-                'keydown',
-                function (event) {
-                    if (
-                        event.key === 'Escape' &&
-                        isMobile()
-                    ) {
-                        closeMobileSidebar();
-                    }
-                }
-            );
-
-            window.addEventListener(
-                'resize',
-                function () {
-                    if (isMobile()) {
-                        sidebar.classList.remove('collapsed');
-                        closeMobileSidebar();
-                        return;
-                    }
-
-                    closeMobileSidebar();
-                    applyDesktopSidebarState();
-                }
-            );
-
-            /* Đóng sidebar mobile khi bấm menu */
-            const sidebarLinks =
-                sidebar.querySelectorAll('.nav-link');
-
-            sidebarLinks.forEach(function (link) {
-                link.addEventListener(
-                    'click',
-                    function () {
-                        if (
-                            isMobile() &&
-                            !this.classList.contains(
-                                'nav-link-disabled'
-                            )
-                        ) {
-                            closeMobileSidebar();
+                // Close sidebar when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target && sidebar && sidebarToggle) {
+                        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                            sidebar.classList.remove('open');
                         }
                     }
-                );
-            });
-
-            /* Đóng/mở từng nhóm menu */
-            const navigationSections =
-                sidebar.querySelectorAll(
-                    '.nav-section[data-nav-section]'
-                );
-
-            navigationSections.forEach(function (section) {
-                const toggle =
-                    section.querySelector(
-                        '.nav-section-toggle'
-                    );
-
-                const activeLink =
-                    section.querySelector(
-                        '.nav-link.active'
-                    );
-
-                const sectionName =
-                    section.dataset.navSection;
-
-                if (!toggle || !sectionName) {
-                    return;
-                }
-
-                const sectionStorageKey =
-                    'adminNavSection_' + sectionName;
-
-                let isCollapsed =
-                    localStorage.getItem(
-                        sectionStorageKey
-                    ) === 'true';
-
-                /*
-                 * Nhóm chứa trang hiện tại
-                 * luôn tự mở.
-                 */
-                if (activeLink) {
-                    isCollapsed = false;
-
-                    toggle.classList.add(
-                        'has-active'
-                    );
-                }
-
-                section.classList.toggle(
-                    'is-collapsed',
-                    isCollapsed
-                );
-
-                toggle.setAttribute(
-                    'aria-expanded',
-                    isCollapsed ? 'false' : 'true'
-                );
-
-                toggle.addEventListener(
-                    'click',
-                    function () {
-                        /*
-                         * Khi sidebar thu gọn trên desktop,
-                         * tiêu đề nhóm đang bị ẩn.
-                         */
-                        if (
-                            sidebar.classList.contains(
-                                'collapsed'
-                            ) &&
-                            !isMobile()
-                        ) {
-                            return;
-                        }
-
-                        const collapsed =
-                            section.classList.toggle(
-                                'is-collapsed'
-                            );
-
-                        toggle.setAttribute(
-                            'aria-expanded',
-                            collapsed
-                                ? 'false'
-                                : 'true'
-                        );
-
-                        localStorage.setItem(
-                            sectionStorageKey,
-                            collapsed
-                                ? 'true'
-                                : 'false'
-                        );
-                    }
-                );
-            });
-
-            /* Tự cuộn tới menu active */
-            const activeLink =
-                sidebar.querySelector('.nav-link.active');
-
-            if (activeLink) {
-                setTimeout(function () {
-                    activeLink.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                }, 150);
+                });
             }
-
-            updateSidebarToggleState();
         });
+
+
+        // User menu toggle
+        function toggleUserMenu() {
+            // Implement user menu dropdown
+            console.log('Toggle user menu');
+        }
     </script>
 
     @yield('scripts')
+
+    <!-- Check-in/Check-out specific CSS -->
+    <style>
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: #fff;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: .3s;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-avatar-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e5e7eb;
+        }
+
+        .dropdown-menu {
+            min-width: 250px;
+            border-radius: 12px;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+        }
+
+        .dropdown-item:hover {
+            background: #f3f4f6;
+        }
+
+        /* Form elements styling for check-in/check-out */
+        .form-control,
+        .form-select {
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+
+        /* Card styling for check-in/check-out */
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Button styling for check-in/check-out */
+        .btn {
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: all 0.15s ease-in-out;
+            padding: 0.5rem 1rem;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            border-color: #10b981;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
+        .btn-warning {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-secondary {
+            background-color: #6b7280;
+            border-color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background-color: #4b5563;
+            border-color: #4b5563;
+        }
+
+        /* Statistics cards styling */
+        .border-left-primary {
+            border-left: 0.25rem solid #3b82f6 !important;
+        }
+
+        .border-left-success {
+            border-left: 0.25rem solid #10b981 !important;
+        }
+
+        .border-left-info {
+            border-left: 0.25rem solid #06b6d4 !important;
+        }
+
+        .border-left-warning {
+            border-left: 0.25rem solid #f59e0b !important;
+        }
+
+        /* Table styling */
+        .table th {
+            background-color: #f8f9fc;
+            border-color: #e3e6f0;
+            color: #5a5c69;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        /* Badge styling */
+        .badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Avatar styling */
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .avatar-lg {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+
+        /* Icons styling */
+        .nav-link i,
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Ensure icons are visible */
+        .bi,
+        .fas,
+        .far,
+        .fab {
+            font-family: "bootstrap-icons", "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+        }
+    </style>
+
+    {{-- <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    @stack('scripts') --}}
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="{{ asset('admin-assets/js/bootstrap.bundle.min.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     @stack('scripts')
 </body>
 

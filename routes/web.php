@@ -170,7 +170,15 @@ Route::prefix('Admin')
         Route::resource('phan-cong', PhanCongController::class);
 
         Route::resource('tours', TourController::class);
+        Route::get(
+            'lich-khoi-hanh/bang-gia',
+            [LichKhoiHanhController::class, 'layBangGia']
+        )->name('lich-khoi-hanh.bang-gia');
         Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
+        Route::patch(
+            'lich-khoi-hanh/{id}/chot',
+            [LichKhoiHanhController::class, 'chot']
+        )->name('lich-khoi-hanh.chot');
 
         Route::resource('gop-doan', GopDoanController::class);
         Route::post('gop-doan/{id}/huy', [GopDoanController::class, 'destroy'])->name('gop-doan.huy');

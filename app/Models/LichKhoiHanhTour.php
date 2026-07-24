@@ -15,13 +15,7 @@ use App\Models\PhuongTien;
 class LichKhoiHanhTour extends Model
 {
     use HasFactory;
-
-
-
-
-
     protected $table = 'lich_khoi_hanh_tours';
-
     protected $fillable = [
         'tour_id',
         'ngay_khoi_hanh',
@@ -34,22 +28,14 @@ class LichKhoiHanhTour extends Model
         'gia_nguoi_lon',
         'gia_tre_em',
 
-        'huong_dan_vien_id',
-        'gia_nguoi_lon',
-        'gia_tre_em',
         'trang_thai',
+
         'dang_gop_doan',
         'gop_vao_lich_id',
         'da_gop',
 
         'huong_dan_vien_id',
         'phuong_tien_id',
-
-        'trang_thai',
-
-        'dang_gop_doan',
-        'gop_vao_lich_id',
-        'da_gop',
     ];
 
     protected $casts = [
@@ -87,6 +73,11 @@ class LichKhoiHanhTour extends Model
             return 'Đã hủy';
         }
 
+        // 2. Đã chốt
+        if ($this->trang_thai === 'finalized') {
+            return 'Đã chốt';
+        }
+
         // 2. Đã kết thúc
         if ($ngayKetThuc->lt($today)) {
             return 'Đã kết thúc';
@@ -115,21 +106,43 @@ class LichKhoiHanhTour extends Model
         return 'Mở bán';
     }
 
+    public function coTheChot(): bool
+    {
+        return in_array(
+            $this->trang_thai_hien_thi,
+            [
+                'Đã đóng',
+                'Đã gộp',
+                'Hết chỗ',
+            ]
+        );
+    }
+
+    public function daDuocChot(): bool
+    {
+        return $this->trang_thai === 'finalized';
+    }
+
     public function capNhatTrangThai()
     {
+        // Nếu đã hủy hoặc đã chốt thì không tự cập nhật nữa
+        if (in_array($this->trang_thai, ['cancelled', 'finalized'])) {
+            return;
+        }
+
         $today = Carbon::today();
 
         $ngayKhoiHanh = Carbon::parse($this->ngay_khoi_hanh);
         $ngayKetThuc = Carbon::parse($this->ngay_ket_thuc);
+
         $ngayDongBan = $ngayKhoiHanh->copy()->subDays(7);
 
-        if ($this->trang_thai == 'cancelled') {
-            return;
-        }
-
-        if ($today->gt($ngayKetThuc)) {
-            $this->trang_thai = 'finished';
-        } elseif ($today->between($ngayKhoiHanh, $ngayKetThuc)) {
+        if ($ngayKetThuc->lt($today)) {
+            $this->trang_thai = 'ended';
+        } elseif (
+            $ngayKhoiHanh->lte($today) &&
+            $ngayKetThuc->gte($today)
+        ) {
             $this->trang_thai = 'running';
         } elseif ($this->so_cho_con_lai <= 0) {
             $this->trang_thai = 'full';
@@ -141,7 +154,6 @@ class LichKhoiHanhTour extends Model
 
         $this->save();
     }
-
 
     public function chiTietGopDoan()
     {
@@ -171,36 +183,10 @@ class LichKhoiHanhTour extends Model
             PhuongTien::class,
             'phuong_tien_id'
 
-
         );
     }
     public function phanCong()
     {
         return $this->hasOne(PhanCong::class);
-    }
-
-    public function checkIns()
-    {
-        return $this->hasMany(
-            CheckInKhachHang::class,
-            'lich_khoi_hanh_id'
-        );
-    }
-
-    public function baoCaoSuCos()
-    {
-        return $this->hasMany(
-            BaoCaoSuCo::class,
-            'lich_khoi_hanh_id'
-        );
-    }
-
-    public function nhatKys()
-    {
-        return $this->hasMany(
-            NhatKyHuongDanVien::class,
-            'lich_khoi_hanh_id'
-
-        );
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\LichKhoiHanhTour;
 use App\Models\DanhSachTour;
 use App\Models\HuongDanVien;
+use App\Models\BangGiaTour;
 use Carbon\Carbon;
 
 
@@ -315,5 +316,58 @@ class LichKhoiHanhController extends Controller
 
         return redirect()->route('Admin.lich-khoi-hanh.index')
             ->with('success', 'Xóa thành công');
+    }
+
+    public function chot($id)
+    {
+        $lich = LichKhoiHanhTour::findOrFail($id);
+
+        // Kiểm tra đã chốt chưa
+        if ($lich->daDuocChot()) {
+            return back()->with(
+                'warning',
+                'Lịch này đã được chốt.'
+            );
+        }
+
+        // Kiểm tra có đủ điều kiện chốt không
+        if (!$lich->coTheChot()) {
+            return back()->with(
+                'error',
+                'Lịch này chưa đủ điều kiện để chốt.'
+            );
+        }
+
+        $lich->update([
+            'trang_thai' => 'finalized',
+        ]);
+
+        return back()->with(
+            'success',
+            'Đã chốt lịch thành công.'
+        );
+    }
+
+    public function layBangGia(Request $request)
+    {
+        $bangGia = BangGiaTour::where('tour_id', $request->tour_id)
+            ->where('loai_mua', $request->loai_mua)
+            ->first();
+
+        if (!$bangGia) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy bảng giá.'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'gia_nguoi_lon' => $bangGia->gia_nguoi_lon,
+                'gia_tre_em' => $bangGia->gia_tre_em,
+                'gia_em_be' => $bangGia->gia_em_be,
+            ]
+        ]);
     }
 }

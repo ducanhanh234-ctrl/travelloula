@@ -1,9 +1,6 @@
 @extends('Layouts.guide')
-
 @section('title', 'Chọn địa điểm Check-in')
-
 @section('guide', 'Chọn địa điểm Check-in')
-
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{ route('Guide.checkin.index') }}">
@@ -11,11 +8,8 @@
         </a>
     </li>
 
-    <li class="breadcrumb-item active">
-        Chọn địa điểm
-    </li>
+    <li class="breadcrumb-item active">Chọn địa điểm</li>
 @endsection
-
 @section('content')
     <style>
         :root {
@@ -667,15 +661,10 @@
     </style>
 
     @php
-        $lichTrinhTours =
-            $lichKhoiHanh->tour->lichTrinhTours
+        $lichTrinhTours = $lichKhoiHanh->tour->lichTrinhTours
             ?? collect();
-
-        $tongNgayThamQuan =
-            $lichTrinhTours->count();
-
-        $tongDiaDiem =
-            $lichTrinhTours->sum(function ($ngay) {
+        $tongNgayThamQuan = $lichTrinhTours->count();
+        $tongDiaDiem = $lichTrinhTours->sum(function ($ngay) {
                 return $ngay->chiTiets->count();
             });
     @endphp
@@ -690,12 +679,11 @@
 
                 <div>
                     <h2>Chọn địa điểm Check-in</h2>
-
                     <p>
                         {{
-        $lichKhoiHanh->tour->ten_tour
-        ?? 'Không xác định'
-                            }}
+                            $lichKhoiHanh->tour->ten_tour
+                            ?? 'Không xác định'
+                        }}
                     </p>
                 </div>
             </div>
@@ -715,19 +703,11 @@
                     </span>
 
                     <div class="location-info-content">
-                        <div class="location-info-label">
-                            Ngày khởi hành
-                        </div>
-
+                        <div class="location-info-label">Ngày khởi hành</div>
                         <div class="location-info-value">
                             @if ($lichKhoiHanh->ngay_khoi_hanh)
-                                                {{
-                                \Carbon\Carbon::parse(
-                                    $lichKhoiHanh->ngay_khoi_hanh
-                                )->format('d/m/Y')
-                                                        }}
-                            @else
-                                Chưa cập nhật
+                                {{\Carbon\Carbon::parse($lichKhoiHanh->ngay_khoi_hanh)->format('d/m/Y')}}
+                            @else Chưa cập nhật
                             @endif
                         </div>
                     </div>
@@ -745,11 +725,7 @@
 
                         <div class="location-info-value">
                             @if ($lichKhoiHanh->ngay_ket_thuc)
-                                                {{
-                                \Carbon\Carbon::parse(
-                                    $lichKhoiHanh->ngay_ket_thuc
-                                )->format('d/m/Y')
-                                                        }}
+                                {{\Carbon\Carbon::parse($lichKhoiHanh->ngay_ket_thuc)->format('d/m/Y')}}
                             @else
                                 Chưa cập nhật
                             @endif
@@ -768,12 +744,7 @@
                         </div>
 
                         <div class="location-info-value">
-                            {{
-        $lichKhoiHanh
-            ->huongDanVien
-            ->ho_ten
-        ?? 'Chưa phân công'
-                                }}
+                            {{$lichKhoiHanh->huongDanVien->ho_ten?? 'Chưa phân công'}}
                         </div>
                     </div>
                 </div>
@@ -833,7 +804,6 @@
                 </div>
 
                 <div class="location-day-body">
-
                     {{-- điểm danh đầu ngày --}}
                     <div class="location-place-card mb-3">
                         <div class="location-place-main">
@@ -855,18 +825,15 @@
                             </div>
                         </div>
 
-                        <div class="location-place-action">
-    <a href="{{ route('Guide.checkin.diemdanh', [
-        'lichKhoiHanh' => $lichKhoiHanh->id,
-        'ngayThu' => $ngay->ngay_thu
-    ]) }}"
-        class="btn-location-checkin">
-        <i class="fas fa-user-check"></i>
-        Điểm danh
-    </a>
-</div>
-</div>
-
+                    <div class="location-place-action">
+                        <a href="{{ route('Guide.checkin.diemdanh', ['lichKhoiHanh' => $lichKhoiHanh->id,
+                            'ngayThu' => $ngay->ngay_thu]) }}"
+                                class="btn-location-checkin">
+                                    <i class="fas fa-user-check"></i>
+                                Điểm danh
+                            </a>
+                        </div>
+                    </div>
 
                     @if ($ngay->chiTiets->isNotEmpty())
                         <div class="location-place-list">
@@ -879,50 +846,31 @@
 
                                             <div class="location-place-content">
                                                 <h5 class="location-place-title">
-                                                    {{
-                                    $chiTiet->tieu_de
-                                    ?? 'Địa điểm chưa có tên'
-                                                                    }}
+                                                    {{$chiTiet->tieu_de ?? 'Địa điểm chưa có tên'}}
                                                 </h5>
 
-                                                <div class="location-place-time">
-                                                    <i class="fas fa-clock"></i>
-
+                                            <div class="location-place-time">
+                                                <i class="fas fa-clock"></i>
                                                     <span>
-                                                        {{
-                                    $chiTiet->gio_bat_dau
-                                    ?? '--:--'
-                                                                        }}
-
+                                                        {{$chiTiet->gio_bat_dau ?? '--:--'}}
                                                         -
-
-                                                        {{
-                                    $chiTiet->gio_ket_thuc
-                                    ?? '--:--'
-                                                                        }}
+                                                        {{$chiTiet->gio_ket_thuc ?? '--:--'}}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="location-place-action">
-                                            <a href="{{ route(
-                                    'Guide.checkin.show',
-                                    [
-                                        'lichKhoiHanh' =>
-                                            $lichKhoiHanh->id,
-
-                                        'chiTiet' =>
-                                            $chiTiet->id
-                                    ]
-                                ) }}" class="btn-location-checkin">
-                                                <i class="fas fa-user-check"></i>
+                                            <a href="{{ route('Guide.checkin.show',['lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id]) }}" class="btn-location-checkin">
+                                                    <i class="fas fa-user-check"></i>
                                                 Check-in
                                             </a>
                                         </div>
                                     </div>
                             @endforeach
                         </div>
+                        
                     @else
                         <div class="location-empty">
                             <div class="location-empty-icon">

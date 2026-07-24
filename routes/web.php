@@ -227,20 +227,8 @@ Route::prefix('Guide')
         Route::get('/check-in', [CheckInController::class, 'index'])
             ->name('checkin.index');
 
-        // Route::get('/check-in/diem-danh', [CheckInController::class, 'diemDanh'])
-        //     ->name('checkin.diemdanh');
-
-        // Route::get('/check-in/dia-diem', [CheckInController::class, 'danhSachDiaDiem'])
-        //     ->name('checkin.danhsachDiadiem');
-
         Route::get('/check-in/{lichKhoiHanh}/dia-diem', [CheckInController::class, 'diaDiem'])
             ->name('checkin.dia-diem');
-
-        Route::get('/check-in/{lichKhoiHanh}/ngay/{ngayThu}/diem-danh', [CheckInController::class, 'diemDanh'])
-            ->name('checkin.diemdanh');
-
-        Route::post('/check-in/diem-danh', [CheckInController::class, 'luuDiemDanh'])
-            ->name('checkin.luuDiemDanh');
 
         Route::get('/check-in/{lichKhoiHanh}/{chiTiet}', [CheckInController::class, 'show'])
             ->name('checkin.show');
@@ -253,7 +241,6 @@ Route::prefix('Guide')
         Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
         Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
         Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
-
 
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');

@@ -9,7 +9,6 @@ use App\Models\DatTour;
 use App\Models\HuongDanVien;
 use App\Models\KhachHangDatTour;
 use App\Models\LichKhoiHanhTour;
-use App\Models\DiemDanhKhachHang;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,16 +38,13 @@ class CheckInController extends Controller
             ->paginate(10);
 
         $tongTour = $lichKhoiHanhs->total();
-
         $dangDienRa = $lichKhoiHanhs->getCollection()
             ->where('ngay_khoi_hanh', '<=', now())
             ->where('ngay_ket_thuc', '>=', now())
             ->count();
-
         $sapKhoiHanh = $lichKhoiHanhs->getCollection()
             ->where('ngay_khoi_hanh', '>', now())
             ->count();
-
         return view(
             'Guide.checkin.index',
             compact(
@@ -70,7 +66,6 @@ class CheckInController extends Controller
             ->get();
 
         $chiTiet = ChiTietLichTrinh::findOrFail($chiTietId);
-
         $checkedIds = CheckInKhachHang::where(
             'chi_tiet_lich_trinh_id',
             $chiTietId
@@ -96,8 +91,8 @@ class CheckInController extends Controller
         }
 
         $daCheck = count($checkedIds);
-
         $chuaCheck = $tongKhach - $daCheck;
+
         return view(
             'Guide.checkin.show',
             compact(
@@ -115,20 +110,12 @@ class CheckInController extends Controller
 
     public function checkIn(Request $request)
     {
-
         // Lấy hướng dẫn viên hiện tại
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-        $checkIn = CheckInKhachHang::where(
-            'khach_hang_dat_tour_id',
-            $request->khach_hang_dat_tour_id
-        )
-            ->where(
-                'chi_tiet_lich_trinh_id',
-                $request->chi_tiet_lich_trinh_id
-            )
+        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
+
+        // Bắt đầu xử lý check-in
+        $checkIn = CheckInKhachHang::where('khach_hang_dat_tour_id', $request->khach_hang_dat_tour_id)
+            ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
             ->first();
 
         if ($checkIn && $checkIn->trang_thai == 'da_check_in') {
@@ -192,101 +179,12 @@ class CheckInController extends Controller
     }
     public function diaDiem($lichKhoiHanhId)
     {
-        $lichKhoiHanh = LichKhoiHanhTour::with(
-            'tour.lichTrinhTours.chiTiets'
-        )->findOrFail($lichKhoiHanhId);
+        $lichKhoiHanh = LichKhoiHanhTour::with('tour.lichTrinhTours.chiTiets')
+            ->findOrFail($lichKhoiHanhId);
 
         return view(
             'Guide.checkin.diadiem',
             compact('lichKhoiHanh')
-        );
-    }
-
-    public function diemDanh($lichKhoiHanhId, $ngayThu)
-    {
-        $datTours = DatTour::with([
-            'nguoiDung',
-            'khachHangs'
-        ])
-            ->where('lich_khoi_hanh_id', $lichKhoiHanhId)
-            ->get();
-
-        $tongKhach = 0;
-
-        foreach ($datTours as $datTour) {
-            $tongKhach += $datTour->khachHangs->count();
-        }
-
-        $diemDanhs = DiemDanhKhachHang::where(
-            'lich_khoi_hanh_id',
-            $lichKhoiHanhId
-        )
-            ->where('ngay_thu', $ngayThu)
-            ->get()
-            ->keyBy('khach_hang_dat_tour_id');
-
-        return view(
-            'Guide.checkin.diemdanh',
-            compact(
-                'datTours',
-                'lichKhoiHanhId',
-                'ngayThu',
-                'tongKhach',
-                'diemDanhs'
-            )
-        );
-    }
-
-    public function luuDiemDanh(Request $request)
-    {
-        
-    }
-
-    public function checkOut($id)
-    {
-        $checkIn = CheckInKhachHang::findOrFail($id);
-        if ($checkIn->thoi_gian_check_out != null) {
-            return back()->with(
-                'error',
-                'Khách đã check-out.'
-            );
-        }
-
-        // Chỉ cho check-out nếu đã check-in
-        if ($checkIn->trang_thai != 'da_check_in') {
-
-            return back()->with(
-                'error',
-                'Hành khách chưa check-in hoặc đã check-out.'
-            );
-        }
-
-        $checkIn->thoi_gian_check_out = now();
-        $checkIn->trang_thai = 'da_check_out';
-        $checkIn->save();
-
-        $khach = $checkIn->khachHang;
-
-        $chiTiet = ChiTietLichTrinh::findOrFail(
-            $checkIn->chi_tiet_lich_trinh_id
-        );
-
-        NhatKyHuongDanVien::create([
-            'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
-            'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
-            'khach_hang_dat_tour_id' => $khach->id,
-            'huong_dan_vien_id' => $checkIn->huong_dan_vien_id,
-            'hanh_dong' => 'CHECK_OUT',
-            'noi_dung' => 'Check-out khách "' .
-                $khach->ho_ten .
-                '" tại "' .
-                $chiTiet->tieu_de .
-                '"'
-        ]);
-
-        return back()->with(
-            'success',
-            'Check-out thành công.'
         );
     }
 
@@ -297,16 +195,17 @@ class CheckInController extends Controller
             Auth::id()
         )->firstOrFail();
 
+        //chốt điểm danh mới đc checkin 2
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $request->chi_tiet_lich_trinh_id
+        );
+
         $datTours = DatTour::with('khachHangs')
             ->where(
                 'lich_khoi_hanh_id',
                 $request->lich_khoi_hanh_id
             )
             ->get();
-
-        $chiTiet = ChiTietLichTrinh::findOrFail(
-            $request->chi_tiet_lich_trinh_id
-        );
 
         foreach ($datTours as $datTour) {
             foreach ($datTour->khachHangs as $khach) {
@@ -404,10 +303,8 @@ class CheckInController extends Controller
     public function undoCheckIn($id)
     {
         $checkIn = CheckInKhachHang::findOrFail($id);
-
         // Chỉ hoàn tác khi đang ở trạng thái đã check-in
         if ($checkIn->trang_thai != 'da_check_in') {
-
             return back()->with(
                 'error',
                 'Không thể hoàn tác Check-in.'

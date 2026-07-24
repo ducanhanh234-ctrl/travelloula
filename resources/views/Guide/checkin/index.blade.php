@@ -1,9 +1,6 @@
 @extends('Layouts.guide')
-
 @section('title', 'Check-in hành khách')
-
 @section('guide', 'Check-in hành khách')
-
 @section('breadcrumb')
     <li class="breadcrumb-item active">
         Check-in hành khách

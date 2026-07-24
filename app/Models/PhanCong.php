@@ -12,13 +12,25 @@ class PhanCong extends Model
         'lich_khoi_hanh_id',
         'hdv_id',
         'phuong_tien_id',
+        'hdv_ids',
+        'phuong_tien_ids',
         'ngay_phan_cong',
         'ghi_chu'
 
     ];
+
+    protected $casts = [
+        'hdv_ids' => 'array',
+        'phuong_tien_ids' => 'array',
+    ];
+
     public function lichKhoiHanh()
     {
-        return $this->belongsTo(LichKhoiHanhTour::class);
+        return $this->belongsTo(
+            LichKhoiHanhTour::class,
+            'lich_khoi_hanh_id',
+            'id'
+        );
     }
 
     public function hdv()
@@ -29,5 +41,17 @@ class PhanCong extends Model
     public function phuongTien()
     {
         return $this->belongsTo(PhuongTien::class);
+    }
+
+    public function getHdvListAttribute()
+    {
+        $hdvIds = collect($this->hdv_ids ?? [$this->hdv_id])->filter()->all();
+        return HuongDanVien::whereIn('id', $hdvIds)->get();
+    }
+
+    public function getPhuongTienListAttribute()
+    {
+        $phuongTienIds = collect($this->phuong_tien_ids ?? [$this->phuong_tien_id])->filter()->all();
+        return PhuongTien::whereIn('id', $phuongTienIds)->get();
     }
 }

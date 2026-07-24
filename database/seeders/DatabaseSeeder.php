@@ -31,7 +31,9 @@ class DatabaseSeeder extends Seeder
         'vao_guide',
         'phuong_tiens.view',
     ])->pluck('id')->toArray();
+
     $guideRole->quyenHans()->syncWithoutDetaching($guidePermissionIds);
+
     $this->call([
         DanhMucSeeder::class,
         DanhSachTourSeeder::class,
@@ -41,9 +43,12 @@ class DatabaseSeeder extends Seeder
         LichKhoiHanhTourSeeder::class,
         DatTourSeeder::class,
     ]);
+
         $adminUser = User::where('email', 'admin@gmail.com')->first();
+
         if ($adminUser) {
             $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
         }
+        
     }
-}
+

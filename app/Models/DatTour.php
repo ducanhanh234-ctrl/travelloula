@@ -33,7 +33,7 @@ class DatTour extends Model
 
     public function tour()
     {
-        return $this->belongsTo(Tour::class, 'tour_id');
+        return $this->belongsTo(DanhSachTour::class, 'tour_id');
     }
 
     public function lichKhoiHanh()

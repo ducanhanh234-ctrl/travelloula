@@ -36,12 +36,26 @@
 
 
 
-
+            @if($thanh_toan->trang_thai != 'da_thanh_toan')
             <a href="{{ route('Admin.thanh_toans.edit_status', $thanh_toan->id) }}" class="btn btn-success">
 
                 <i class="fas fa-edit"></i>
                 Cập Nhật Trạng Thái
             </a>
+            @endif
+            @if($thanh_toan->trang_thai == 'da_thanh_toan')
+            <form action="{{ route('thanh-toan.guiHoaDon',$thanh_toan->id) }}" method="POST">
+
+                @csrf
+
+                <button class="btn btn-success">
+
+                    Gửi Lại hóa đơn
+
+                </button>
+
+            </form>
+            @endif
 
 
             <a href="{{ route('Admin.thanh_toans.index') }}" class="btn btn-secondary">
@@ -83,16 +97,20 @@
                                 Trạng thái
                             </label>
                             <div>
-                                @if ($thanh_toan->trang_thai == 1)
-                                <span class="badge badge-success">Đã thanh toán</span>
-                                @elseif ($thanh_toan->trang_thai == 2)
-                                <span class="badge badge-warning">Chờ xử lý</span>
-                                @elseif ($thanh_toan->trang_thai == 3)
-                                <span class="badge badge-danger">Thất bại</span>
-                                @elseif ($thanh_toan->trang_thai == 4)
-                                <span class="badge badge-info">Hoàn tiền</span>
+                                @if ($thanh_toan->trang_thai == 'da_thanh_toan')
+                                <span class="badge badge-success text-black">Đã thanh toán</span>
+                                @elseif ($thanh_toan->trang_thai == 'cho_thanh_toan')
+                                <span class="badge badge-warning text-black">Chờ Thanh Toán</span>
+                                @elseif ($thanh_toan->trang_thai == 'cho_xu_ly')
+                                <span class="badge badge-warning text-black">Chờ xử lý</span>
+                                @elseif ($thanh_toan->trang_thai == 'thanh_toan_that_bai')
+                                <span class="badge badge-danger text-black">Thất bại</span>
+                                @elseif ($thanh_toan->trang_thai == 'hoan_tien')
+                                <span class="badge badge-info text-black">Hoàn tiền</span>
+                                @elseif ($thanh_toan->trang_thai == 'dat_coc')
+                                <span class="badge badge-primary text-black">Đặt cọc</span>
                                 @else
-                                <span class="badge badge-secondary">Không xác định</span>
+                                <span class="badge badge-secondary text-black">Không xác định</span>
                                 @endif
                             </div>
                         </div>
@@ -102,7 +120,7 @@
                                 Số tiền
                             </label>
                             <h5 class="text-success fw-bold">
-                                {{ number_format($thanh_toan->so_tien, 0, ',', '.') }}đ
+                                {{ number_format($thanh_toan->datTour->tong_tien ?? 0, 0, ',', '.') }}đ
                             </h5>
                         </div>
 
@@ -167,10 +185,8 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label text-muted">
-                                Số người đi
-                            </label>
-                            <h6>{{ $thanh_toan->so_nguoi_di }} người</h6>
+                            <label for="" class="form-label text-muted">Địa Chỉ</label>
+                            <h6>{{ $thanh_toan->nguoiDung->address }}</h6>
                         </div>
 
                     </div>
@@ -195,21 +211,24 @@
                             <label class="form-label text-muted">
                                 Tên tour
                             </label>
-                            <h6>{{ $thanh_toan->datTour->tour->ten_tour }}</h6>
+                            <h6>{{ $thanh_toan->datTour->tour->ten_tour ?? 'Không xác định' }}</h6>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">
                                 Mã đơn đặt
                             </label>
-                            <h6>{{ $thanh_toan->datTour->ma_don_dat }}</h6>
+                            <h6>{{ $thanh_toan->datTour->ma_dat_tour }}</h6>
                         </div>
 
                         <div class="col-md-6">
                             <label class="form-label text-muted">
                                 Ngày khởi hành
                             </label>
-                            <h6>{{ $thanh_toan->datTour->tour->ngay_khoi_hanh }}</h6>
+
+                            <h6>
+                                {{ optional(optional($thanh_toan->datTour)->lichKhoiHanh)->ngay_khoi_hanh ?? 'Không xác định' }}
+                            </h6>
                         </div>
 
                         <div class="col-md-6">
@@ -241,38 +260,50 @@
                 <div class="card-body text-center">
 
                     <div class="mb-3">
-                        @if($thanh_toan->trang_thai == 1)
+                        @if($thanh_toan->trang_thai == 'da_thanh_toan')
                         <i class="fas fa-check-circle text-success" style="font-size:60px"></i>
-                        @elseif($thanh_toan->trang_thai == 2)
+                        @elseif($thanh_toan->trang_thai == 'cho_thanh_toan')
                         <i class="fas fa-hourglass-half text-warning" style="font-size:60px"></i>
-                        @elseif($thanh_toan->trang_thai == 3)
+                        @elseif($thanh_toan->trang_thai == 'thanh_toan_that_bai')
                         <i class="fas fa-times-circle text-danger" style="font-size:60px"></i>
-                        @elseif($thanh_toan->trang_thai == 4)
+                        @elseif($thanh_toan->trang_thai == 'hoan_tien')
                         <i class="fas fa-undo text-info" style="font-size:60px"></i>
+                        @elseif($thanh_toan->trang_thai == 'cho_xu_ly')
+                        <i class="fas fa-clock text-warning" style="font-size:60px"></i>
+                        @elseif($thanh_toan->trang_thai == 'dat_coc')
+                        <i class="fas fa-coins text-primary" style="font-size:60px"></i>
                         @else
                         <i class="fas fa-question-circle text-secondary" style="font-size:60px"></i>
                         @endif
                     </div>
 
                     <h5 class="fw-bold">
-                        @if ($thanh_toan->trang_thai == 1)
-                        <span class="badge badge-success">
+                        @if ($thanh_toan->trang_thai == 'da_thanh_toan')
+                        <span class="badge badge-success text-black">
                             Đã thanh toán
                         </span>
-                        @elseif ($thanh_toan->trang_thai == 2)
-                        <span class="badge badge-warning">
-                            Chờ xử lý
+                        @elseif ($thanh_toan->trang_thai == 'chua_thanh_toan')
+                        <span class="badge badge-secondary text-black">
+                            Chưa thanh toán
                         </span>
-                        @elseif ($thanh_toan->trang_thai == 3)
-                        <span class="badge badge-danger">
+                        @elseif ($thanh_toan->trang_thai == 'thanh_toan_that_bai')
+                        <span class="badge badge-danger text-black">
                             Thất bại
                         </span>
-                        @elseif ($thanh_toan->trang_thai == 4)
-                        <span class="badge badge-info">
+                        @elseif ($thanh_toan->trang_thai == 'hoan_tien')
+                        <span class="badge badge-info text-black">
                             Hoàn tiền
                         </span>
+                        @elseif ($thanh_toan->trang_thai == 'cho_xu_ly')
+                        <span class="badge badge-warning text-black">
+                            Chờ xử lý
+                        </span>
+                        @elseif ($thanh_toan->trang_thai == 'dat_coc')
+                        <span class="badge badge-primary text-black">
+                            Đặt cọc
+                        </span>
                         @else
-                        <span class="badge badge-secondary">
+                        <span class="badge badge-secondary text-black">
                             Không xác định
                         </span>
                         @endif
@@ -291,62 +322,40 @@
 
                 <div class="card-header">
                     <i class="fas fa-history me-2"></i>
-                    Lịch sử giao dịch
+                    Tải Xuống Hóa Đơn
                 </div>
 
                 <div class="card-body">
 
                     <div class="border-start ps-3">
 
-                        {{-- <div class="mb-4">
-                            <h6 class="mb-1">
-                                Tạo giao dịch
-                            </h6>
+                        @if($thanh_toan->hoa_don_pdf)
 
-                            <small class="text-muted">
-                                10/06/2026 - 15:20
-                            </small>
+                        <div class="d-grid gap-2">
+
+                            <a href="{{ route('thanh-toan.download',$thanh_toan->id) }}" class="btn btn-danger">
+
+                                <i class="fas fa-download"></i>
+                                Tải xuống hóa đơn
+
+                            </a>
+
+                            <a href="{{ route('thanh-toan.view',$thanh_toan->id) }}" target="_blank" class="btn btn-primary">
+
+                                <i class="fas fa-eye"></i>
+                                Xem hóa đơn
+
+                            </a>
+
                         </div>
 
-                        <div class="mb-4">
-                            <h6 class="mb-1 text-primary">
-                                Chuyển tới VNPay
-                            </h6>
+                        @else
 
-                            <small class="text-muted">
-                                10/06/2026 - 15:25
-                            </small>
-                        </div>
+                        <button class="btn btn-secondary w-100" disabled>
+                            Chưa có hóa đơn
+                        </button>
 
-                        <div>
-                            <h6 class="mb-1">
-                                @if ($thanh_toan->trang_thai == 1)
-                                <span class="badge badge-success">
-                                    Đã thanh toán
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 2)
-                                <span class="badge badge-warning">
-                                    Chờ xử lý
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 3)
-                                <span class="badge badge-danger">
-                                    Thất bại
-                                </span>
-                                @elseif ($thanh_toan->trang_thai == 4)
-                                <span class="badge badge-info">
-                                    Hoàn tiền
-                                </span>
-                                @else
-                                <span class="badge badge-secondary">
-                                    Không xác định
-                                </span>
-                                @endif
-                            </h6>
-
-                            <small class="text-muted">
-                                10/06/2026 - 15:30
-                            </small>
-                        </div> --}}
+                        @endif
 
                     </div>
 

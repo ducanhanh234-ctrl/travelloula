@@ -109,11 +109,19 @@
 
                     <div class="col-md-3 col-sm-6">
                         <div class="info-card">
-                            <div class="info-label">Phương Tiện</div>
+                            <div class="info-label">Phương tiện</div>
+
                             <div class="info-value">
-                                <i class="fas fa-bus me-1 text-primary"></i>
-                                {{ $phanCong->phuongTien->ten_phuong_tien ?? 'Không có' }}
-                                {{ $phanCong->phuongTien->bien_so ? ' - ' . $phanCong->phuongTien->bien_so : '' }}
+                                @forelse($phanCong->dsPhuongTien as $xe)
+                                <div>
+                                    <i class="fas fa-bus me-1 text-primary"></i>
+                                    @if($xe->bien_so_xe)
+                                    {{ $xe->bien_so_xe }}
+                                    @endif
+                                </div>
+                                @empty
+                                Không có
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -147,7 +155,7 @@
                             <th width="15%">Điện thoại</th>
                             <th width="10%" class="text-center">Loại Khách</th>
                             <th width="15%" class="text-center">Trạng thái</th>
-                            <th width="15%" class="text-center">Thao tác</th>
+
                         </tr>
                     </thead>
 
@@ -173,19 +181,14 @@
                             <td class="text-center">
                                 {{-- Giả định thuộc tính trạng thái --}}
                                 @if(($khach->datTour->trang_thai ?? '') == 'da_thanh_toan')
-                                <span class="badge-status status-paid">Đã thanh toán</span>
-                                @else
-                                <span class="badge-status status-pending">Chờ xác nhận</span>
+                                <span class="badge-status status-paid bg-success text-white">Đã thanh toán</span>
+                                @elseif($khach->datTour->trang_thai ?? '' == 'cho_xac_nhan')
+                                <span class="badge-status status-pending bg-warning text-dark">Chờ xác nhận</span>
+                                @elseif($khach->datTour->trang_thai ?? '' == 'da_huy')
+                                <span class="badge-status status-cancelled bg-danger text-white">Đã hủy</span>
                                 @endif
                             </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-light border text-primary" title="Check-in khách">
-                                    <i class="fas fa-check-circle"></i>
-                                </button>
-                                <button class="btn btn-sm btn-light border text-info" title="Chi tiết">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </td>
+
                         </tr>
 
                         @empty

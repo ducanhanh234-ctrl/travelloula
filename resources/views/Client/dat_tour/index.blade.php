@@ -13,6 +13,16 @@
                 {{session('error')}}
             </div>
             @endif
+            <input type="hidden" name="hanh_khach[1][ho_ten]" class="form-control" value="Nguyen Van A">
+            <input type="hidden" name="hanh_khach[1][loai_hanh_khach]" value="adult">
+            <input name="hanh_khach[1][gioi_tinh]" class="form-select" value="Nam">
+
+            <input type="hidden" name="hanh_khach[1][ngay_sinh]" class="form-control" value="01/01/2026">
+            <input type="hidden" name="hanh_khach[1][quoc_tich]" class="form-control" value="Việt Nam">
+            <input type="hidden" name="hanh_khach[1][loai_giay_to]" class="form-select" value="CCCD">
+            <input type="hidden" name="hanh_khach[1][so_giay_to]" class="form-control" value="00120588235">
+            <input type="hidden" name="hanh_khach[1][so_dien_thoai]" class="form-control" value="0909090909">
+            <input type="hidden" name="hanh_khach[1][yeu_cau_dac_biet]" class="form-control" value="05"></input>
             <div class="row g-5">
                 <!-- LEFT - Thông tin chính -->
                 <div class="col-lg-7">
@@ -212,6 +222,7 @@
 
         </form> <!-- END FORM -->
     </div>
+
 </div>
 
 <style>
@@ -243,7 +254,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Lấy giá cơ bản từ Tour truyền qua Blade
@@ -405,4 +416,6 @@
     });
 
 </script>
-@endsection
+
+@endpush
+

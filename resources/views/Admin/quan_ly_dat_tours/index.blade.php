@@ -638,9 +638,176 @@
         /* Ngày */
         .departure-date {
             color: #29457d;
+
             font-size: 12px;
             font-weight: 750;
             white-space: nowrap;
+        }
+
+        .departure-date i {
+            margin-right: 5px;
+            color: #4d72da;
+            font-size: 10px;
+        }
+
+        .booking-created-date {
+            margin-top: 4px;
+            color: #8b97aa;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        /* Tour và khách */
+        .booking-tour-name {
+            max-width: 250px;
+            overflow: hidden;
+            color: #233f7a;
+            font-size: 12px;
+            font-weight: 750;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .booking-code {
+            margin-top: 4px;
+            color: #6d7d9a;
+            font-family: monospace;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .booking-customer {
+            margin-top: 5px;
+            color: #536584;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .booking-customer i {
+            color: #6f84b3;
+        }
+
+        /* Số khách */
+        .passenger-summary {
+            padding: 6px 10px;
+            color: #3158ce;
+            background: #edf4ff;
+            border: 1px solid #cfe0ff;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 750;
+
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .passenger-legend {
+            margin-top: 5px;
+            color: #8b97aa;
+            font-size: 9px;
+        }
+
+        /* Doanh thu */
+        .booking-revenue {
+            color: var(--booking-success);
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .booking-paid {
+            margin-top: 4px;
+            color: #7c899f;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        /* HDV */
+        .booking-guide {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-icon {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            color: #315be8;
+            background: #edf4ff;
+            border: 1px solid #cfe0ff;
+            border-radius: 8px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .guide-name {
+            max-width: 140px;
+            overflow: hidden;
+            color: #40537a;
+            font-size: 11px;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .empty-value {
+            color: var(--booking-text-light);
+            font-size: 10px;
+            font-style: italic;
+        }
+
+        /* Nguồn booking */
+        .booking-source {
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 750;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-website {
+            color: #2855ce;
+            background: #edf4ff;
+            border-color: #c9dcff;
+        }
+
+        .badge-sale {
+            color: #8650b1;
+            background: #f7efff;
+            border-color: #e2cff3;
+        }
+
+        /* Trạng thái */
+        .booking-status {
+            padding: 5px 10px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            font-size: 9px;
+            font-weight: 750;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: currentColor;
         }
 
         .departure-date i {
@@ -1294,12 +1461,19 @@
                                     <td>
                                         <span class="passenger-summary">
                                             <i class="fas fa-users"></i>
+
+
                                             {{ $booking->so_nguoi_lon }}
                                             /
                                             {{ $booking->so_tre_em }}
+                                            /
+                                            {{ $booking->so_em_be }}
                                         </span>
 
-                                        <div class="passenger-legend">Lớn / Trẻ em</div>
+                                        <div class="passenger-legend">
+                                            Lớn / Trẻ em / Em bé
+                                        </div>
+
                                     </td>
 
                                     <td>

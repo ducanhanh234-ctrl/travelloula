@@ -176,10 +176,77 @@
             <div class="tour-grid">
                 @foreach($tours as $tour)
                     @php
-                        $lichGanNhat = $tour->lichKhoiHanhTours
-                            ->where('trang_thai', 'available')
+                        /*
+                         * Tour chỉ được chuyển sang form đặt tour khi có lịch:
+                         * - Từ hôm nay trở đi.
+                         * - Trạng thái available.
+                         * - Số chỗ còn lại lớn hơn 0.
+                         */
+                        $homNay = now()->startOfDay();
+
+                        $tatCaLichKhoiHanhs = collect(
+                            $tour->lichKhoiHanhTours ?? []
+                        )
+                            ->filter(function ($lich) {
+                                return in_array($lich->trang_thai, [
+                                    'available',
+                                    'running',
+                                    'full',
+                                    'closed',
+                                ], true);
+                            })
                             ->sortBy('ngay_khoi_hanh')
-                            ->first();
+                            ->values();
+
+                        $lichKhoiHanhsSapToi = $tatCaLichKhoiHanhs
+                            ->filter(function ($lich) use ($homNay) {
+                                if (empty($lich->ngay_khoi_hanh)) {
+                                    return false;
+                                }
+
+                                return \Carbon\Carbon::parse(
+                                    $lich->ngay_khoi_hanh
+                                )->startOfDay()->gte($homNay);
+                            })
+                            ->values();
+
+                        $lichCoTheDat = $lichKhoiHanhsSapToi
+                            ->filter(function ($lich) {
+                                return $lich->trang_thai === 'available'
+                                    && (int) $lich->so_cho_con_lai > 0;
+                            })
+                            ->sortBy('ngay_khoi_hanh')
+                            ->values();
+
+                        $lichGanNhat = $lichCoTheDat->first();
+                        $coTheDatTour = $lichGanNhat !== null;
+
+                        /*
+                         * Xác định lý do để chỉ hiển thị khi khách bấm
+                         * nút "Đặt tour".
+                         */
+                        $lyDoKhongDat = 'Tour hiện chưa có lịch khởi hành có thể đặt.';
+
+                        if ($tatCaLichKhoiHanhs->isEmpty()) {
+                            $lyDoKhongDat = 'Tour này chưa được tạo lịch khởi hành. Vui lòng quay lại sau hoặc liên hệ tư vấn để được thông báo khi có lịch mới.';
+                        } elseif ($lichKhoiHanhsSapToi->isEmpty()) {
+                            $lyDoKhongDat = 'Tour hiện không còn lịch khởi hành sắp tới. Các lịch đã tạo đều đã qua ngày khởi hành.';
+                        } elseif ($lichKhoiHanhsSapToi->every(
+                            fn ($lich) => $lich->trang_thai === 'closed'
+                        )) {
+                            $lyDoKhongDat = 'Tất cả lịch khởi hành sắp tới của tour đã đóng đăng ký.';
+                        } elseif ($lichKhoiHanhsSapToi->every(function ($lich) {
+                            return $lich->trang_thai === 'full'
+                                || (int) $lich->so_cho_con_lai <= 0;
+                        })) {
+                            $lyDoKhongDat = 'Tất cả lịch khởi hành sắp tới của tour đã hết chỗ.';
+                        } elseif ($lichKhoiHanhsSapToi->every(
+                            fn ($lich) => $lich->trang_thai === 'running'
+                        )) {
+                            $lyDoKhongDat = 'Các lịch khởi hành của tour hiện đang diễn ra nên hệ thống không thể nhận thêm khách.';
+                        } elseif (!$coTheDatTour) {
+                            $lyDoKhongDat = 'Tour có lịch khởi hành nhưng hiện chưa có lịch nào đang mở bán và còn chỗ.';
+                        }
 
                         $anhTour = $tour->anh_dai_dien;
 
@@ -259,13 +326,17 @@
                                 </span>
                             </div>
 
-                            @if($lichGanNhat)
+                            @if($coTheDatTour)
                                 <div class="start-date">
-                                    <i class="fa-regular fa-calendar-days"></i>
+                                    <i class="fa-solid fa-calendar-check"></i>
                                     <span>
                                         Khởi hành:
-                                        {{ \Carbon\Carbon::parse($lichGanNhat->ngay_khoi_hanh)->format('d/m/Y') }}
-                                        - còn {{ $lichGanNhat->so_cho_con_lai }} chỗ
+                                        <strong>
+                                            {{ \Carbon\Carbon::parse($lichGanNhat->ngay_khoi_hanh)->format('d/m/Y') }}
+                                        </strong>
+                                        - còn
+                                        <strong>{{ (int) $lichGanNhat->so_cho_con_lai }}</strong>
+                                        chỗ
                                     </span>
                                 </div>
                             @else
@@ -287,10 +358,24 @@
                                         Xem chi tiết
                                     </a>
 
-                                    <a href="{{ route('Client.danh_sach_tour.show', $tour->id) }}#dat-tour"
-                                       class="booking-btn">
-                                        Đặt tour
-                                    </a>
+                                    @if($coTheDatTour)
+                                        <a
+                                            href="{{ route('Client.danh_sach_tour.show', $tour->id) }}#dat-tour"
+                                            class="booking-btn"
+                                        >
+                                            Đặt tour
+                                        </a>
+                                    @else
+                                        <button
+                                            type="button"
+                                            class="booking-btn js-booking-unavailable"
+                                            data-tour-name="{{ $tour->ten_tour }}"
+                                            data-reason="{{ $lyDoKhongDat }}"
+                                            aria-label="Đặt tour {{ $tour->ten_tour }}"
+                                        >
+                                            Đặt tour
+                                        </button>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -314,6 +399,61 @@
 
     </div>
 </section>
+
+<div
+    class="booking-message-modal"
+    id="bookingMessageModal"
+    role="dialog"
+    aria-modal="true"
+    aria-hidden="true"
+    aria-labelledby="bookingMessageTitle"
+>
+    <div
+        class="booking-message-backdrop"
+        data-close-booking-message
+    ></div>
+
+    <div class="booking-message-dialog">
+        <button
+            type="button"
+            class="booking-message-close"
+            data-close-booking-message
+            aria-label="Đóng thông báo"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="booking-message-icon">
+            <i class="fa-solid fa-calendar-xmark"></i>
+        </div>
+
+        <span class="booking-message-kicker">
+            Thông tin đặt tour
+        </span>
+
+        <h3 id="bookingMessageTitle">
+            Tour hiện chưa thể đặt
+        </h3>
+
+        <p id="bookingMessageText">
+            Tour chưa có lịch khởi hành phù hợp.
+        </p>
+
+        <div class="booking-message-actions">
+            <button
+                type="button"
+                class="booking-message-confirm"
+                data-close-booking-message
+            >
+                Đã hiểu
+            </button>
+
+            <a href="{{ route('Client.danh_sach_tour.index') }}">
+                Xem tour khác
+            </a>
+        </div>
+    </div>
+</div>
 
 <style>
 :root{
@@ -673,6 +813,8 @@
     gap:8px;
     text-decoration:none;
     white-space:nowrap;
+    font-family:inherit;
+    cursor:pointer;
     transition:.25s ease;
 }
 
@@ -1047,7 +1189,8 @@
     flex:0 0 auto;
 }
 
-.tour-actions a{
+.tour-actions a,
+.tour-actions button{
     height:46px;
     padding:0 17px;
     border-radius:15px;
@@ -1251,7 +1394,8 @@
         width:100%;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         flex:1;
     }
 
@@ -1400,7 +1544,8 @@
         flex-direction:column;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         width:100%;
     }
 }
@@ -1795,7 +1940,8 @@ body{
         font-size:28px;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         min-height:50px;
         font-size:15px;
     }
@@ -1842,7 +1988,8 @@ body{
         width:100%;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         flex:1;
     }
 }
@@ -2336,7 +2483,8 @@ body{
         width:100%;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         flex:1;
     }
 }
@@ -2457,7 +2605,8 @@ body{
         flex-direction:column;
     }
 
-    .tour-actions a{
+    .tour-actions a,
+    .tour-actions button{
         width:100%;
     }
 }
@@ -2539,6 +2688,178 @@ body{
     }
 }
 
+
+/* =========================================================
+   MODAL THÔNG BÁO KHI TOUR CHƯA CÓ LỊCH KHỞI HÀNH
+   ========================================================= */
+.booking-message-modal{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transition:opacity .22s ease,visibility .22s ease;
+}
+
+.booking-message-modal.show{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+.booking-message-backdrop{
+    position:absolute;
+    inset:0;
+    background:rgba(15,23,42,.58);
+    backdrop-filter:blur(5px);
+}
+
+.booking-message-dialog{
+    position:relative;
+    z-index:1;
+    width:min(480px,100%);
+    padding:34px 32px 28px;
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:28px;
+    background:#ffffff;
+    box-shadow:0 30px 90px rgba(15,23,42,.28);
+    text-align:center;
+    transform:translateY(18px) scale(.97);
+    transition:transform .24s ease;
+}
+
+.booking-message-modal.show .booking-message-dialog{
+    transform:translateY(0) scale(1);
+}
+
+.booking-message-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:38px;
+    height:38px;
+    border:0;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#64748b;
+    background:#f1f5f9;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.booking-message-close:hover{
+    color:#ffffff;
+    background:#2563eb;
+    transform:rotate(5deg);
+}
+
+.booking-message-icon{
+    width:76px;
+    height:76px;
+    margin:0 auto 18px;
+    border-radius:24px;
+    display:grid;
+    place-items:center;
+    color:#2563eb;
+    background:linear-gradient(135deg,#eff6ff,#dbeafe);
+    font-size:32px;
+    box-shadow:0 15px 32px rgba(37,99,235,.14);
+}
+
+.booking-message-kicker{
+    display:inline-flex;
+    margin-bottom:10px;
+    padding:7px 13px;
+    border-radius:999px;
+    color:#1d4ed8;
+    background:#eff6ff;
+    border:1px solid #bfdbfe;
+    font-size:12px;
+    font-weight:1000;
+    text-transform:uppercase;
+    letter-spacing:.45px;
+}
+
+.booking-message-dialog h3{
+    margin:0 0 12px;
+    color:#0f172a;
+    font-size:25px;
+    line-height:1.3;
+    font-weight:1000;
+}
+
+.booking-message-dialog p{
+    margin:0;
+    color:#475569;
+    font-size:15px;
+    line-height:1.75;
+}
+
+.booking-message-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:25px;
+}
+
+.booking-message-actions button,
+.booking-message-actions a{
+    min-height:48px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:1000;
+    text-decoration:none;
+    cursor:pointer;
+    transition:.22s ease;
+}
+
+.booking-message-confirm{
+    border:0;
+    color:#ffffff;
+    background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+    box-shadow:0 12px 24px rgba(37,99,235,.23);
+}
+
+.booking-message-actions a{
+    color:#2563eb;
+    background:#ffffff;
+    border:1px solid #93c5fd;
+}
+
+.booking-message-actions button:hover,
+.booking-message-actions a:hover{
+    transform:translateY(-2px);
+}
+
+body.booking-message-open{
+    overflow:hidden;
+}
+
+@media(max-width:520px){
+    .booking-message-dialog{
+        padding:30px 20px 22px;
+        border-radius:22px;
+    }
+
+    .booking-message-dialog h3{
+        font-size:22px;
+    }
+
+    .booking-message-actions{
+        grid-template-columns:1fr;
+    }
+}
+
 </style>
 
 
@@ -2595,6 +2916,79 @@ document.addEventListener('DOMContentLoaded', function () {
         element.addEventListener('click', function (event) {
             event.stopPropagation();
         });
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('bookingMessageModal');
+    const title = document.getElementById('bookingMessageTitle');
+    const message = document.getElementById('bookingMessageText');
+    const closeButtons = modal
+        ? modal.querySelectorAll('[data-close-booking-message]')
+        : [];
+
+    function openBookingMessage(button) {
+        if (!modal) {
+            return;
+        }
+
+        const tourName = button.dataset.tourName || 'Tour';
+        const reason = button.dataset.reason
+            || 'Tour hiện chưa có lịch khởi hành phù hợp.';
+
+        title.textContent = tourName;
+        message.textContent = reason;
+
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('booking-message-open');
+
+        const closeButton = modal.querySelector(
+            '.booking-message-close'
+        );
+
+        if (closeButton) {
+            closeButton.focus();
+        }
+    }
+
+    function closeBookingMessage() {
+        if (!modal) {
+            return;
+        }
+
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('booking-message-open');
+    }
+
+    document.querySelectorAll(
+        '.js-booking-unavailable'
+    ).forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            openBookingMessage(button);
+        });
+    });
+
+    closeButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            closeBookingMessage();
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (
+            event.key === 'Escape'
+            && modal
+            && modal.classList.contains('show')
+        ) {
+            closeBookingMessage();
+        }
     });
 });
 </script>

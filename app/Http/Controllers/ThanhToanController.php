@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\HoaDonMail;
+use App\Mail\ThanhToanThanhCong;
 use App\Models\DatTour;
 use App\Models\ThanhToan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Services\HoaDonService;
+use Illuminate\Support\Facades\Storage;
 
 class ThanhToanController extends Controller
 {
@@ -90,23 +95,29 @@ class ThanhToanController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|integer',
-            'ghi_chu' => 'nullable|string'
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|string',
+                'ghi_chu' => 'nullable|string'
+            ]);
 
-        $thanhToan = ThanhToan::findOrFail($id);
+            $thanhToan = ThanhToan::findOrFail($id);
 
-        $thanhToan->update([
-            'trang_thai' => $request->status,
-            'ghi_chu' => $request->ghi_chu,
-        ]);
+            $thanhToan->update([
+                'trang_thai' => $request->status,
+                'ghi_chu' => $request->ghi_chu,
+            ]);
 
-        return redirect()
+            return redirect()
 
-            ->route('Admin.thanh_toans.show', $thanhToan->id)
+                ->route('Admin.thanh_toans.index')
 
-            ->with('success', 'Cập nhật trạng thái thành công');
+                ->with('success', 'Cập nhật trạng thái thành công');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('Admin.thanh_toans.index',)
+                ->with('error', 'Cập nhật trạng thái thất bại: ' . $e->getMessage());
+        }
     }
     public function destroy($id)
     {
@@ -116,186 +127,235 @@ class ThanhToanController extends Controller
         return redirect()->route('Admin.thanh_toans.index')->with('success', 'Xóa thành công');
     }
     public function createPayment($id)
-{
-    $datTour = DatTour::findOrFail($id);
+    {
+        $datTour = DatTour::findOrFail($id);
 
-    if ($datTour->trang_thai == 'da_thanh_toan') {
-        return back()->with('error', 'Đơn này đã được thanh toán.');
-    }
-
-    $vnp_TmnCode    = config('services.vnpay.tmn_code');
-    $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
-    $vnp_Url        = config('services.vnpay.url');
-    $vnp_ReturnUrl  = config('services.vnpay.return_url');
-
-    // Mã giao dịch
-    $vnp_TxnRef = $datTour->ma_dat_tour . '_' . time();
-
-    $inputData = [
-        "vnp_Version"    => "2.1.0",
-        "vnp_TmnCode"    => $vnp_TmnCode,
-        "vnp_Amount"     => (int)($datTour->tong_tien * 100),
-        "vnp_Command"    => "pay",
-        "vnp_CreateDate" => date("YmdHis"),
-        "vnp_CurrCode"   => "VND",
-        "vnp_IpAddr"     => "127.0.0.1",
-        "vnp_Locale"     => "vn",
-        "vnp_OrderInfo"  => "Thanh toan don " . $datTour->ma_dat_tour,
-        "vnp_OrderType"  => "billpayment",
-        "vnp_ReturnUrl"  => $vnp_ReturnUrl,
-        "vnp_TxnRef"     => $vnp_TxnRef,
-        "vnp_ExpireDate" => date("YmdHis", strtotime("+15 minutes")),
-    ];
-
-    ksort($inputData);
-
-    $query = "";
-    $hashData = "";
-    $i = 0;
-
-    foreach ($inputData as $key => $value) {
-
-        if ($i == 1) {
-            $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
-        } else {
-            $hashData .= urlencode($key) . "=" . urlencode($value);
-            $i = 1;
+        if ($datTour->trang_thai == 'da_thanh_toan') {
+            return back()->with('error', 'Đơn này đã được thanh toán.');
         }
 
-        $query .= urlencode($key) . "=" . urlencode($value) . '&';
-    }
+        $vnp_TmnCode    = config('services.vnpay.tmn_code');
+        $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
+        $vnp_Url        = config('services.vnpay.url');
+        $vnp_ReturnUrl  = config('services.vnpay.return_url');
 
-    $vnpSecureHash = hash_hmac(
-        "sha512",
-        $hashData,
-        $vnp_HashSecret
-    );
+        // Mã giao dịch
+        $vnp_TxnRef = $datTour->ma_dat_tour . '_' . time();
 
-    $paymentUrl = $vnp_Url .
-        "?" .
-        $query .
-        "vnp_SecureHash=" .
-        $vnpSecureHash;
+        $inputData = [
+            "vnp_Version"    => "2.1.0",
+            "vnp_TmnCode"    => $vnp_TmnCode,
+            "vnp_Amount"     => (int)($datTour->tong_tien * 100),
+            "vnp_Command"    => "pay",
+            "vnp_CreateDate" => date("YmdHis"),
+            "vnp_CurrCode"   => "VND",
+            "vnp_IpAddr"     => "127.0.0.1",
+            "vnp_Locale"     => "vn",
+            "vnp_OrderInfo"  => "Thanh toan don " . $datTour->ma_dat_tour,
+            "vnp_OrderType"  => "billpayment",
+            "vnp_ReturnUrl"  => $vnp_ReturnUrl,
+            "vnp_TxnRef"     => $vnp_TxnRef,
+            "vnp_ExpireDate" => date("YmdHis", strtotime("+15 minutes")),
+        ];
 
-    // Cập nhật giao dịch đã tạo trước đó
-    $payment = ThanhToan::where('dat_tour_id', $datTour->id)->first();
+        ksort($inputData);
 
-    if ($payment) {
-        $payment->update([
-            'ma_giao_dich' => $vnp_TxnRef
-        ]);
-    }
+        $query = "";
+        $hashData = "";
+        $i = 0;
 
-    return redirect($paymentUrl);
-}
-public function vnpayReturn(Request $request)
-{
-    $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
+        foreach ($inputData as $key => $value) {
 
-    $inputData = $request->all();
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
 
-    if (!isset($inputData['vnp_SecureHash'])) {
-        return redirect()
-            ->route('client.home')
-            ->with('error', 'Không nhận được chữ ký từ VNPAY.');
-    }
-
-    $vnp_SecureHash = $inputData['vnp_SecureHash'];
-
-    unset($inputData['vnp_SecureHash']);
-    unset($inputData['vnp_SecureHashType']);
-
-    ksort($inputData);
-
-    $hashData = "";
-
-    $i = 0;
-
-    foreach ($inputData as $key => $value) {
-
-        if ($i == 1) {
-            $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
-        } else {
-            $hashData .= urlencode($key) . '=' . urlencode($value);
-            $i = 1;
+            $query .= urlencode($key) . "=" . urlencode($value) . '&';
         }
+
+        $vnpSecureHash = hash_hmac(
+            "sha512",
+            $hashData,
+            $vnp_HashSecret
+        );
+
+        $paymentUrl = $vnp_Url .
+            "?" .
+            $query .
+            "vnp_SecureHash=" .
+            $vnpSecureHash;
+
+        // Cập nhật giao dịch đã tạo trước đó
+        $payment = ThanhToan::where('dat_tour_id', $datTour->id)->first();
+
+        if ($payment) {
+            $payment->update([
+                'ma_giao_dich' => $vnp_TxnRef
+            ]);
+        }
+
+        return redirect($paymentUrl);
     }
+    public function vnpayReturn(Request $request)
+    {
+        $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
 
-    $secureHash = hash_hmac(
-        'sha512',
-        $hashData,
-        $vnp_HashSecret
-    );
+        $inputData = $request->all();
 
-    if ($secureHash !== $vnp_SecureHash) {
+        if (!isset($inputData['vnp_SecureHash'])) {
+            return redirect()
+                ->route('client.home')
+                ->with('error', 'Không nhận được chữ ký từ VNPAY.');
+        }
 
-        return redirect()
-            ->route('client.home')
-            ->with('error', 'Sai chữ ký bảo mật.');
-    }
+        $vnp_SecureHash = $inputData['vnp_SecureHash'];
 
-    $payment = ThanhToan::where(
-        'ma_giao_dich',
-        $request->vnp_TxnRef
-    )->first();
+        unset($inputData['vnp_SecureHash']);
+        unset($inputData['vnp_SecureHashType']);
 
-    if (!$payment) {
+        ksort($inputData);
 
-        return redirect()
-            ->route('client.home')
-            ->with('error', 'Không tìm thấy giao dịch.');
-    }
+        $hashData = "";
 
-    if (
-        $request->vnp_ResponseCode == "00" &&
-        $request->vnp_TransactionStatus == "00"
-    ) {
+        $i = 0;
+
+        foreach ($inputData as $key => $value) {
+
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
+            } else {
+                $hashData .= urlencode($key) . '=' . urlencode($value);
+                $i = 1;
+            }
+        }
+
+        $secureHash = hash_hmac(
+            'sha512',
+            $hashData,
+            $vnp_HashSecret
+        );
+
+        if ($secureHash !== $vnp_SecureHash) {
+
+            return redirect()
+                ->route('client.home')
+                ->with('error', 'Sai chữ ký bảo mật.');
+        }
+
+        $payment = ThanhToan::where(
+            'ma_giao_dich',
+            $request->vnp_TxnRef
+        )->first();
+
+        if (!$payment) {
+
+            return redirect()
+                ->route('client.home')
+                ->with('error', 'Không tìm thấy giao dịch.');
+        }
+        $thanhToan = $payment;
+        $datTour = $payment->datTour;
+        if (
+            $request->vnp_ResponseCode == "00" &&
+            $request->vnp_TransactionStatus == "00"
+        ) {
+            $payment->update([
+
+                'trang_thai' => 'da_thanh_toan',
+
+                'thoi_gian_thanh_toan' => now(),
+
+                'ghi_chu' => 'Thanh toán thành công qua VNPAY'
+            ]);
+
+            $payment->datTour->update([
+
+                'so_tien_da_thanh_toan' => $payment->so_tien,
+
+                'trang_thai' => 'da_thanh_toan'
+            ]);
+            // ====== TẠO HÓA ĐƠN PDF ======
+            $hoaDonService = new HoaDonService();
+            $hoaDonService->taoHoaDon($payment);
+
+            // ====== GỬI EMAIL ======
+            Mail::to($payment->datTour->NguoiDung->email)
+                ->send(new HoaDonMail($payment));
+
+            return redirect()
+                ->route('home')
+                ->with('success', 'Thanh toán thành công.');
+        }
 
         $payment->update([
 
-            'trang_thai' => 'da_thanh_toan',
+            'trang_thai' => 'that_bai',
 
-            'thoi_gian_thanh_toan' => now(),
-
-            'ghi_chu' => 'Thanh toán thành công qua VNPAY'
-        ]);
-
-        $payment->datTour->update([
-
-            'so_tien_da_thanh_toan' => $payment->so_tien,
-
-            'trang_thai' => 'da_thanh_toan'
+            'ghi_chu' => 'Thanh toán thất bại'
         ]);
 
         return redirect()
-            ->route('client.home')
-            ->with('success', 'Thanh toán thành công.');
+            ->route('home')
+            ->with('error', 'Thanh toán thất bại.');
     }
+    public function paymentHistory()
+    {
+        $payments = ThanhToan::with('datTour')
 
-    $payment->update([
+            ->where('nguoi_dung_id', auth()->id())
 
-        'trang_thai' => 'that_bai',
+            ->latest()
 
-        'ghi_chu' => 'Thanh toán thất bại'
-    ]);
+            ->paginate(10);
 
-    return redirect()
-        ->route('client.home')
-        ->with('error', 'Thanh toán thất bại.');
-}
-public function paymentHistory()
-{
-    $payments = ThanhToan::with('datTour')
+        return view(
+            'client.thanh_toan.history',
+            compact('payments')
+        );
+    }
+    public function guiHoaDon($id)
+    {
+        $payment = ThanhToan::findOrFail($id);
 
-        ->where('nguoi_dung_id', auth()->id())
+        Mail::to($payment->datTour->NguoiDung->email)
+            ->send(new HoaDonMail($payment));
 
-        ->latest()
+        return back()->with('success', 'Đã gửi lại hóa đơn.');
+    }
+    public function downloadHoaDon($id)
+    {
+        $thanhToan = ThanhToan::findOrFail($id);
 
-        ->paginate(10);
+        if (!$thanhToan->hoa_don_pdf) {
+            return back()->with('error', 'Hóa đơn chưa được tạo.');
+        }
 
-    return view(
-        'client.thanh_toan.history',
-        compact('payments')
-    );
-}
+        if (!Storage::disk('public')->exists($thanhToan->hoa_don_pdf)) {
+            return back()->with('error', 'Không tìm thấy file hóa đơn.');
+        }
+
+        return Storage::disk('public')->download(
+            $thanhToan->hoa_don_pdf,
+            'HoaDon_' . $thanhToan->ma_giao_dich . '.pdf'
+        );
+    }
+    public function viewHoaDon($id)
+    {
+        $thanhToan = ThanhToan::findOrFail($id);
+
+        if (!$thanhToan->hoa_don_pdf) {
+            return back()->with('error', 'Hóa đơn chưa tồn tại.');
+        }
+
+        if (!Storage::disk('public')->exists($thanhToan->hoa_don_pdf)) {
+            return back()->with('error', 'Không tìm thấy file.');
+        }
+
+        return response()->file(
+            Storage::disk('public')->path($thanhToan->hoa_don_pdf)
+        );
+    }
 }

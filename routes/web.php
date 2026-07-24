@@ -62,7 +62,16 @@ Route::resource('tour_da_dat', TourDaDatController::class);
 
 Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])->name('vnpay.return');
-
+Route::post(
+    '/admin/thanh-toan/{id}/gui-hoa-don',
+    [ThanhToanController::class, 'guiHoaDon']
+)->name('thanh-toan.guiHoaDon');
+Route::get(
+    '/thanh-toan/{id}/download',
+    [ThanhToanController::class, 'downloadHoaDon']
+)->name('thanh-toan.download');
+Route::get('/thanh-toan/{id}/view', [ThanhToanController::class, 'viewHoaDon'])
+    ->name('thanh-toan.view');
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES
@@ -232,9 +241,15 @@ Route::prefix('Guide')
             ->name('checkin.checkinTatCa');
         Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
             ->name('checkin.checkoutTatCa');
+        Route::post('/check-in/undo-tat-ca', [CheckInController::class, 'undoCheckInTatCa'])
+            ->name('checkin.undoTatCa');
         Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
         Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
         Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
+
+        // Lưu trạng thái điểm danh khởi hành (nút Lưu)
+        Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
+            ->name('checkin.saveLock');
 
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
@@ -251,4 +266,24 @@ Route::prefix('Guide')
         Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
+
+        Route::get(
+            '/checkin/{lichKhoiHanh}/xuat-phat',
+            [CheckInController::class, 'showXuatPhat']
+        )->name('checkin.xuatPhat');
+
+        Route::post(
+            '/checkin/{lichKhoiHanh}/xuat-phat',
+            [CheckInController::class, 'storeXuatPhat']
+        )->name('checkin.storeXuatPhat');
+
+        Route::get(
+            '/checkin/{lichKhoiHanh}/ket-thuc',
+            [CheckInController::class, 'showKetThuc']
+        )->name('checkin.ketThuc');
+
+        Route::post(
+            '/checkin/{lichKhoiHanh}/ket-thuc',
+            [CheckInController::class, 'storeKetThuc']
+        )->name('checkin.storeKetThuc');
     });

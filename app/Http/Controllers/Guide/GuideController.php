@@ -6,32 +6,64 @@ use App\Http\Controllers\Controller;
 use App\Models\HuongDanVien;
 use App\Models\KhachHangDatTour;
 use App\Models\PhanCong;
+use App\Models\PhuongTien;
 use Illuminate\Http\Request;
 
 class GuideController extends Controller
 {
     public function index()
     {
+        $hdvId = HuongDanVien::where('email', auth()->user()->email)
+            ->value('id');
+
         $tours = PhanCong::with([
             'lichKhoiHanh.tour',
-            'phuongTien',
-            'hdv'
+            'hdv',
         ])
-            ->whereHas('hdv', function ($query) {
-                $query->where('email', auth()->user()->email);
+            ->whereJsonContains('hdv_ids', (string)$hdvId)
+            ->get()
+            ->sortBy(function ($tour) {
+                return [
+                    $tour->trang_thai === 'running' ? 0 : 1,
+                    $tour->lichKhoiHanh->ngay_khoi_hanh?->timestamp ?? PHP_INT_MAX,
+                ];
             })
-            ->latest()
-            ->get();
+            ->values();
+
+        // Lấy danh sách phương tiện của từng phân công
+        foreach ($tours as $tour) {
+            $ids = $tour->phuong_tien_ids ?? [];
+
+            if (!is_array($ids)) {
+                $ids = json_decode($ids, true) ?? [];
+            }
+
+            $tour->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
+        }
 
         return view('Guide.tour_dc_phan_cong', compact('tours'));
     }
     public function show($id)
     {
+        $hdvId = HuongDanVien::where('email', auth()->user()->email)
+            ->value('id');
+
         $tour = PhanCong::with([
             'lichKhoiHanh.tour',
-            'phuongTien',
-            'hdv'
-        ])->findOrFail($id);
+            'hdv',
+        ])
+            ->where('id', $id)
+            ->whereJsonContains('hdv_ids', (string) $hdvId)
+            ->firstOrFail();
+
+        // Lấy danh sách phương tiện
+        $ids = $tour->phuong_tien_ids ?? [];
+
+        if (!is_array($ids)) {
+            $ids = json_decode($ids, true) ?? [];
+        }
+
+        $tour->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
 
         return view('Guide.show_tour_phan_cong', compact('tour'));
     }
@@ -77,8 +109,18 @@ class GuideController extends Controller
             'lichKhoiHanh'
         ])
             ->where('id', $phanCongId)
-            ->where('hdv_id', $hdv->id)
+            ->whereJsonContains('hdv_ids', (string)$hdv->id)
             ->firstOrFail();
+
+        // Lấy danh sách ID phương tiện từ JSON
+        $ids = $phanCong->phuong_tien_ids ?? [];
+
+        if (!is_array($ids)) {
+            $ids = json_decode($ids, true) ?? [];
+        }
+
+        // Lấy danh sách phương tiện
+        $phanCong->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
 
         // Lấy danh sách khách hàng đã đặt tour
         $khachHangs = KhachHangDatTour::whereHas('datTour', function ($query) use ($phanCong) {

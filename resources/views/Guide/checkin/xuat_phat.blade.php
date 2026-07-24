@@ -1372,7 +1372,7 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !($canCheckIn ?? false) ? 'disabled' : '' }} title="{{ !($canCheckIn ?? false) && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
+            <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !$canCheckIn ? 'disabled' : '' }} title="{{ ! $canCheckIn && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                 <i class="fas fa-user-check"></i>
                 Check-in tất cả
             </button>
@@ -1385,12 +1385,11 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
+            <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-sign-out-alt"></i>
                 Check-out tất cả
             </button>
         </form>
-
         <form action="{{ route('Guide.checkin.undoTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn hoàn tác tất cả trạng thái Check-in và Check-out của hành khách?');">
             @csrf
 
@@ -1398,7 +1397,7 @@ max($phanTramCheckIn, 0),
 
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
 
-            <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
+            <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-rotate-left"></i>
                 Hoàn tác tất cả
             </button>
@@ -1553,15 +1552,14 @@ max($phanTramCheckIn, 0),
                                     </button>
                                 </form>
                                 @else
-                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled>
+                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}">
                                     <i class="fas fa-user-check"></i>
-                                    Chưa đến giờ
+                                    {{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}
                                 </button>
                                 @endif
 
                                 <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
                                     <i class="fas fa-pen"></i>
-
                                     {{
                                                             $checkIn &&
                                                             $checkIn->ghi_chu
@@ -1582,7 +1580,7 @@ max($phanTramCheckIn, 0),
                                     @csrf
                                     @method('PATCH')
 
-                                    <button type="submit" class="btn-checkin-row btn-row-checkout">
+                                    <button type="submit" class="btn-checkin-row btn-row-checkout" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                                         <i class="fas fa-sign-out-alt"></i>
                                         Check-out
                                     </button>
@@ -1594,12 +1592,12 @@ max($phanTramCheckIn, 0),
                                                         ) }}" method="POST">
                                     @csrf
 
-                                    <button type="submit" class="btn-checkin-row btn-row-undo" title="Hoàn tác Check-in" onclick="return confirm('Hoàn tác trạng thái Check-in của hành khách này?');">
+                                    <button type="submit" class="btn-checkin-row btn-row-undo" title="Hoàn tác Check-in" onclick="return confirm('Hoàn tác trạng thái Check-in của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                         <i class="fas fa-rotate-left"></i>
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
+                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                     <i class="fas fa-pen"></i>
                                     Ghi chú
                                 </button>
@@ -1615,13 +1613,13 @@ max($phanTramCheckIn, 0),
                                                         ) }}" method="POST">
                                     @csrf
 
-                                    <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');">
+                                    <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                         <i class="fas fa-rotate-left"></i>
                                         Hoàn tác
                                     </button>
                                 </form>
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
+                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                     <i class="fas fa-pen"></i>
                                     Ghi chú
                                 </button>
@@ -1655,6 +1653,8 @@ max($phanTramCheckIn, 0),
 </div>
 
 {{-- Modal ghi chú đặt ngoài Table để HTML hợp lệ --}}
+
+@foreach ($datTours as $datTour)
 @foreach ($datTours as $datTour)
 @foreach ($datTour->khachHangs as $khach)
 @php
@@ -1710,6 +1710,7 @@ $checkIn = $checkIns[$khach->id] ?? null;
         </div>
     </div>
 </div>
+@endforeach
 @endforeach
 @endforeach
 @endsection

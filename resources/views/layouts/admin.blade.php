@@ -966,7 +966,7 @@
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a href="{{ route('Admin.gop-doan.index') }}"
+                    <a href="{{ route('Admin.yeu-cau-gop-doan.index') }}"
                         class="nav-link {{ request()->routeIs('Admin.yeu-cau-gop-doan.*') ? 'active' : '' }}">
                         <div class="nav-icon">
                             <i class="fas fa-object-group"></i>
@@ -1029,21 +1029,11 @@
 
             </div>
 
-
-
-
             <div class="nav-section">
                 <div class="nav-section-title">Quản lý Người dùng</div>
                 <div class="nav-item">
 
-
-
                     <a href="{{ route('Admin.users.index') }}" class="nav-link ">
-
-
-
-
-
                         <a href="{{ route('Admin.huong-dan-viens.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
                             <div class="nav-icon">
@@ -1061,7 +1051,7 @@
                         <span class="nav-text">Người dùng</span>
                     </a>
                 </div>
-                <div class="nav-item">
+                {{-- <div class="nav-item">
 
                     <a href="{{ route('Admin.huong-dan-viens.index') }}"
                         class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}">
@@ -1070,7 +1060,7 @@
                         </div>
                         <span class="nav-text">Quản lý HDV</span>
                     </a>
-                </div>
+                </div> --}}
                 <div class="nav-item">
 
 
@@ -1084,21 +1074,7 @@
                     </a>
                 </div>
 
-
-
             </div>
-
-            <div class="nav-item">
-
-
-
-                <a href="{{ route('Admin.banners.index') }}"
-                    class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}">
-                    Quản Lý Banner
-                </a>
-
-            </div>
-
 
             <!-- Banners Management -->
             <div class="nav-item">

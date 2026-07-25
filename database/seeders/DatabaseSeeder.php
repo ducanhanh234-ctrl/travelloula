@@ -9,13 +9,9 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-
     public function run(): void
 
     {
-        $this->call([
-            PermissionSeeder::class,
-        ]);
 
         $adminRole = VaiTro::firstOrCreate(
             ['ten_vai_tro' => 'admin'],
@@ -40,6 +36,8 @@ class DatabaseSeeder extends Seeder
         $guideRole->quyenHans()->syncWithoutDetaching($guidePermissionIds);
 
         $this->call([
+            PermissionSeeder::class,
+
             DanhMucSeeder::class,
             DanhSachTourSeeder::class,
 
@@ -47,13 +45,13 @@ class DatabaseSeeder extends Seeder
 
             UserSeeder::class,
             HuongDanVienSeeder::class,
+
             PhuongTienSeeder::class,
 
             LichKhoiHanhTourSeeder::class,
 
             DatTourSeeder::class,
         ]);
-
         $adminUser = User::where('email', 'admin@gmail.com')->first();
 
         if ($adminUser) {

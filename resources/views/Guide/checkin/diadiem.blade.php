@@ -1,13 +1,4 @@
 @extends('Layouts.guide')
-@section('title', 'Chọn địa điểm Check-in')
-@section('guide', 'Chọn địa điểm Check-in')
-@section('breadcrumb')
-<li class="breadcrumb-item">
-    <a href="{{ route('Guide.checkin.index') }}">
-        Check-in
-    </a>
-</li>
-
 
 @section('title', 'Chọn địa điểm Check-in')
 
@@ -739,7 +730,6 @@ return $ngay->chiTiets->count();
                         @else
                         Chưa cập nhật
                         @endif
-
                     </div>
                 </div>
             </div>
@@ -748,7 +738,6 @@ return $ngay->chiTiets->count();
                 <span class="location-info-icon">
                     <i class="fas fa-flag-checkered"></i>
                 </span>
-
 
                 <div class="location-info-content">
                     <div class="location-info-label">
@@ -765,11 +754,9 @@ return $ngay->chiTiets->count();
                         @else
                         Chưa cập nhật
                         @endif
-
                     </div>
                 </div>
             </div>
-
 
             <div class="location-info-item">
                 <span class="location-info-icon">
@@ -788,318 +775,293 @@ return $ngay->chiTiets->count();
                                     ->ho_ten
                                 ?? 'Chưa phân công'
                             }}
-
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    {{-- Thống kê --}}
+    <div class="location-stats-grid">
+        <div class="location-stat-card">
+            <span class="location-stat-icon location-stat-day">
+                <i class="fas fa-calendar-day"></i>
+            </span>
 
-        {{-- Thống kê --}}
-        <div class="location-stats-grid">
-            <div class="location-stat-card">
-                <span class="location-stat-icon location-stat-day">
+            <div class="location-stat-content">
+                <div class="location-stat-value">
+                    {{ $tongNgayThamQuan }}
+                </div>
+
+                <div class="location-stat-label">
+                    Ngày tham quan
+                </div>
+            </div>
+        </div>
+
+        <div class="location-stat-card">
+            <span class="location-stat-icon location-stat-place">
+                <i class="fas fa-map-marker-alt"></i>
+            </span>
+
+            <div class="location-stat-content">
+                <div class="location-stat-value">
+                    {{ $tongDiaDiem }}
+                </div>
+
+                <div class="location-stat-label">
+                    Tổng địa điểm
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="location-day-card">
+        <div class="location-day-header">
+            <div class="location-day-title">
+                <span class="location-day-title-icon">
                     <i class="fas fa-calendar-day"></i>
                 </span>
 
-                <div class="location-stat-content">
-                    <div class="location-stat-value">
-                        {{ $tongNgayThamQuan }}
-                    </div>
-
-                    <div class="location-stat-label">
-                        Ngày tham quan
-                    </div>
-                </div>
+                Checkin Khởi Hành
             </div>
 
-            <div class="location-stat-card">
-                <span class="location-stat-icon location-stat-place">
-                    <i class="fas fa-map-marker-alt"></i>
-                </span>
+            <span class="location-day-count">
+                1 địa điểm
+            </span>
+        </div>
 
-                <div class="location-stat-content">
-                    <div class="location-stat-value">
-                        {{ $tongDiaDiem }}
+        <div class="location-day-body">
 
-                    </div>
-                </div>
+            <div class="location-place-list">
 
-                <div class="location-stat-card">
-                    <span class="location-stat-icon location-stat-place">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </span>
-
-                    <div class="location-stat-content">
-                        <div class="location-stat-value">
-                            {{ $tongDiaDiem }}
-                        </div>
-
-
-                        <div class="location-stat-label">
-                            Tổng địa điểm
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="location-day-card">
-                <div class="location-day-header">
-                    <div class="location-day-title">
-                        <span class="location-day-title-icon">
-                            <i class="fas fa-calendar-day"></i>
+                <div class="location-place-card">
+                    <div class="location-place-main">
+                        <span class="location-place-icon">
+                            <i class="fas fa-map-marker-alt"></i>
                         </span>
 
-                        Checkin Khởi Hành
+                        <div class="location-place-content">
+                            <h5 class="location-place-title">
+                                Lúc khởi hành
+                            </h5>
+
+
+                        </div>
                     </div>
 
-                    <span class="location-day-count">
-                        1 địa điểm
-                    </span>
-                </div>
-
-                <div class="location-day-body">
-
-                    <div class="location-place-list">
-
-                        <div class="location-place-card">
-                            <div class="location-place-main">
-                                <span class="location-place-icon">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </span>
-
-                                <div class="location-place-content">
-                                    <h5 class="location-place-title">
-                                        Lúc khởi hành
-                                    </h5>
-
-
-                                </div>
-                            </div>
-
-                            <div class="location-place-action">
-                                <a href="{{ route(
+                    <div class="location-place-action">
+                        <a href="{{ route(
     'Guide.checkin.xuatPhat',
     $lichKhoiHanh->id
 ) }}" class="btn-location-checkin">
-                                    <i class="fas fa-user-check"></i>
-                                    Check-in
-                                </a>
-                            </div>
-                        </div>
-
+                            <i class="fas fa-user-check"></i>
+                            Check-in
+                        </a>
                     </div>
-
-
-
                 </div>
+
             </div>
-            {{-- Danh sách lịch trình --}}
-            @forelse ($lichTrinhTours as $ngay)
-            <div class="location-day-card">
-                <div class="location-day-header">
-                    <div class="location-day-title">
-                        <span class="location-day-title-icon">
-                            <i class="fas fa-calendar-day"></i>
+
+
+
+        </div>
+    </div>
+    {{-- Danh sách lịch trình --}}
+    @forelse ($lichTrinhTours as $ngay)
+    <div class="location-day-card">
+        <div class="location-day-header">
+            <div class="location-day-title">
+                <span class="location-day-title-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </span>
+
+                Ngày {{ $ngay->ngay_thu }}
+            </div>
+
+            <span class="location-day-count">
+                {{ $ngay->chiTiets->count() }} địa điểm
+            </span>
+        </div>
+
+        <div class="location-day-body">
+            @if ($ngay->chiTiets->isNotEmpty())
+            <div class="location-place-list">
+                @foreach ($ngay->chiTiets as $chiTiet)
+                <div class="location-place-card">
+                    <div class="location-place-main">
+                        <span class="location-place-icon">
+                            <i class="fas fa-map-marker-alt"></i>
                         </span>
 
-                        Ngày {{ $ngay->ngay_thu }}
-                    </div>
-
-                    <span class="location-day-count">
-                        {{ $ngay->chiTiets->count() }} địa điểm
-                    </span>
-                </div>
-
-                <div class="location-day-body">
-                    @if ($ngay->chiTiets->isNotEmpty())
-                    <div class="location-place-list">
-                        @foreach ($ngay->chiTiets as $chiTiet)
-                        <div class="location-place-card">
-                            <div class="location-place-main">
-                                <span class="location-place-icon">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </span>
-
-                                <div class="location-place-content">
-                                    <h5 class="location-place-title">
-                                        {{
+                        <div class="location-place-content">
+                            <h5 class="location-place-title">
+                                {{
                                                     $chiTiet->tieu_de
                                                     ?? 'Địa điểm chưa có tên'
                                                 }}
-                                    </h5>
+                            </h5>
 
-                                    <div class="location-place-time">
-                                        <i class="fas fa-clock"></i>
+                            <div class="location-place-time">
+                                <i class="fas fa-clock"></i>
 
-                                        <span>
-                                            {{
+                                <span>
+                                    {{
                                                         $chiTiet->gio_bat_dau
                                                         ?? '--:--'
                                                     }}
 
-                                            -
+                                    -
 
-                                            {{
+                                    {{
                                                         $chiTiet->gio_ket_thuc
                                                         ?? '--:--'
                                                     }}
-                                        </span>
-
-                                    </div>
-                                </div>
-                                @endif
+                                </span>
                             </div>
                         </div>
-                        @empty
-                        <div class="location-day-card">
-                            <div class="location-empty">
-                                <div class="location-empty-icon">
-                                    <i class="fas fa-calendar-times"></i>
-                                </div>
+                    </div>
 
-
-                                <div class="location-place-action">
-                                    @if ($ngay->ngay_thu == 1 && ! $lichKhoiHanh->da_checkin_khoi_hanh)
-                                    @if($firstDayOneActivity && $firstDayOneActivity->id === $chiTiet->id && $departureCanCheckIn)
-                                    <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Check-in khởi hành">
-                                        <i class="fas fa-user-check"></i>
-                                        Check-in
-                                    </a>
-                                    @else
-                                    @if($departureExpired)
-                                    <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Đã đóng">
-                                        <i class="fas fa-user-check"></i>
-                                        Đã đóng
-                                    </a>
-                                    @else
-                                    <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in xuất phát">
-                                        <i class="fas fa-user-check"></i>
-                                        Chưa đến giờ
-                                    </button>
-                                    @endif
-                                    @endif
-                                    @else
-                                    @php $expired = $activityWindows[$chiTiet->id]['expired'] ?? false; @endphp
-                                    @if($activityWindows[$chiTiet->id]['can_checkin'] ?? false)
-                                    <a href="{{ route(
+                    <div class="location-place-action">
+                        @if ($ngay->ngay_thu == 1 && ! $lichKhoiHanh->da_checkin_khoi_hanh)
+                        @if($firstDayOneActivity && $firstDayOneActivity->id === $chiTiet->id && $departureCanCheckIn)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Check-in khởi hành">
+                            <i class="fas fa-user-check"></i>
+                            Check-in
+                        </a>
+                        @else
+                        @if($departureExpired)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Đã đóng">
+                            <i class="fas fa-user-check"></i>
+                            Đã đóng
+                        </a>
+                        @else
+                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in xuất phát">
+                            <i class="fas fa-user-check"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
+                        @endif
+                        @else
+                        @php $expired = $activityWindows[$chiTiet->id]['expired'] ?? false; @endphp
+                        @if($activityWindows[$chiTiet->id]['can_checkin'] ?? false)
+                        <a href="{{ route(
                                     'Guide.checkin.show',
                                     [
                                         'lichKhoiHanh' => $lichKhoiHanh->id,
                                         'chiTiet' => $chiTiet->id,
                                     ]
                                 ) }}" class="btn-location-checkin">
-                                        <i class="fas fa-user-check"></i>
-                                        Check-in
-                                    </a>
-                                    @else
-                                    @if($expired)
-                                    <a href="{{ route(
+                            <i class="fas fa-user-check"></i>
+                            Check-in
+                        </a>
+                        @else
+                        @if($expired)
+                        <a href="{{ route(
                                     'Guide.checkin.show',
                                     [
                                         'lichKhoiHanh' => $lichKhoiHanh->id,
                                         'chiTiet' => $chiTiet->id,
                                     ]
                                 ) }}" class="btn-location-checkin" title="Đã đóng">
-                                        <i class="fas fa-user-check"></i>
-                                        Đã đóng
-                                    </a>
-                                    @else
-                                    <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in">
-                                        <i class="fas fa-user-check"></i>
-                                        Chưa đến giờ
-                                    </button>
-                                    @endif
-                                    @endif
-                                    @endif
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
+                            <i class="fas fa-user-check"></i>
+                            Đã đóng
+                        </a>
                         @else
-                        <div class="location-empty">
-                            <div class="location-empty-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-
-                            <div class="location-empty-title">
-                                Chưa có địa điểm
-                            </div>
-
-                            <div class="location-empty-text">
-                                Ngày tham quan này chưa có địa điểm Check-in.
-                            </div>
-                        </div>
+                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in">
+                            <i class="fas fa-user-check"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
+                        @endif
                         @endif
                     </div>
                 </div>
-                @empty
-                <div class="location-day-card">
-                    <div class="location-empty">
-                        <div class="location-empty-icon">
-                            <i class="fas fa-calendar-times"></i>
-                        </div>
-
-                        <div class="location-empty-title">
-                            Chưa có lịch trình
-                        </div>
-
-                        <div class="location-empty-text">
-                            Tour này chưa được thiết lập lịch trình và địa điểm Check-in.
-                        </div>
-                    </div>
+                @endforeach
+            </div>
+            @else
+            <div class="location-empty">
+                <div class="location-empty-icon">
+                    <i class="fas fa-map-marker-alt"></i>
                 </div>
-                @endforelse
-                <div class="location-day-card">
-                    <div class="location-day-header">
-                        <div class="location-day-title">
-                            <span class="location-day-title-icon">
-                                <i class="fas fa-calendar-day"></i>
-                            </span>
 
-                            Checkin Kết Thúc
-                        </div>
+                <div class="location-empty-title">
+                    Chưa có địa điểm
+                </div>
 
-                        <span class="location-day-count">
-                            1 địa điểm
+                <div class="location-empty-text">
+                    Ngày tham quan này chưa có địa điểm Check-in.
+                </div>
+            </div>
+            @endif
+        </div>
+    </div>
+    @empty
+    <div class="location-day-card">
+        <div class="location-empty">
+            <div class="location-empty-icon">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+
+            <div class="location-empty-title">
+                Chưa có lịch trình
+            </div>
+
+            <div class="location-empty-text">
+                Tour này chưa được thiết lập lịch trình và địa điểm Check-in.
+            </div>
+        </div>
+    </div>
+    @endforelse
+    <div class="location-day-card">
+        <div class="location-day-header">
+            <div class="location-day-title">
+                <span class="location-day-title-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </span>
+
+                Checkin Kết Thúc
+            </div>
+
+            <span class="location-day-count">
+                1 địa điểm
+            </span>
+        </div>
+
+        <div class="location-day-body">
+
+            <div class="location-place-list">
+
+                <div class="location-place-card">
+                    <div class="location-place-main">
+                        <span class="location-place-icon">
+                            <i class="fas fa-map-marker-alt"></i>
                         </span>
+
+                        <div class="location-place-content">
+                            <h5 class="location-place-title">
+                                Lúc Kết Thúc
+                            </h5>
+
+
+                        </div>
                     </div>
 
-                    <div class="location-day-body">
-
-                        <div class="location-place-list">
-
-                            <div class="location-place-card">
-                                <div class="location-place-main">
-                                    <span class="location-place-icon">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </span>
-
-                                    <div class="location-place-content">
-                                        <h5 class="location-place-title">
-                                            Lúc Kết Thúc
-                                        </h5>
-
-
-                                    </div>
-                                </div>
-
-                                <div class="location-place-action">
-                                    <a href="{{ route(
+                    <div class="location-place-action">
+                        <a href="{{ route(
     'Guide.checkin.ketThuc',
     $lichKhoiHanh->id
 ) }}" class="btn-location-checkin">
-                                        <i class="fas fa-user-check"></i>
-                                        Check-in
-                                    </a>
-                                </div>
-                            </div>
-
-                        </div>
-
-
-
+                            <i class="fas fa-user-check"></i>
+                            Check-in
+                        </a>
                     </div>
                 </div>
+
             </div>
 
-            @endsection
+
+
+        </div>
+    </div>
+</div>
+@endsection

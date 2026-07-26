@@ -54,13 +54,8 @@ class DanhSachTour extends Model
 
     public function lichTrinhs()
     {
-        return $this->hasMany(
-            LichTrinhTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(LichTrinhTour::class, 'tour_id');
     }
-
-
 
 
     protected $casts = [
@@ -96,11 +91,12 @@ class DanhSachTour extends Model
     {
         return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
     }
+
+
+
     public function lichTrinh()
     {
-        return $this->hasMany(
-            LichTrinhTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')
+            ->orderBy('ngay_thu');
     }
 }

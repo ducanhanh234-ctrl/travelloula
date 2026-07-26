@@ -96,4 +96,11 @@ class DanhSachTour extends Model
     {
         return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
     }
+    public function lichTrinh()
+    {
+        return $this->hasMany(
+            LichTrinhTour::class,
+            'tour_id'
+        );
+    }
 }

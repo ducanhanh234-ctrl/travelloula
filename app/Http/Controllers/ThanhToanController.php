@@ -211,10 +211,12 @@ class ThanhToanController extends Controller
                 ->with('error', 'Không nhận được chữ ký từ VNPAY.');
         }
 
+
         $vnp_SecureHash = $inputData['vnp_SecureHash'];
 
         unset($inputData['vnp_SecureHash']);
         unset($inputData['vnp_SecureHashType']);
+
 
         ksort($inputData);
 
@@ -252,6 +254,7 @@ class ThanhToanController extends Controller
 
         if (!$payment) {
 
+
             return redirect()
                 ->route('client.home')
                 ->with('error', 'Không tìm thấy giao dịch.');
@@ -264,12 +267,15 @@ class ThanhToanController extends Controller
         ) {
             $payment->update([
 
+
                 'trang_thai' => 'da_thanh_toan',
 
                 'thoi_gian_thanh_toan' => now(),
 
+
                 'ghi_chu' => 'Thanh toán thành công qua VNPAY'
             ]);
+
 
             $payment->datTour->update([
 
@@ -299,7 +305,9 @@ class ThanhToanController extends Controller
 
         return redirect()
             ->route('home')
+
             ->with('error', 'Thanh toán thất bại.');
+
     }
     public function paymentHistory()
     {
@@ -310,6 +318,7 @@ class ThanhToanController extends Controller
             ->latest()
 
             ->paginate(10);
+
 
         return view(
             'client.thanh_toan.history',
@@ -328,6 +337,7 @@ class ThanhToanController extends Controller
     public function downloadHoaDon($id)
     {
         $thanhToan = ThanhToan::findOrFail($id);
+
 
         if (!$thanhToan->hoa_don_pdf) {
             return back()->with('error', 'Hóa đơn chưa được tạo.');

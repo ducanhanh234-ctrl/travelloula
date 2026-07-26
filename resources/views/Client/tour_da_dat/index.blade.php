@@ -124,10 +124,6 @@
 
                             {{ $booking->so_tre_em }} Trẻ em
 
-                            |
-
-                            {{ $booking->so_em_be }} Em bé
-
                         </div>
 
                     </div>

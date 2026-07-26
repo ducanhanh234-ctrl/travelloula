@@ -45,7 +45,7 @@
                                 -- Chọn tour --
                             </option>
                             @foreach($tours as $tour)
-                                <<option value="{{ $tour->id }}" data-category="{{ $tour->danh_muc_id }}"
+                                <option value="{{ $tour->id }}" data-category="{{ $tour->danh_muc_id }}"
                                     data-destination="{{ $tour->diem_den }}" data-adult="{{ $tour->gia_nguoi_lon }}"
                                     data-child="{{ $tour->gia_tre_em }}" data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
                                     @disabled($tour->trang_thai !== 'active')>

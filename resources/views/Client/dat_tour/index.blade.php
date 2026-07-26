@@ -15,7 +15,7 @@
             <!-- ĐƯA FORM RA GIỮA VỚI col-lg-9 mx-auto -->
             <div class="row">
                 <div class="col-xl-9 col-lg-10 mx-auto">
-                    
+
                     <div class="mb-4 text-center">
                         <h2 class="font-weight-bold text-dark mb-2">
                             <i class="fa fa-plane-departure mr-2 primary-text"></i>Thông Tin Đặt Tour
@@ -30,11 +30,11 @@
                     <input type="hidden" name="tour_id" value="{{ $tour->id }}">
                     <input type="hidden" name="trang_thai" value="cho_thanh_toan">
                     <input type="hidden" name="so_tien_da_thanh_toan" value="0">
-                    
+
                     <div class="card border-0 shadow-sm mb-5 tour-info-card">
                         <div class="row no-gutters">
                             <div class="col-md-4">
-                                <img src="{{ asset('storage/'.$tour->anh_dai_dien) }}" class="img-fluid h-100 w-100 tour-img" alt="{{ $tour->ten_tour }}">
+                                <img src="{{ asset($tour->anh_dai_dien) }}" alt="{{ $tour->ten_tour }}" class="img-fluid h-100 w-100 tour-img" class="img-fluid h-100 w-100 tour-img" alt="{{ $tour->ten_tour }}">
                             </div>
                             <div class="col-md-8 p-4 d-flex flex-column justify-content-center">
                                 <h4 class="font-weight-bold mb-3">{{ $tour->ten_tour }}</h4>
@@ -60,7 +60,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="card border-0 shadow-sm p-3 h-100 schedule-card transition-all m-0" style="cursor: pointer;">
                                 <div class="d-flex align-items-start">
-                                    <input class="form-check-input custom-radio mt-1" type="radio" name="lich_khoi_hanh_id" value="{{ $lich->id }}" required @checked(old('lich_khoi_hanh_id') == $lich->id)>
+                                    <input class="form-check-input custom-radio mt-1" type="radio" name="lich_khoi_hanh_id" value="{{ $lich->id }}" required @checked(old('lich_khoi_hanh_id')==$lich->id)>
                                     <div class="ml-4 w-100">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <strong class="schedule-date" style="font-size: 1.15rem; color: #0f172a;">
@@ -71,10 +71,10 @@
                                                 {{ $lich->trang_thai == 'closed' ? 'badge-secondary-soft' : '' }}
                                                 {{ $lich->trang_thai == 'full' ? 'badge-danger-soft' : '' }}">
                                                 @switch($lich->trang_thai)
-                                                    @case('available') Mở bán @break
-                                                    @case('closed') Đã đóng @break
-                                                    @case('full') Đã đầy @break
-                                                    @default Không xác định
+                                                @case('available') Mở bán @break
+                                                @case('closed') Đã đóng @break
+                                                @case('full') Đã đầy @break
+                                                @default Không xác định
                                                 @endswitch
                                             </span>
                                         </div>
@@ -153,7 +153,7 @@
                                 Tôi xin cam đoan toàn bộ thông tin hành khách đã nhập ở trên là chính xác và hoàn toàn chịu trách nhiệm nếu có sai sót xảy ra.
                             </label>
                         </div>
-                        
+
                         <div class="row justify-content-center">
                             <div class="col-md-6">
                                 <!-- Nút này chuyển từ submit sang kích hoạt xử lý JS kiểm tra thông tin -->
@@ -208,15 +208,15 @@
         --bg: #f8fbff;
         --text: #0f172a;
     }
-    
+
     .page-bg {
         background-color: var(--bg);
     }
-    
+
     .primary-text {
         color: var(--primary) !important;
     }
-    
+
     .rounded-custom {
         border-radius: 12px !important;
     }
@@ -227,7 +227,7 @@
         padding: 0.6rem 1rem;
         height: auto;
     }
-    
+
     .input-custom:focus {
         box-shadow: 0 0 0 0.2rem rgba(7, 87, 216, 0.15);
         border-color: var(--primary);
@@ -244,8 +244,11 @@
         object-fit: cover;
         min-height: 200px;
     }
-    @media(max-width: 768px){
-        .tour-img { border-radius: 12px 12px 0 0; }
+
+    @media(max-width: 768px) {
+        .tour-img {
+            border-radius: 12px 12px 0 0;
+        }
     }
 
     .tour-info-card {
@@ -257,23 +260,43 @@
         border-radius: 12px !important;
         background: #fff;
     }
+
     .schedule-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
     }
+
     .schedule-card:has(input[type="radio"]:checked) {
         border-color: var(--primary) !important;
         background-color: var(--primary-light);
     }
+
     .custom-radio {
         width: 1.25rem;
         height: 1.25rem;
         accent-color: var(--primary);
     }
 
-    .badge-success-soft { background: #dcfce7; color: #166534; padding: 6px 12px; font-weight: 600;}
-    .badge-secondary-soft { background: #f1f5f9; color: #475569; padding: 6px 12px; font-weight: 600;}
-    .badge-danger-soft { background: #fee2e2; color: #991b1b; padding: 6px 12px; font-weight: 600;}
+    .badge-success-soft {
+        background: #dcfce7;
+        color: #166534;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+
+    .badge-secondary-soft {
+        background: #f1f5f9;
+        color: #475569;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
+
+    .badge-danger-soft {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 6px 12px;
+        font-weight: 600;
+    }
 
     .passenger-accordion-card {
         border: 1px solid #e2e8f0;
@@ -281,23 +304,23 @@
         overflow: hidden;
         background: #fff;
     }
-    
+
     .passenger-accordion-header {
         background-color: #fff;
         padding: 1rem 1.25rem;
         cursor: pointer;
         transition: background 0.2s;
     }
-    
+
     .passenger-accordion-header:hover {
         background-color: #f8fafc;
     }
-    
+
     .accordion-icon {
         transition: transform 0.3s ease;
         color: var(--primary);
     }
-    
+
     .passenger-accordion-header.collapsed .accordion-icon {
         transform: rotate(-90deg);
         color: #94a3b8;
@@ -308,12 +331,13 @@
         padding: 1.5rem;
         border-top: 1px solid #e2e8f0;
     }
-    
+
     .btn-checkout {
         background-color: var(--primary);
         border-color: var(--primary);
         transition: all 0.3s;
     }
+
     .btn-checkout:hover {
         background-color: #0546b5;
         box-shadow: 0 8px 15px rgba(7, 87, 216, 0.2);
@@ -327,6 +351,7 @@
         margin-bottom: 1rem;
         border: 1px solid #e2e8f0;
     }
+
     .summary-section-title {
         font-size: 0.95rem;
         text-transform: uppercase;
@@ -337,21 +362,30 @@
         border-bottom: 1px dashed #e2e8f0;
         padding-bottom: 0.5rem;
     }
+
 </style>
 @endsection
 
 @section('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const priceAdult = {{ $tour->gia_nguoi_lon ?? 0 }};
-        const priceChild = {{ $tour->gia_tre_em ?? 0 }};
+        const priceAdult = {
+            {
+                $tour - > gia_nguoi_lon ? ? 0
+            }
+        };
+        const priceChild = {
+            {
+                $tour - > gia_tre_em ? ? 0
+            }
+        };
         const tourTitle = "{{ $tour->ten_tour }}";
-        
+
         const elQtyAdult = document.getElementById('qty_adult');
         const elQtyChild = document.getElementById('qty_child');
         const elInputGrandTotal = document.getElementById('input_grand_total');
         const accordionContainer = document.getElementById('passengers-accordion');
-        
+
         // Điều khiển Form & Modal
         const bookingForm = document.getElementById('bookingForm');
         const btnPreviewBooking = document.getElementById('btnPreviewBooking');
@@ -452,7 +486,7 @@
         function updateBookingDetails() {
             let adults = parseInt(elQtyAdult.value) || 0;
             let children = parseInt(elQtyChild.value) || 0;
-            
+
             if (adults < 1) {
                 adults = 1;
                 elQtyAdult.value = 1;
@@ -477,7 +511,7 @@
                 formsHTML += getPassengerFormTemplate(passengerIndex, 'Hành khách', 'child', isOpen);
                 passengerIndex++;
             }
-            
+
             accordionContainer.innerHTML = formsHTML;
         }
 
@@ -486,7 +520,7 @@
             // 1. Tìm lịch khởi hành được chọn
             const selectedRadio = document.querySelector('input[name="lich_khoi_hanh_id"]:checked');
             let dateText = "Chưa chọn lịch";
-            if(selectedRadio) {
+            if (selectedRadio) {
                 const cardParent = selectedRadio.closest('.schedule-card');
                 dateText = cardParent.querySelector('.schedule-date').textContent.trim();
             }
@@ -507,7 +541,7 @@
             // 4. Thu thập danh sách chi tiết các hành khách đã điền
             let passengersHTML = '';
             const passCards = document.querySelectorAll('#passengers-accordion .passenger-accordion-card');
-            
+
             passCards.forEach((card, index) => {
                 const name = card.querySelector('.pass-name').value || '(Chưa nhập)';
                 const type = card.querySelector('.pass-type').value === 'adult' ? 'Người lớn' : 'Trẻ em';
@@ -515,7 +549,7 @@
                 const dob = card.querySelector('.pass-dob').value || '(Trưa nhập)';
                 const docType = card.querySelector('.pass-doc-type').value;
                 const docId = card.querySelector('.pass-doc-id').value || '(Chưa nhập)';
-                
+
                 passengersHTML += `
                     <tr>
                         <td class="font-weight-bold">#${index + 1}</td>
@@ -639,9 +673,10 @@
 
         elQtyAdult.addEventListener('change', updateBookingDetails);
         elQtyChild.addEventListener('change', updateBookingDetails);
-        
+
         // Khởi chạy dữ liệu mặc định lần đầu khi load trang
         updateBookingDetails();
     });
+
 </script>
 @endsection

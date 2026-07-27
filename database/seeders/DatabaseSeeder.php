@@ -10,7 +10,6 @@ use Illuminate\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
-
     {
         $adminRole = VaiTro::firstOrCreate(
             ['ten_vai_tro' => 'admin'],
@@ -49,5 +48,8 @@ class DatabaseSeeder extends Seeder
         if ($adminUser) {
             $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
         }
+
+
     }
 }
+

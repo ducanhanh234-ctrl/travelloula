@@ -146,7 +146,7 @@ class BaoCaoSuCoController extends Controller
                 ->withInput()
                 ->withErrors([
                     'lich_khoi_hanh_id' =>
-                        'Bạn chỉ được báo cáo sự cố cho tour đang được phân công và đang diễn ra.',
+                    'Bạn chỉ được báo cáo sự cố cho tour đang được phân công và đang diễn ra.',
                 ]);
         }
 
@@ -168,7 +168,7 @@ class BaoCaoSuCoController extends Controller
 
         $admins = User::query()
             ->get()
-            ->filter(fn (User $user) => $user->hasPermission('vao_admin'))
+            ->filter(fn(User $user) => $user->hasPermission('vao_admin'))
             ->values();
 
         if ($admins->isNotEmpty()) {
@@ -206,21 +206,31 @@ class BaoCaoSuCoController extends Controller
             ->first();
     }
 
-    public function show(BaoCaoSuCo $baoCaoSuCo)
+    public function show($id)
     {
-        $guide = Auth::user()?->huongDanVien;
+        $guide = auth()->user()?->huongDanVien;
 
         abort_unless(
-            (bool) $guide &&
-            (int) $baoCaoSuCo->huong_dan_vien_id === (int) $guide->id,
+            $guide,
             403,
-            'Bạn không có quyền xem báo cáo này.'
+            'Tài khoản chưa liên kết hướng dẫn viên.'
         );
 
-        $baoCaoSuCo->load([
-            'lichKhoiHanh',
-            'adminXuLy',
-        ]);
+        /*
+     * Chỉ tìm báo cáo:
+     * - Có đúng ID được yêu cầu.
+     * - Thuộc chính hướng dẫn viên đang đăng nhập.
+     *
+     * Guide không thể xem báo cáo của Guide khác
+     * bằng cách sửa ID trên URL.
+     */
+        $baoCaoSuCo = BaoCaoSuCo::query()
+            ->with([
+                'lichKhoiHanh.tour',
+                'adminXuLy',
+            ])
+            ->where('huong_dan_vien_id', $guide->id)
+            ->findOrFail($id);
 
         return view(
             'Guide.baocaosuco.show',

@@ -247,12 +247,11 @@
 
                         @if ($baoCaoSuCo->trang_thai === 'moi')
                             <form method="POST"
-                                action="{{ route('Admin.baocaosuco.tiep-nhan', [
-                                    'id' => request()->route('id'),
-                                ]) }}"
+                                action="{{ route('Admin.baocaosuco.tiep-nhan', ['id' => $baoCaoSuCo->id]) }}"
                                 class="mt-4">
 
                                 @csrf
+                                @method('PATCH')
 
                                 <button type="submit" class="btn btn-success w-100">
                                     <i class="fas fa-hand me-2"></i>

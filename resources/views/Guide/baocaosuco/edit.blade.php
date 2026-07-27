@@ -53,8 +53,9 @@
                                 -- Chọn lịch khởi hành --
                             </option>
 
-                            @foreach($lichKhoiHanhs as $lich)
-                                <option value="{{ $lich->id }}" {{ old('lich_khoi_hanh_id', $baoCao->lich_khoi_hanh_id) == $lich->id ? 'selected' : '' }}>
+                            @foreach ($lichKhoiHanhs as $lich)
+                                <option value="{{ $lich->id }}"
+                                    {{ old('lich_khoi_hanh_id', $baoCao->lich_khoi_hanh_id) == $lich->id ? 'selected' : '' }}>
                                     {{ $lich->tour->ten_tour }}
                                     -
                                     {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
@@ -80,23 +81,28 @@
                         </label>
 
                         <select name="loai_su_co" class="form-select">
-                            <option value="khach_hang" {{ old('loai_su_co', $baoCao->loai_su_co) == 'khach_hang' ? 'selected' : '' }}>
+                            <option value="khach_hang"
+                                {{ old('loai_su_co', $baoCao->loai_su_co) == 'khach_hang' ? 'selected' : '' }}>
                                 Khách hàng
                             </option>
 
-                            <option value="phuong_tien" {{ old('loai_su_co', $baoCao->loai_su_co) == 'phuong_tien' ? 'selected' : '' }}>
+                            <option value="phuong_tien"
+                                {{ old('loai_su_co', $baoCao->loai_su_co) == 'phuong_tien' ? 'selected' : '' }}>
                                 Phương tiện
                             </option>
 
-                            <option value="thoi_tiet" {{ old('loai_su_co', $baoCao->loai_su_co) == 'thoi_tiet' ? 'selected' : '' }}>
+                            <option value="thoi_tiet"
+                                {{ old('loai_su_co', $baoCao->loai_su_co) == 'thoi_tiet' ? 'selected' : '' }}>
                                 Thời tiết
                             </option>
 
-                            <option value="lich_trinh" {{ old('loai_su_co', $baoCao->loai_su_co) == 'lich_trinh' ? 'selected' : '' }}>
+                            <option value="lich_trinh"
+                                {{ old('loai_su_co', $baoCao->loai_su_co) == 'lich_trinh' ? 'selected' : '' }}>
                                 Lịch trình
                             </option>
 
-                            <option value="khac" {{ old('loai_su_co', $baoCao->loai_su_co) == 'khac' ? 'selected' : '' }}>
+                            <option value="khac"
+                                {{ old('loai_su_co', $baoCao->loai_su_co) == 'khac' ? 'selected' : '' }}>
                                 Khác
                             </option>
                         </select>
@@ -113,7 +119,8 @@
                                 Thấp
                             </option>
 
-                            <option value="trung_binh" {{ old('muc_do', $baoCao->muc_do) == 'trung_binh' ? 'selected' : '' }}>
+                            <option value="trung_binh"
+                                {{ old('muc_do', $baoCao->muc_do) == 'trung_binh' ? 'selected' : '' }}>
                                 Trung bình
                             </option>
 
@@ -129,8 +136,7 @@
                             Nội dung
                         </label>
 
-                        <textarea name="noi_dung" rows="6" class="form-control"
-                            required>{{ old('noi_dung', $baoCao->noi_dung) }}</textarea>
+                        <textarea name="noi_dung" rows="6" class="form-control" required>{{ old('noi_dung', $baoCao->noi_dung) }}</textarea>
                     </div>
 
                     <div class="d-flex justify-content-end">

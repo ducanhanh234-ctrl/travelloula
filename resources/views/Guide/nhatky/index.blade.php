@@ -960,7 +960,6 @@
                                             </span>
                                         @endif
                                     </td>
-
                                     <td>
                                         <div class="tour-log-main-text">
                                             {{ $tenTour }}

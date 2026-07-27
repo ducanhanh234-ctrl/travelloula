@@ -41,6 +41,10 @@ use App\Http\Controllers\Guide\BaoCaoSuCoController as GuideBaoCaoSuCoController
 use App\Http\Controllers\Guide\CheckInController;
 use App\Http\Controllers\Guide\GuideController;
 use App\Http\Controllers\Guide\NhatKyHuongDanVienController;
+use App\Http\Controllers\Admin\YeuCauGopDoanController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+use App\Http\Controllers\Admin\DatTourController;
 
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
@@ -136,6 +140,7 @@ Route::prefix('Admin')
     ->name('Admin.')
     ->middleware(['auth', 'permission:vao_admin'])
     ->group(function () {
+
         Route::view('/', 'layouts.admin')->name('dashboard');
 
         Route::resource('users', UserController::class);
@@ -206,17 +211,71 @@ Route::prefix('Admin')
         Route::resource('phan-cong', PhanCongController::class);
 
         Route::resource('tours', TourController::class);
+
+        Route::get(
+            'lich-khoi-hanh/bang-gia',
+            [LichKhoiHanhController::class, 'layBangGia']
+        )->name('lich-khoi-hanh.bang-gia');
+
         Route::delete('/tours/images/{id}', [TourController::class, 'deleteImage'])
             ->name('tours.deleteImage');
 
         Route::resource('bang-gia-tours',BangGiaTourController::class);
-        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
 
-        Route::resource('gop-doan', GopDoanController::class);
-        Route::post('gop-doan/{id}/huy', [GopDoanController::class, 'destroy'])->name('gop-doan.huy');
-        Route::post('gop-doan/chi-tiet/{id}/trang-thai', [GopDoanController::class, 'capNhatTrangThaiLienHe'])
-            ->name('gop-doan.cap-nhat-trang-thai');
-        Route::post('gop-doan/{id}/chot', [GopDoanController::class, 'chotGop'])->name('gop-doan.chot');
+        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
+        Route::patch(
+            'lich-khoi-hanh/{id}/chot',
+            [LichKhoiHanhController::class, 'chot']
+        )->name('lich-khoi-hanh.chot');
+
+        Route::get(
+            'gop-doan/lich-su',
+            [GopDoanController::class, 'lichSu']
+        )->name('gop-doan.lich-su');
+
+        Route::get(
+            'gop-doan/thu-cong',
+            [GopDoanController::class, 'thuCong']
+        )->name('gop-doan.thu-cong');
+
+        Route::post(
+            'gop-doan/thu-cong',
+            [GopDoanController::class, 'storeThuCong']
+        )->name('gop-doan.thu-cong.store');
+
+        Route::post(
+            'gop-doan/de-xuat',
+            [GopDoanController::class, 'storeAI']
+        )->name('gop-doan.ai.store');
+
+        Route::resource('gop-doan', GopDoanController::class)
+            ->only(['index']);
+
+        Route::prefix('yeu-cau-gop-doan')
+            ->name('yeu-cau-gop-doan.')
+            ->group(function () {
+
+                Route::get('/', [YeuCauGopDoanController::class, 'index'])
+                    ->name('index');
+
+                Route::get('/{id}', [YeuCauGopDoanController::class, 'show'])
+                    ->name('show');
+
+                Route::post(
+                    '/chi-tiet/{id}/trang-thai',
+                    [YeuCauGopDoanController::class, 'capNhatTrangThaiLienHe']
+                )->name('cap-nhat-trang-thai');
+
+                Route::post(
+                    '/{id}/chot',
+                    [YeuCauGopDoanController::class, 'chotGop']
+                )->name('chot');
+
+                Route::post(
+                    '/{id}/huy',
+                    [YeuCauGopDoanController::class, 'destroy']
+                )->name('destroy');
+            });
 
         Route::resource('lich_trinh_tours', LichTrinhTourController::class);
         Route::get('tour/{tour}/lich-trinh', [LichTrinhTourController::class, 'indexByTour'])

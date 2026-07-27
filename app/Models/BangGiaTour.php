@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 use Illuminate\Database\Eloquent\Model;
 
 class BangGiaTour extends Model
 {
+
     use HasFactory;
 
     protected $fillable = [
@@ -18,10 +21,16 @@ class BangGiaTour extends Model
         'gia_nguoi_lon',
         'gia_tre_em',
         'trang_thai'
+
     ];
 
     public function tour()
     {
-        return $this->belongsTo(DanhSachTour::class);
+
+        return $this->belongsTo(
+            DanhSachTour::class,
+            'tour_id'
+        );
+
     }
 }

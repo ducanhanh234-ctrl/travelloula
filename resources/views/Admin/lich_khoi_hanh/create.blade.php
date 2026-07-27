@@ -40,21 +40,43 @@
                                     Tour
                                 </label>
 
-                                <select name="tour_id" id="tour_id" class="form-select">
+                                <select name="tour_id" id="tour_id" class="form-select select2">
 
                                     @foreach ($tours as $tour)
-
                                         <option value="{{ $tour->id }}" data-thoi-luong="{{ $tour->thoi_luong }}"
-                                            data-so-cho="{{ $tour->so_khach_toi_da }}"
-                                            data-gia-nguoi-lon="{{ $tour->gia_nguoi_lon }}"
-                                            data-gia-tre-em="{{ $tour->gia_tre_em }}">
+                                            data-so-cho="{{ $tour->so_khach_toi_da }}">
                                             {{ $tour->ten_tour }}
-
                                         </option>
                                     @endforeach
 
                                 </select>
                             </div>
+
+                            {{-- LOẠI MÙA --}}
+                            <div class="mb-3">
+
+                                <label class="form-label fw-bold">
+                                    Loại mùa
+                                </label>
+
+                                <select name="loai_mua" id="loai_mua" class="form-select">
+
+                                    <option value="">
+                                        -- Chọn loại mùa --
+                                    </option>
+
+                                    <option value="thuong">
+                                        Mùa thường
+                                    </option>
+
+                                    <option value="cao_diem">
+                                        Mùa cao điểm
+                                    </option>
+
+                                </select>
+
+                            </div>
+
                             <div class="mt-2">
 
                                 <span class="badge bg-info text-dark">
@@ -97,33 +119,43 @@
                             <div class="row">
 
                                 {{-- GIÁ NGƯỜI LỚN --}}
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
 
                                         <label class="form-label fw-bold">
                                             Giá người lớn
                                         </label>
 
-
                                         <input type="number" id="gia_nguoi_lon" name="gia_nguoi_lon" class="form-control"
-                                            placeholder="VNĐ">
-
+                                            placeholder="VNĐ" readonly>
 
                                     </div>
                                 </div>
 
                                 {{-- GIÁ TRẺ EM --}}
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="mb-3">
 
                                         <label class="form-label fw-bold">
                                             Giá trẻ em
                                         </label>
 
-
                                         <input type="number" id="gia_tre_em" name="gia_tre_em" class="form-control"
-                                            placeholder="VNĐ">
+                                            placeholder="VNĐ" readonly>
 
+                                    </div>
+                                </div>
+
+                                {{-- GIÁ EM BÉ --}}
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+
+                                        <label class="form-label fw-bold">
+                                            Giá em bé
+                                        </label>
+
+                                        <input type="number" id="gia_em_be" name="gia_em_be" class="form-control"
+                                            placeholder="VNĐ" readonly>
 
                                     </div>
                                 </div>

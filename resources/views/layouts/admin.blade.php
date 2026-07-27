@@ -1338,7 +1338,7 @@
                     <div class="nav-item">
                         <a href="{{ route('Admin.bai_viets.index') }}" class="nav-link {{ request()->routeIs('Admin.bai_viet*') ? 'active' : '' }}" title="Bài viết">
                             <span class="nav-icon">
-                                <i class="fas fa-file-contract"></i>
+                                <i class="fas fa-newspaper"></i>
                             </span>
 
                             <span class="nav-text">
@@ -1400,11 +1400,7 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.bang-gia-tours.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.bang-gia-tours*') ? 'active' : '' }}"
-                            title="Quản lý khởi hành"
-                        >
+                        <a href="{{ route('Admin.bang-gia-tours.index') }}" class="nav-link {{ request()->routeIs('Admin.bang-gia-tours*') ? 'active' : '' }}" title="Quản lý khởi hành">
                             <span class="nav-icon">
                                 <i class="fas fa-money-bill-wave"></i>
                             </span>
@@ -1426,7 +1422,17 @@
                             </span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.yeu-cau-gop-doan.index') }}" class="nav-link {{ request()->routeIs('Admin.yeu-cau-gop-doan*') ? 'active' : '' }}" title="Yêu cầu gộp đoàn">
+                            <span class="nav-icon">
+                                <i class="fas fa-users-cog"></i>
+                            </span>
 
+                            <span class="nav-text">
+                                Yêu Cầu Gộp Đoàn
+                            </span>
+                        </a>
+                    </div>
                     <div class="nav-item">
                         <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link {{ request()->routeIs('Admin.phuong-tiens*') ? 'active' : '' }}" title="Quản lý xe">
                             <span class="nav-icon">

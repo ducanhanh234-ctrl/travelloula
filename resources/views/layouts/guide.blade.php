@@ -1109,6 +1109,7 @@
                         </span>
                     </a>
                 </div>
+
             </div>
 
             {{-- Nghiệp vụ --}}
@@ -1188,21 +1189,14 @@
                     </a>
                 </div>
 
+
                 <div class="guide-nav-item">
                     <a href="#" class="guide-nav-link" title="Thông báo">
                         <span class="guide-nav-icon">
                             <i class="fas fa-bell"></i>
                         </span>
 
-                        <span class="guide-nav-text">
-                            Thông báo
-                        </span>
 
-                        <span class="guide-nav-badge">
-                            3
-                        </span>
-                    </a>
-                </div>
             </div>
         </nav>
     </aside>

@@ -74,6 +74,7 @@ class LichKhoiHanhTour extends Model
     }
 
 
+
     public function getTrangThaiHienThiAttribute()
     {
         $today = Carbon::today();
@@ -177,11 +178,13 @@ class LichKhoiHanhTour extends Model
     }
     public function phanCong()
     {
+
         return $this->hasOne(
             PhanCong::class,
             'lich_khoi_hanh_id',
             'id'
         );
+
     }
 
     public function checkIns()

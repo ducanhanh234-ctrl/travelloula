@@ -763,6 +763,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div>Trạng thái khởi hành</div>
 
                             <div class="tour-detail-info-item">
                                 <span class="tour-detail-info-icon">
@@ -783,24 +784,7 @@
                                 </div>
                             </div>
 
-                            <div class="tour-detail-info-item">
-                                <span class="tour-detail-info-icon">
-                                    <i class="fas fa-bus"></i>
-                                </span>
 
-                                <div class="tour-detail-info-content">
-                                    <div class="tour-detail-info-label">
-                                        Phương tiện
-                                    </div>
-
-                                    <div class="tour-detail-info-value">
-                                        {{
-                                            $phuongTien->ten_phuong_tien
-                                            ?? 'Chưa phân công'
-                                        }}
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="tour-detail-info-item">
                                 <span class="tour-detail-info-icon">
@@ -1005,7 +989,7 @@
 
                             <div class="tour-quick-item">
                                 <div class="tour-quick-label">
-                                    Xe
+                                    Hướng dẫn viên
                                 </div>
 
                                 <div class="tour-quick-value">
@@ -1031,7 +1015,7 @@
 
                             <div class="tour-quick-item">
                                 <div class="tour-quick-label">
-                                    Khách
+                                    Số Khách
                                 </div>
 
                                 <div class="tour-quick-value">
@@ -1051,6 +1035,7 @@
                                     </span>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </section>

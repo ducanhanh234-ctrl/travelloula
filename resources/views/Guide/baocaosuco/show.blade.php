@@ -19,6 +19,7 @@
 @endsection
 
 @section('content')
+
     @php
         $trangThaiText = match ($baoCaoSuCo->trang_thai) {
             'moi' => 'Mới gửi',
@@ -1557,6 +1558,7 @@
                     </div>
                 </section>
             </aside>
+
         </div>
     </div>
 @endsection

@@ -1734,7 +1734,7 @@
                 </button>
 
                 <div class="nav-section-menu">
-                    <div class="nav-item">
+                    {{-- <div class="nav-item">
                         <a href="#" class="nav-link" title="Thông báo">
                             <span class="nav-icon">
                                 <i class="fas fa-bell"></i>
@@ -1748,7 +1748,7 @@
                                 3
                             </span>
                         </a>
-                    </div>
+                    </div> --}}
 
                     <div class="nav-item">
                         <a href="#" class="nav-link" title="Hỗ trợ khách hàng">

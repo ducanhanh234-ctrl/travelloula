@@ -95,6 +95,7 @@ class TourController extends Controller
 
             'danh_muc_id' => 'required|exists:danh_mucs,id',
 
+
             'anh_dai_dien' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             'hinh_anh.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -104,6 +105,7 @@ class TourController extends Controller
             'gia_nguoi_lon' => 'required|numeric|min:0|lte:gia_tour',
 
             'gia_tre_em' => 'required|numeric|min:0|lt:gia_nguoi_lon',
+
 
             'so_ngay' => 'required|integer|min:1|max:30',
 
@@ -289,6 +291,7 @@ class TourController extends Controller
 
             'danh_muc_id' => 'required|exists:danh_mucs,id',
 
+
             'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             'hinh_anh.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -296,6 +299,7 @@ class TourController extends Controller
             'gia_tour' => 'required|numeric|min:0',
 
             'gia_nguoi_lon' => 'required|numeric|min:0|lte:gia_tour',
+
 
             'gia_tre_em' => 'required|numeric|min:0|lt:gia_nguoi_lon',
 

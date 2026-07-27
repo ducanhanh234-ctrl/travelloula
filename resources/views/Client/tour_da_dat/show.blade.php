@@ -61,10 +61,7 @@
                             <td>{{ $datTour->so_tre_em }}</td>
                         </tr>
 
-                        <tr>
-                            <th>Em bé</th>
-                            <td>{{ $datTour->so_em_be }}</td>
-                        </tr>
+                        
 
                         <tr>
                             <th>Tổng tiền</th>

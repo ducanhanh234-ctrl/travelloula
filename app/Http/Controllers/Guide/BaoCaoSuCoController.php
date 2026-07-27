@@ -4,301 +4,237 @@ namespace App\Http\Controllers\Guide;
 
 use App\Http\Controllers\Controller;
 use App\Models\BaoCaoSuCo;
-use App\Models\HuongDanVien;
 use App\Models\LichKhoiHanhTour;
+use App\Models\User;
+use App\Notifications\BaoCaoSuCoMoiNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class BaoCaoSuCoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
+        $guide = Auth::user()?->huongDanVien;
 
-        $baoCaos = BaoCaoSuCo::with('lichKhoiHanh.tour')
-            ->where('huong_dan_vien_id', $guide->id)
+        abort_unless(
+            (bool) $guide,
+            403,
+            'Tài khoản chưa liên kết hướng dẫn viên.'
+        );
+
+        $query = BaoCaoSuCo::query()
+            ->with([
+                'lichKhoiHanh',
+                'adminXuLy',
+            ])
+            ->where('huong_dan_vien_id', $guide->id);
+
+        if ($request->filled('keyword')) {
+            $keyword = trim((string) $request->keyword);
+
+            $query->where(function ($q) use ($keyword) {
+                $q->where('tieu_de', 'like', "%{$keyword}%")
+                    ->orWhere('noi_dung', 'like', "%{$keyword}%");
+            });
+        }
+
+        if ($request->filled('trang_thai')) {
+            $query->where(
+                'trang_thai',
+                $request->trang_thai
+            );
+        }
+
+        if ($request->filled('muc_do')) {
+            $query->where(
+                'muc_do',
+                $request->muc_do
+            );
+        }
+
+        $baoCaos = $query
             ->latest()
-            ->get();
+            ->paginate(12)
+            ->withQueryString();
 
-        // Thống kê
-        $tongBaoCao = $baoCaos->count();
+        $base = BaoCaoSuCo::query()
+            ->where('huong_dan_vien_id', $guide->id);
 
-        $choXuLy = $baoCaos
-            ->where('trang_thai', 'cho_xu_ly')
-            ->count();
+        $thongKe = [
+            'tong' => (clone $base)->count(),
 
-        $dangXuLy = $baoCaos
-            ->where('trang_thai', 'dang_xu_ly')
-            ->count();
+            'moi' => (clone $base)
+                ->where('trang_thai', 'moi')
+                ->count(),
 
-        $daXuLy = $baoCaos
-            ->where('trang_thai', 'da_xu_ly')
-            ->count();
+            'dang_xu_ly' => (clone $base)
+                ->whereIn('trang_thai', [
+                    'da_tiep_nhan',
+                    'dang_xu_ly',
+                ])
+                ->count(),
+
+            'da_xu_ly' => (clone $base)
+                ->where('trang_thai', 'da_xu_ly')
+                ->count(),
+        ];
 
         return view(
             'Guide.baocaosuco.index',
-            compact(
-                'baoCaos',
-                'tongBaoCao',
-                'choXuLy',
-                'dangXuLy',
-                'daXuLy'
-            )
+            compact('baoCaos', 'thongKe')
         );
     }
 
     public function create()
     {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
+        $guide = Auth::user()?->huongDanVien;
 
-        $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
-            ->where('huong_dan_vien_id', $guide->id)
-            ->get();
+        abort_unless(
+            (bool) $guide,
+            403,
+            'Tài khoản chưa liên kết hướng dẫn viên.'
+        );
+
+        $activeLichKhoiHanh = $this->getActiveLichKhoiHanhForGuide($guide);
 
         return view(
             'Guide.baocaosuco.create',
-            compact('lichKhoiHanhs')
+            compact('activeLichKhoiHanh')
         );
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'lich_khoi_hanh_id' => 'required|exists:lich_khoi_hanh_tours,id',
-            'tieu_de' => 'required|max:255',
-            'loai_su_co' => 'required',
-            'muc_do' => 'required',
-            'noi_dung' => 'required',
+        $guide = Auth::user()?->huongDanVien;
+
+        abort_unless(
+            (bool) $guide,
+            403,
+            'Tài khoản chưa liên kết hướng dẫn viên.'
+        );
+
+        $data = $request->validate([
+            'tieu_de' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'loai_su_co' => [
+                'required',
+                'in:phuong_tien,lich_trinh,khach_hang,dich_vu,an_ninh,suc_khoe,khac',
+            ],
+
+            'muc_do' => [
+                'required',
+                'in:thap,trung_binh,cao,khan_cap',
+            ],
+
+            'noi_dung' => [
+                'required',
+                'string',
+                'max:10000',
+            ],
         ]);
 
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
+        $lichKhoiHanh = $this->getActiveLichKhoiHanhForGuide($guide);
 
-        BaoCaoSuCo::create([
+        if (!$lichKhoiHanh) {
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'lich_khoi_hanh_id' =>
+                    'Bạn chỉ được báo cáo sự cố cho tour đang được phân công và đang diễn ra.',
+                ]);
+        }
 
-            'lich_khoi_hanh_id' => $request->lich_khoi_hanh_id,
+        $baoCao = DB::transaction(function () use (
+            $data,
+            $guide,
+            $lichKhoiHanh
+        ) {
+            return BaoCaoSuCo::create([
+                'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                'huong_dan_vien_id' => $guide->id,
+                'tieu_de' => $data['tieu_de'],
+                'loai_su_co' => $data['loai_su_co'],
+                'muc_do' => $data['muc_do'],
+                'noi_dung' => $data['noi_dung'],
+                'trang_thai' => 'moi',
+            ]);
+        });
 
-            'huong_dan_vien_id' => $guide->id,
+        $admins = User::query()
+            ->get()
+            ->filter(fn(User $user) => $user->hasPermission('vao_admin'))
+            ->values();
 
-            'tieu_de' => $request->tieu_de,
-
-            'loai_su_co' => $request->loai_su_co,
-
-            'muc_do' => $request->muc_do,
-
-            'noi_dung' => $request->noi_dung,
-
-            'trang_thai' => 'cho_xu_ly',
-
-        ]);
+        if ($admins->isNotEmpty()) {
+            Notification::send(
+                $admins,
+                new BaoCaoSuCoMoiNotification(
+                    $baoCao->load([
+                        'huongDanVien',
+                        'lichKhoiHanh',
+                    ])
+                )
+            );
+        }
 
         return redirect()
             ->route('Guide.baocaosuco.index')
             ->with(
                 'success',
-                'Báo cáo sự cố đã được gửi.'
+                'Đã gửi báo cáo sự cố đến Admin.'
             );
+    }
+
+    private function getActiveLichKhoiHanhForGuide($guide): ?LichKhoiHanhTour
+    {
+        $homNay = now()->startOfDay();
+
+        return LichKhoiHanhTour::query()
+            ->with('tour')
+            ->whereHas('phanCong', function ($query) use ($guide) {
+                $query->where('hdv_id', $guide->id);
+            })
+            ->whereDate('ngay_khoi_hanh', '<=', $homNay)
+            ->whereDate('ngay_ket_thuc', '>=', $homNay)
+            ->orderBy('ngay_khoi_hanh')
+            ->first();
     }
 
     public function show($id)
     {
-        $baoCao = BaoCaoSuCo::with([
-            'lichKhoiHanh.tour',
-            'huongDanVien'
-        ])->findOrFail($id);
+        $guide = auth()->user()?->huongDanVien;
+
+        abort_unless(
+            $guide,
+            403,
+            'Tài khoản chưa liên kết hướng dẫn viên.'
+        );
+
+        /*
+     * Chỉ tìm báo cáo:
+     * - Có đúng ID được yêu cầu.
+     * - Thuộc chính hướng dẫn viên đang đăng nhập.
+     *
+     * Guide không thể xem báo cáo của Guide khác
+     * bằng cách sửa ID trên URL.
+     */
+        $baoCaoSuCo = BaoCaoSuCo::query()
+            ->with([
+                'lichKhoiHanh.tour',
+                'adminXuLy',
+            ])
+            ->where('huong_dan_vien_id', $guide->id)
+            ->findOrFail($id);
 
         return view(
             'Guide.baocaosuco.show',
-            compact('baoCao')
+            compact('baoCaoSuCo')
         );
-    }
-
-    public function edit($id)
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCao = BaoCaoSuCo::findOrFail($id);
-
-        // Chỉ được sửa báo cáo của chính mình
-        if ($baoCao->huong_dan_vien_id != $guide->id) {
-            abort(403);
-        }
-
-        // Chỉ sửa khi đang chờ xử lý
-        if ($baoCao->trang_thai != 'cho_xu_ly') {
-            return redirect()
-                ->route('Guide.baocaosuco.index')
-                ->with(
-                    'error',
-                    'Báo cáo này không thể chỉnh sửa.'
-                );
-        }
-
-        $lichKhoiHanhs = LichKhoiHanhTour::with('tour')
-            ->where('huong_dan_vien_id', $guide->id)
-            ->get();
-
-        return view(
-            'Guide.baocaosuco.edit',
-            compact('baoCao', 'lichKhoiHanhs')
-        );
-    }
-
-    public function update(Request $request, $id)
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCao = BaoCaoSuCo::findOrFail($id);
-
-        if ($baoCao->huong_dan_vien_id != $guide->id) {
-            abort(403);
-        }
-
-        if ($baoCao->trang_thai != 'cho_xu_ly') {
-            return redirect()
-                ->route('Guide.baocaosuco.index')
-                ->with(
-                    'error',
-                    'Báo cáo đã được xử lý nên không thể chỉnh sửa.'
-                );
-        }
-
-        $request->validate([
-            'tieu_de' => 'required|max:255',
-            'loai_su_co' => 'required',
-            'muc_do' => 'required',
-            'noi_dung' => 'required',
-        ]);
-
-        $baoCao->update([
-            'lich_khoi_hanh_id' => $request->lich_khoi_hanh_id,
-            'tieu_de' => $request->tieu_de,
-            'loai_su_co' => $request->loai_su_co,
-            'muc_do' => $request->muc_do,
-            'noi_dung' => $request->noi_dung,
-        ]);
-
-        return redirect()
-            ->route('Guide.baocaosuco.index')
-            ->with(
-                'success',
-                'Cập nhật báo cáo thành công.'
-            );
-    }
-
-    public function destroy($id)
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCao = BaoCaoSuCo::findOrFail($id);
-
-        if ($baoCao->huong_dan_vien_id != $guide->id) {
-            abort(403);
-        }
-
-        if ($baoCao->trang_thai != 'cho_xu_ly') {
-            return redirect()
-                ->route('Guide.baocaosuco.index')
-                ->with(
-                    'error',
-                    'Báo cáo đã được xử lý nên không thể xóa.'
-                );
-        }
-
-        $baoCao->delete();
-
-        return redirect()
-            ->route('Guide.baocaosuco.index')
-            ->with(
-                'success',
-                'Đã xóa báo cáo.'
-            );
-    }
-
-    // thùng rác
-    public function trash()
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCaos = BaoCaoSuCo::onlyTrashed()
-            ->with('lichKhoiHanh.tour')
-            ->where('huong_dan_vien_id', $guide->id)
-            ->latest()
-            ->get();
-
-        return view(
-            'Guide.baocaosuco.trash',
-            compact('baoCaos')
-        );
-    }
-
-    //khôi phục báo cáo đã xóa
-    public function restore($id)
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCao = BaoCaoSuCo::onlyTrashed()
-            ->findOrFail($id);
-
-        if ($baoCao->huong_dan_vien_id != $guide->id) {
-            abort(403);
-        }
-
-        $baoCao->restore();
-
-        return redirect()
-            ->route('Guide.baocaosuco.trash')
-            ->with(
-                'success',
-                'Khôi phục báo cáo thành công.'
-            );
-    }
-
-    // Xóa vĩnh viễn 
-    public function forceDelete($id)
-    {
-        $guide = HuongDanVien::where(
-            'user_id',
-            Auth::id()
-        )->firstOrFail();
-
-        $baoCao = BaoCaoSuCo::onlyTrashed()
-            ->findOrFail($id);
-
-        if ($baoCao->huong_dan_vien_id != $guide->id) {
-            abort(403);
-        }
-
-        $baoCao->forceDelete();
-
-        return redirect()
-            ->route('Guide.baocaosuco.trash')
-            ->with(
-                'success',
-                'Đã xóa vĩnh viễn.'
-            );
     }
 }

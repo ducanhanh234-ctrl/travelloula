@@ -49,5 +49,7 @@ class DatabaseSeeder extends Seeder
             $adminUser->vaiTros()->syncWithoutDetaching([$adminRole->id]);
         }
 
+
     }
 }
+

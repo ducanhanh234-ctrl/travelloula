@@ -1,236 +1,364 @@
-@extends('Layouts.guide')
+@extends('layouts.guide')
+
+
+@section('title', 'Báo cáo sự cố')
 
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid py-4">
+    {{-- Header --}}
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
-            <h2 class="fw-bold text-success mb-1">
-                <i class="fas fa-exclamation-circle"></i>
+            <h3 class="fw-bold mb-1">
                 Báo cáo sự cố
-            </h2>
+            </h3>
 
-            <small class="text-muted">
-                Theo dõi và quản lý các báo cáo sự cố trong quá trình dẫn tour.
-            </small>
+            <p class="text-muted mb-0">
+                Theo dõi các sự cố đã gửi đến Admin.
+            </p>
         </div>
 
-        <div class="d-flex gap-2">
-            <a href="{{ route('Guide.baocaosuco.trash') }}" class="btn btn-outline-danger">
-                <i class="fas fa-trash"></i>
-                Thùng rác
-            </a>
-
-            <a href="{{ route('Guide.baocaosuco.create') }}" class="btn btn-success">
-                <i class="fas fa-plus"></i>
-                Tạo báo cáo
-            </a>
-        </div>
+        <a href="{{ route('Guide.baocaosuco.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
+            Báo cáo sự cố
+        </a>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Tổng báo cáo
-                    </h6>
-
-                    <h2 class="text-success">
-                        {{ $tongBaoCao }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Chờ xử lý
-                    </h6>
-
-                    <h2 class="text-secondary">
-                        {{ $choXuLy }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Đang xử lý
-                    </h6>
-                    <h2 class="text-warning">
-                        {{ $dangXuLy }}
-                    </h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <h6 class="text-muted">
-                        Đã xử lý
-                    </h6>
-
-                    <h2 class="text-success">
-                        {{ $daXuLy }}
-                    </h2>
-                </div>
-            </div>
-        </div>
+    {{-- Thông báo --}}
+    @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
     </div>
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
     @endif
 
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0">
-                <i class="fas fa-list me-2"></i>
-                Danh sách báo cáo sự cố
-            </h5>
-        </div>
+    {{-- Thống kê --}}
+    <div class="row g-3 mb-4">
+        @foreach ([
+        ['Tổng báo cáo', $thongKe['tong'], 'primary'],
+        ['Mới', $thongKe['moi'], 'danger'],
+        ['Đang xử lý', $thongKe['dang_xu_ly'], 'warning'],
+        ['Đã xử lý', $thongKe['da_xu_ly'], 'success'],
+        ] as [$label, $value, $color])
+        <div class="col-md-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        {{ $label }}
+                    </div>
 
-        <div class="card-body">
-            @if($baoCaos->isEmpty())
-                <div class="text-center py-5">
-                    <i class="fas fa-folder-open fa-4x text-success mb-3"></i>
-                    <h5 class="fw-bold">
-                        Chưa có báo cáo sự cố nào
-                    </h5>
-                    <p class="text-muted">
-                        Hãy tạo báo cáo đầu tiên của bạn.
-                    </p>
-                    <a href="{{ route('Guide.baocaosuco.create') }}" class="btn btn-success">
-                        <i class="fas fa-plus me-1"></i>
-                        Tạo báo cáo
-                    </a>
+                    <div class="fs-3 fw-bold text-{{ $color }}">
+                        {{ $value }}
+                    </div>
                 </div>
-
-            @else
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-success">
-                            <tr>
-                                <th width="70">STT</th>
-                                <th>Tour</th>
-                                <th>Tiêu đề</th>
-                                <th>Loại sự cố</th>
-                                <th>Mức độ</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày gửi</th>
-                                <th width="130" class="text-center">
-                                    Thao tác
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach($baoCaos as $baoCao)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>
-                                        {{ $baoCao->lichKhoiHanh->tour->ten_tour }}
-                                    </td>
-
-                                    <td>
-                                        <strong>
-                                            {{ $baoCao->tieu_de }}
-                                        </strong>
-                                    </td>
-
-                                    <td>
-                                        {{ ucfirst(str_replace('_', ' ', $baoCao->loai_su_co)) }}
-                                    </td>
-
-                                    <td>
-                                        @if($baoCao->muc_do == 'thap')
-                                            <span class="badge rounded-pill bg-success">
-                                                Thấp
-                                            </span>
-
-                                        @elseif($baoCao->muc_do == 'trung_binh')
-                                            <span class="badge rounded-pill bg-warning text-dark">
-                                                Trung bình
-                                            </span>
-
-                                        @else
-                                            <span class="badge rounded-pill bg-danger">
-                                                Cao
-                                            </span>
-                                        @endif
-
-                                    </td>
-
-                                    <td>
-                                        @if($baoCao->trang_thai == 'cho_xu_ly')
-                                            <span class="badge rounded-pill bg-secondary">
-                                                Chờ xử lý
-                                            </span>
-
-                                        @elseif($baoCao->trang_thai == 'dang_xu_ly')
-                                            <span class="badge rounded-pill bg-info text-dark">
-                                                Đang xử lý
-                                            </span>
-
-                                        @else
-                                            <span class="badge rounded-pill bg-success">
-                                                Đã xử lý
-                                            </span>
-                                        @endif
-                                    </td>
-
-                                    <td>
-                                        {{ $baoCao->created_at->format('d/m/Y H:i') }}
-                                    </td>
-
-                                    <td class="text-center">
-
-                                        {{-- Xem --}}
-                                        <a href="{{ route('Guide.baocaosuco.show', $baoCao->id) }}"
-                                            class="btn btn-outline-success btn-sm" title="Xem">
-
-                                            <i class="fas fa-eye"></i>
-
-                                        </a>
-
-                                        @if($baoCao->trang_thai == 'cho_xu_ly')
-
-                                            {{-- Sửa --}}
-                                            <a href="{{ route('Guide.baocaosuco.edit', $baoCao->id) }}"
-                                                class="btn btn-outline-warning btn-sm" title="Chỉnh sửa">
-
-                                                <i class="fas fa-edit"></i>
-
-                                            </a>
-
-                                            {{-- Xóa --}}
-                                            <form action="{{ route('Guide.baocaosuco.destroy', $baoCao->id) }}" method="POST"
-                                                class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-
-                                                <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                    onclick="return confirm('Bạn có chắc muốn xóa báo cáo này không?')" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+            </div>
         </div>
+        @endforeach
     </div>
+
+    <div class="card border-0 shadow-sm">
+        {{-- Bộ lọc --}}
+        <div class="card-body border-bottom">
+            <form method="GET" class="row g-2">
+                <div class="col-md-5">
+                    <input type="text" name="keyword" value="{{ request('keyword') }}" class="form-control" placeholder="Tìm tiêu đề hoặc nội dung...">
+                </div>
+
+                <div class="col-md-3">
+                    <select name="trang_thai" class="form-select">
+                        <option value="">
+                            Tất cả trạng thái
+                        </option>
+
+                        @foreach (\App\Models\BaoCaoSuCo::trangThaiList() as $value => $label)
+                        <option value="{{ $value }}" @selected(request('trang_thai')===$value)>
+                            {{ $label }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select name="muc_do" class="form-select">
+                        <option value="">
+                            Tất cả mức độ
+                        </option>
+
+                        @foreach (\App\Models\BaoCaoSuCo::mucDoList() as $value => $label)
+                        <option value="{{ $value }}" @selected(request('muc_do')===$value)>
+                            {{ $label }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-grid">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-filter me-1"></i>
+                        Lọc
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {{-- Bảng --}}
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Sự cố</th>
+                        <th>Mức độ</th>
+                        <th>Trạng thái báo cáo</th>
+                        <th>Phân công</th>
+                        <th>Khởi hành</th>
+                        <th>Ngày gửi</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse ($baoCaos as $baoCao)
+                    @php
+                    $lichKhoiHanh = $baoCao->lichKhoiHanh;
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Trạng thái phân công
+                    |--------------------------------------------------------------------------
+                    | Dựa vào quan hệ huongDanVien của lịch khởi hành.
+                    */
+                    $daPhanCong = !empty(
+                    $lichKhoiHanh?->huongDanVien
+                    );
+
+                    $trangThaiPhanCongText = $daPhanCong
+                    ? 'Đã phân công'
+                    : 'Chưa phân công';
+
+                    $trangThaiPhanCongClass = $daPhanCong
+                    ? 'bg-success-subtle text-success border border-success-subtle'
+                    : 'bg-secondary-subtle text-secondary border border-secondary-subtle';
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Trạng thái khởi hành
+                    |--------------------------------------------------------------------------
+                    | Tự tính theo ngày bắt đầu và ngày kết thúc.
+                    */
+                    $homNay = now()->startOfDay();
+
+                    $ngayKhoiHanh = $lichKhoiHanh?->ngay_khoi_hanh
+                    ? \Carbon\Carbon::parse(
+                    $lichKhoiHanh->ngay_khoi_hanh
+                    )->startOfDay()
+                    : null;
+
+                    $ngayKetThuc = $lichKhoiHanh?->ngay_ket_thuc
+                    ? \Carbon\Carbon::parse(
+                    $lichKhoiHanh->ngay_ket_thuc
+                    )->endOfDay()
+                    : null;
+
+                    if (!$lichKhoiHanh || !$ngayKhoiHanh) {
+                    $trangThaiKhoiHanhText = 'Chưa có lịch';
+                    $trangThaiKhoiHanhClass =
+                    'bg-secondary-subtle text-secondary border border-secondary-subtle';
+                    $trangThaiKhoiHanhIcon =
+                    'fa-calendar-xmark';
+                    } elseif ($homNay->lt($ngayKhoiHanh)) {
+                    $trangThaiKhoiHanhText =
+                    'Chưa khởi hành';
+                    $trangThaiKhoiHanhClass =
+                    'bg-info-subtle text-info-emphasis border border-info-subtle';
+                    $trangThaiKhoiHanhIcon =
+                    'fa-hourglass-start';
+                    } elseif (
+                    $ngayKetThuc &&
+                    now()->gt($ngayKetThuc)
+                    ) {
+                    $trangThaiKhoiHanhText =
+                    'Đã kết thúc';
+                    $trangThaiKhoiHanhClass =
+                    'bg-success-subtle text-success border border-success-subtle';
+                    $trangThaiKhoiHanhIcon =
+                    'fa-flag-checkered';
+                    } else {
+                    $trangThaiKhoiHanhText =
+                    'Đang diễn ra';
+                    $trangThaiKhoiHanhClass =
+                    'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
+                    $trangThaiKhoiHanhIcon =
+                    'fa-route';
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Màu trạng thái báo cáo
+                    |--------------------------------------------------------------------------
+                    */
+                    $trangThaiBaoCaoClass = match (
+                    $baoCao->trang_thai
+                    ) {
+                    'moi' =>
+                    'bg-danger-subtle text-danger border border-danger-subtle',
+
+                    'da_tiep_nhan' =>
+                    'bg-info-subtle text-info-emphasis border border-info-subtle',
+
+                    'dang_xu_ly' =>
+                    'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+
+                    'da_xu_ly' =>
+                    'bg-success-subtle text-success border border-success-subtle',
+
+                    'tu_choi' =>
+                    'bg-secondary-subtle text-secondary border border-secondary-subtle',
+
+                    default =>
+                    'bg-secondary-subtle text-secondary border border-secondary-subtle',
+                    };
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Màu mức độ
+                    |--------------------------------------------------------------------------
+                    */
+                    $mucDoClass = match ($baoCao->muc_do) {
+                    'thap' =>
+                    'bg-success-subtle text-success border border-success-subtle',
+
+                    'trung_binh' =>
+                    'bg-warning-subtle text-warning-emphasis border border-warning-subtle',
+
+                    'cao' =>
+                    'bg-danger-subtle text-danger border border-danger-subtle',
+
+                    'khan_cap' =>
+                    'bg-dark text-white border border-dark',
+
+                    default =>
+                    'bg-secondary-subtle text-secondary border border-secondary-subtle',
+                    };
+                    @endphp
+
+                    <tr>
+                        <td>
+                            <span class="fw-semibold text-muted">
+                                #{{ $baoCao->id }}
+                            </span>
+                        </td>
+
+                        <td style="min-width: 230px;">
+                            <strong class="d-block">
+                                {{ $baoCao->tieu_de }}
+                            </strong>
+
+                            <small class="text-muted">
+                                {{ $baoCao->loai_su_co_text }}
+                            </small>
+
+                            @if ($lichKhoiHanh)
+                            <div class="small text-primary mt-1">
+                                <i class="fas fa-map-location-dot me-1"></i>
+
+                                {{
+                                                $lichKhoiHanh->tour?->ten_tour
+                                                ?? 'Tour không xác định'
+                                            }}
+                            </div>
+                            @endif
+                        </td>
+
+                        <td>
+                            <span class="badge rounded-pill {{ $mucDoClass }}">
+                                {{ $baoCao->muc_do_text }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge rounded-pill {{ $trangThaiBaoCaoClass }}">
+                                {{ $baoCao->trang_thai_text }}
+                            </span>
+                        </td>
+
+                        {{-- Trạng thái phân công --}}
+                        <td>
+                            <span class="badge rounded-pill {{ $trangThaiPhanCongClass }}">
+                                <i class="fas fa-user-tie me-1"></i>
+                                {{ $trangThaiPhanCongText }}
+                            </span>
+
+                            @if ($daPhanCong)
+                            <div class="small text-muted mt-1">
+                                {{
+                                                $lichKhoiHanh
+                                                    ?->huongDanVien
+                                                    ?->ho_ten
+                                                ?? ''
+                                            }}
+                            </div>
+                            @endif
+                        </td>
+
+                        {{-- Trạng thái khởi hành --}}
+                        <td>
+                            <span class="badge rounded-pill {{ $trangThaiKhoiHanhClass }}">
+                                <i class="fas {{ $trangThaiKhoiHanhIcon }} me-1"></i>
+                                {{ $trangThaiKhoiHanhText }}
+                            </span>
+
+                            @if ($ngayKhoiHanh)
+                            <div class="small text-muted mt-1">
+                                {{ $ngayKhoiHanh->format('d/m/Y') }}
+
+                                @if ($ngayKetThuc)
+                                –
+                                {{ $ngayKetThuc->format('d/m/Y') }}
+                                @endif
+                            </div>
+                            @endif
+                        </td>
+
+                        <td class="text-nowrap">
+                            {{
+                                        $baoCao->created_at?->format(
+                                            'd/m/Y H:i'
+                                        )
+                                        ?? '—'
+                                    }}
+                        </td>
+
+                        <td class="text-end">
+                            <a href="{{ route(
+                                            'Guide.baocaosuco.show',
+                                            ['id' => $baoCao->id]
+                                        ) }}" class="btn btn-sm btn-outline-primary text-nowrap">
+                                <i class="fas fa-eye me-1"></i>
+                                Xem
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="fas fa-triangle-exclamation fa-2x mb-3 d-block"></i>
+                            Chưa có báo cáo sự cố.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if ($baoCaos->hasPages())
+        <div class="card-footer bg-white">
+            {{
+                        $baoCaos->links(
+                            'pagination::bootstrap-5'
+                        )
+                    }}
+        </div>
+        @endif
+
+    </div> {{-- card --}}
+</div> {{-- container-fluid --}}
 @endsection

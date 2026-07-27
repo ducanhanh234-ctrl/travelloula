@@ -50,6 +50,7 @@ class LichKhoiHanhTour extends Model
         'dang_gop_doan',
         'gop_vao_lich_id',
         'da_gop',
+        'da_checkin_khoi_hanh',
     ];
 
     protected $casts = [
@@ -71,6 +72,7 @@ class LichKhoiHanhTour extends Model
             'huong_dan_vien_id'
         );
     }
+
 
 
     public function getTrangThaiHienThiAttribute()
@@ -176,7 +178,13 @@ class LichKhoiHanhTour extends Model
     }
     public function phanCong()
     {
-        return $this->hasOne(PhanCong::class);
+
+        return $this->hasOne(
+            PhanCong::class,
+            'lich_khoi_hanh_id',
+            'id'
+        );
+
     }
 
     public function checkIns()

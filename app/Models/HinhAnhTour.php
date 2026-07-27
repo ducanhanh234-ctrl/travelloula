@@ -18,6 +18,7 @@ class HinhAnhTour extends Model
 
     protected $casts = [
         'la_anh_dai_dien' => 'boolean',
+        'thu_tu_hien_thi' => 'integer',
     ];
 
     public function tour()

@@ -127,9 +127,133 @@
         </div>
 
         @if($baiViets->hasPages())
-        <div class="pagination-wrap">
-            {{ $baiViets->links() }}
-        </div>
+        <nav class="pagination-wrap" aria-label="Phân trang bài viết">
+            <div class="modern-pagination">
+                {{-- Trang trước --}}
+                @if($baiViets->onFirstPage())
+                    <span class="page-control is-disabled" aria-disabled="true">
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Trước</span>
+                    </span>
+                @else
+                    <a
+                        class="page-control"
+                        href="{{ $baiViets->previousPageUrl() }}"
+                        rel="prev"
+                        aria-label="Trang trước"
+                    >
+                        <i class="fa-solid fa-chevron-left"></i>
+                        <span>Trước</span>
+                    </a>
+                @endif
+
+                {{-- Danh sách số trang --}}
+                @php
+                    $currentPage = $baiViets->currentPage();
+                    $lastPage = $baiViets->lastPage();
+
+                    /*
+                     * Hiển thị tối đa 5 số trang quanh trang hiện tại.
+                     * Không gọi elements() vì đây không phải method public
+                     * của paginator trong Laravel 12.
+                     */
+                    $startPage = max(1, $currentPage - 2);
+                    $endPage = min($lastPage, $currentPage + 2);
+
+                    if (($endPage - $startPage) < 4) {
+                        if ($startPage === 1) {
+                            $endPage = min($lastPage, 5);
+                        } elseif ($endPage === $lastPage) {
+                            $startPage = max(1, $lastPage - 4);
+                        }
+                    }
+                @endphp
+
+                <div class="page-numbers">
+                    {{-- Luôn hiện trang đầu khi cửa sổ trang bắt đầu sau trang 1 --}}
+                    @if($startPage > 1)
+                        <a
+                            class="page-number"
+                            href="{{ $baiViets->url(1) }}"
+                            aria-label="Đến trang 1"
+                        >
+                            1
+                        </a>
+
+                        @if($startPage > 2)
+                            <span class="page-dots" aria-hidden="true">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </span>
+                        @endif
+                    @endif
+
+                    @for($page = $startPage; $page <= $endPage; $page++)
+                        @if($page === $currentPage)
+                            <span
+                                class="page-number is-active"
+                                aria-current="page"
+                            >
+                                {{ $page }}
+                            </span>
+                        @else
+                            <a
+                                class="page-number"
+                                href="{{ $baiViets->url($page) }}"
+                                aria-label="Đến trang {{ $page }}"
+                            >
+                                {{ $page }}
+                            </a>
+                        @endif
+                    @endfor
+
+                    {{-- Luôn hiện trang cuối khi cửa sổ trang kết thúc trước trang cuối --}}
+                    @if($endPage < $lastPage)
+                        @if($endPage < ($lastPage - 1))
+                            <span class="page-dots" aria-hidden="true">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </span>
+                        @endif
+
+                        <a
+                            class="page-number"
+                            href="{{ $baiViets->url($lastPage) }}"
+                            aria-label="Đến trang {{ $lastPage }}"
+                        >
+                            {{ $lastPage }}
+                        </a>
+                    @endif
+                </div>
+
+                {{-- Trang sau --}}
+                @if($baiViets->hasMorePages())
+                    <a
+                        class="page-control"
+                        href="{{ $baiViets->nextPageUrl() }}"
+                        rel="next"
+                        aria-label="Trang sau"
+                    >
+                        <span>Sau</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                @else
+                    <span class="page-control is-disabled" aria-disabled="true">
+                        <span>Sau</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </span>
+                @endif
+            </div>
+
+            <div class="pagination-info">
+                Trang
+                <strong>{{ $baiViets->currentPage() }}</strong>
+                /
+                <strong>{{ $baiViets->lastPage() }}</strong>
+                <span>•</span>
+                Tổng
+                <strong>{{ number_format($baiViets->total(), 0, ',', '.') }}</strong>
+                bài viết
+            </div>
+        </nav>
         @endif
         @else
         <div class="empty-box">
@@ -490,10 +614,122 @@
         font-weight: 1000;
     }
 
+    /* =========================================================
+       PHÂN TRANG XANH - TRẮNG HIỆN ĐẠI
+       ========================================================= */
     .pagination-wrap {
         display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        margin-top: 42px;
+    }
+
+    .modern-pagination {
+        display: inline-flex;
+        align-items: center;
         justify-content: center;
-        margin-top: 36px;
+        gap: 8px;
+        max-width: 100%;
+        padding: 10px;
+        border: 1px solid #dbeafe;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, .96);
+        box-shadow: 0 14px 38px rgba(37, 99, 235, .10);
+        backdrop-filter: blur(12px);
+    }
+
+    .page-numbers {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+    }
+
+    .page-number,
+    .page-control,
+    .page-dots {
+        height: 44px;
+        min-width: 44px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #475569;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        font-size: 14px;
+        font-weight: 900;
+        text-decoration: none;
+        transition:
+            transform .2s ease,
+            border-color .2s ease,
+            background .2s ease,
+            color .2s ease,
+            box-shadow .2s ease;
+    }
+
+    .page-number:hover,
+    .page-control:hover {
+        color: #155eef;
+        background: #eff6ff;
+        border-color: #93c5fd;
+        box-shadow: 0 8px 20px rgba(21, 94, 239, .12);
+        transform: translateY(-2px);
+    }
+
+    .page-number.is-active {
+        color: #ffffff;
+        border-color: transparent;
+        background: linear-gradient(135deg, #3b82f6, #155eef);
+        box-shadow: 0 10px 24px rgba(21, 94, 239, .28);
+        cursor: default;
+    }
+
+    .page-control {
+        min-width: 102px;
+        padding: 0 15px;
+        gap: 8px;
+        color: #155eef;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+
+    .page-control i {
+        font-size: 12px;
+    }
+
+    .page-control.is-disabled {
+        color: #94a3b8;
+        border-color: #e2e8f0;
+        background: #f8fafc;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: .7;
+    }
+
+    .page-dots {
+        min-width: 34px;
+        border-color: transparent;
+        color: #94a3b8;
+        background: transparent;
+    }
+
+    .pagination-info {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 750;
+        text-align: center;
+    }
+
+    .pagination-info strong {
+        color: #155eef;
+        font-weight: 1000;
+    }
+
+    .pagination-info span {
+        margin: 0 6px;
+        color: #cbd5e1;
     }
 
     .empty-box {
@@ -553,6 +789,48 @@
     @media(max-width:640px) {
         .news-top h1 {
             font-size: 34px;
+        }
+
+        .modern-pagination {
+            width: 100%;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .modern-pagination::-webkit-scrollbar {
+            display: none;
+        }
+
+        .page-control {
+            min-width: 44px;
+            width: 44px;
+            padding: 0;
+            flex: 0 0 44px;
+        }
+
+        .page-control span {
+            display: none;
+        }
+
+        .page-numbers {
+            gap: 5px;
+        }
+
+        .page-number {
+            min-width: 40px;
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+        }
+
+        .page-dots {
+            min-width: 28px;
+            width: 28px;
+            height: 40px;
+            flex: 0 0 28px;
         }
 
         .news-top p {

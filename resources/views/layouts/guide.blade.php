@@ -1171,23 +1171,6 @@
                         </span>
                     </a>
                 </div>
-
-                <div class="guide-nav-item">
-                    <a
-                        href="#"
-                        class="guide-nav-link"
-                        title="Lịch khởi hành"
-                    >
-                        <span class="guide-nav-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </span>
-
-                        <span class="guide-nav-text">
-                            Lịch khởi hành
-                        </span>
-                    </a>
-                </div>
-
                 <div class="guide-nav-item">
                     <a
                         href="#"
@@ -1298,25 +1281,7 @@
                     </a>
                 </div>
 
-                <div class="guide-nav-item">
-                    <a
-                        href="#"
-                        class="guide-nav-link"
-                        title="Thông báo"
-                    >
-                        <span class="guide-nav-icon">
-                            <i class="fas fa-bell"></i>
-                        </span>
 
-                        <span class="guide-nav-text">
-                            Thông báo
-                        </span>
-
-                        <span class="guide-nav-badge">
-                            3
-                        </span>
-                    </a>
-                </div>
             </div>
         </nav>
     </aside>

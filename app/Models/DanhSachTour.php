@@ -96,7 +96,7 @@ class DanhSachTour extends Model
             BangGiaTour::class,
             'tour_id'
         );
-
+    }
     public function hinhAnhs()
     {
         return $this->hasMany(HinhAnhTour::class, 'tour_id');
@@ -111,7 +111,5 @@ class DanhSachTour extends Model
             LichTrinhTour::class,
             'tour_id'
         );
-
-
     }
 }

@@ -140,12 +140,6 @@
                 <br>
                 {{ $booking->so_tre_em }}
             </div>
-
-            <div class="col-md-4">
-                <strong>Em bé:</strong>
-                <br>
-                {{ $booking->so_em_be }}
-            </div>
         </div>
         <hr>
 
@@ -214,18 +208,11 @@
                             @case('adult')
                                 Người lớn
                                 @break
-
                             @case('child')
                                 Trẻ em
                                 @break
-
-                            @case('baby')
-                                Em bé
-                                @break
-
                             @default
                                 {{ $khach->loai_hanh_khach }}
-
                         @endswitch
                     </td>
 

@@ -12,6 +12,7 @@ class ThanhToan extends Model
         'dat_tour_id',
         'nguoi_dung_id',
         'phuong_thuc_thanh_toan',
+        'hoa_don_pdf',
         'so_tien',
         'ma_giao_dich',
         'trang_thai',

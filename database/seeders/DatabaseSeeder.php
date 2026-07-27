@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+
         $this->call([
             PermissionSeeder::class,
 
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
             DatTourSeeder::class,
         ]);
 
+
         $adminRole = VaiTro::firstOrCreate(
             ['ten_vai_tro' => 'admin'],
             ['mo_ta' => 'Quản trị viên hệ thống']
@@ -40,6 +42,7 @@ class DatabaseSeeder extends Seeder
         );
 
         // Admin có toàn bộ quyền
+
         $adminRole->quyenHans()->sync(
             QuyenHan::pluck('id')->toArray()
         );
@@ -52,11 +55,38 @@ class DatabaseSeeder extends Seeder
             ])->pluck('id')->toArray()
         );
 
+        $allPermissions = QuyenHan::pluck('id')->toArray();
+        $adminRole->quyenHans()->syncWithoutDetaching($allPermissions);
+
+        // Guide chỉ có quyền vào khu vực Guide
+        $guidePermissionIds = QuyenHan::whereIn('ten', [
+            'vao_guide',
+            'phuong_tiens.view',
+        ])->pluck('id')->toArray();
+
+        $guideRole->quyenHans()->syncWithoutDetaching($guidePermissionIds);
+
+        $this->call([
+            DanhMucSeeder::class,
+            DanhSachTourSeeder::class,
+            UserSeeder::class,
+            HuongDanVienSeeder::class,
+            PhuongTienSeeder::class,
+            LichKhoiHanhTourSeeder::class,
+            DatTourSeeder::class,
+        ]);
+
+
         // Gán role admin cho tài khoản admin@gmail.com
         $adminUser = User::where('email', 'admin@gmail.com')->first();
 
         if ($adminUser) {
             $adminUser->vaiTros()->sync([$adminRole->id]);
         }
+
+
+
     }
 }
+
+

@@ -1,17 +1,10 @@
 <?php
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 
 class DatTour extends Model
 {
-
-
-
     use SoftDeletes;
     protected $table = 'dat_tours';
 
@@ -26,7 +19,6 @@ class DatTour extends Model
         'ma_dat_tour',
         'so_nguoi_lon',
         'so_tre_em',
-        'so_em_be',
         'tong_tien',
         'so_tien_da_thanh_toan',
         'trang_thai',
@@ -41,7 +33,7 @@ class DatTour extends Model
 
     public function tour()
     {
-        return $this->belongsTo(Tour::class, 'tour_id');
+        return $this->belongsTo(DanhSachTour::class, 'tour_id');
     }
 
     public function lichKhoiHanh()
@@ -61,7 +53,6 @@ class DatTour extends Model
         );
     }
 
-
     public function khachDaiDien()
     {
         return $this->hasOne(
@@ -69,7 +60,6 @@ class DatTour extends Model
             'dat_tour_id'
         )->orderBy('id', 'asc');
     }
-
 
     public function khachHangs()
     {
@@ -108,7 +98,6 @@ class DatTour extends Model
             default => 'secondary',
         };
     }
-
     public function khachHangDatTour()
     {
         return $this->hasMany(

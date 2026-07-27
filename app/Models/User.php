@@ -9,6 +9,7 @@ use App\Models\VaiTro;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\BaoCaoSuCo;
 
 class User extends Authenticatable
 {
@@ -133,5 +134,12 @@ class User extends Authenticatable
     public function huongDanVien()
     {
         return $this->hasOne(HuongDanVien::class, 'user_id');
+    }
+    public function baoCaoSuCosXuLy()
+    {
+        return $this->hasMany(
+            BaoCaoSuCo::class,
+            'admin_xu_ly_id'
+        );
     }
 }

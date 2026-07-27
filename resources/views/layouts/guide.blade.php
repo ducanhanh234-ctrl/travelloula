@@ -1196,8 +1196,11 @@
                             <i class="fas fa-bell"></i>
                         </span>
 
-
-            </div>
+                        <span class="guide-nav-text">
+                            Thông báo
+                        </span>
+                    </a>
+                </div>
         </nav>
     </aside>
 

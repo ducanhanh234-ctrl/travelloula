@@ -233,7 +233,8 @@ Route::prefix('Admin')
             ->name('chi_tiet_lich_trinhs.destroy');
 
         Route::resource('nhat_ky_tours', NhatKyTourController::class)->only(['index', 'show']);
-
+        Route::post('/import-hanh-khach', [ImportKhachHangController::class, 'import'])
+            ->name('import_hanh_khach');
 
         /*
         |--------------------------------------------------------------------------
@@ -259,7 +260,6 @@ Route::prefix('Admin')
                 Route::delete('/{id}', [AdminBaoCaoSuCoController::class, 'destroy'])
                     ->name('destroy');
             });
-
     });
 
 /*
@@ -380,5 +380,4 @@ Route::prefix('Guide')
             '/checkin/{lichKhoiHanh}/ket-thuc',
             [CheckInController::class, 'storeKetThuc']
         )->name('checkin.storeKetThuc');
-
     });

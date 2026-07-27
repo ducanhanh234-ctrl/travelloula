@@ -98,12 +98,12 @@
                                     value="{{ old('gia_tre_em', $tour->gia_tre_em ?? '') }}">
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            {{-- <div class="col-md-6 mb-3">
                                 <label class="form-label">Giá em bé</label>
 
                                 <input type="number" name="gia_em_be" class="form-control"
                                     value="{{ old('gia_em_be', $tour->gia_em_be ?? '') }}">
-                            </div>
+                            </div> --}}
 
                         </div>
 

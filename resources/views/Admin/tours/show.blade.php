@@ -115,7 +115,7 @@
 
                                     <th style="width:25%">Trẻ em</th>
 
-                                    <th style="width:25%">Em bé</th>
+                                    {{-- <th style="width:25%">Em bé</th> --}}
 
                                 </tr>
 
@@ -161,7 +161,7 @@
 
                                     </td>
 
-                                    <td>
+                                    {{-- <td>
 
                                         <h5 class="text-info mb-1">
                                             {{ number_format($tour->gia_em_be) }}đ
@@ -171,7 +171,7 @@
                                             Dưới 5 tuổi
                                         </small>
 
-                                    </td>
+                                    </td> --}}
 
                                 </tr>
 

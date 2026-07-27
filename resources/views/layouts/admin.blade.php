@@ -4,96 +4,47 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>
         @yield('title', 'Admin Dashboard - Travelloula')
     </title>
 
-    <meta
-        name="theme-color"
-        content="#315be8"
-    >
+    <meta name="theme-color" content="#315be8">
 
-    <link
-        rel="icon"
-        type="image/x-icon"
-        href="/favicon.ico"
-    >
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
     {{-- Fonts --}}
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     {{-- Bootstrap --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
     {{-- Bootstrap Icons --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
     {{-- CSS dự án --}}
-    <link
-        href="{{ asset('css/admin.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
 
-    <link
-        href="{{ asset('css/admin-modern.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/admin-modern.css') }}" rel="stylesheet">
 
-    <link
-        href="{{ asset('css/dashboard-professional.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/dashboard-professional.css') }}" rel="stylesheet">
 
-    <link
-        href="{{ asset('css/admin-tables.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/admin-tables.css') }}" rel="stylesheet">
 
-    <link
-        href="{{ asset('css/admin-tables-fixed.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/admin-tables-fixed.css') }}" rel="stylesheet">
 
-    <link
-        href="{{ asset('css/admin-icons.css') }}"
-        rel="stylesheet"
-    >
+    <link href="{{ asset('css/admin-icons.css') }}" rel="stylesheet">
 
     <style>
         :root {
@@ -260,11 +211,9 @@
 
             color: var(--admin-white);
 
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--admin-primary-500),
+                    var(--admin-purple));
 
             border: 1px solid rgba(255, 255, 255, 0.28);
             border-radius: 12px;
@@ -405,8 +354,7 @@
             text-align: center;
         }
 
-        .sidebar .nav-section-toggle.has-active
-        .nav-section-toggle-icon {
+        .sidebar .nav-section-toggle.has-active .nav-section-toggle-icon {
             color: var(--admin-primary-500);
         }
 
@@ -431,13 +379,11 @@
             display: block;
         }
 
-        .sidebar .nav-section.is-collapsed
-        .nav-section-menu {
+        .sidebar .nav-section.is-collapsed .nav-section-menu {
             display: none;
         }
 
-        .sidebar .nav-section.is-collapsed
-        .nav-section-arrow {
+        .sidebar .nav-section.is-collapsed .nav-section-arrow {
             transform: rotate(-90deg);
         }
 
@@ -491,11 +437,9 @@
         .sidebar .nav-link.active {
             color: var(--admin-primary-500);
 
-            background: linear-gradient(
-                90deg,
-                #edf4ff 0%,
-                #f1efff 100%
-            );
+            background: linear-gradient(90deg,
+                    #edf4ff 0%,
+                    #f1efff 100%);
 
             border-color: #cfdcff;
             font-weight: 750;
@@ -510,11 +454,9 @@
             width: 4px;
             content: "";
 
-            background: linear-gradient(
-                180deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
+            background: linear-gradient(180deg,
+                    var(--admin-primary-500),
+                    var(--admin-purple));
 
             border-radius: 0 8px 8px 0;
         }
@@ -604,9 +546,7 @@
         }
 
         .sidebar.collapsed .nav-section-menu,
-        .sidebar.collapsed
-        .nav-section.is-collapsed
-        .nav-section-menu {
+        .sidebar.collapsed .nav-section.is-collapsed .nav-section-menu {
             display: block;
         }
 
@@ -661,7 +601,7 @@
             transition: margin-left 0.3s ease;
         }
 
-        .sidebar.collapsed ~ .main-content {
+        .sidebar.collapsed~.main-content {
             margin-left: var(--admin-sidebar-collapsed-width);
         }
 
@@ -910,11 +850,9 @@
         .user-avatar {
             color: var(--admin-white);
 
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--admin-primary-500),
+                    var(--admin-purple));
 
             border: 2px solid #dce6fb;
             box-shadow: 0 5px 13px rgba(49, 91, 232, 0.18);
@@ -1052,11 +990,9 @@
         .content .btn-primary {
             color: var(--admin-white);
 
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--admin-primary-500),
+                    var(--admin-purple));
 
             border-color: var(--admin-primary-500);
 
@@ -1067,11 +1003,9 @@
         .content .btn-primary:hover {
             color: var(--admin-white);
 
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-600),
-                #4c40d7
-            );
+            background: linear-gradient(135deg,
+                    var(--admin-primary-600),
+                    #4c40d7);
 
             border-color: var(--admin-primary-600);
         }
@@ -1185,11 +1119,9 @@
         .content .page-item.active .page-link {
             color: var(--admin-white);
 
-            background: linear-gradient(
-                135deg,
-                var(--admin-primary-500),
-                var(--admin-purple)
-            );
+            background: linear-gradient(135deg,
+                    var(--admin-primary-500),
+                    var(--admin-purple));
 
             border-color: var(--admin-primary-500);
         }
@@ -1260,14 +1192,12 @@
                 justify-content: flex-start;
             }
 
-            .sidebar.collapsed
-            .nav-section.is-collapsed
-            .nav-section-menu {
+            .sidebar.collapsed .nav-section.is-collapsed .nav-section-menu {
                 display: none;
             }
 
             .main-content,
-            .sidebar.collapsed ~ .main-content {
+            .sidebar.collapsed~.main-content {
                 margin-left: 0;
             }
 
@@ -1293,8 +1223,7 @@
                 display: none;
             }
 
-            .breadcrumb-item +
-            .breadcrumb-item::before {
+            .breadcrumb-item+.breadcrumb-item::before {
                 display: none;
             }
 
@@ -1333,17 +1262,24 @@
 </head>
 
 <body>
+    @php
+        $adminUser = auth()->user();
+
+        $notifications = $adminUser
+            ? $adminUser->notifications()->latest()->take(10)->get()
+            : collect();
+
+        $notificationCount = $adminUser
+            ? $adminUser->unreadNotifications()->count()
+            : 0;
+
+        $suCoMoi = $suCoMoi ?? 0;
+    @endphp
+
     {{-- Sidebar --}}
-    <aside
-        class="sidebar"
-        id="sidebar"
-    >
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a
-                href="{{ route('Admin.dashboard') }}"
-                class="sidebar-logo"
-                title="Travelloula Admin"
-            >
+            <a href="{{ route('Admin.dashboard') }}" class="sidebar-logo" title="Travelloula Admin">
                 <span class="logo-icon">
                     <i class="fas fa-plane"></i>
                 </span>
@@ -1362,15 +1298,8 @@
 
         <nav class="sidebar-nav">
             {{-- Tổng quan --}}
-            <div
-                class="nav-section"
-                data-nav-section="tong-quan"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="tong-quan">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-home nav-section-toggle-icon"></i>
 
@@ -1384,11 +1313,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.dashboard') }}"
+                        <a href="{{ route('Admin.dashboard') }}"
                             class="nav-link {{ request()->routeIs('Admin.dashboard') ? 'active' : '' }}"
-                            title="Dashboard"
-                        >
+                            title="Dashboard">
                             <span class="nav-icon">
                                 <i class="fas fa-tachometer-alt"></i>
                             </span>
@@ -1400,11 +1327,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.trang_dieu_khoans.edit') }}"
+                        <a href="{{ route('Admin.trang_dieu_khoans.edit') }}"
                             class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}"
-                            title="Điều khoản"
-                        >
+                            title="Điều khoản">
                             <span class="nav-icon">
                                 <i class="fas fa-file-contract"></i>
                             </span>
@@ -1414,19 +1339,25 @@
                             </span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.bai_viets.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.bai_viet*') ? 'active' : '' }}"
+                            title="Bài viết">
+                            <span class="nav-icon">
+                                <i class="fas fa-file-contract"></i>
+                            </span>
+
+                            <span class="nav-text">
+                                Bài viết
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
             {{-- Quản lý Tour --}}
-            <div
-                class="nav-section"
-                data-nav-section="quan-ly-tour"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="quan-ly-tour">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-map-marked-alt nav-section-toggle-icon"></i>
 
@@ -1440,11 +1371,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.tours.index') }}"
+                        <a href="{{ route('Admin.tours.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}"
-                            title="Danh sách Tour"
-                        >
+                            title="Danh sách Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-map-marked-alt"></i>
                             </span>
@@ -1456,11 +1385,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.lich_trinh_tours.index') }}"
+                        <a href="{{ route('Admin.lich_trinh_tours.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.lich_trinh_tours*') ? 'active' : '' }}"
-                            title="Quản lý lịch trình"
-                        >
+                            title="Quản lý lịch trình">
                             <span class="nav-icon">
                                 <i class="fas fa-calendar-alt"></i>
                             </span>
@@ -1472,11 +1399,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.lich-khoi-hanh.index') }}"
+                        <a href="{{ route('Admin.lich-khoi-hanh.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.lich-khoi-hanh*') ? 'active' : '' }}"
-                            title="Quản lý khởi hành"
-                        >
+                            title="Quản lý khởi hành">
                             <span class="nav-icon">
                                 <i class="fas fa-plane-departure"></i>
                             </span>
@@ -1488,11 +1413,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.gop-doan.index') }}"
+                        <a href="{{ route('Admin.gop-doan.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.gop-doan*') ? 'active' : '' }}"
-                            title="Gộp đoàn"
-                        >
+                            title="Gộp đoàn">
                             <span class="nav-icon">
                                 <i class="fas fa-object-group"></i>
                             </span>
@@ -1504,11 +1427,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.phuong-tiens.index') }}"
+                        <a href="{{ route('Admin.phuong-tiens.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.phuong-tiens*') ? 'active' : '' }}"
-                            title="Quản lý xe"
-                        >
+                            title="Quản lý xe">
                             <span class="nav-icon">
                                 <i class="fas fa-bus"></i>
                             </span>
@@ -1520,11 +1441,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.nhat_ky_tours.index') }}"
+                        <a href="{{ route('Admin.nhat_ky_tours.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.nhat_ky_tours*') ? 'active' : '' }}"
-                            title="Nhật ký Tour"
-                        >
+                            title="Nhật ký Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-book"></i>
                             </span>
@@ -1538,15 +1457,8 @@
             </div>
 
             {{-- Đặt Tour và vận hành --}}
-            <div
-                class="nav-section"
-                data-nav-section="dat-tour-van-hanh"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="dat-tour-van-hanh">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-briefcase nav-section-toggle-icon"></i>
 
@@ -1560,11 +1472,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.quan_ly_dat_tour.index') }}"
+                        <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}"
-                            title="Quản lý đặt Tour"
-                        >
+                            title="Quản lý đặt Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-calendar-check"></i>
                             </span>
@@ -1576,11 +1486,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.phan-cong.index') }}"
+                        <a href="{{ route('Admin.phan-cong.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}"
-                            title="Quản lý phân công"
-                        >
+                            title="Quản lý phân công">
                             <span class="nav-icon">
                                 <i class="fas fa-user-friends"></i>
                             </span>
@@ -1594,15 +1502,8 @@
             </div>
 
             {{-- Quản lý người dùng --}}
-            <div
-                class="nav-section"
-                data-nav-section="nguoi-dung"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="nguoi-dung">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-users-cog nav-section-toggle-icon"></i>
 
@@ -1616,11 +1517,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.huong-dan-viens.index') }}"
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}"
-                            title="Quản lý hướng dẫn viên"
-                        >
+                            title="Quản lý hướng dẫn viên">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tie"></i>
                             </span>
@@ -1632,11 +1531,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.users.index') }}"
+                        <a href="{{ route('Admin.users.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}"
-                            title="Người dùng"
-                        >
+                            title="Người dùng">
                             <span class="nav-icon">
                                 <i class="fas fa-user"></i>
                             </span>
@@ -1648,11 +1545,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.khach-hang.index') }}"
+                        <a href="{{ route('Admin.khach-hang.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.khach-hang*') ? 'active' : '' }}"
-                            title="Quản lý khách hàng"
-                        >
+                            title="Quản lý khách hàng">
                             <span class="nav-icon">
                                 <i class="fas fa-user-check"></i>
                             </span>
@@ -1664,11 +1559,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.vai-tros.index') }}"
+                        <a href="{{ route('Admin.vai-tros.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}"
-                            title="Vai trò"
-                        >
+                            title="Vai trò">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tag"></i>
                             </span>
@@ -1680,11 +1573,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.quyen-hans.index') }}"
+                        <a href="{{ route('Admin.quyen-hans.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}"
-                            title="Quyền"
-                        >
+                            title="Quyền">
                             <span class="nav-icon">
                                 <i class="fas fa-key"></i>
                             </span>
@@ -1696,11 +1587,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.role-permissions.matrix') }}"
+                        <a href="{{ route('Admin.role-permissions.matrix') }}"
                             class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}"
-                            title="Phân quyền"
-                        >
+                            title="Phân quyền">
                             <span class="nav-icon">
                                 <i class="fas fa-th"></i>
                             </span>
@@ -1714,15 +1603,8 @@
             </div>
 
             {{-- Nội dung --}}
-            <div
-                class="nav-section"
-                data-nav-section="noi-dung"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="noi-dung">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-layer-group nav-section-toggle-icon"></i>
 
@@ -1736,11 +1618,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.banners.index') }}"
+                        <a href="{{ route('Admin.banners.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}"
-                            title="Quản lý Banner"
-                        >
+                            title="Quản lý Banner">
                             <span class="nav-icon">
                                 <i class="fas fa-image"></i>
                             </span>
@@ -1752,11 +1632,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.danh_mucs.index') }}"
+                        <a href="{{ route('Admin.danh_mucs.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}"
-                            title="Quản lý danh mục"
-                        >
+                            title="Quản lý danh mục">
                             <span class="nav-icon">
                                 <i class="fas fa-tags"></i>
                             </span>
@@ -1768,11 +1646,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.danh_gias.index') }}"
+                        <a href="{{ route('Admin.danh_gias.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}"
-                            title="Quản lý đánh giá"
-                        >
+                            title="Quản lý đánh giá">
                             <span class="nav-icon">
                                 <i class="fas fa-star"></i>
                             </span>
@@ -1784,12 +1660,8 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link nav-link-disabled"
-                            title="Chức năng chưa có route"
-                            onclick="return false;"
-                        >
+                        <a href="#" class="nav-link nav-link-disabled" title="Chức năng chưa có route"
+                            onclick="return false;">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tie"></i>
                             </span>
@@ -1803,15 +1675,8 @@
             </div>
 
             {{-- Thanh toán và báo cáo --}}
-            <div
-                class="nav-section"
-                data-nav-section="thanh-toan-bao-cao"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="thanh-toan-bao-cao">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-chart-line nav-section-toggle-icon"></i>
 
@@ -1825,11 +1690,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.thanh_toans.index') }}"
+                        <a href="{{ route('Admin.thanh_toans.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}"
-                            title="Quản lý thanh toán"
-                        >
+                            title="Quản lý thanh toán">
                             <span class="nav-icon">
                                 <i class="fas fa-credit-card"></i>
                             </span>
@@ -1841,11 +1704,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="{{ route('Admin.thong_ke.index') }}"
+                        <a href="{{ route('Admin.thong_ke.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}"
-                            title="Báo cáo và thống kê"
-                        >
+                            title="Báo cáo và thống kê">
                             <span class="nav-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </span>
@@ -1859,15 +1720,8 @@
             </div>
 
             {{-- Hệ thống --}}
-            <div
-                class="nav-section"
-                data-nav-section="he-thong"
-            >
-                <button
-                    type="button"
-                    class="nav-section-toggle"
-                    aria-expanded="true"
-                >
+            <div class="nav-section" data-nav-section="he-thong">
+                <button type="button" class="nav-section-toggle" aria-expanded="true">
                     <span class="nav-section-toggle-left">
                         <i class="fas fa-cog nav-section-toggle-icon"></i>
 
@@ -1881,11 +1735,7 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link"
-                            title="Thông báo"
-                        >
+                        <a href="#" class="nav-link" title="Thông báo">
                             <span class="nav-icon">
                                 <i class="fas fa-bell"></i>
                             </span>
@@ -1901,11 +1751,7 @@
                     </div>
 
                     <div class="nav-item">
-                        <a
-                            href="#"
-                            class="nav-link"
-                            title="Hỗ trợ khách hàng"
-                        >
+                        <a href="#" class="nav-link" title="Hỗ trợ khách hàng">
                             <span class="nav-icon">
                                 <i class="fas fa-headset"></i>
                             </span>
@@ -1921,28 +1767,35 @@
                     </div>
                 </div>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('Admin.baocaosuco.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.baocaosuco.*') ? 'active' : '' }}">
+
+                    <span class="nav-icon">
+                        <i class="fas fa-triangle-exclamation"></i>
+                    </span>
+
+                    <span class="nav-text">Xử lý sự cố</span>
+
+                    @if (($suCoMoi ?? 0) > 0)
+                        <span class="badge bg-danger ms-auto">
+                            {{ ($suCoMoi ?? 0) > 99 ? '99+' : ($suCoMoi ?? 0) }}
+                        </span>
+                    @endif
+                </a>
+            </div>
         </nav>
     </aside>
 
     {{-- Overlay mobile --}}
-    <div
-        class="sidebar-overlay"
-        id="sidebarOverlay"
-    ></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     {{-- Main --}}
     <div class="main-content">
         <header class="header">
             <div class="header-left">
-                <button
-                    class="sidebar-toggle"
-                    id="sidebarToggle"
-                    type="button"
-                    title="Thu gọn hoặc mở menu"
-                    aria-label="Thu gọn hoặc mở menu"
-                    aria-controls="sidebar"
-                    aria-expanded="true"
-                >
+                <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Thu gọn hoặc mở menu"
+                    aria-label="Thu gọn hoặc mở menu" aria-controls="sidebar" aria-expanded="true">
                     <i class="fas fa-bars"></i>
                 </button>
 
@@ -1963,86 +1816,96 @@
                 <div class="search-box">
                     <i class="fas fa-search search-icon"></i>
 
-                    <input
-                        type="text"
-                        class="search-input"
-                        placeholder="Tìm kiếm..."
-                        autocomplete="off"
-                    >
+                    <input type="text" class="search-input" placeholder="Tìm kiếm..." autocomplete="off">
                 </div>
 
                 <div class="header-actions">
-                    <button
-                        class="header-btn"
-                        title="Thông báo"
-                        type="button"
-                    >
-                        <i class="fas fa-bell"></i>
+                    <div class="dropdown">
+                        <button class="header-btn"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            title="Thông báo">
+                            <i class="fas fa-bell"></i>
 
-                        <span class="notification-badge">
-                            3
-                        </span>
-                    </button>
+                            @if ($notificationCount > 0)
+                                <span class="notification-badge">
+                                    {{ $notificationCount > 99 ? '99+' : $notificationCount }}
+                                </span>
+                            @endif
+                        </button>
 
-                    <button
-                        class="header-btn"
-                        title="Tin nhắn"
-                        type="button"
-                    >
+                        <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0"
+                            style="width:390px;max-width:calc(100vw - 24px);max-height:520px;overflow-y:auto">
+                            <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+                                <span class="fw-bold">Thông báo</span>
+
+                                @if ($notificationCount > 0)
+                                    <span class="badge bg-danger">
+                                        {{ $notificationCount }} chưa đọc
+                                    </span>
+                                @endif
+                            </div>
+
+                            @forelse ($notifications as $notification)
+                                <a href="{{ $notification->data['url'] ?? '#' }}"
+                                    class="dropdown-item py-3 border-bottom text-wrap {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
+                                    <div class="d-flex gap-3">
+                                        <span class="text-danger pt-1">
+                                            <i class="fas fa-triangle-exclamation"></i>
+                                        </span>
+
+                                        <span class="flex-grow-1">
+                                            <span class="d-block fw-semibold text-dark">
+                                                {{ $notification->data['tieu_de'] ?? 'Thông báo mới' }}
+                                            </span>
+
+                                            <span class="d-block small text-muted mt-1">
+                                                {{ $notification->data['message'] ?? '' }}
+                                            </span>
+
+                                            <span class="d-block small text-secondary mt-1">
+                                                {{ optional($notification->created_at)->diffForHumans() }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-4 text-center text-muted">
+                                    <i class="far fa-bell-slash d-block mb-2 fs-4"></i>
+                                    Chưa có thông báo
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+
+                    <button class="header-btn" title="Tin nhắn" type="button">
                         <i class="fas fa-envelope"></i>
-
-                        <span class="notification-badge">
-                            5
-                        </span>
                     </button>
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button
-                        class="btn user-menu-button d-flex align-items-center"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                    >
+                    <button class="btn user-menu-button d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Auth::check() && Auth::user()->avatar)
-                            <img
-                                src="{{ asset('storage/' . Auth::user()->avatar) }}"
-                                alt="{{ Auth::user()->name }}"
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
                                 class="user-avatar-img"
                                 onerror="
                                     this.style.display='none';
                                     this.nextElementSibling.style.display='inline-flex';
-                                "
-                            >
+                                ">
 
-                            <span
-                                class="user-avatar"
-                                style="display:none;"
-                            >
-                                {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'A',
-                                        0,
-                                        1
-                                    )
-                                ) }}
+                            <span class="user-avatar" style="display:none;">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                             </span>
                         @else
                             <span class="user-avatar">
-                                {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'A',
-                                        0,
-                                        1
-                                    )
-                                ) }}
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                             </span>
                         @endif
                     </button>
 
-                    <ul
-                        class="dropdown-menu dropdown-menu-end user-dropdown"
-                    >
+                    <ul class="dropdown-menu dropdown-menu-end user-dropdown">
                         <li class="px-3 py-2">
                             <div class="fw-bold text-dark">
                                 {{ Auth::user()->name ?? 'Administrator' }}
@@ -2058,10 +1921,7 @@
                         </li>
 
                         <li>
-                            <a
-                                class="dropdown-item"
-                                href="{{ route('profile') }}"
-                            >
+                            <a class="dropdown-item" href="{{ route('profile') }}">
                                 <i class="fas fa-user me-2"></i>
                                 Hồ sơ cá nhân
                             </a>
@@ -2072,16 +1932,10 @@
                         </li>
 
                         <li>
-                            <form
-                                method="POST"
-                                action="{{ route('logout') }}"
-                            >
+                            <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
-                                <button
-                                    type="submit"
-                                    class="dropdown-item text-danger"
-                                >
+                                <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt me-2"></i>
                                     Đăng xuất
                                 </button>
@@ -2106,7 +1960,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar =
                 document.getElementById('sidebar');
 
@@ -2128,9 +1982,9 @@
             }
 
             function updateSidebarToggleState() {
-                const isExpanded = isMobile()
-                    ? sidebar.classList.contains('open')
-                    : !sidebar.classList.contains('collapsed');
+                const isExpanded = isMobile() ?
+                    sidebar.classList.contains('open') :
+                    !sidebar.classList.contains('collapsed');
 
                 sidebarToggle.setAttribute(
                     'aria-expanded',
@@ -2189,7 +2043,7 @@
 
             sidebarToggle.addEventListener(
                 'click',
-                function () {
+                function() {
                     if (isMobile()) {
                         if (sidebar.classList.contains('open')) {
                             closeMobileSidebar();
@@ -2222,7 +2076,7 @@
 
             document.addEventListener(
                 'keydown',
-                function (event) {
+                function(event) {
                     if (
                         event.key === 'Escape' &&
                         isMobile()
@@ -2234,7 +2088,7 @@
 
             window.addEventListener(
                 'resize',
-                function () {
+                function() {
                     if (isMobile()) {
                         sidebar.classList.remove('collapsed');
                         closeMobileSidebar();
@@ -2250,10 +2104,10 @@
             const sidebarLinks =
                 sidebar.querySelectorAll('.nav-link');
 
-            sidebarLinks.forEach(function (link) {
+            sidebarLinks.forEach(function(link) {
                 link.addEventListener(
                     'click',
-                    function () {
+                    function() {
                         if (
                             isMobile() &&
                             !this.classList.contains(
@@ -2272,7 +2126,7 @@
                     '.nav-section[data-nav-section]'
                 );
 
-            navigationSections.forEach(function (section) {
+            navigationSections.forEach(function(section) {
                 const toggle =
                     section.querySelector(
                         '.nav-section-toggle'
@@ -2322,7 +2176,7 @@
 
                 toggle.addEventListener(
                     'click',
-                    function () {
+                    function() {
                         /*
                          * Khi sidebar thu gọn trên desktop,
                          * tiêu đề nhóm đang bị ẩn.
@@ -2343,16 +2197,16 @@
 
                         toggle.setAttribute(
                             'aria-expanded',
-                            collapsed
-                                ? 'false'
-                                : 'true'
+                            collapsed ?
+                            'false' :
+                            'true'
                         );
 
                         localStorage.setItem(
                             sectionStorageKey,
-                            collapsed
-                                ? 'true'
-                                : 'false'
+                            collapsed ?
+                            'true' :
+                            'false'
                         );
                     }
                 );
@@ -2363,7 +2217,7 @@
                 sidebar.querySelector('.nav-link.active');
 
             if (activeLink) {
-                setTimeout(function () {
+                setTimeout(function() {
                     activeLink.scrollIntoView({
                         behavior: 'smooth',
                         block: 'center'

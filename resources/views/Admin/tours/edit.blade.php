@@ -17,7 +17,7 @@
 
             <div class="card-body">
 
-                <form action="{{ route('Admin.tours.update', $tour) }}" method="POST" enctype="multipart/form-data">
+                <form  action="{{ route('Admin.tours.update', $tour) }}" method="POST" enctype="multipart/form-data">
 
                     @csrf
                     @method('PUT')
@@ -54,20 +54,62 @@
 
                     </div>
 
-                    <label>Ảnh đại diện</label>
+                    <div class="mb-3">
 
-                    @if ($tour->anh_dai_dien)
-                        <div class="mb-3">
+                        <label>Ảnh đại diện</label>
 
-                            <img src="{{ asset('storage/' . $tour->anh_dai_dien) }}" class="img-thumbnail shadow"
-                                style="width:220px;height:150px;object-fit:cover">
+                        @php
+                            $cover = $tour->hinhAnhs->where('la_anh_dai_dien', true)->first();
+                        @endphp
 
-                        </div>
-                    @endif
+                        @if ($cover)
+                            <div class="mb-2">
+                                <img src="{{ asset('storage/' . $cover->duong_dan_anh) }}" class="img-thumbnail"
+                                    style="width:220px;height:150px;object-fit:cover;">
+                            </div>
+                        @endif
 
-                    <input type="file" name="anh_dai_dien" id="anh_dai_dien" class="form-control">
+                        <input type="file" name="anh_dai_dien" id="anh_dai_dien" class="form-control">
 
-                    <img id="preview" class="img-thumbnail mt-3" style="display:none;width:220px;">
+                        <img id="preview" class="img-thumbnail mt-2"
+                            style="display:none;width:220px;height:150px;object-fit:cover;">
+
+                    </div>
+
+                    <label class="fw-bold">Ảnh chi tiết</label>
+
+                    <div class="row">
+
+                        @foreach ($tour->hinhAnhs as $image)
+                            <div class="col-md-3 mb-3">
+
+                                <img src="{{ asset('storage/' . $image->duong_dan_anh) }}" class="img-thumbnail"
+                                    style="width:100%;height:170px;object-fit:cover;">
+
+                                @if (!$image->la_anh_dai_dien)
+                                    
+                                @else
+                                    <div class="alert alert-success text-center mt-2 p-1">
+                                        Ảnh đại diện
+                                    </div>
+                                @endif
+
+                            </div>
+                        @endforeach
+
+                    </div>
+                    <div class="mb-4">
+
+                        <label>Thêm ảnh chi tiết</label>
+
+                        <input type="file" name="hinh_anh[]" multiple class="form-control" id="hinh_anh">
+
+                    </div>
+
+                    <div id="preview-images" class="d-flex flex-wrap gap-2 mb-4">
+                    </div>
+
+
 
                     <div class="row">
 
@@ -121,7 +163,7 @@
                                 Số ngày
                             </label>
 
-                            <select name="so_ngay" class="form-select mb-3">
+                            <select id="so_ngay" name="so_ngay" class="form-select mb-3">
 
                                 @for ($i = 1; $i <= 30; $i++)
                                     <option value="{{ $i }}" {{ $soNgay == $i ? 'selected' : '' }}>
@@ -230,7 +272,7 @@
 
                         </a>
 
-                        <button class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary">
 
                             <i class="fas fa-save"></i>
 
@@ -248,7 +290,7 @@
 
     </div>
 @endsection
-<script>
+{{-- <script>
     document.getElementById('so_ngay').addEventListener('change', function() {
 
         let ngay = parseInt(this.value);
@@ -275,4 +317,45 @@
         }
 
     }
-</script>
+</script> --}}
+{{-- <script>
+    document.getElementById('anh_dai_dien').addEventListener('change', function(e) {
+
+        const file = e.target.files[0];
+
+        if (file) {
+
+            const preview = document.getElementById('preview');
+
+            preview.src = URL.createObjectURL(file);
+
+            preview.style.display = 'block';
+
+        }
+
+    });
+
+    document.getElementById('hinh_anh').addEventListener('change', function(e) {
+
+        const container = document.getElementById('preview-images');
+
+        container.innerHTML = '';
+
+        [...e.target.files].forEach(file => {
+
+            let img = document.createElement('img');
+
+            img.src = URL.createObjectURL(file);
+
+            img.style.width = '150px';
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+
+            img.className = 'img-thumbnail';
+
+            container.appendChild(img);
+
+        });
+
+    });
+</script> --}}

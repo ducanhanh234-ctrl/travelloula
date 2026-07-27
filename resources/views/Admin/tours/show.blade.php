@@ -24,14 +24,32 @@
 
                     <div class="card-body text-center">
 
-                        @if ($tour->anh_dai_dien)
-                            <img src="{{ asset('storage/' . $tour->anh_dai_dien) }}" class="img-fluid rounded shadow"
+                        @php
+                            $cover = $tour->hinhAnhs->where('la_anh_dai_dien', true)->first();
+                        @endphp
+
+                        @if ($cover)
+                            <img src="{{ asset('storage/' . $cover->duong_dan_anh) }}" class="img-fluid rounded shadow"
                                 style="width:100%;height:450px;object-fit:cover;">
                         @else
                             <img src="https://via.placeholder.com/600x450" class="img-fluid rounded shadow">
                         @endif
 
                     </div>
+                    @if ($tour->hinhAnhs->count() > 1)
+                        <div class="row mt-3">
+
+                            @foreach ($tour->hinhAnhs->where('la_anh_dai_dien', false) as $image)
+                                <div class="col-3 mb-2">
+
+                                    <img src="{{ asset('storage/' . $image->duong_dan_anh) }}"
+                                        class="img-fluid rounded border" style="height:90px;width:100%;object-fit:cover;">
+
+                                </div>
+                            @endforeach
+
+                        </div>
+                    @endif
 
                 </div>
 

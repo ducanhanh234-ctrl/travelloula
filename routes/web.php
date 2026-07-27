@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BangGiaTourController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BaiVietController;
@@ -170,6 +171,10 @@ Route::prefix('Admin')
         Route::resource('phan-cong', PhanCongController::class);
 
         Route::resource('tours', TourController::class);
+        Route::delete('/tours/images/{id}', [TourController::class, 'deleteImage'])
+            ->name('tours.deleteImage');
+
+        Route::resource('bang-gia-tours',BangGiaTourController::class);
         Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
 
         Route::resource('gop-doan', GopDoanController::class);

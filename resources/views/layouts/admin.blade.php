@@ -1486,6 +1486,21 @@
                             </span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a
+                            href="{{ route('Admin.bang-gia-tours.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.bang-gia-tours*') ? 'active' : '' }}"
+                            title="Quản lý khởi hành"
+                        >
+                            <span class="nav-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </span>
+
+                            <span class="nav-text">
+                                Bảng giá Tour
+                            </span>
+                        </a>
+                    </div>
 
                     <div class="nav-item">
                         <a

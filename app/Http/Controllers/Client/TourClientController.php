@@ -20,12 +20,8 @@ class TourClientController extends Controller
                 'danhMuc',
 
                 /*
-                 * Tải toàn bộ lịch để Blade có thể xác định chính xác:
-                 * - Tour chưa có lịch.
-                 * - Lịch đã qua ngày.
-                 * - Lịch hết chỗ.
-                 * - Lịch đã đóng.
-                 * - Lịch đang diễn ra.
+                 * Tải toàn bộ lịch để xác định lịch gần nhất có thể đặt
+                 * và ngày dùng để đối chiếu bảng giá tour.
                  */
                 'lichKhoiHanhTours' => function ($query) {
                     $query
@@ -37,6 +33,17 @@ class TourClientController extends Controller
                         ])
                         ->orderBy('ngay_khoi_hanh')
                         ->orderBy('id');
+                },
+
+                /*
+                 * Tải bảng giá đang hoạt động.
+                 * Bảng giá được kiểm tra theo ngày khởi hành của từng tour.
+                 */
+                'bangGiaTours' => function ($query) {
+                    $query
+                        ->where('trang_thai', 'active')
+                        ->orderByDesc('ngay_bat_dau')
+                        ->orderByDesc('id');
                 },
             ])
             ->where('trang_thai', 'active');
@@ -55,6 +62,11 @@ class TourClientController extends Controller
             $query->where('danh_muc_id', $request->danh_muc_id);
         }
 
+        /*
+         * Bộ lọc giá hiện vẫn lọc theo giá niêm yết trong danh_sach_tours.
+         * Giá cao điểm phụ thuộc ngày khởi hành nên sẽ được tính sau khi
+         * tải lịch và bảng giá của tour.
+         */
         if ($request->filled('gia_min')) {
             $query->where('gia_tour', '>=', (float) $request->gia_min);
         }
@@ -74,7 +86,7 @@ class TourClientController extends Controller
         }
 
         /*
-         * Khi người dùng tìm theo ngày khởi hành, chỉ lấy lịch:
+         * Khi tìm theo ngày khởi hành, chỉ lấy lịch:
          * - Đúng ngày đã chọn.
          * - Đang mở bán.
          * - Còn chỗ.
@@ -101,6 +113,49 @@ class TourClientController extends Controller
         $tours = $query
             ->paginate(12)
             ->withQueryString();
+
+        $ngayTimKiem = null;
+
+        if ($request->filled('ngay_khoi_hanh')) {
+            try {
+                $ngayTimKiem = Carbon::parse(
+                    $request->ngay_khoi_hanh
+                )->startOfDay();
+            } catch (\Throwable $exception) {
+                $ngayTimKiem = null;
+            }
+        }
+
+        /*
+         * Gắn dữ liệu giá hiển thị cho từng tour trên trang index.
+         *
+         * Các thuộc tính Blade có thể dùng:
+         * - $tour->gia_niem_yet
+         * - $tour->gia_hien_thi
+         * - $tour->gia_nguoi_lon_niem_yet
+         * - $tour->gia_nguoi_lon_hien_thi
+         * - $tour->gia_tre_em_niem_yet
+         * - $tour->gia_tre_em_hien_thi
+         * - $tour->co_gia_cao_diem
+         * - $tour->phan_tram_tang_hien_thi
+         * - $tour->lichGiaApDung
+         * - $tour->bang_gia_ap_dung
+         */
+        $tours->getCollection()->transform(function ($tour) use ($ngayTimKiem) {
+            $lichGiaApDung = $this->getDepartureForIndexPrice(
+                $tour,
+                $ngayTimKiem
+            );
+
+            $this->attachDisplayPrice(
+                $tour,
+                $lichGiaApDung?->ngay_khoi_hanh
+            );
+
+            $tour->setRelation('lichGiaApDung', $lichGiaApDung);
+
+            return $tour;
+        });
 
         $danhMucs = DanhMuc::query()
             ->where('trang_thai', 'active')
@@ -147,6 +202,13 @@ class TourClientController extends Controller
                         ])
                         ->orderBy('ngay_khoi_hanh')
                         ->orderBy('id');
+                },
+
+                'bangGiaTours' => function ($query) {
+                    $query
+                        ->where('trang_thai', 'active')
+                        ->orderByDesc('ngay_bat_dau')
+                        ->orderByDesc('id');
                 },
 
                 'danhGia' => function ($query) {
@@ -197,8 +259,32 @@ class TourClientController extends Controller
             ->sortBy('ngay_khoi_hanh')
             ->values();
 
+        /*
+         * Gắn giá riêng cho từng lịch khởi hành.
+         * Blade chi tiết có thể đọc trực tiếp từ từng $lich.
+         */
+        $tatCaLichKhoiHanhs->each(function ($lich) use ($tour) {
+            $priceData = $this->resolvePriceData(
+                $tour,
+                $lich->ngay_khoi_hanh
+            );
+
+            foreach ($priceData as $key => $value) {
+                $lich->setAttribute($key, $value);
+            }
+        });
+
         $lichGanNhat = $lichCoTheDat->first();
         $coTheDatTour = $lichGanNhat !== null;
+
+        /*
+         * Giá chính ở đầu trang chi tiết lấy theo lịch gần nhất có thể đặt.
+         * Nếu chưa có lịch phù hợp, hệ thống dùng giá niêm yết của tour.
+         */
+        $this->attachDisplayPrice(
+            $tour,
+            $lichGanNhat?->ngay_khoi_hanh
+        );
 
         $lyDoKhongDat = $this->getBookingUnavailableReason(
             $tatCaLichKhoiHanhs,
@@ -237,6 +323,184 @@ class TourClientController extends Controller
             'soLuotDat',
             'isFavorite'
         ));
+    }
+
+    /**
+     * Chọn ngày dùng để hiển thị giá trên trang danh sách.
+     *
+     * - Có lọc ngày: dùng đúng ngày người dùng đã chọn.
+     * - Không lọc ngày: dùng lịch gần nhất đang mở bán và còn chỗ.
+     * - Không có lịch phù hợp: trả về null, dùng giá niêm yết.
+     */
+    private function getDepartureForIndexPrice(
+        DanhSachTour $tour,
+        ?Carbon $ngayTimKiem = null
+    ) {
+        $homNay = now()->startOfDay();
+
+        $lichKhoiHanhs = collect($tour->lichKhoiHanhTours ?? [])
+            ->filter(fn ($lich) => !empty($lich->ngay_khoi_hanh));
+
+        if ($ngayTimKiem) {
+            return $lichKhoiHanhs
+                ->first(function ($lich) use ($ngayTimKiem) {
+                    return Carbon::parse($lich->ngay_khoi_hanh)
+                            ->isSameDay($ngayTimKiem)
+                        && $lich->trang_thai === 'available'
+                        && (int) $lich->so_cho_con_lai > 0;
+                });
+        }
+
+        return $lichKhoiHanhs
+            ->filter(function ($lich) use ($homNay) {
+                return Carbon::parse($lich->ngay_khoi_hanh)
+                        ->startOfDay()
+                        ->gte($homNay)
+                    && $lich->trang_thai === 'available'
+                    && (int) $lich->so_cho_con_lai > 0;
+            })
+            ->sortBy('ngay_khoi_hanh')
+            ->first();
+    }
+
+    /**
+     * Gắn các trường giá động vào model tour để Blade sử dụng.
+     */
+    private function attachDisplayPrice(
+        DanhSachTour $tour,
+        $ngayKhoiHanh = null
+    ): void {
+        $priceData = $this->resolvePriceData($tour, $ngayKhoiHanh);
+
+        foreach ($priceData as $key => $value) {
+            $tour->setAttribute($key, $value);
+        }
+    }
+
+    /**
+     * Xác định bảng giá áp dụng theo đúng ngày khởi hành.
+     *
+     * Tour ngoài cao điểm:
+     * - Dùng giá trong danh_sach_tours.
+     * - Không gạch giá.
+     *
+     * Tour trong cao điểm:
+     * - Giá niêm yết lấy từ danh_sach_tours.
+     * - Giá hiện tại lấy từ bang_gia_tours.
+     * - Blade có thể gạch giá niêm yết và làm nổi bật giá hiện tại.
+     */
+    private function resolvePriceData(
+        DanhSachTour $tour,
+        $ngayKhoiHanh = null
+    ): array {
+        $giaNguoiLonNiemYet = $this->normalizeMoney(
+            ((float) ($tour->gia_nguoi_lon ?? 0) > 0)
+                ? $tour->gia_nguoi_lon
+                : $tour->gia_tour
+        );
+
+        $giaTreEmNiemYet = $this->normalizeMoney(
+            $tour->gia_tre_em ?? 0
+        );
+
+        $bangGiaApDung = null;
+        $ngayApDung = null;
+
+        if (!empty($ngayKhoiHanh)) {
+            try {
+                $ngayApDung = Carbon::parse($ngayKhoiHanh)->startOfDay();
+            } catch (\Throwable $exception) {
+                $ngayApDung = null;
+            }
+        }
+
+        if ($ngayApDung) {
+            $bangGiaApDung = collect($tour->bangGiaTours ?? [])
+                ->filter(function ($bangGia) use ($ngayApDung) {
+                    if (
+                        $bangGia->trang_thai !== 'active'
+                        || empty($bangGia->ngay_bat_dau)
+                        || empty($bangGia->ngay_ket_thuc)
+                    ) {
+                        return false;
+                    }
+
+                    $ngayBatDau = Carbon::parse(
+                        $bangGia->ngay_bat_dau
+                    )->startOfDay();
+
+                    $ngayKetThuc = Carbon::parse(
+                        $bangGia->ngay_ket_thuc
+                    )->endOfDay();
+
+                    return $ngayApDung->gte($ngayBatDau)
+                        && $ngayApDung->lte($ngayKetThuc);
+                })
+                ->sortByDesc(function ($bangGia) {
+                    return sprintf(
+                        '%s-%020d',
+                        (string) $bangGia->ngay_bat_dau,
+                        (int) $bangGia->id
+                    );
+                })
+                ->first();
+        }
+
+        $giaNguoiLonBangGia = $bangGiaApDung
+            ? $this->normalizeMoney($bangGiaApDung->gia_nguoi_lon ?? 0)
+            : 0;
+
+        $giaTreEmBangGia = $bangGiaApDung
+            ? $this->normalizeMoney($bangGiaApDung->gia_tre_em ?? 0)
+            : 0;
+
+        $giaNguoiLonHienThi = $giaNguoiLonBangGia > 0
+            ? $giaNguoiLonBangGia
+            : $giaNguoiLonNiemYet;
+
+        $giaTreEmHienThi = $giaTreEmBangGia > 0
+            ? $giaTreEmBangGia
+            : $giaTreEmNiemYet;
+
+        $phanTramTang = $bangGiaApDung
+            ? (int) ($bangGiaApDung->phan_tram_tang ?? 0)
+            : 0;
+
+        /*
+         * Chỉ gạch giá khi bảng giá thực sự làm thay đổi giá.
+         * Các dòng bang_gia_tours có 0% và giá bằng giá niêm yết
+         * sẽ được hiển thị như giá thường.
+         */
+        $coGiaThayDoi = $bangGiaApDung !== null
+            && (
+                $phanTramTang > 0
+                || $giaNguoiLonHienThi !== $giaNguoiLonNiemYet
+                || $giaTreEmHienThi !== $giaTreEmNiemYet
+            );
+
+        return [
+            'gia_niem_yet' => $giaNguoiLonNiemYet,
+            'gia_hien_thi' => $giaNguoiLonHienThi,
+
+            'gia_nguoi_lon_niem_yet' => $giaNguoiLonNiemYet,
+            'gia_nguoi_lon_hien_thi' => $giaNguoiLonHienThi,
+
+            'gia_tre_em_niem_yet' => $giaTreEmNiemYet,
+            'gia_tre_em_hien_thi' => $giaTreEmHienThi,
+
+            'co_gia_cao_diem' => $coGiaThayDoi,
+            'phan_tram_tang_hien_thi' => $phanTramTang,
+            'bang_gia_ap_dung' => $bangGiaApDung,
+            'ngay_gia_ap_dung' => $ngayApDung?->toDateString(),
+        ];
+    }
+
+    /**
+     * Chuyển giá decimal về số nguyên để hiển thị tiền Việt Nam.
+     */
+    private function normalizeMoney($value): int
+    {
+        return max(0, (int) round((float) $value));
     }
 
     /**

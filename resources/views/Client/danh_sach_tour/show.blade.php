@@ -17,13 +17,59 @@
         }
     }
 
-    $giaNguoiLon = ($tour->gia_nguoi_lon ?? 0) > 0 ? $tour->gia_nguoi_lon : $tour->gia_tour;
-    $giaTreEm = $tour->gia_tre_em ?? 0;
+    /*
+     * Giá gốc luôn lấy từ bảng danh_sach_tours.
+     * Bảng bang_gia_tours chỉ được dùng khi:
+     * - trạng thái active;
+     * - phần trăm tăng lớn hơn 0;
+     * - ngày khởi hành nằm trong khoảng áp dụng.
+     */
+    $giaNguoiLonGoc = ($tour->gia_nguoi_lon ?? 0) > 0
+        ? (float) $tour->gia_nguoi_lon
+        : (float) ($tour->gia_tour ?? 0);
+
+    $giaTreEmGoc = (float) ($tour->gia_tre_em ?? 0);
+
+    $cacBangGiaCaoDiem = \Illuminate\Support\Facades\DB::table('bang_gia_tours')
+        ->where('tour_id', $tour->id)
+        ->where('trang_thai', 'active')
+        ->where('phan_tram_tang', '>', 0)
+        ->orderByDesc('phan_tram_tang')
+        ->get();
+
+    $timBangGiaTheoNgay = function ($ngayKhoiHanh) use ($cacBangGiaCaoDiem) {
+        if (empty($ngayKhoiHanh)) {
+            return null;
+        }
+
+        $ngay = \Carbon\Carbon::parse($ngayKhoiHanh)->startOfDay();
+
+        return $cacBangGiaCaoDiem->first(function ($bangGia) use ($ngay) {
+            return $ngay->betweenIncluded(
+                \Carbon\Carbon::parse($bangGia->ngay_bat_dau)->startOfDay(),
+                \Carbon\Carbon::parse($bangGia->ngay_ket_thuc)->endOfDay()
+            );
+        });
+    };
 
     $lichGanNhat = $lichGanNhat ?? $tour->lichKhoiHanhTours
         ->where('trang_thai', 'available')
         ->sortBy('ngay_khoi_hanh')
         ->first();
+
+    $bangGiaGanNhat = $lichGanNhat
+        ? $timBangGiaTheoNgay($lichGanNhat->ngay_khoi_hanh)
+        : null;
+
+    $laGiaCaoDiemGanNhat = $bangGiaGanNhat !== null;
+
+    $giaNguoiLonHienTai = $laGiaCaoDiemGanNhat
+        ? (float) $bangGiaGanNhat->gia_nguoi_lon
+        : $giaNguoiLonGoc;
+
+    $giaTreEmHienTai = $laGiaCaoDiemGanNhat
+        ? (float) $bangGiaGanNhat->gia_tre_em
+        : $giaTreEmGoc;
 
     $soSaoTrungBinh = $soSaoTrungBinh ?? $tour->danhGia->avg('so_sao');
     $tongDanhGia = $tongDanhGia ?? $tour->danhGia->count();
@@ -247,21 +293,49 @@
                 </div>
 
                 <div class="price-box">
-                    <span>Giá chỉ từ</span>
-                    <strong>{{ number_format($tour->gia_tour ?? 0, 0, ',', '.') }} đ</strong>
+                    <span>
+                        {{ $laGiaCaoDiemGanNhat ? 'Giá cao điểm từ' : 'Giá chỉ từ' }}
+                    </span>
+
+                    @if($laGiaCaoDiemGanNhat)
+                        <div class="price-main-sale">
+                            <del>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} đ</del>
+                            <strong>{{ number_format($giaNguoiLonHienTai, 0, ',', '.') }} đ</strong>
+                        </div>
+
+                        <small class="peak-price-note">
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            Tăng {{ $bangGiaGanNhat->phan_tram_tang }}% cho lịch khởi hành cao điểm
+                        </small>
+                    @else
+                        <strong>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} đ</strong>
+                    @endif
                 </div>
 
                 <div class="price-detail">
                     <p>
                         <span>Người lớn</span>
-                        <strong>{{ number_format($giaNguoiLon, 0, ',', '.') }} đ</strong>
+
+                        <strong class="price-value-group">
+                            @if($laGiaCaoDiemGanNhat)
+                                <del>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} đ</del>
+                            @endif
+
+                            <span>{{ number_format($giaNguoiLonHienTai, 0, ',', '.') }} đ</span>
+                        </strong>
                     </p>
 
                     <p>
                         <span>Trẻ em</span>
-                        <strong>{{ number_format($giaTreEm, 0, ',', '.') }} đ</strong>
-                    </p>
 
+                        <strong class="price-value-group">
+                            @if($laGiaCaoDiemGanNhat)
+                                <del>{{ number_format($giaTreEmGoc, 0, ',', '.') }} đ</del>
+                            @endif
+
+                            <span>{{ number_format($giaTreEmHienTai, 0, ',', '.') }} đ</span>
+                        </strong>
+                    </p>
                 </div>
 
                 @if($lichGanNhat)
@@ -513,18 +587,55 @@
 
                                 <tbody>
                                     @forelse($tour->lichKhoiHanhTours->sortBy('ngay_khoi_hanh')->take(6) as $lich)
-                                        <tr>
-                                            <td>{{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}</td>
-                                            <td>{{ number_format($giaNguoiLon, 0, ',', '.') }} VND</td>
-                                            <td>{{ number_format($giaTreEm, 0, ',', '.') }} VND</td>
+                                        @php
+                                            $bangGiaTheoLich = $timBangGiaTheoNgay($lich->ngay_khoi_hanh);
+                                            $laLichCaoDiem = $bangGiaTheoLich !== null;
 
+                                            $giaNguoiLonTheoLich = $laLichCaoDiem
+                                                ? (float) $bangGiaTheoLich->gia_nguoi_lon
+                                                : $giaNguoiLonGoc;
+
+                                            $giaTreEmTheoLich = $laLichCaoDiem
+                                                ? (float) $bangGiaTheoLich->gia_tre_em
+                                                : $giaTreEmGoc;
+                                        @endphp
+
+                                        <tr>
+                                            <td>
+                                                {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
+
+                                                @if($laLichCaoDiem)
+                                                    <span class="peak-date-badge">
+                                                        Cao điểm +{{ $bangGiaTheoLich->phan_tram_tang }}%
+                                                    </span>
+                                                @endif
+                                            </td>
+
+                                            <td>
+                                                <div class="table-price-group">
+                                                    @if($laLichCaoDiem)
+                                                        <del>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} VND</del>
+                                                    @endif
+
+                                                    <strong>{{ number_format($giaNguoiLonTheoLich, 0, ',', '.') }} VND</strong>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="table-price-group">
+                                                    @if($laLichCaoDiem)
+                                                        <del>{{ number_format($giaTreEmGoc, 0, ',', '.') }} VND</del>
+                                                    @endif
+
+                                                    <strong>{{ number_format($giaTreEmTheoLich, 0, ',', '.') }} VND</strong>
+                                                </div>
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
                                             <td>Đang cập nhật</td>
-                                            <td>{{ number_format($giaNguoiLon, 0, ',', '.') }} VND</td>
-                                            <td>{{ number_format($giaTreEm, 0, ',', '.') }} VND</td>
-
+                                            <td>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} VND</td>
+                                            <td>{{ number_format($giaTreEmGoc, 0, ',', '.') }} VND</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -4670,6 +4781,135 @@ a:hover{
     }
 }
 
+
+
+/* =========================================================
+   GIÁ NIÊM YẾT VÀ GIÁ ĐANG ÁP DỤNG
+   - Giá khách thanh toán: xanh thương hiệu
+   - Giá niêm yết: xám đậm, gạch ngang rõ ràng
+   - Nhãn cao điểm: cam để tạo điểm nhấn
+   ========================================================= */
+.price-main-sale{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:10px 14px;
+}
+
+/* Giá niêm yết ở khung giá chính */
+.price-main-sale del{
+    color:#475569 !important;
+    font-size:21px;
+    font-weight:900;
+    line-height:1.2;
+    opacity:1;
+    text-decoration-line:line-through;
+    text-decoration-color:#64748b;
+    text-decoration-thickness:2px;
+}
+
+/* Giá thực tế khách thanh toán */
+.price-main-sale > strong{
+    color:#2563eb !important;
+    font-size:42px;
+    font-weight:1000;
+    line-height:1.08;
+    letter-spacing:-1px;
+    text-shadow:0 6px 18px rgba(37,99,235,.13);
+}
+
+/* Nhãn thông báo tăng giá cao điểm */
+.peak-price-note{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    margin-top:10px;
+    padding:7px 11px;
+    border-radius:999px;
+    color:#c2410c !important;
+    background:#fff7ed !important;
+    border:1px solid #fdba74 !important;
+    font-size:12px;
+    font-weight:900;
+}
+
+.price-value-group{
+    display:flex;
+    align-items:flex-end;
+    flex-direction:column;
+    gap:4px;
+}
+
+/* Giá niêm yết trong khung người lớn, trẻ em và bảng giá */
+.price-value-group del,
+.table-price-group del{
+    color:#64748b !important;
+    font-size:13px;
+    font-weight:800;
+    line-height:1.25;
+    opacity:1;
+    text-decoration-line:line-through;
+    text-decoration-color:#475569;
+    text-decoration-thickness:1.7px;
+}
+
+/* Giá cuối cùng luôn dùng màu xanh để đồng bộ giao diện */
+.price-value-group > span,
+.table-price-group strong{
+    color:#2563eb !important;
+    font-weight:1000;
+}
+
+.price-value-group > span{
+    font-size:17px;
+}
+
+.table-price-group strong{
+    font-size:15px;
+}
+
+/* Tour không có cao điểm vẫn dùng màu xanh thương hiệu */
+.price-box > strong{
+    color:#2563eb !important;
+}
+
+.table-price-group{
+    display:flex;
+    align-items:flex-start;
+    flex-direction:column;
+    gap:5px;
+}
+
+.peak-date-badge{
+    display:inline-flex;
+    margin-left:8px;
+    padding:4px 8px;
+    border-radius:999px;
+    color:#b45309;
+    background:#fef3c7;
+    border:1px solid #fde68a;
+    font-size:10px;
+    font-weight:1000;
+    white-space:nowrap;
+}
+
+@media(max-width:480px){
+    .price-main-sale{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:4px;
+    }
+
+    .price-main-sale > strong{
+        font-size:34px;
+    }
+
+    .peak-date-badge{
+        display:flex;
+        width:max-content;
+        margin:6px 0 0;
+    }
+}
 </style>
 
 

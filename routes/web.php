@@ -419,10 +419,10 @@ Route::prefix('Guide')
         Route::get('/bao-cao-su-co/{id}', [GuideBaoCaoSuCoController::class, 'show'])
             ->name('baocaosuco.show');
 
-        Route::get('/bao-cao-su-co/{id}/edit', [BaoCaoSuCoController::class, 'edit'])->name('baocaosuco.edit');
-        Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
-        Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
-        Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
+        // Route::get('/bao-cao-su-co/{id}/edit', [BaoCaoSuCoController::class, 'edit'])->name('baocaosuco.edit');
+        // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
+        // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
+        // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
 
 
         Route::get(

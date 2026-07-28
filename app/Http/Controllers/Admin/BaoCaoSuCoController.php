@@ -100,6 +100,18 @@ class BaoCaoSuCoController extends Controller
             'adminXuLy',
         ])->findOrFail($id);
 
+        auth()->user()
+            ->unreadNotifications()
+            ->get()
+            ->filter(function ($notification) use ($baoCaoSuCo) {
+                return isset($notification->data['bao_cao_id'])
+                    && (int) $notification->data['bao_cao_id']
+                    === (int) $baoCaoSuCo->id;
+            })
+            ->each(function ($notification) {
+                $notification->markAsRead();
+            });
+
         return view(
             'Admin.bao_cao_su_co.show',
             compact('baoCaoSuCo')
@@ -160,15 +172,15 @@ class BaoCaoSuCoController extends Controller
                 'trang_thai' => $data['trang_thai'],
 
                 'ghi_chu_xu_ly' =>
-                    $data['ghi_chu_xu_ly'] ?? null,
+                $data['ghi_chu_xu_ly'] ?? null,
 
                 'thoi_gian_tiep_nhan' =>
-                    $baoCaoSuCo->thoi_gian_tiep_nhan ?? now(),
+                $baoCaoSuCo->thoi_gian_tiep_nhan ?? now(),
 
                 'thoi_gian_xu_ly' =>
-                    $data['trang_thai'] === 'da_xu_ly'
-                        ? now()
-                        : null,
+                $data['trang_thai'] === 'da_xu_ly'
+                    ? now()
+                    : null,
             ]);
         });
 

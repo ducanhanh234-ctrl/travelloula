@@ -26,7 +26,6 @@ class BangGiaTour extends Model
 
     public function tour()
     {
-
         return $this->belongsTo(
             DanhSachTour::class,
             'tour_id'

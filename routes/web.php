@@ -186,6 +186,9 @@ Route::prefix('Admin')
         Route::get('/tour/{tourId}/lich-khoi-hanh', [QuanLyDatTourController::class, 'getLichKhoiHanhByTour'])
             ->name('dat_tours.lich-khoi-hanh');
 
+        Route::get('/lich-khoi-hanh/{lichKhoiHanhId}/gia', [QuanLyDatTourController::class, 'getGiaTheoLichKhoiHanh'])
+            ->name('dat_tours.gia-theo-lich');
+
         Route::prefix('thanh_toans')->name('thanh_toans.')->group(function () {
             Route::get('/', [ThanhToanController::class, 'index'])->name('index');
             Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
@@ -220,7 +223,7 @@ Route::prefix('Admin')
         Route::delete('/tours/images/{id}', [TourController::class, 'deleteImage'])
             ->name('tours.deleteImage');
 
-        Route::resource('bang-gia-tours',BangGiaTourController::class);
+        Route::resource('bang-gia-tours', BangGiaTourController::class);
 
         Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
         Route::patch(

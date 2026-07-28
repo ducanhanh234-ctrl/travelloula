@@ -123,31 +123,82 @@
         <hr>
 
         {{-- Thông tin đoàn --}}
-        <h4 class="mb-3 text-info">
-            <i class="fas fa-users me-2"></i>
-                Thông tin đoàn
-        </h4>
+        <div class="accordion mb-4" id="bookingAccordion">
 
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <strong>Người lớn:</strong>
-                <br>
-                {{ $booking->so_nguoi_lon }}
-            </div>
+    <div class="accordion-item">
 
-            <div class="col-md-4">
-                <strong>Trẻ em:</strong>
-                <br>
-                {{ $booking->so_tre_em }}
+        <h2 class="accordion-header">
+
+            <button class="accordion-button"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#collapsePassengers"
+                    aria-expanded="true">
+
+                <div class="d-flex justify-content-between align-items-center w-100 me-3">
+    <div>
+        <i class="fas fa-users me-2 text-primary"></i>
+        <strong>Thông tin đoàn</strong>
+    </div>
+
+    <span class="badge bg-primary">
+        {{ $booking->khachHangDatTour->count() }} hành khách
+    </span>
+</div>
+
+            </button>
+
+        </h2>
+
+        <div id="collapsePassengers"
+     class="accordion-collapse collapse show">
+
+    <div class="accordion-body">
+
+    <div class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <div class="card border-primary shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <i class="fas fa-user fa-2x text-primary mb-2"></i>
+
+                <h6 class="text-muted mb-1">
+                    Người lớn
+                </h6>
+
+                <h3 class="fw-bold text-primary mb-0">
+                    {{ $booking->so_nguoi_lon }}
+                </h3>
+
             </div>
         </div>
-        <hr>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-success shadow-sm h-100">
+            <div class="card-body text-center">
+
+                <i class="fas fa-child fa-2x text-success mb-2"></i>
+
+                <h6 class="text-muted mb-1">
+                    Trẻ em
+                </h6>
+
+                <h3 class="fw-bold text-success mb-0">
+                    {{ $booking->so_tre_em }}
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<hr class="mb-4">
 
         {{-- Danh sách hành khách --}}
-        <h4 class="mb-3 text-warning">
-            <i class="fas fa-id-card me-2"></i>
-                Danh sách hành khách
-        </h4>
+
 
      <div class="table-responsive">
     <table class="table table-hover table-striped align-middle">
@@ -231,7 +282,13 @@
                     </tbody>
                 </table>
             </div>
-        <hr>
+
+                    </div> {{-- accordion-body --}}
+        </div> {{-- accordion-collapse --}}
+    </div> {{-- accordion-item --}}
+</div> {{-- accordion --}}
+
+<hr>
 
         {{-- Thanh toán --}}
         <h4 class="mb-3 text-danger">

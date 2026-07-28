@@ -9,7 +9,6 @@ class DanhSachTour extends Model
     protected $table = 'danh_sach_tours';
 
     protected $fillable = [
-
         'danh_muc_id',
         'ten_tour',
         'duong_dan',
@@ -29,7 +28,6 @@ class DanhSachTour extends Model
         'gia_nguoi_lon',
         'gia_tre_em',
         'gia_em_be',
-
     ];
 
     public function lichKhoiHanh()
@@ -49,10 +47,7 @@ class DanhSachTour extends Model
 
     public function lichTrinhs()
     {
-        return $this->hasMany(
-            LichTrinhTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(LichTrinhTour::class, 'tour_id');
     }
 
     protected $casts = [
@@ -97,19 +92,20 @@ class DanhSachTour extends Model
             'tour_id'
         );
     }
+
     public function hinhAnhs()
     {
         return $this->hasMany(HinhAnhTour::class, 'tour_id');
     }
+
     public function bangGias()
     {
         return $this->hasMany(BangGiaTour::class, 'tour_id');
     }
+
     public function lichTrinh()
     {
-        return $this->hasMany(
-            LichTrinhTour::class,
-            'tour_id'
-        );
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')
+            ->orderBy('ngay_thu');
     }
 }

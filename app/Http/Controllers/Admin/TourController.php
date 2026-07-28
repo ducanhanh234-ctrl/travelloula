@@ -291,7 +291,6 @@ class TourController extends Controller
 
             'danh_muc_id' => 'required|exists:danh_mucs,id',
 
-
             'anh_dai_dien' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
 
             'hinh_anh.*' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',

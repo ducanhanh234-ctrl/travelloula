@@ -74,7 +74,7 @@ class LichKhoiHanhController extends Controller
 
         $data = $query
             ->orderBy('ngay_khoi_hanh')
-            ->paginate(10)
+            ->paginate(50)
             ->withQueryString();
 
         if (request('status')) {

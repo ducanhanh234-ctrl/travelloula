@@ -1,43 +1,43 @@
 @extends('Layouts.guide')
 
 @section('content')
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-edit me-2"></i>
+                Chỉnh sửa báo cáo sự cố
+            </h4>
+            <small class="text-white-50">
+                Cập nhật thông tin báo cáo sự cố trong quá trình dẫn tour.
+            </small>
+        </div>
 
-    <div class="container">
-        <div class="card shadow">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">
-                    <i class="fas fa-edit me-2"></i>
-                    Chỉnh sửa báo cáo sự cố
-                </h4>
-                <small class="text-white-50">
-                    Cập nhật thông tin báo cáo sự cố trong quá trình dẫn tour.
-                </small>
+        <div class="card-body">
+            @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
+            @endif
 
-            <div class="card-body">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+            <div class="alert alert-light border">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Mã báo cáo:</strong>
+                        #BC{{ str_pad($baoCao->id, 5, '0', STR_PAD_LEFT) }}
                     </div>
-                @endif
 
-                <div class="alert alert-light border">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <strong>Mã báo cáo:</strong>
-                            #BC{{ str_pad($baoCao->id, 5, '0', STR_PAD_LEFT) }}
-                        </div>
-
-                        <div class="col-md-6">
-                            <strong>Ngày tạo:</strong>
-                            {{ $baoCao->created_at->format('d/m/Y H:i') }}
-                        </div>
+                    <div class="col-md-6">
+                        <strong>Ngày tạo:</strong>
+                        {{ $baoCao->created_at->format('d/m/Y H:i') }}
                     </div>
                 </div>
+            </div>
+
 
                 <form action="{{ route('Guide.baocaosuco.update', $baoCao->id) }}" method="POST">
                     @csrf
@@ -64,15 +64,16 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-success">
-                            <i class="fas fa-heading me-1"></i>
-                            Tiêu đề
-                        </label>
 
-                        <input type="text" name="tieu_de" class="form-control"
-                            value="{{ old('tieu_de', $baoCao->tieu_de) }}" required>
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-success">
+                        <i class="fas fa-heading me-1"></i>
+                        Tiêu đề
+                    </label>
+
+                    <input type="text" name="tieu_de" class="form-control" value="{{ old('tieu_de', $baoCao->tieu_de) }}" required>
+                </div>
+
 
                     <div class="mb-3">
                         <label class="form-label fw-bold text-success">
@@ -130,27 +131,30 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold text-success">
-                            <i class="fas fa-align-left me-1"></i>
-                            Nội dung
-                        </label>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-success">
+                        <i class="fas fa-align-left me-1"></i>
+                        Nội dung
+                    </label>
+
 
                         <textarea name="noi_dung" rows="6" class="form-control" required>{{ old('noi_dung', $baoCao->noi_dung) }}</textarea>
                     </div>
 
-                    <div class="d-flex justify-content-end">
-                        <a href="{{ route('Guide.baocaosuco.index') }}" class="btn btn-secondary me-2">
-                            Quay lại
-                        </a>
 
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fas fa-save"></i>
-                            Cập nhật báo cáo
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="d-flex justify-content-end">
+                    <a href="{{ route('Guide.baocaosuco.index') }}" class="btn btn-secondary me-2">
+                        Quay lại
+                    </a>
+
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-save"></i>
+                        Cập nhật báo cáo
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 @endsection

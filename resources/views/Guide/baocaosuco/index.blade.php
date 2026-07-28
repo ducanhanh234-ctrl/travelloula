@@ -1,5 +1,6 @@
 @extends('layouts.guide')
 
+
 @section('title', 'Báo cáo sự cố')
 
 @section('content')
@@ -378,6 +379,9 @@
                     }}
                 </div>
             @endif
+
         </div>
+        @endif
     </div>
+</div>
 @endsection

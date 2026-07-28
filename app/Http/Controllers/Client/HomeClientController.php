@@ -7,6 +7,7 @@ use App\Models\DanhMuc;
 use App\Models\DanhSachTour;
 use App\Models\DanhSachTourYeuThich;
 use App\Models\KhachHangDatTour;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -49,10 +50,34 @@ class HomeClientController extends Controller
                         ->orderBy('ngay_khoi_hanh')
                         ->orderBy('id');
                 },
+                'bangGiaTours' => function ($query) {
+                    $query
+                        ->where('trang_thai', 'active')
+                        ->orderByDesc('ngay_bat_dau')
+                        ->orderByDesc('id');
+                },
             ])
             ->latest('id')
             ->take(8)
             ->get();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Giá tour động trên trang chủ
+        |--------------------------------------------------------------------------
+        | Giá cao điểm được tính trực tiếp từ giá niêm yết trong danh_sach_tours
+        | theo phan_tram_tang của bang_gia_tours tại ngày khởi hành gần nhất.
+        */
+        $tours->each(function (DanhSachTour $tour) {
+            $lichGiaApDung = $this->getDepartureForHomePrice($tour);
+
+            $this->attachDisplayPrice(
+                $tour,
+                $lichGiaApDung?->ngay_khoi_hanh
+            );
+
+            $tour->setRelation('lichGiaApDung', $lichGiaApDung);
+        });
 
         /*
         |--------------------------------------------------------------------------
@@ -221,6 +246,148 @@ class HomeClientController extends Controller
             'khuyenMais',
             'favoriteTourIds'
         ));
+    }
+
+    /**
+     * Lấy lịch gần nhất đang mở bán, còn chỗ và chưa qua ngày.
+     */
+    private function getDepartureForHomePrice(DanhSachTour $tour)
+    {
+        $homNay = now()->startOfDay();
+
+        return collect($tour->lichKhoiHanhTours ?? [])
+            ->filter(function ($lich) use ($homNay) {
+                if (empty($lich->ngay_khoi_hanh)) {
+                    return false;
+                }
+
+                return Carbon::parse($lich->ngay_khoi_hanh)
+                        ->startOfDay()
+                        ->gte($homNay)
+                    && $lich->trang_thai === 'available'
+                    && (int) $lich->so_cho_con_lai > 0;
+            })
+            ->sortBy('ngay_khoi_hanh')
+            ->first();
+    }
+
+    /**
+     * Gắn giá niêm yết và giá đang áp dụng vào model tour cho Blade.
+     */
+    private function attachDisplayPrice(
+        DanhSachTour $tour,
+        $ngayKhoiHanh = null
+    ): void {
+        foreach (
+            $this->resolvePriceData($tour, $ngayKhoiHanh)
+            as $key => $value
+        ) {
+            $tour->setAttribute($key, $value);
+        }
+    }
+
+    /**
+     * Tự tính giá cao điểm theo phần trăm tăng.
+     *
+     * Không sử dụng giá nhập sẵn trong bang_gia_tours để tính giá bán.
+     * Công thức:
+     * giá hiện tại = giá danh_sach_tours × (1 + phần trăm tăng / 100).
+     */
+    private function resolvePriceData(
+        DanhSachTour $tour,
+        $ngayKhoiHanh = null
+    ): array {
+        $giaNguoiLonNiemYet = $this->normalizeMoney(
+            ((float) ($tour->gia_nguoi_lon ?? 0) > 0)
+                ? $tour->gia_nguoi_lon
+                : $tour->gia_tour
+        );
+
+        $giaTreEmNiemYet = $this->normalizeMoney(
+            $tour->gia_tre_em ?? 0
+        );
+
+        $ngayApDung = null;
+
+        if (!empty($ngayKhoiHanh)) {
+            try {
+                $ngayApDung = Carbon::parse($ngayKhoiHanh)->startOfDay();
+            } catch (\Throwable $exception) {
+                $ngayApDung = null;
+            }
+        }
+
+        $bangGiaApDung = null;
+
+        if ($ngayApDung) {
+            $bangGiaApDung = collect($tour->bangGiaTours ?? [])
+                ->filter(function ($bangGia) use ($ngayApDung) {
+                    if (
+                        ($bangGia->trang_thai ?? null) !== 'active'
+                        || empty($bangGia->ngay_bat_dau)
+                        || empty($bangGia->ngay_ket_thuc)
+                    ) {
+                        return false;
+                    }
+
+                    $ngayBatDau = Carbon::parse(
+                        $bangGia->ngay_bat_dau
+                    )->startOfDay();
+
+                    $ngayKetThuc = Carbon::parse(
+                        $bangGia->ngay_ket_thuc
+                    )->endOfDay();
+
+                    return $ngayApDung->gte($ngayBatDau)
+                        && $ngayApDung->lte($ngayKetThuc);
+                })
+                ->sortByDesc(function ($bangGia) {
+                    return sprintf(
+                        '%s-%020d',
+                        (string) $bangGia->ngay_bat_dau,
+                        (int) $bangGia->id
+                    );
+                })
+                ->first();
+        }
+
+        $phanTramTang = $bangGiaApDung
+            ? max(0, (float) ($bangGiaApDung->phan_tram_tang ?? 0))
+            : 0;
+
+        if ($bangGiaApDung && $phanTramTang > 0) {
+            $heSoTang = 1 + ($phanTramTang / 100);
+
+            $giaNguoiLonHienThi = $this->normalizeMoney(
+                $giaNguoiLonNiemYet * $heSoTang
+            );
+
+            $giaTreEmHienThi = $giaTreEmNiemYet > 0
+                ? $this->normalizeMoney($giaTreEmNiemYet * $heSoTang)
+                : 0;
+        } else {
+            $giaNguoiLonHienThi = $giaNguoiLonNiemYet;
+            $giaTreEmHienThi = $giaTreEmNiemYet;
+        }
+
+        return [
+            'gia_niem_yet' => $giaNguoiLonNiemYet,
+            'gia_hien_thi' => $giaNguoiLonHienThi,
+            'gia_nguoi_lon_niem_yet' => $giaNguoiLonNiemYet,
+            'gia_nguoi_lon_hien_thi' => $giaNguoiLonHienThi,
+            'gia_tre_em_niem_yet' => $giaTreEmNiemYet,
+            'gia_tre_em_hien_thi' => $giaTreEmHienThi,
+            'co_gia_cao_diem' => $bangGiaApDung !== null
+                && $phanTramTang > 0,
+            'phan_tram_tang_hien_thi' => $phanTramTang,
+            'bang_gia_ap_dung' => $bangGiaApDung,
+            'ngay_gia_ap_dung' => $ngayApDung?->toDateString(),
+        ];
+    }
+
+    private function normalizeMoney($value): int
+    {
+        return max(0, (int) round((float) $value));
     }
 
     public function landingPage()

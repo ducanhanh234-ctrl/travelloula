@@ -386,8 +386,9 @@ class TourClientController extends Controller
      *
      * Tour trong cao điểm:
      * - Giá niêm yết lấy từ danh_sach_tours.
-     * - Giá hiện tại lấy từ bang_gia_tours.
-     * - Blade có thể gạch giá niêm yết và làm nổi bật giá hiện tại.
+     * - Chỉ lấy phần trăm tăng, thời gian và trạng thái từ bang_gia_tours.
+     * - Giá hiện tại được tự tính theo phần trăm tăng.
+     * - Blade gạch giá niêm yết và làm nổi bật giá hiện tại.
      */
     private function resolvePriceData(
         DanhSachTour $tour,
@@ -446,37 +447,38 @@ class TourClientController extends Controller
                 ->first();
         }
 
-        $giaNguoiLonBangGia = $bangGiaApDung
-            ? $this->normalizeMoney($bangGiaApDung->gia_nguoi_lon ?? 0)
-            : 0;
-
-        $giaTreEmBangGia = $bangGiaApDung
-            ? $this->normalizeMoney($bangGiaApDung->gia_tre_em ?? 0)
-            : 0;
-
-        $giaNguoiLonHienThi = $giaNguoiLonBangGia > 0
-            ? $giaNguoiLonBangGia
-            : $giaNguoiLonNiemYet;
-
-        $giaTreEmHienThi = $giaTreEmBangGia > 0
-            ? $giaTreEmBangGia
-            : $giaTreEmNiemYet;
-
         $phanTramTang = $bangGiaApDung
-            ? (int) ($bangGiaApDung->phan_tram_tang ?? 0)
+            ? max(0, (float) ($bangGiaApDung->phan_tram_tang ?? 0))
             : 0;
 
         /*
-         * Chỉ gạch giá khi bảng giá thực sự làm thay đổi giá.
-         * Các dòng bang_gia_tours có 0% và giá bằng giá niêm yết
-         * sẽ được hiển thị như giá thường.
+         * Giá cao điểm được tính tự động từ giá niêm yết.
+         * Chỉ cần sửa phan_tram_tang trong bang_gia_tours,
+         * giá hiển thị sẽ tự thay đổi mà không phải nhập lại giá.
+         *
+         * Ví dụ: 7.990.000đ, tăng 15% => 9.188.500đ.
          */
-        $coGiaThayDoi = $bangGiaApDung !== null
-            && (
-                $phanTramTang > 0
-                || $giaNguoiLonHienThi !== $giaNguoiLonNiemYet
-                || $giaTreEmHienThi !== $giaTreEmNiemYet
+        if ($bangGiaApDung !== null && $phanTramTang > 0) {
+            $heSoTang = 1 + ($phanTramTang / 100);
+
+            $giaNguoiLonHienThi = $this->normalizeMoney(
+                $giaNguoiLonNiemYet * $heSoTang
             );
+
+            $giaTreEmHienThi = $giaTreEmNiemYet > 0
+                ? $this->normalizeMoney($giaTreEmNiemYet * $heSoTang)
+                : 0;
+        } else {
+            /*
+             * Không thuộc cao điểm hoặc phần trăm tăng bằng 0:
+             * luôn dùng giá trong danh_sach_tours.
+             */
+            $giaNguoiLonHienThi = $giaNguoiLonNiemYet;
+            $giaTreEmHienThi = $giaTreEmNiemYet;
+        }
+
+        $coGiaThayDoi = $bangGiaApDung !== null
+            && $phanTramTang > 0;
 
         return [
             'gia_niem_yet' => $giaNguoiLonNiemYet,

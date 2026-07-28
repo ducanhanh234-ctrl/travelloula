@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\BangGiaTourController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BaiVietController;
 use App\Http\Controllers\BannerController;
@@ -21,20 +23,28 @@ use App\Http\Controllers\TrangDieuKhoanClientController;
 use App\Http\Controllers\TrangDieuKhoanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
+
+use App\Http\Controllers\Admin\BaoCaoSuCoController as AdminBaoCaoSuCoController;
 use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\Admin\GopDoanController;
 use App\Http\Controllers\Admin\LichKhoiHanhController;
 use App\Http\Controllers\Admin\LichTrinhTourController;
 use App\Http\Controllers\Admin\NhatKyTourController;
 use App\Http\Controllers\Admin\TourController;
+
 use App\Http\Controllers\Client\BaiVietClientController;
 use App\Http\Controllers\Client\HomeClientController;
 use App\Http\Controllers\Client\TourClientController;
 use App\Http\Controllers\Client\TourYeuThichController;
-use App\Http\Controllers\Guide\BaoCaoSuCoController;
+
+use App\Http\Controllers\Guide\BaoCaoSuCoController as GuideBaoCaoSuCoController;
 use App\Http\Controllers\Guide\CheckInController;
 use App\Http\Controllers\Guide\GuideController;
 use App\Http\Controllers\Guide\NhatKyHuongDanVienController;
+use App\Http\Controllers\Admin\YeuCauGopDoanController;
+use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
+use App\Http\Controllers\Admin\HinhAnhTourController;
+use App\Http\Controllers\Admin\DatTourController;
 
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
@@ -130,6 +140,7 @@ Route::prefix('Admin')
     ->name('Admin.')
     ->middleware(['auth', 'permission:vao_admin'])
     ->group(function () {
+
         Route::view('/', 'layouts.admin')->name('dashboard');
 
         Route::resource('users', UserController::class);
@@ -175,6 +186,9 @@ Route::prefix('Admin')
         Route::get('/tour/{tourId}/lich-khoi-hanh', [QuanLyDatTourController::class, 'getLichKhoiHanhByTour'])
             ->name('dat_tours.lich-khoi-hanh');
 
+        Route::get('/lich-khoi-hanh/{lichKhoiHanhId}/gia', [QuanLyDatTourController::class, 'getGiaTheoLichKhoiHanh'])
+            ->name('dat_tours.gia-theo-lich');
+
         Route::prefix('thanh_toans')->name('thanh_toans.')->group(function () {
             Route::get('/', [ThanhToanController::class, 'index'])->name('index');
             Route::get('/{id}', [ThanhToanController::class, 'show'])->name('show');
@@ -200,13 +214,71 @@ Route::prefix('Admin')
         Route::resource('phan-cong', PhanCongController::class);
 
         Route::resource('tours', TourController::class);
-        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
 
-        Route::resource('gop-doan', GopDoanController::class);
-        Route::post('gop-doan/{id}/huy', [GopDoanController::class, 'destroy'])->name('gop-doan.huy');
-        Route::post('gop-doan/chi-tiet/{id}/trang-thai', [GopDoanController::class, 'capNhatTrangThaiLienHe'])
-            ->name('gop-doan.cap-nhat-trang-thai');
-        Route::post('gop-doan/{id}/chot', [GopDoanController::class, 'chotGop'])->name('gop-doan.chot');
+        Route::get(
+            'lich-khoi-hanh/bang-gia',
+            [LichKhoiHanhController::class, 'layBangGia']
+        )->name('lich-khoi-hanh.bang-gia');
+
+        Route::delete('/tours/images/{id}', [TourController::class, 'deleteImage'])
+            ->name('tours.deleteImage');
+
+        Route::resource('bang-gia-tours', BangGiaTourController::class);
+
+        Route::resource('lich-khoi-hanh', LichKhoiHanhController::class);
+        Route::patch(
+            'lich-khoi-hanh/{id}/chot',
+            [LichKhoiHanhController::class, 'chot']
+        )->name('lich-khoi-hanh.chot');
+
+        Route::get(
+            'gop-doan/lich-su',
+            [GopDoanController::class, 'lichSu']
+        )->name('gop-doan.lich-su');
+
+        Route::get(
+            'gop-doan/thu-cong',
+            [GopDoanController::class, 'thuCong']
+        )->name('gop-doan.thu-cong');
+
+        Route::post(
+            'gop-doan/thu-cong',
+            [GopDoanController::class, 'storeThuCong']
+        )->name('gop-doan.thu-cong.store');
+
+        Route::post(
+            'gop-doan/de-xuat',
+            [GopDoanController::class, 'storeAI']
+        )->name('gop-doan.ai.store');
+
+        Route::resource('gop-doan', GopDoanController::class)
+            ->only(['index']);
+
+        Route::prefix('yeu-cau-gop-doan')
+            ->name('yeu-cau-gop-doan.')
+            ->group(function () {
+
+                Route::get('/', [YeuCauGopDoanController::class, 'index'])
+                    ->name('index');
+
+                Route::get('/{id}', [YeuCauGopDoanController::class, 'show'])
+                    ->name('show');
+
+                Route::post(
+                    '/chi-tiet/{id}/trang-thai',
+                    [YeuCauGopDoanController::class, 'capNhatTrangThaiLienHe']
+                )->name('cap-nhat-trang-thai');
+
+                Route::post(
+                    '/{id}/chot',
+                    [YeuCauGopDoanController::class, 'chotGop']
+                )->name('chot');
+
+                Route::post(
+                    '/{id}/huy',
+                    [YeuCauGopDoanController::class, 'destroy']
+                )->name('destroy');
+            });
 
         Route::resource('lich_trinh_tours', LichTrinhTourController::class);
         Route::get('tour/{tour}/lich-trinh', [LichTrinhTourController::class, 'indexByTour'])
@@ -228,9 +300,33 @@ Route::prefix('Admin')
             ->name('chi_tiet_lich_trinhs.destroy');
 
         Route::resource('nhat_ky_tours', NhatKyTourController::class)->only(['index', 'show']);
-
         Route::post('/import-hanh-khach', [ImportKhachHangController::class, 'import'])
             ->name('import_hanh_khach');
+
+        /*
+        |--------------------------------------------------------------------------
+        | ADMIN - BÁO CÁO SỰ CỐ
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('bao-cao-su-co')
+            ->name('baocaosuco.')
+            ->group(function () {
+                Route::get('/', [AdminBaoCaoSuCoController::class, 'index'])
+                    ->name('index');
+
+                Route::get('/{id}', [AdminBaoCaoSuCoController::class, 'show'])
+                    ->name('show');
+
+                Route::patch('/{id}/tiep-nhan', [AdminBaoCaoSuCoController::class, 'tiepNhan'])
+                    ->name('tiep-nhan');
+
+                Route::put('/{id}/xu-ly', [AdminBaoCaoSuCoController::class, 'update'])
+                    ->name('update');
+
+                Route::delete('/{id}', [AdminBaoCaoSuCoController::class, 'destroy'])
+                    ->name('destroy');
+            });
     });
 
 /*
@@ -250,7 +346,10 @@ Route::prefix('Guide')
 
         Route::resource('phuong-tiens', PhuongTienController::class);
         Route::resource('tour-phan-cong', GuideController::class);
-        Route::get('/lich-trinh/{phanCongId}', [GuideController::class, 'lichtrinh'])->name('lich-trinh');
+
+        Route::get('/lich-trinh/{phanCongId}', [GuideController::class, 'lichtrinh'])
+            ->name('lich-trinh');
+
         Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])
             ->name('danh-sach-khach');
 
@@ -268,12 +367,14 @@ Route::prefix('Guide')
         Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
             ->name('checkin.checkoutTatCa');
 
+
         Route::post('/check-in/undo-tat-ca', [CheckInController::class, 'undoCheckInTatCa'])
             ->name('checkin.undoTatCa');
 
         Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
         Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
         Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
+
 
 
         // Lưu trạng thái điểm danh khởi hành (nút Lưu)
@@ -284,18 +385,47 @@ Route::prefix('Guide')
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
 
-        Route::get('/bao-cao-su-co', [BaoCaoSuCoController::class, 'index'])->name('baocaosuco.index');
-        Route::get('/bao-cao-su-co/create', [BaoCaoSuCoController::class, 'create'])->name('baocaosuco.create');
-        Route::post('/bao-cao-su-co', [BaoCaoSuCoController::class, 'store'])->name('baocaosuco.store');
-        Route::get('/bao-cao-su-co/trash', [BaoCaoSuCoController::class, 'trash'])->name('baocaosuco.trash');
-        Route::patch('/bao-cao-su-co/{id}/restore', [BaoCaoSuCoController::class, 'restore'])
+        /*
+        |--------------------------------------------------------------------------
+        | GUIDE - BÁO CÁO SỰ CỐ
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get('/bao-cao-su-co', [GuideBaoCaoSuCoController::class, 'index'])
+            ->name('baocaosuco.index');
+
+        Route::get('/bao-cao-su-co/create', [GuideBaoCaoSuCoController::class, 'create'])
+            ->name('baocaosuco.create');
+
+        Route::post('/bao-cao-su-co', [GuideBaoCaoSuCoController::class, 'store'])
+            ->name('baocaosuco.store');
+
+        Route::get('/bao-cao-su-co/trash', [GuideBaoCaoSuCoController::class, 'trash'])
+            ->name('baocaosuco.trash');
+
+        Route::patch('/bao-cao-su-co/{id}/restore', [GuideBaoCaoSuCoController::class, 'restore'])
             ->name('baocaosuco.restore');
-        Route::delete('/bao-cao-su-co/{id}/force-delete', [BaoCaoSuCoController::class, 'forceDelete'])
+
+        Route::delete('/bao-cao-su-co/{id}/force-delete', [GuideBaoCaoSuCoController::class, 'forceDelete'])
             ->name('baocaosuco.forceDelete');
-        Route::get('/bao-cao-su-co/{id}/edit', [BaoCaoSuCoController::class, 'edit'])->name('baocaosuco.edit');
-        Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
-        Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
-        Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
+
+
+        Route::get('/bao-cao-su-co/{id}/edit', [GuideBaoCaoSuCoController::class, 'edit'])
+            ->name('baocaosuco.edit');
+
+        Route::put('/bao-cao-su-co/{id}', [GuideBaoCaoSuCoController::class, 'update'])
+            ->name('baocaosuco.update');
+
+        Route::delete('/bao-cao-su-co/{id}', [GuideBaoCaoSuCoController::class, 'destroy'])
+            ->name('baocaosuco.destroy');
+
+        Route::get('/bao-cao-su-co/{id}', [GuideBaoCaoSuCoController::class, 'show'])
+            ->name('baocaosuco.show');
+
+        // Route::get('/bao-cao-su-co/{id}/edit', [BaoCaoSuCoController::class, 'edit'])->name('baocaosuco.edit');
+        // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
+        // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
+        // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
 
 
         Route::get(

@@ -15,28 +15,60 @@ class YeuCauGopDoanService
         return DB::transaction(function () use ($nhom, $diem, $lyDo) {
 
             $yeuCau = YeuCauGopDoan::create([
-                'ma_yeu_cau' => 'YG' . now()->format('YmdHis') . rand(100, 999),
-                'ly_do_de_xuat' => $lyDo,
-                'loai_de_xuat' => 'tu_dong',
-                'trang_thai' => 'cho_xu_ly',
-                'xe_de_xuat' => $this->getXeDeXuat($nhom),
+                'ma_yeu_cau'       => 'YG' . now()->format('YmdHis') . rand(100, 999),
+                'ly_do_de_xuat'    => $lyDo,
+                'loai_de_xuat'     => 'tu_dong',
+                'trang_thai'       => 'cho_xu_ly',
+                'xe_de_xuat'       => $this->getXeDeXuat($nhom),
             ]);
 
-            foreach ($nhom as $index => $lich) {
+            $lichChinhId = $nhom->first()->id;
 
-                // CHẶN TRÙNG (QUAN TRỌNG)
-                if ((int)$lich->dang_gop_doan !== 0) {
-                    throw new \Exception("Lịch {$lich->id} đã có yêu cầu gộp đoàn");
+            foreach ($nhom as $lich) {
+
+                if ((int) $lich->dang_gop_doan !== 0) {
+                    throw new \Exception("Lịch {$lich->id} đã có yêu cầu gộp đoàn.");
                 }
 
-                // tạo chi tiết
-                ChiTietYeuCauGopDoan::create([
-                    'yeu_cau_gop_doan_id' => $yeuCau->id,
-                    'lich_khoi_hanh_id'   => $lich->id,
-                    'la_lich_chinh'       => $index === 0,
-                ]);
+                $laLichChinh = $lich->id == $lichChinhId;
 
-                // lock lịch
+                // Lấy toàn bộ booking của lịch
+                $bookings = \App\Models\DatTour::where(
+                    'lich_khoi_hanh_id',
+                    $lich->id
+                )->get();
+
+                // Tạo chi tiết cho từng booking
+                foreach ($bookings as $booking) {
+
+                    ChiTietYeuCauGopDoan::create([
+
+                        'yeu_cau_gop_doan_id' => $yeuCau->id,
+
+                        'lich_khoi_hanh_id'   => $lich->id,
+
+                        'dat_tour_id'         => $booking->id,
+
+                        'la_lich_chinh'       => $laLichChinh,
+
+                    ]);
+                }
+
+                // Nếu lịch chưa có booking thì vẫn tạo 1 dòng
+                if ($bookings->count() == 0) {
+
+                    ChiTietYeuCauGopDoan::create([
+
+                        'yeu_cau_gop_doan_id' => $yeuCau->id,
+
+                        'lich_khoi_hanh_id'   => $lich->id,
+
+                        'la_lich_chinh'       => $laLichChinh,
+
+                    ]);
+                }
+
+                // Lock lịch
                 $lich->update([
                     'dang_gop_doan' => 1
                 ]);
@@ -46,16 +78,34 @@ class YeuCauGopDoanService
         });
     }
 
-    public function taoYeuCauThuCong(array $lichIds, array|string $lyDo = [])
-    {
-        return DB::transaction(function () use ($lichIds, $lyDo) {
+    public function taoYeuCauThuCong(
+        array $lichIds,
+        array|string $lyDo = [],
+        ?int $lichChinhId = null
+    ) {
+        return DB::transaction(function () use (
+            $lichIds,
+            $lyDo,
+            $lichChinhId
+        ) {
 
             $nhom = LichKhoiHanhTour::whereIn('id', $lichIds)
                 ->orderBy('ngay_khoi_hanh')
+                ->lockForUpdate()
                 ->get();
 
             if ($nhom->count() < 2) {
                 throw new \Exception('Phải chọn ít nhất 2 lịch để gộp.');
+            }
+
+            if (
+                $nhom->contains(
+                    fn($l) => $l->dang_gop_doan != 0
+                )
+            ) {
+                throw new \Exception(
+                    'Có lịch đã nằm trong yêu cầu gộp khác.'
+                );
             }
 
             if (is_string($lyDo)) {
@@ -71,7 +121,12 @@ class YeuCauGopDoanService
                 'xe_de_xuat'       => $this->getXeDeXuat($nhom),
             ]);
 
-            foreach ($nhom as $index => $lich) {
+            foreach ($nhom as $lich) {
+
+                $laLichChinh = $lichChinhId
+                    ? $lich->id == $lichChinhId
+                    : $lich->id == $nhom->first()->id;
+
                 // lấy booking của lịch này
                 $bookings = \App\Models\DatTour::where(
                     'lich_khoi_hanh_id',
@@ -88,7 +143,7 @@ class YeuCauGopDoanService
 
                         'dat_tour_id' => $booking->id,
 
-                        'la_lich_chinh' => $index === 0,
+                        'la_lich_chinh' => $laLichChinh,
 
                     ]);
                 }
@@ -102,7 +157,7 @@ class YeuCauGopDoanService
 
                         'lich_khoi_hanh_id' => $lich->id,
 
-                        'la_lich_chinh' => $index === 0,
+                        'la_lich_chinh' => $laLichChinh,
 
                     ]);
                 }

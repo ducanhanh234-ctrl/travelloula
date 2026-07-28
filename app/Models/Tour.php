@@ -56,4 +56,8 @@ class Tour extends Model
             'tour_id'
         );
     }
+    public function hinhAnhs()
+    {
+        return $this->hasMany(HinhAnhTour::class, 'tour_id');
+    }
 }

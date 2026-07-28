@@ -558,6 +558,46 @@ $avgRating = (float) ($avgRating ?? 0);
         font-weight: 900;
     }
 
+    /* GIÁ TOUR GỌN: GIÁ CŨ GẠCH NGANG + GIÁ MỚI BÊN CẠNH */
+    .home-tour-price {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 6px 9px;
+        min-width: 0;
+        min-height: 38px;
+    }
+
+    .home-tour-price-old {
+        color: #64748b;
+        font-size: 14px;
+        line-height: 1.2;
+        font-weight: 800;
+        white-space: nowrap;
+        text-decoration-line: line-through;
+        text-decoration-color: #475569;
+        text-decoration-thickness: 2px;
+    }
+
+    .home-tour-price-current {
+        color: #0757d8 !important;
+        font-size: 21px !important;
+        line-height: 1.1 !important;
+        font-weight: 1000 !important;
+        letter-spacing: -.35px;
+        white-space: nowrap;
+    }
+
+    @media(max-width:390px) {
+        .home-tour-price-old {
+            font-size: 13px;
+        }
+
+        .home-tour-price-current {
+            font-size: 20px !important;
+        }
+    }
+
     .tour-actions {
         display: flex;
         align-items: center;
@@ -1954,20 +1994,125 @@ $avgRating = (float) ($avgRating ?? 0);
                         'label' => 'Chưa có lịch',
                         'class' => 'status-unknown',
                         ];
+
+                        /*
+                         * Giá hiển thị gọn trên trang chủ:
+                         * - Ngày thường: chỉ hiện giá niêm yết.
+                         * - Ngày cao điểm: giá niêm yết gạch ngang + giá mới bên cạnh.
+                         *
+                         * Ưu tiên lịch mở bán gần nhất đang được hiển thị trên card.
+                         */
+                        $giaNiemYetTrangChu = (int) round(
+                            (float) (
+                                ((float) ($tour->gia_nguoi_lon ?? 0) > 0)
+                                    ? $tour->gia_nguoi_lon
+                                    : ($tour->gia_tour ?? 0)
+                            )
+                        );
+
+                        $giaHienThiTrangChu = $giaNiemYetTrangChu;
+                        $coGiaCaoDiemTrangChu = false;
+                        $bangGiaApDungTrangChu = null;
+
+                        if ($lichGanNhat && !empty($lichGanNhat->ngay_khoi_hanh)) {
+                            $ngayKhoiHanhTinhGia = \Carbon\Carbon::parse(
+                                $lichGanNhat->ngay_khoi_hanh
+                            )->startOfDay();
+
+                            $bangGiaApDungTrangChu = collect(
+                                $tour->bangGiaTours ?? []
+                            )
+                                ->filter(function ($bangGia) use ($ngayKhoiHanhTinhGia) {
+                                    if (
+                                        ($bangGia->trang_thai ?? null) !== 'active'
+                                        || empty($bangGia->ngay_bat_dau)
+                                        || empty($bangGia->ngay_ket_thuc)
+                                    ) {
+                                        return false;
+                                    }
+
+                                    $ngayBatDau = \Carbon\Carbon::parse(
+                                        $bangGia->ngay_bat_dau
+                                    )->startOfDay();
+
+                                    $ngayKetThuc = \Carbon\Carbon::parse(
+                                        $bangGia->ngay_ket_thuc
+                                    )->endOfDay();
+
+                                    return $ngayKhoiHanhTinhGia->gte($ngayBatDau)
+                                        && $ngayKhoiHanhTinhGia->lte($ngayKetThuc);
+                                })
+                                ->sortByDesc(function ($bangGia) {
+                                    return sprintf(
+                                        '%s-%020d',
+                                        (string) $bangGia->ngay_bat_dau,
+                                        (int) $bangGia->id
+                                    );
+                                })
+                                ->first();
+
+                            if ($bangGiaApDungTrangChu) {
+                                $giaNguoiLonBangGia = (int) round(
+                                    (float) ($bangGiaApDungTrangChu->gia_nguoi_lon ?? 0)
+                                );
+
+                                if ($giaNguoiLonBangGia > 0) {
+                                    $giaHienThiTrangChu = $giaNguoiLonBangGia;
+                                }
+
+                                $coGiaCaoDiemTrangChu =
+                                    (int) ($bangGiaApDungTrangChu->phan_tram_tang ?? 0) > 0
+                                    || $giaHienThiTrangChu !== $giaNiemYetTrangChu;
+                            }
+                        }
+
+                        /*
+                         * Nếu HomeController đã gắn sẵn dữ liệu giá như
+                         * TourClientController thì ưu tiên dùng dữ liệu đó.
+                         */
+                        if (isset($tour->gia_niem_yet)) {
+                            $giaNiemYetTrangChu = (int) $tour->gia_niem_yet;
+                        }
+
+                        if (isset($tour->gia_hien_thi)) {
+                            $giaHienThiTrangChu = (int) $tour->gia_hien_thi;
+                        }
+
+                        if (isset($tour->co_gia_cao_diem)) {
+                            $coGiaCaoDiemTrangChu = (bool) $tour->co_gia_cao_diem;
+                        }
                         @endphp
 
                         <div class="tour-bottom">
-                            <div>
-                                <strong>
-                                    {{ number_format(
-                                        $lichGanNhat && (int) $lichGanNhat->gia_nguoi_lon > 0
-                                            ? $lichGanNhat->gia_nguoi_lon
-                                            : ($tour->gia_nguoi_lon > 0 ? $tour->gia_nguoi_lon : $tour->gia_tour),
-                                        0,
-                                        ',',
-                                        '.'
-                                    ) }}đ
-                                </strong>
+                            <div class="home-tour-price">
+                                @if($coGiaCaoDiemTrangChu)
+                                    <span class="home-tour-price-old">
+                                        {{ number_format(
+                                            $giaNiemYetTrangChu,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}đ
+                                    </span>
+
+                                    <strong class="home-tour-price-current">
+                                        {{ number_format(
+                                            $giaHienThiTrangChu,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}đ
+                                    </strong>
+                                @else
+                                    <strong class="home-tour-price-current">
+                                        {{ number_format(
+                                            $giaHienThiTrangChu,
+                                            0,
+                                            ',',
+                                            '.'
+                                        ) }}đ
+                                    </strong>
+                                @endif
                             </div>
 
                             <div class="tour-actions">
@@ -2126,12 +2271,12 @@ $avgRating = (float) ($avgRating ?? 0);
         <div class="home-container">
             <div class="review-section-heading">
                 <div>
-                    <span>ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT</span>
+                    {{-- <span>ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT</span> --}}
                     <h2 class="big-title">Khách Hàng Đánh Giá</h2>
-                    <p>
+                    {{-- <p>
                         Dữ liệu được lấy trực tiếp từ những đánh giá tour đã được
                         quản trị viên xét duyệt.
-                    </p>
+                    </p> --}}
                 </div>
 
                 <div class="review-summary">
@@ -2143,7 +2288,7 @@ $avgRating = (float) ($avgRating ?? 0);
                                 @endfor
                         </div>
 
-                        <span>{{ $totalReviews }} đánh giá đã duyệt</span>
+                        <span>{{ $totalReviews }} Đánh giá đã duyệt</span>
                     </div>
                 </div>
             </div>
@@ -2338,7 +2483,7 @@ $avgRating = (float) ($avgRating ?? 0);
                     event.stopPropagation();
 
                     const button = form.querySelector('.heart');
-                    const icon = button ? .querySelector('i');
+                    const icon = button?.querySelector('i');
 
                     if (!button || !icon || button.classList.contains('is-loading')) {
                         return;
@@ -2383,7 +2528,7 @@ $avgRating = (float) ($avgRating ?? 0);
                                 form.appendChild(methodInput);
                             }
                         } else {
-                            methodInput ? .remove();
+                            methodInput?.remove();
                         }
 
                         button.classList.toggle('active', nextFavoriteState);

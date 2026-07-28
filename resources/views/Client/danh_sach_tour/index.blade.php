@@ -263,6 +263,33 @@
                         $isFavorite = auth()->check()
                             ? in_array($tour->id, $favoriteTourIds ?? [])
                             : false;
+
+                        /*
+                         * Giá hiển thị đã được controller gắn theo ngày khởi hành:
+                         * - Không thuộc cao điểm: dùng giá trong danh_sach_tours.
+                         * - Thuộc cao điểm: dùng giá trong bang_gia_tours.
+                         *
+                         * Các giá trị fallback giúp trang không lỗi nếu controller
+                         * chưa gắn đủ thuộc tính trong một số trường hợp cũ.
+                         */
+                        $giaNiemYet = (float) (
+                            $tour->gia_niem_yet
+                            ?? $tour->gia_tour
+                            ?? 0
+                        );
+
+                        $giaHienThi = (float) (
+                            $tour->gia_hien_thi
+                            ?? $giaNiemYet
+                        );
+
+                        $coGiaCaoDiem = (bool) (
+                            $tour->co_gia_cao_diem
+                            ?? false
+                        );
+
+                        $giaCoThayDoi = $coGiaCaoDiem
+                            && abs($giaHienThi - $giaNiemYet) >= 1;
                     @endphp
 
                     <article
@@ -347,9 +374,22 @@
                             @endif
 
                             <div class="tour-bottom">
-                                <div class="price-box">
-                                    <span>Chỉ từ</span>
-                                    <strong>{{ number_format($tour->gia_tour ?? 0, 0, ',', '.') }}đ</strong>
+                                <div class="price-box {{ $giaCoThayDoi ? 'is-high-season' : 'is-normal-price' }}">
+                                    @if($giaCoThayDoi)
+                                        <div class="price-values">
+                                            <del class="listed-price">
+                                                {{ number_format($giaNiemYet, 0, ',', '.') }}đ
+                                            </del>
+
+                                            <strong class="current-price">
+                                                {{ number_format($giaHienThi, 0, ',', '.') }}đ
+                                            </strong>
+                                        </div>
+                                    @else
+                                        <strong class="current-price normal-price">
+                                            {{ number_format($giaHienThi, 0, ',', '.') }}đ
+                                        </strong>
+                                    @endif
                                 </div>
 
                                 <div class="tour-actions">
@@ -2857,6 +2897,64 @@ body.booking-message-open{
 
     .booking-message-actions{
         grid-template-columns:1fr;
+    }
+}
+
+
+/* =========================================================
+   GIÁ TOUR TRÊN TRANG DANH SÁCH
+   - Cao điểm: giá cũ gạch ngang, giá mới ngay bên cạnh.
+   - Ngày thường: chỉ hiển thị một giá.
+   ========================================================= */
+.tour-bottom .price-box{
+    display:flex;
+    align-items:center;
+    min-width:0;
+}
+
+.tour-bottom .price-values{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:8px 12px;
+}
+
+.tour-bottom .listed-price{
+    display:inline-block;
+    color:#475569;
+    font-size:15px;
+    line-height:1.2;
+    font-weight:850;
+    text-decoration-line:line-through;
+    text-decoration-color:#334155;
+    text-decoration-thickness:2px;
+    opacity:1;
+}
+
+.tour-bottom .current-price{
+    display:inline-block;
+    margin:0;
+    color:#0757d8 !important;
+    font-size:clamp(24px,1.8vw,32px);
+    line-height:1.08;
+    font-weight:1000;
+    letter-spacing:-.7px;
+    overflow-wrap:anywhere;
+}
+
+@media(max-width:1366px){
+    .tour-bottom .price-box{
+        width:100%;
+    }
+}
+
+@media(max-width:640px){
+    .tour-bottom .current-price{
+        font-size:25px;
+    }
+
+    .tour-bottom .listed-price{
+        font-size:14px;
     }
 }
 

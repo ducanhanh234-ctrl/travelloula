@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class DanhSachTour extends Model
 {
@@ -30,82 +32,98 @@ class DanhSachTour extends Model
         'gia_em_be',
     ];
 
-    public function lichKhoiHanh()
-    {
-        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
-    }
+    protected $casts = [
+        'gia_tour' => 'decimal:2',
+        'gia_nguoi_lon' => 'decimal:2',
+        'gia_tre_em' => 'decimal:2',
+        'gia_em_be' => 'decimal:2',
+        'so_khach_toi_da' => 'integer',
+    ];
 
-    public function danhMuc()
+    public function danhMuc(): BelongsTo
     {
         return $this->belongsTo(DanhMuc::class, 'danh_muc_id');
     }
 
-    public function lichKhoiHanhTours()
+    /**
+     * Quan hệ chuẩn được TourClientController sử dụng.
+     */
+    public function bangGiaTours(): HasMany
+    {
+        return $this->hasMany(BangGiaTour::class, 'tour_id')
+            ->orderBy('ngay_bat_dau')
+            ->orderBy('id');
+    }
+
+    /**
+     * Giữ lại tên cũ để các phần code khác không bị lỗi.
+     */
+    public function bangGia(): HasMany
+    {
+        return $this->bangGiaTours();
+    }
+
+    /**
+     * Giữ lại tên cũ để các phần code khác không bị lỗi.
+     */
+    public function bangGias(): HasMany
+    {
+        return $this->bangGiaTours();
+    }
+
+    public function lichKhoiHanh(): HasMany
     {
         return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
     }
 
-    public function lichTrinhs()
+    public function lichKhoiHanhTours(): HasMany
+    {
+        return $this->hasMany(LichKhoiHanhTour::class, 'tour_id');
+    }
+
+    public function lichTrinhs(): HasMany
     {
         return $this->hasMany(LichTrinhTour::class, 'tour_id');
     }
 
-    protected $casts = [
-        'gia_tour' => 'decimal:2',
-        'so_khach_toi_da' => 'integer',
-    ];
-
-
-    public function lichTrinhTours()
+    public function lichTrinhTours(): HasMany
     {
         return $this->hasMany(LichTrinhTour::class, 'tour_id')
-            ->orderBy('ngay_thu');
+            ->orderBy('ngay_thu')
+            ->orderBy('id');
     }
 
-    public function hinhAnhTours()
+    public function lichTrinh(): HasMany
+    {
+        return $this->hasMany(LichTrinhTour::class, 'tour_id')
+            ->orderBy('ngay_thu')
+            ->orderBy('id');
+    }
+
+    public function hinhAnhTours(): HasMany
     {
         return $this->hasMany(HinhAnhTour::class, 'tour_id')
-            ->orderBy('thu_tu_hien_thi');
+            ->orderBy('thu_tu_hien_thi')
+            ->orderBy('id');
     }
 
-    public function datTours()
-    {
-        return $this->hasMany(DatTour::class, 'tour_id');
-    }
-
-    public function danhGia()
-    {
-        return $this->hasMany(DanhGia::class, 'tour_id');
-    }
-
-
-    public function yeuThichs()
-    {
-        return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
-    }
-
-
-    public function bangGia()
-    {
-        return $this->hasMany(
-            BangGiaTour::class,
-            'tour_id'
-        );
-    }
-
-    public function hinhAnhs()
+    public function hinhAnhs(): HasMany
     {
         return $this->hasMany(HinhAnhTour::class, 'tour_id');
     }
 
-    public function bangGias()
+    public function datTours(): HasMany
     {
-        return $this->hasMany(BangGiaTour::class, 'tour_id');
+        return $this->hasMany(DatTour::class, 'tour_id');
     }
 
-    public function lichTrinh()
+    public function danhGia(): HasMany
     {
-        return $this->hasMany(LichTrinhTour::class, 'tour_id')
-            ->orderBy('ngay_thu');
+        return $this->hasMany(DanhGia::class, 'tour_id');
+    }
+
+    public function yeuThichs(): HasMany
+    {
+        return $this->hasMany(DanhSachTourYeuThich::class, 'tour_id');
     }
 }

@@ -18,58 +18,42 @@
     }
 
     /*
-     * Giá gốc luôn lấy từ bảng danh_sach_tours.
-     * Bảng bang_gia_tours chỉ được dùng khi:
-     * - trạng thái active;
-     * - phần trăm tăng lớn hơn 0;
-     * - ngày khởi hành nằm trong khoảng áp dụng.
+     * Controller đã tự tính giá theo phần trăm tăng của bảng bang_gia_tours.
+     * Công thức dùng thống nhất ở mọi trang:
+     * Giá cao điểm = Giá niêm yết trong danh_sach_tours
+     *                 × (1 + phan_tram_tang / 100).
      */
-    $giaNguoiLonGoc = ($tour->gia_nguoi_lon ?? 0) > 0
-        ? (float) $tour->gia_nguoi_lon
-        : (float) ($tour->gia_tour ?? 0);
+    $giaNguoiLonGoc = (int) (
+        $tour->gia_nguoi_lon_niem_yet
+        ?? (((float) ($tour->gia_nguoi_lon ?? 0) > 0)
+            ? $tour->gia_nguoi_lon
+            : ($tour->gia_tour ?? 0))
+    );
 
-    $giaTreEmGoc = (float) ($tour->gia_tre_em ?? 0);
+    $giaTreEmGoc = (int) (
+        $tour->gia_tre_em_niem_yet
+        ?? ($tour->gia_tre_em ?? 0)
+    );
 
-    $cacBangGiaCaoDiem = \Illuminate\Support\Facades\DB::table('bang_gia_tours')
-        ->where('tour_id', $tour->id)
-        ->where('trang_thai', 'active')
-        ->where('phan_tram_tang', '>', 0)
-        ->orderByDesc('phan_tram_tang')
-        ->get();
+    $giaNguoiLonHienTai = (int) (
+        $tour->gia_nguoi_lon_hien_thi
+        ?? $giaNguoiLonGoc
+    );
 
-    $timBangGiaTheoNgay = function ($ngayKhoiHanh) use ($cacBangGiaCaoDiem) {
-        if (empty($ngayKhoiHanh)) {
-            return null;
-        }
+    $giaTreEmHienTai = (int) (
+        $tour->gia_tre_em_hien_thi
+        ?? $giaTreEmGoc
+    );
 
-        $ngay = \Carbon\Carbon::parse($ngayKhoiHanh)->startOfDay();
+    $laGiaCaoDiemGanNhat = (bool) (
+        $tour->co_gia_cao_diem
+        ?? false
+    );
 
-        return $cacBangGiaCaoDiem->first(function ($bangGia) use ($ngay) {
-            return $ngay->betweenIncluded(
-                \Carbon\Carbon::parse($bangGia->ngay_bat_dau)->startOfDay(),
-                \Carbon\Carbon::parse($bangGia->ngay_ket_thuc)->endOfDay()
-            );
-        });
-    };
-
-    $lichGanNhat = $lichGanNhat ?? $tour->lichKhoiHanhTours
-        ->where('trang_thai', 'available')
-        ->sortBy('ngay_khoi_hanh')
-        ->first();
-
-    $bangGiaGanNhat = $lichGanNhat
-        ? $timBangGiaTheoNgay($lichGanNhat->ngay_khoi_hanh)
-        : null;
-
-    $laGiaCaoDiemGanNhat = $bangGiaGanNhat !== null;
-
-    $giaNguoiLonHienTai = $laGiaCaoDiemGanNhat
-        ? (float) $bangGiaGanNhat->gia_nguoi_lon
-        : $giaNguoiLonGoc;
-
-    $giaTreEmHienTai = $laGiaCaoDiemGanNhat
-        ? (float) $bangGiaGanNhat->gia_tre_em
-        : $giaTreEmGoc;
+    $phanTramTangGanNhat = (float) (
+        $tour->phan_tram_tang_hien_thi
+        ?? 0
+    );
 
     $soSaoTrungBinh = $soSaoTrungBinh ?? $tour->danhGia->avg('so_sao');
     $tongDanhGia = $tongDanhGia ?? $tour->danhGia->count();
@@ -305,7 +289,7 @@
 
                         <small class="peak-price-note">
                             <i class="fa-solid fa-arrow-trend-up"></i>
-                            Tăng {{ $bangGiaGanNhat->phan_tram_tang }}% cho lịch khởi hành cao điểm
+                            Tăng {{ number_format($phanTramTangGanNhat, 0, '', '.') }}% cho lịch khởi hành cao điểm
                         </small>
                     @else
                         <strong>{{ number_format($giaNguoiLonGoc, 0, ',', '.') }} đ</strong>
@@ -588,16 +572,29 @@
                                 <tbody>
                                     @forelse($tour->lichKhoiHanhTours->sortBy('ngay_khoi_hanh')->take(6) as $lich)
                                         @php
-                                            $bangGiaTheoLich = $timBangGiaTheoNgay($lich->ngay_khoi_hanh);
-                                            $laLichCaoDiem = $bangGiaTheoLich !== null;
+                                            /*
+                                             * Mỗi lịch đã được controller gắn giá tự tính
+                                             * theo phần trăm tăng đúng ngày khởi hành.
+                                             */
+                                            $laLichCaoDiem = (bool) (
+                                                $lich->co_gia_cao_diem
+                                                ?? false
+                                            );
 
-                                            $giaNguoiLonTheoLich = $laLichCaoDiem
-                                                ? (float) $bangGiaTheoLich->gia_nguoi_lon
-                                                : $giaNguoiLonGoc;
+                                            $phanTramTangTheoLich = (float) (
+                                                $lich->phan_tram_tang_hien_thi
+                                                ?? 0
+                                            );
 
-                                            $giaTreEmTheoLich = $laLichCaoDiem
-                                                ? (float) $bangGiaTheoLich->gia_tre_em
-                                                : $giaTreEmGoc;
+                                            $giaNguoiLonTheoLich = (int) (
+                                                $lich->gia_nguoi_lon_hien_thi
+                                                ?? $giaNguoiLonGoc
+                                            );
+
+                                            $giaTreEmTheoLich = (int) (
+                                                $lich->gia_tre_em_hien_thi
+                                                ?? $giaTreEmGoc
+                                            );
                                         @endphp
 
                                         <tr>
@@ -606,7 +603,7 @@
 
                                                 @if($laLichCaoDiem)
                                                     <span class="peak-date-badge">
-                                                        Cao điểm +{{ $bangGiaTheoLich->phan_tram_tang }}%
+                                                        Cao điểm +{{ number_format($phanTramTangTheoLich, 0, '', '.') }}%
                                                     </span>
                                                 @endif
                                             </td>

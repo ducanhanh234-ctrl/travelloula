@@ -2052,17 +2052,19 @@ $avgRating = (float) ($avgRating ?? 0);
                                 ->first();
 
                             if ($bangGiaApDungTrangChu) {
-                                $giaNguoiLonBangGia = (int) round(
-                                    (float) ($bangGiaApDungTrangChu->gia_nguoi_lon ?? 0)
+                                $phanTramTangTrangChu = max(
+                                    0,
+                                    (float) ($bangGiaApDungTrangChu->phan_tram_tang ?? 0)
                                 );
 
-                                if ($giaNguoiLonBangGia > 0) {
-                                    $giaHienThiTrangChu = $giaNguoiLonBangGia;
-                                }
+                                if ($phanTramTangTrangChu > 0) {
+                                    $giaHienThiTrangChu = (int) round(
+                                        $giaNiemYetTrangChu
+                                        * (1 + ($phanTramTangTrangChu / 100))
+                                    );
 
-                                $coGiaCaoDiemTrangChu =
-                                    (int) ($bangGiaApDungTrangChu->phan_tram_tang ?? 0) > 0
-                                    || $giaHienThiTrangChu !== $giaNiemYetTrangChu;
+                                    $coGiaCaoDiemTrangChu = true;
+                                }
                             }
                         }
 
@@ -2271,12 +2273,12 @@ $avgRating = (float) ($avgRating ?? 0);
         <div class="home-container">
             <div class="review-section-heading">
                 <div>
-                    {{-- <span>ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT</span> --}}
+                    <span>ĐÁNH GIÁ ĐÃ ĐƯỢC DUYỆT</span>
                     <h2 class="big-title">Khách Hàng Đánh Giá</h2>
-                    {{-- <p>
+                    <p>
                         Dữ liệu được lấy trực tiếp từ những đánh giá tour đã được
                         quản trị viên xét duyệt.
-                    </p> --}}
+                    </p>
                 </div>
 
                 <div class="review-summary">
@@ -2288,7 +2290,7 @@ $avgRating = (float) ($avgRating ?? 0);
                                 @endfor
                         </div>
 
-                        <span>{{ $totalReviews }} Đánh giá đã duyệt</span>
+                        <span>{{ $totalReviews }} đánh giá đã duyệt</span>
                     </div>
                 </div>
             </div>

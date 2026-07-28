@@ -21,7 +21,8 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1254,7 +1255,6 @@
                 height: 38px;
             }
         }
-
     </style>
 
     @stack('styles')
@@ -1266,15 +1266,18 @@
     $adminUser = auth()->user();
 
     $notifications = $adminUser
-    ? $adminUser->notifications()->latest()->take(10)->get()
-    : collect();
+        ? $adminUser->unreadNotifications()
+            ->latest()
+            ->take(10)
+            ->get()
+        : collect();
 
     $notificationCount = $adminUser
-    ? $adminUser->unreadNotifications()->count()
-    : 0;
+        ? $adminUser->unreadNotifications()->count()
+        : 0;
 
     $suCoMoi = $suCoMoi ?? 0;
-    @endphp
+@endphp
 
     {{-- Sidebar --}}
     <aside class="sidebar" id="sidebar">
@@ -1313,7 +1316,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.dashboard') }}" class="nav-link {{ request()->routeIs('Admin.dashboard') ? 'active' : '' }}" title="Dashboard">
+                        <a href="{{ route('Admin.dashboard') }}"
+                            class="nav-link {{ request()->routeIs('Admin.dashboard') ? 'active' : '' }}"
+                            title="Dashboard">
                             <span class="nav-icon">
                                 <i class="fas fa-tachometer-alt"></i>
                             </span>
@@ -1325,7 +1330,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.trang_dieu_khoans.edit') }}" class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}" title="Điều khoản">
+                        <a href="{{ route('Admin.trang_dieu_khoans.edit') }}"
+                            class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}"
+                            title="Điều khoản">
                             <span class="nav-icon">
                                 <i class="fas fa-file-contract"></i>
                             </span>
@@ -1336,7 +1343,9 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.bai_viets.index') }}" class="nav-link {{ request()->routeIs('Admin.bai_viet*') ? 'active' : '' }}" title="Bài viết">
+                        <a href="{{ route('Admin.bai_viets.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.bai_viet*') ? 'active' : '' }}"
+                            title="Bài viết">
                             <span class="nav-icon">
                                 <i class="fas fa-newspaper"></i>
                             </span>
@@ -1365,7 +1374,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.tours.index') }}" class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}" title="Danh sách Tour">
+                        <a href="{{ route('Admin.tours.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.tours*') ? 'active' : '' }}"
+                            title="Danh sách Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-map-marked-alt"></i>
                             </span>
@@ -1377,7 +1388,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.lich_trinh_tours.index') }}" class="nav-link {{ request()->routeIs('Admin.lich_trinh_tours*') ? 'active' : '' }}" title="Quản lý lịch trình">
+                        <a href="{{ route('Admin.lich_trinh_tours.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.lich_trinh_tours*') ? 'active' : '' }}"
+                            title="Quản lý lịch trình">
                             <span class="nav-icon">
                                 <i class="fas fa-calendar-alt"></i>
                             </span>
@@ -1389,7 +1402,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.lich-khoi-hanh.index') }}" class="nav-link {{ request()->routeIs('Admin.lich-khoi-hanh*') ? 'active' : '' }}" title="Quản lý khởi hành">
+                        <a href="{{ route('Admin.lich-khoi-hanh.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.lich-khoi-hanh*') ? 'active' : '' }}"
+                            title="Quản lý khởi hành">
                             <span class="nav-icon">
                                 <i class="fas fa-plane-departure"></i>
                             </span>
@@ -1400,7 +1415,9 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.bang-gia-tours.index') }}" class="nav-link {{ request()->routeIs('Admin.bang-gia-tours*') ? 'active' : '' }}" title="Quản lý khởi hành">
+                        <a href="{{ route('Admin.bang-gia-tours.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.bang-gia-tours*') ? 'active' : '' }}"
+                            title="Quản lý khởi hành">
                             <span class="nav-icon">
                                 <i class="fas fa-money-bill-wave"></i>
                             </span>
@@ -1412,7 +1429,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.gop-doan.index') }}" class="nav-link {{ request()->routeIs('Admin.gop-doan*') ? 'active' : '' }}" title="Gộp đoàn">
+                        <a href="{{ route('Admin.gop-doan.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.gop-doan*') ? 'active' : '' }}"
+                            title="Gộp đoàn">
                             <span class="nav-icon">
                                 <i class="fas fa-object-group"></i>
                             </span>
@@ -1423,7 +1442,9 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.yeu-cau-gop-doan.index') }}" class="nav-link {{ request()->routeIs('Admin.yeu-cau-gop-doan*') ? 'active' : '' }}" title="Yêu cầu gộp đoàn">
+                        <a href="{{ route('Admin.yeu-cau-gop-doan.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.yeu-cau-gop-doan*') ? 'active' : '' }}"
+                            title="Yêu cầu gộp đoàn">
                             <span class="nav-icon">
                                 <i class="fas fa-users-cog"></i>
                             </span>
@@ -1434,7 +1455,9 @@
                         </a>
                     </div>
                     <div class="nav-item">
-                        <a href="{{ route('Admin.phuong-tiens.index') }}" class="nav-link {{ request()->routeIs('Admin.phuong-tiens*') ? 'active' : '' }}" title="Quản lý xe">
+                        <a href="{{ route('Admin.phuong-tiens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.phuong-tiens*') ? 'active' : '' }}"
+                            title="Quản lý xe">
                             <span class="nav-icon">
                                 <i class="fas fa-bus"></i>
                             </span>
@@ -1446,7 +1469,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.nhat_ky_tours.index') }}" class="nav-link {{ request()->routeIs('Admin.nhat_ky_tours*') ? 'active' : '' }}" title="Nhật ký Tour">
+                        <a href="{{ route('Admin.nhat_ky_tours.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.nhat_ky_tours*') ? 'active' : '' }}"
+                            title="Nhật ký Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-book"></i>
                             </span>
@@ -1475,7 +1500,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.quan_ly_dat_tour.index') }}" class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}" title="Quản lý đặt Tour">
+                        <a href="{{ route('Admin.quan_ly_dat_tour.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.quan_ly_dat_tour*') ? 'active' : '' }}"
+                            title="Quản lý đặt Tour">
                             <span class="nav-icon">
                                 <i class="fas fa-calendar-check"></i>
                             </span>
@@ -1487,7 +1514,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.phan-cong.index') }}" class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}" title="Quản lý phân công">
+                        <a href="{{ route('Admin.phan-cong.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.phan-cong*') ? 'active' : '' }}"
+                            title="Quản lý phân công">
                             <span class="nav-icon">
                                 <i class="fas fa-user-friends"></i>
                             </span>
@@ -1516,7 +1545,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.huong-dan-viens.index') }}" class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}" title="Quản lý hướng dẫn viên">
+                        <a href="{{ route('Admin.huong-dan-viens.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.huong-dan-viens*') ? 'active' : '' }}"
+                            title="Quản lý hướng dẫn viên">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tie"></i>
                             </span>
@@ -1528,7 +1559,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.users.index') }}" class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}" title="Người dùng">
+                        <a href="{{ route('Admin.users.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.users*') ? 'active' : '' }}"
+                            title="Người dùng">
                             <span class="nav-icon">
                                 <i class="fas fa-user"></i>
                             </span>
@@ -1540,7 +1573,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.khach-hang.index') }}" class="nav-link {{ request()->routeIs('Admin.khach-hang*') ? 'active' : '' }}" title="Quản lý khách hàng">
+                        <a href="{{ route('Admin.khach-hang.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.khach-hang*') ? 'active' : '' }}"
+                            title="Quản lý khách hàng">
                             <span class="nav-icon">
                                 <i class="fas fa-user-check"></i>
                             </span>
@@ -1552,7 +1587,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.vai-tros.index') }}" class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}" title="Vai trò">
+                        <a href="{{ route('Admin.vai-tros.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.vai-tros*') ? 'active' : '' }}"
+                            title="Vai trò">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tag"></i>
                             </span>
@@ -1564,7 +1601,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.quyen-hans.index') }}" class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}" title="Quyền">
+                        <a href="{{ route('Admin.quyen-hans.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.quyen-hans*') ? 'active' : '' }}"
+                            title="Quyền">
                             <span class="nav-icon">
                                 <i class="fas fa-key"></i>
                             </span>
@@ -1576,7 +1615,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.role-permissions.matrix') }}" class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}" title="Phân quyền">
+                        <a href="{{ route('Admin.role-permissions.matrix') }}"
+                            class="nav-link {{ request()->routeIs('Admin.role-permissions*') ? 'active' : '' }}"
+                            title="Phân quyền">
                             <span class="nav-icon">
                                 <i class="fas fa-th"></i>
                             </span>
@@ -1605,7 +1646,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.banners.index') }}" class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}" title="Quản lý Banner">
+                        <a href="{{ route('Admin.banners.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.banners*') ? 'active' : '' }}"
+                            title="Quản lý Banner">
                             <span class="nav-icon">
                                 <i class="fas fa-image"></i>
                             </span>
@@ -1617,7 +1660,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.danh_mucs.index') }}" class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}" title="Quản lý danh mục">
+                        <a href="{{ route('Admin.danh_mucs.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.danh_mucs*') ? 'active' : '' }}"
+                            title="Quản lý danh mục">
                             <span class="nav-icon">
                                 <i class="fas fa-tags"></i>
                             </span>
@@ -1629,7 +1674,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.danh_gias.index') }}" class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}" title="Quản lý đánh giá">
+                        <a href="{{ route('Admin.danh_gias.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.danh_gias*') ? 'active' : '' }}"
+                            title="Quản lý đánh giá">
                             <span class="nav-icon">
                                 <i class="fas fa-star"></i>
                             </span>
@@ -1641,7 +1688,8 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="#" class="nav-link nav-link-disabled" title="Chức năng chưa có route" onclick="return false;">
+                        <a href="#" class="nav-link nav-link-disabled" title="Chức năng chưa có route"
+                            onclick="return false;">
                             <span class="nav-icon">
                                 <i class="fas fa-user-tie"></i>
                             </span>
@@ -1670,7 +1718,9 @@
 
                 <div class="nav-section-menu">
                     <div class="nav-item">
-                        <a href="{{ route('Admin.thanh_toans.index') }}" class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}" title="Quản lý thanh toán">
+                        <a href="{{ route('Admin.thanh_toans.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.thanh_toans*') ? 'active' : '' }}"
+                            title="Quản lý thanh toán">
                             <span class="nav-icon">
                                 <i class="fas fa-credit-card"></i>
                             </span>
@@ -1682,7 +1732,9 @@
                     </div>
 
                     <div class="nav-item">
-                        <a href="{{ route('Admin.thong_ke.index') }}" class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}" title="Báo cáo và thống kê">
+                        <a href="{{ route('Admin.thong_ke.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.thong_ke*') ? 'active' : '' }}"
+                            title="Báo cáo và thống kê">
                             <span class="nav-icon">
                                 <i class="fas fa-chart-bar"></i>
                             </span>
@@ -1744,7 +1796,8 @@
                 </div>
             </div>
             <div class="nav-item">
-                <a href="{{ route('Admin.baocaosuco.index') }}" class="nav-link {{ request()->routeIs('Admin.baocaosuco.*') ? 'active' : '' }}">
+                <a href="{{ route('Admin.baocaosuco.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.baocaosuco.*') ? 'active' : '' }}">
 
                     <span class="nav-icon">
                         <i class="fas fa-triangle-exclamation"></i>
@@ -1753,9 +1806,9 @@
                     <span class="nav-text">Xử lý sự cố</span>
 
                     @if (($suCoMoi ?? 0) > 0)
-                    <span class="badge bg-danger ms-auto">
-                        {{ ($suCoMoi ?? 0) > 99 ? '99+' : ($suCoMoi ?? 0) }}
-                    </span>
+                        <span class="badge bg-danger ms-auto">
+                            {{ ($suCoMoi ?? 0) > 99 ? '99+' : $suCoMoi ?? 0 }}
+                        </span>
                     @endif
                 </a>
             </div>
@@ -1769,7 +1822,8 @@
     <div class="main-content">
         <header class="header">
             <div class="header-left">
-                <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Thu gọn hoặc mở menu" aria-label="Thu gọn hoặc mở menu" aria-controls="sidebar" aria-expanded="true">
+                <button class="sidebar-toggle" id="sidebarToggle" type="button" title="Thu gọn hoặc mở menu"
+                    aria-label="Thu gọn hoặc mở menu" aria-controls="sidebar" aria-expanded="true">
                     <i class="fas fa-bars"></i>
                 </button>
 
@@ -1795,54 +1849,57 @@
 
                 <div class="header-actions">
                     <div class="dropdown">
-                        <button class="header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
+                        <button class="header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                            title="Thông báo">
                             <i class="fas fa-bell"></i>
 
                             @if ($notificationCount > 0)
-                            <span class="notification-badge">
-                                {{ $notificationCount > 99 ? '99+' : $notificationCount }}
-                            </span>
+                                <span class="notification-badge">
+                                    {{ $notificationCount > 99 ? '99+' : $notificationCount }}
+                                </span>
                             @endif
                         </button>
 
-                        <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0" style="width:390px;max-width:calc(100vw - 24px);max-height:520px;overflow-y:auto">
+                        <div class="dropdown-menu dropdown-menu-end shadow border-0 p-0"
+                            style="width:390px;max-width:calc(100vw - 24px);max-height:520px;overflow-y:auto">
                             <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
                                 <span class="fw-bold">Thông báo</span>
 
                                 @if ($notificationCount > 0)
-                                <span class="badge bg-danger">
-                                    {{ $notificationCount }} chưa đọc
-                                </span>
+                                    <span class="badge bg-danger">
+                                        {{ $notificationCount }} chưa đọc
+                                    </span>
                                 @endif
                             </div>
 
                             @forelse ($notifications as $notification)
-                            <a href="{{ $notification->data['url'] ?? '#' }}" class="dropdown-item py-3 border-bottom text-wrap {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
-                                <div class="d-flex gap-3">
-                                    <span class="text-danger pt-1">
-                                        <i class="fas fa-triangle-exclamation"></i>
-                                    </span>
-
-                                    <span class="flex-grow-1">
-                                        <span class="d-block fw-semibold text-dark">
-                                            {{ $notification->data['tieu_de'] ?? 'Thông báo mới' }}
+                                <a href="{{ $notification->data['url'] ?? '#' }}"
+                                    class="dropdown-item py-3 border-bottom text-wrap {{ is_null($notification->read_at) ? 'bg-light' : '' }}">
+                                    <div class="d-flex gap-3">
+                                        <span class="text-danger pt-1">
+                                            <i class="fas fa-triangle-exclamation"></i>
                                         </span>
 
-                                        <span class="d-block small text-muted mt-1">
-                                            {{ $notification->data['message'] ?? '' }}
-                                        </span>
+                                        <span class="flex-grow-1">
+                                            <span class="d-block fw-semibold text-dark">
+                                                {{ $notification->data['tieu_de'] ?? 'Thông báo mới' }}
+                                            </span>
 
-                                        <span class="d-block small text-secondary mt-1">
-                                            {{ optional($notification->created_at)->diffForHumans() }}
+                                            <span class="d-block small text-muted mt-1">
+                                                {{ $notification->data['message'] ?? '' }}
+                                            </span>
+
+                                            <span class="d-block small text-secondary mt-1">
+                                                {{ optional($notification->created_at)->diffForHumans() }}
+                                            </span>
                                         </span>
-                                    </span>
-                                </div>
-                            </a>
+                                    </div>
+                                </a>
                             @empty
-                            <div class="p-4 text-center text-muted">
-                                <i class="far fa-bell-slash d-block mb-2 fs-4"></i>
-                                Chưa có thông báo
-                            </div>
+                                <div class="p-4 text-center text-muted">
+                                    <i class="far fa-bell-slash d-block mb-2 fs-4"></i>
+                                    Chưa có thông báo
+                                </div>
                             @endforelse
                         </div>
                     </div>
@@ -1853,20 +1910,23 @@
                 </div>
 
                 <div class="user-menu dropdown">
-                    <button class="btn user-menu-button d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn user-menu-button d-flex align-items-center" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Auth::check() && Auth::user()->avatar)
-                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="user-avatar-img" onerror="
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="user-avatar-img"
+                                onerror="
                                     this.style.display='none';
                                     this.nextElementSibling.style.display='inline-flex';
                                 ">
 
-                        <span class="user-avatar" style="display:none;">
-                            {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                        </span>
+                            <span class="user-avatar" style="display:none;">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            </span>
                         @else
-                        <span class="user-avatar">
-                            {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                        </span>
+                            <span class="user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
+                            </span>
                         @endif
                     </button>
 
@@ -1952,8 +2012,7 @@
                     !sidebar.classList.contains('collapsed');
 
                 sidebarToggle.setAttribute(
-                    'aria-expanded'
-                    , isExpanded ? 'true' : 'false'
+                    'aria-expanded', isExpanded ? 'true' : 'false'
                 );
             }
 
@@ -1992,8 +2051,7 @@
                     ) === 'true';
 
                 sidebar.classList.toggle(
-                    'collapsed'
-                    , isCollapsed
+                    'collapsed', isCollapsed
                 );
 
                 updateSidebarToggleState();
@@ -2007,8 +2065,8 @@
             }
 
             sidebarToggle.addEventListener(
-                'click'
-                , function() {
+                'click',
+                function() {
                     if (isMobile()) {
                         if (sidebar.classList.contains('open')) {
                             closeMobileSidebar();
@@ -2022,8 +2080,7 @@
                     sidebar.classList.toggle('collapsed');
 
                     localStorage.setItem(
-                        sidebarStorageKey
-                        , sidebar.classList.contains(
+                        sidebarStorageKey, sidebar.classList.contains(
                             'collapsed'
                         )
                     );
@@ -2034,14 +2091,13 @@
 
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener(
-                    'click'
-                    , closeMobileSidebar
+                    'click', closeMobileSidebar
                 );
             }
 
             document.addEventListener(
-                'keydown'
-                , function(event) {
+                'keydown',
+                function(event) {
                     if (
                         event.key === 'Escape' &&
                         isMobile()
@@ -2052,8 +2108,8 @@
             );
 
             window.addEventListener(
-                'resize'
-                , function() {
+                'resize',
+                function() {
                     if (isMobile()) {
                         sidebar.classList.remove('collapsed');
                         closeMobileSidebar();
@@ -2071,8 +2127,8 @@
 
             sidebarLinks.forEach(function(link) {
                 link.addEventListener(
-                    'click'
-                    , function() {
+                    'click',
+                    function() {
                         if (
                             isMobile() &&
                             !this.classList.contains(
@@ -2130,18 +2186,16 @@
                 }
 
                 section.classList.toggle(
-                    'is-collapsed'
-                    , isCollapsed
+                    'is-collapsed', isCollapsed
                 );
 
                 toggle.setAttribute(
-                    'aria-expanded'
-                    , isCollapsed ? 'false' : 'true'
+                    'aria-expanded', isCollapsed ? 'false' : 'true'
                 );
 
                 toggle.addEventListener(
-                    'click'
-                    , function() {
+                    'click',
+                    function() {
                         /*
                          * Khi sidebar thu gọn trên desktop,
                          * tiêu đề nhóm đang bị ẩn.
@@ -2161,15 +2215,13 @@
                             );
 
                         toggle.setAttribute(
-                            'aria-expanded'
-                            , collapsed ?
+                            'aria-expanded', collapsed ?
                             'false' :
                             'true'
                         );
 
                         localStorage.setItem(
-                            sectionStorageKey
-                            , collapsed ?
+                            sectionStorageKey, collapsed ?
                             'true' :
                             'false'
                         );
@@ -2184,15 +2236,14 @@
             if (activeLink) {
                 setTimeout(function() {
                     activeLink.scrollIntoView({
-                        behavior: 'smooth'
-                        , block: 'center'
+                        behavior: 'smooth',
+                        block: 'center'
                     });
                 }, 150);
             }
 
             updateSidebarToggleState();
         });
-
     </script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 

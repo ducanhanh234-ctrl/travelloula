@@ -23,7 +23,8 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -1036,7 +1037,6 @@
                 width: min(280px, 86vw);
             }
         }
-
     </style>
 
     @stack('styles')
@@ -1044,6 +1044,13 @@
 </head>
 
 <body>
+    @php
+        $guideUser = Auth::user();
+
+        $guideNotifications = $guideUser ? $guideUser->unreadNotifications()->latest()->take(10)->get() : collect();
+
+        $guideUnreadNotificationCount = $guideUser ? $guideUser->unreadNotifications()->count() : 0;
+    @endphp
     {{-- Sidebar --}}
     <aside class="guide-sidebar" id="guideSidebar">
         <div class="guide-sidebar-header">
@@ -1072,11 +1079,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.tour-phan-cong.*')
-                                ? 'active'
-                                : ''
-                            }}" title="Dashboard hướng dẫn viên">
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.tour-phan-cong.*') ? 'active' : '' }}"
+                        title="Dashboard hướng dẫn viên">
                         <span class="guide-nav-icon">
                             <i class="fas fa-tachometer-alt"></i>
                         </span>
@@ -1095,11 +1101,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.tour-phan-cong.index') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.tour-phan-cong.*')
-                                ? 'active'
-                                : ''
-                            }}" title="Tour được phân công">
+                    <a href="{{ route('Guide.tour-phan-cong.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.tour-phan-cong.*') ? 'active' : '' }}"
+                        title="Tour được phân công">
                         <span class="guide-nav-icon">
                             <i class="fas fa-map-marked-alt"></i>
                         </span>
@@ -1119,11 +1124,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.checkin.index') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.checkin.*')
-                                ? 'active'
-                                : ''
-                            }}" title="Check-in khách">
+                    <a href="{{ route('Guide.checkin.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.checkin.*') ? 'active' : '' }}"
+                        title="Check-in khách">
                         <span class="guide-nav-icon">
                             <i class="fas fa-clipboard-check"></i>
                         </span>
@@ -1135,11 +1139,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.nhatky.index') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.nhatky.*')
-                                ? 'active'
-                                : ''
-                            }}" title="Nhật ký hướng dẫn viên">
+                    <a href="{{ route('Guide.nhatky.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.nhatky.*') ? 'active' : '' }}"
+                        title="Nhật ký hướng dẫn viên">
                         <span class="guide-nav-icon">
                             <i class="fas fa-book"></i>
                         </span>
@@ -1151,11 +1154,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.baocaosuco.index') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.baocaosuco.*')
-                                ? 'active'
-                                : ''
-                            }}" title="Báo cáo sự cố">
+                    <a href="{{ route('Guide.baocaosuco.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.baocaosuco.*') ? 'active' : '' }}"
+                        title="Báo cáo sự cố">
                         <span class="guide-nav-icon">
                             <i class="fas fa-exclamation-triangle"></i>
                         </span>
@@ -1174,11 +1176,10 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.profile') }}" class="guide-nav-link
-                            {{ request()->routeIs('Guide.profile')
-                                ? 'active'
-                                : ''
-                            }}" title="Hồ sơ cá nhân">
+                    <a href="{{ route('Guide.profile') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.profile') ? 'active' : '' }}"
+                        title="Hồ sơ cá nhân">
                         <span class="guide-nav-icon">
                             <i class="fas fa-user"></i>
                         </span>
@@ -1191,7 +1192,10 @@
 
 
                 <div class="guide-nav-item">
-                    <a href="#" class="guide-nav-link" title="Thông báo">
+                    <a href="{{ route('Guide.baocaosuco.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.baocaosuco.*') ? 'active' : '' }}"
+                        title="Thông báo">
                         <span class="guide-nav-icon">
                             <i class="fas fa-bell"></i>
                         </span>
@@ -1199,6 +1203,12 @@
                         <span class="guide-nav-text">
                             Thông báo
                         </span>
+
+                        @if ($guideUnreadNotificationCount > 0)
+                            <span class="guide-nav-badge">
+                                {{ $guideUnreadNotificationCount > 99 ? '99+' : $guideUnreadNotificationCount }}
+                            </span>
+                        @endif
                     </a>
                 </div>
         </nav>
@@ -1211,7 +1221,8 @@
     <div class="guide-main-content">
         <header class="guide-header">
             <div class="guide-header-left">
-                <button type="button" class="guide-sidebar-toggle" id="guideSidebarToggle" title="Thu gọn hoặc mở menu" aria-label="Mở menu">
+                <button type="button" class="guide-sidebar-toggle" id="guideSidebarToggle"
+                    title="Thu gọn hoặc mở menu" aria-label="Mở menu">
                     <i class="fas fa-bars"></i>
                 </button>
 
@@ -1224,11 +1235,11 @@
                         </li>
 
                         @hasSection('breadcrumb')
-                        @yield('breadcrumb')
+                            @yield('breadcrumb')
                         @else
-                        <li class="breadcrumb-item active">
-                            @yield('guide', 'Trang hướng dẫn viên')
-                        </li>
+                            <li class="breadcrumb-item active">
+                                @yield('guide', 'Trang hướng dẫn viên')
+                            </li>
                         @endif
                     </ol>
                 </nav>
@@ -1242,50 +1253,112 @@
                 </div>
 
                 <div class="guide-header-actions">
-                    <button type="button" class="guide-header-button" title="Thông báo">
-                        <i class="fas fa-bell"></i>
+                    <div class="dropdown">
+                        <button type="button" class="guide-header-button" title="Thông báo"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell"></i>
 
-                        <span class="guide-notification-badge">
-                            3
-                        </span>
-                    </button>
+                            @if ($guideUnreadNotificationCount > 0)
+                                <span class="guide-notification-badge">
+                                    {{ $guideUnreadNotificationCount > 99 ? '99+' : $guideUnreadNotificationCount }}
+                                </span>
+                            @endif
+                        </button>
 
-                    <button type="button" class="guide-header-button" title="Tin nhắn">
-                        <i class="fas fa-envelope"></i>
+                        <div class="dropdown-menu dropdown-menu-end p-0"
+                            style="width: 380px; max-height: 480px; overflow-y: auto;">
+                            <div class="d-flex justify-content-between align-items-center px-3 py-3 border-bottom">
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        Thông báo
+                                    </div>
 
-                        <span class="guide-notification-badge">
-                            5
-                        </span>
-                    </button>
+                                    <small class="text-muted">
+                                        {{ $guideUnreadNotificationCount }} thông báo chưa đọc
+                                    </small>
+                                </div>
+                            </div>
+
+                            @forelse ($guideNotifications as $notification)
+                                @php
+                                    $data = $notification->data ?? [];
+                                    $notificationUrl = $data['url'] ?? route('Guide.baocaosuco.index');
+                                    $isUnread = is_null($notification->read_at);
+                                @endphp
+
+                                <a href="{{ $notificationUrl }}"
+                                    class="dropdown-item px-3 py-3 border-bottom text-wrap {{ $isUnread ? 'bg-light' : '' }}">
+                                    <div class="d-flex gap-3">
+                                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center flex-shrink-0"
+                                            style="width: 40px; height: 40px;">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+
+                                        <div class="flex-grow-1 min-w-0">
+                                            <div class="d-flex justify-content-between gap-2">
+                                                <div class="fw-semibold text-dark">
+                                                    {{ $data['tieu_de'] ?? 'Cập nhật báo cáo sự cố' }}
+                                                </div>
+
+                                                @if ($isUnread)
+                                                    <span class="rounded-circle bg-primary flex-shrink-0 mt-1"
+                                                        style="width: 8px; height: 8px;"></span>
+                                                @endif
+                                            </div>
+
+                                            <div class="small text-muted mt-1">
+                                                {{ $data['message'] ?? 'Báo cáo của bạn đã được cập nhật.' }}
+                                            </div>
+
+                                            @if (!empty($data['ghi_chu_xu_ly']))
+                                                <div class="small mt-2 text-dark">
+                                                    <strong>Phản hồi Admin:</strong>
+                                                    {{ $data['ghi_chu_xu_ly'] }}
+                                                </div>
+                                            @endif
+
+                                            <div class="small text-muted mt-2">
+                                                {{ optional($notification->created_at)->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="text-center py-5 text-muted">
+                                    <i class="far fa-bell-slash fs-3 mb-2"></i>
+
+                                    <div>
+                                        Chưa có thông báo nào.
+                                    </div>
+                                </div>
+                            @endforelse
+
+                            <a href="{{ route('Guide.baocaosuco.index') }}"
+                                class="dropdown-item text-center py-3 fw-semibold text-primary">
+                                Xem tất cả báo cáo sự cố
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="dropdown">
-                    <button type="button" class="btn guide-user-button d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn guide-user-button d-flex align-items-center"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         @if (Auth::check() && Auth::user()->avatar)
-                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}" class="guide-user-avatar-image" onerror="
+                            <img src="{{ asset('storage/' . Auth::user()->avatar) }}" alt="{{ Auth::user()->name }}"
+                                class="guide-user-avatar-image"
+                                onerror="
                                     this.style.display='none';
                                     this.nextElementSibling.style.display='inline-flex';
                                 ">
 
-                        <span class="guide-user-avatar" style="display:none;">
-                            {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'H',
-                                        0,
-                                        1
-                                    )
-                                ) }}
-                        </span>
+                            <span class="guide-user-avatar" style="display:none;">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
+                            </span>
                         @else
-                        <span class="guide-user-avatar">
-                            {{ strtoupper(
-                                    substr(
-                                        Auth::user()->name ?? 'H',
-                                        0,
-                                        1
-                                    )
-                                ) }}
-                        </span>
+                            <span class="guide-user-avatar">
+                                {{ strtoupper(substr(Auth::user()->name ?? 'H', 0, 1)) }}
+                            </span>
                         @endif
                     </button>
 
@@ -1408,15 +1481,13 @@
                 sidebar.classList.toggle('collapsed');
 
                 localStorage.setItem(
-                    storageKey
-                    , sidebar.classList.contains('collapsed')
+                    storageKey, sidebar.classList.contains('collapsed')
                 );
             });
 
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener(
-                    'click'
-                    , closeMobileSidebar
+                    'click', closeMobileSidebar
                 );
             }
 
@@ -1437,8 +1508,7 @@
                         localStorage.getItem(storageKey) === 'true';
 
                     sidebar.classList.toggle(
-                        'collapsed'
-                        , isCollapsed
+                        'collapsed', isCollapsed
                     );
 
                     return;
@@ -1461,7 +1531,6 @@
                 });
             });
         });
-
     </script>
 
     @yield('scripts')

@@ -207,34 +207,38 @@ class BaoCaoSuCoController extends Controller
     }
 
     public function show($id)
-    {
-        $guide = auth()->user()?->huongDanVien;
+{
+    $guide = auth()->user()?->huongDanVien;
 
-        abort_unless(
-            $guide,
-            403,
-            'Tài khoản chưa liên kết hướng dẫn viên.'
-        );
+    abort_unless(
+        $guide,
+        403,
+        'Tài khoản chưa liên kết hướng dẫn viên.'
+    );
 
-        /*
-     * Chỉ tìm báo cáo:
-     * - Có đúng ID được yêu cầu.
-     * - Thuộc chính hướng dẫn viên đang đăng nhập.
-     *
-     * Guide không thể xem báo cáo của Guide khác
-     * bằng cách sửa ID trên URL.
-     */
-        $baoCaoSuCo = BaoCaoSuCo::query()
-            ->with([
-                'lichKhoiHanh.tour',
-                'adminXuLy',
-            ])
-            ->where('huong_dan_vien_id', $guide->id)
-            ->findOrFail($id);
+    $baoCaoSuCo = BaoCaoSuCo::query()
+        ->with([
+            'lichKhoiHanh.tour',
+            'adminXuLy',
+        ])
+        ->where('huong_dan_vien_id', $guide->id)
+        ->findOrFail($id);
 
-        return view(
-            'Guide.baocaosuco.show',
-            compact('baoCaoSuCo')
-        );
-    }
+    auth()->user()
+        ->unreadNotifications()
+        ->get()
+        ->filter(function ($notification) use ($baoCaoSuCo) {
+            return isset($notification->data['bao_cao_id'])
+                && (int) $notification->data['bao_cao_id']
+                    === (int) $baoCaoSuCo->id;
+        })
+        ->each(function ($notification) {
+            $notification->markAsRead();
+        });
+
+    return view(
+        'Guide.baocaosuco.show',
+        compact('baoCaoSuCo')
+    );
+}
 }

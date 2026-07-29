@@ -15,22 +15,35 @@ class AdminLienHeController extends Controller
     {
         $query = LienHe::query();
 
-        // Tìm kiếm
         if ($request->filled('keyword')) {
-            $query->search($request->keyword);
+            $query->where(function ($q) use ($request) {
+                $q->where('ho_ten', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('email', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('so_dien_thoai', 'like', '%' . $request->keyword . '%')
+                    ->orWhere('tieu_de', 'like', '%' . $request->keyword . '%');
+            });
         }
 
-        // Lọc trạng thái
         if ($request->filled('trang_thai')) {
             $query->where('trang_thai', $request->trang_thai);
         }
 
         $lienHes = $query
             ->latest()
-            ->paginate(10)
+            ->paginate(15)
             ->withQueryString();
 
-        return view('Admin.lien_he.index', compact('lienHes'));
+        // Thống kê
+        $tong = LienHe::count();
+        $chuaXuLy = LienHe::where('trang_thai', 'Chưa xử lý')->count();
+        $daXuLy = LienHe::where('trang_thai', 'Đã xử lý')->count();
+
+        return view('Admin.lien_hes.index', compact(
+            'lienHes',
+            'tong',
+            'chuaXuLy',
+            'daXuLy'
+        ));
     }
 
     /**
@@ -40,7 +53,30 @@ class AdminLienHeController extends Controller
     {
         $lienHe = LienHe::findOrFail($id);
 
-        return view('Admin.lien_he.show', compact('lienHe'));
+        
+
+        return view('Admin.lien_hes.show', compact('lienHe'));
+    }
+    public function markRead($id)
+    {
+        $lienHe = LienHe::findOrFail($id);
+
+        $lienHe->update([
+            'trang_thai' => 'Đã xử lý'
+        ]);
+
+        return back()->with('success', 'Đã đánh dấu là Đã xử lý.');
+    }
+
+    public function markUnread($id)
+    {
+        $lienHe = LienHe::findOrFail($id);
+
+        $lienHe->update([
+            'trang_thai' => 'Chưa xử lý'
+        ]);
+
+        return back()->with('success', 'Đã chuyển về Chưa xử lý.');
     }
 
     /**
@@ -61,7 +97,7 @@ class AdminLienHeController extends Controller
         ]);
 
         return redirect()
-            ->route('Admin.lien_he.show', $lienHe->id)
+            ->route('Admin.lien_hes.show', $lienHe->id)
             ->with('success', 'Đã cập nhật liên hệ thành công.');
     }
 
@@ -89,7 +125,7 @@ class AdminLienHeController extends Controller
         $lienHe->delete();
 
         return redirect()
-            ->route('Admin.lien_he.index')
+            ->route('Admin.lien_hes.index')
             ->with('success', 'Đã xóa liên hệ.');
     }
 }

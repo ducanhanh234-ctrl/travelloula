@@ -313,7 +313,29 @@ Route::prefix('Admin')
         Route::resource('nhat_ky_tours', NhatKyTourController::class)->only(['index', 'show']);
         Route::post('/import-hanh-khach', [ImportKhachHangController::class, 'import'])
             ->name('import_hanh_khach');
+        // Admin
+        Route::prefix('lien-hes')
+            ->name('lien_hes.')
+            ->group(function () {
 
+            Route::get('/', [AdminLienHeController::class, 'index'])
+                ->name('index');
+
+            Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                ->name('show');
+
+            Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
+                ->name('read');
+
+            Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                ->name('destroy');
+
+        });
+        Route::patch(
+            '{id}/unread',
+            [AdminLienHeController::class, 'markUnread']
+        )
+            ->name('unread');
         /*
 |--------------------------------------------------------------------------
 | QUẢN LÝ LIÊN HỆ

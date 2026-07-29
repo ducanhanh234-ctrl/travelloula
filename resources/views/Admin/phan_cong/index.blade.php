@@ -1015,9 +1015,15 @@
                                         @if($status == 'finalized')
                                         <span class="badge bg-success ">Đã Chốt</span>
                                         @elseif($status == 'assigned')
-                                        <span class="badge bg-danger">Đã Phân Công</span>
+                                        <span class="badge bg-primary">Đã Phân Công</span>
                                         @elseif($status == 'running')
                                         <span class="badge bg-warning">Đang Chạy</span>
+                                        @elseif($status == 'available')
+                                        <span class="badge bg-secondary">Mở Bán</span>
+                                        @elseif($status == 'closed')
+                                        <span class="badge bg-dark">Đã Đóng</span>
+                                        @elseif($status == 'ended')
+                                        <span class="badge bg-danger">Đã Kết Thúc</span>
                                         @else
                                         <span class="badge bg-secondary">Chưa Chốt</span>
                                         @endif

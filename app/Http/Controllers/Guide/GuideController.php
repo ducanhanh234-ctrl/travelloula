@@ -7,6 +7,7 @@ use App\Models\HuongDanVien;
 use App\Models\KhachHangDatTour;
 use App\Models\PhanCong;
 use App\Models\PhuongTien;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class GuideController extends Controller
@@ -16,11 +17,15 @@ class GuideController extends Controller
         $hdvId = HuongDanVien::where('email', auth()->user()->email)
             ->value('id');
 
+        $today = Carbon::today();
+        $twoWeeksLater = Carbon::today()->addDays(14);
+
         $tours = PhanCong::with([
             'lichKhoiHanh.tour',
             'hdv',
         ])
             ->whereJsonContains('hdv_ids', (string)$hdvId)
+            ->whereBetween('ngay_phan_cong', [$today, $twoWeeksLater])
             ->get()
             ->sortBy(function ($tour) {
                 return [
@@ -30,7 +35,6 @@ class GuideController extends Controller
             })
             ->values();
 
-        // Lấy danh sách phương tiện của từng phân công
         foreach ($tours as $tour) {
             $ids = $tour->phuong_tien_ids ?? [];
 

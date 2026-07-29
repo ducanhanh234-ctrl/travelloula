@@ -210,8 +210,10 @@
                             Ghi nhớ đăng nhập
                         </label>
 
-                        <a href="#" class="hover:text-white">
+                        <a href="{{ route('password.request') }}" class="text-decoration-none">
+
                             Quên mật khẩu?
+
                         </a>
                     </div>
 

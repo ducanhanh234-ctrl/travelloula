@@ -25,7 +25,8 @@ class PhanCongController extends Controller
             'tour',
             'phanCong.hdv',
             'phanCong.phuongTien',
-        ])
+        ])->leftJoin('phan_congs', 'phan_congs.lich_khoi_hanh_id', '=', 'lich_khoi_hanh_tours.id')
+            ->select('lich_khoi_hanh_tours.*')
             ->when($keyword, function ($query) use ($keyword) {
                 $query->whereHas('hdv', function ($q) use ($keyword) {
                     $q->where('ho_ten', 'like', '%' . $keyword . '%');
@@ -41,7 +42,7 @@ class PhanCongController extends Controller
                 $query->whereHas('phanCong')
                     ->orWhere('trang_thai', 'finalized');
             })
-            ->orderBy('ngay_khoi_hanh', 'asc')
+            ->orderBy('phan_congs.ngay_phan_cong', 'asc')
             ->paginate(10);
 
         return view(

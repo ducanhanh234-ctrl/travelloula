@@ -376,6 +376,10 @@
         gap: 13px;
     }
 
+    .location-day-header-disabled {
+        background: linear-gradient(135deg, #adb5bd, #6c757d) !important;
+    }
+
     .location-day-title {
         font-size: 14px;
         font-weight: 750;
@@ -450,6 +454,26 @@
             border-color 0.18s ease,
             box-shadow 0.18s ease,
             transform 0.18s ease;
+    }
+
+    .location-place-card-disabled {
+        background: #f8f9fa;
+        border-color: #ced4da;
+        opacity: .8;
+    }
+
+    .location-place-card-disabled::before {
+        background: #6c757d;
+    }
+
+    .location-place-card-disabled .location-place-icon {
+        background: #e9ecef;
+        color: #6c757d;
+        border-color: #ced4da;
+    }
+
+    .location-place-card-disabled .location-place-title {
+        color: #6c757d;
     }
 
     .location-place-card:hover {
@@ -584,6 +608,20 @@
 
         text-decoration: none;
         transform: translateY(-1px);
+    }
+
+    .btn-location-checkin.disabled,
+    .btn-location-checkin:disabled {
+        background: #adb5bd !important;
+        border-color: #adb5bd !important;
+        cursor: not-allowed;
+        opacity: .7;
+        pointer-events: none;
+    }
+
+    .btn-closed {
+        background: #dc3545 !important;
+        color: #fff;
     }
 
     /* Empty */
@@ -816,7 +854,7 @@ return $ngay->chiTiets->count();
         </div>
     </div>
     <div class="location-day-card">
-        <div class="location-day-header">
+        <div class="location-day-header {{ $departureCanCheckIn ? '' : 'location-day-header-disabled' }}">
             <div class="location-day-title">
                 <span class="location-day-title-icon">
                     <i class="fas fa-calendar-day"></i>
@@ -834,7 +872,7 @@ return $ngay->chiTiets->count();
 
             <div class="location-place-list">
 
-                <div class="location-place-card">
+                <div class="location-place-card {{ $departureCanCheckIn ? '' : 'location-place-card-disabled' }}">
                     <div class="location-place-main">
                         <span class="location-place-icon">
                             <i class="fas fa-map-marker-alt"></i>
@@ -850,13 +888,30 @@ return $ngay->chiTiets->count();
                     </div>
 
                     <div class="location-place-action">
-                        <a href="{{ route(
-    'Guide.checkin.xuatPhat',
-    $lichKhoiHanh->id
-) }}" class="btn-location-checkin">
+                        @if($departureDone)
+                        <button class="btn-location-checkin btn-success" disabled>
+                            <i class="fas fa-check-circle"></i>
+                            Đã check-in
+                        </button>
+
+                        @elseif($departureExpired)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin btn-closed">
+                            <i class="fas fa-lock"></i>
+                            Đã đóng
+                        </a>
+
+                        @elseif($departureCanCheckIn)
+                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin">
                             <i class="fas fa-user-check"></i>
                             Check-in
                         </a>
+
+                        @else
+                        <button class="btn-location-checkin disabled" disabled>
+                            <i class="fas fa-clock"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
                     </div>
                 </div>
 
@@ -922,57 +977,39 @@ return $ngay->chiTiets->count();
                     </div>
 
                     <div class="location-place-action">
-                        @if ($ngay->ngay_thu == 1 && ! $lichKhoiHanh->da_checkin_khoi_hanh)
-                        @if($firstDayOneActivity && $firstDayOneActivity->id === $chiTiet->id && $departureCanCheckIn)
-                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Check-in khởi hành">
+                        @php
+                        $window = $activityWindows[$chiTiet->id] ?? null;
+                        $canCheckIn = $window['can_checkin'] ?? false;
+                        $expired = $window['expired'] ?? false;
+                        @endphp
+
+                        @if($canCheckIn)
+
+                        <a href="{{ route('Guide.checkin.show', [
+            'lichKhoiHanh' => $lichKhoiHanh->id,
+            'chiTiet' => $chiTiet->id,
+        ]) }}" class="btn-location-checkin">
                             <i class="fas fa-user-check"></i>
                             Check-in
                         </a>
-                        @else
-                        @if($departureExpired)
-                        <a href="{{ route('Guide.checkin.xuatPhat', $lichKhoiHanh->id) }}" class="btn-location-checkin" title="Đã đóng">
-                            <i class="fas fa-user-check"></i>
+
+                        @elseif($expired)
+
+                        <a href="{{ route('Guide.checkin.show', [
+            'lichKhoiHanh' => $lichKhoiHanh->id,
+            'chiTiet' => $chiTiet->id,
+        ]) }}" class="btn-location-checkin btn-closed">
+                            <i class="fas fa-lock"></i>
                             Đã đóng
                         </a>
+
                         @else
-                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in xuất phát">
-                            <i class="fas fa-user-check"></i>
+
+                        <button type="button" class="btn-location-checkin disabled" disabled>
+                            <i class="fas fa-clock"></i>
                             Chưa đến giờ
                         </button>
-                        @endif
-                        @endif
-                        @else
-                        @php $expired = $activityWindows[$chiTiet->id]['expired'] ?? false; @endphp
-                        @if($activityWindows[$chiTiet->id]['can_checkin'] ?? false)
-                        <a href="{{ route(
-                                    'Guide.checkin.show',
-                                    [
-                                        'lichKhoiHanh' => $lichKhoiHanh->id,
-                                        'chiTiet' => $chiTiet->id,
-                                    ]
-                                ) }}" class="btn-location-checkin">
-                            <i class="fas fa-user-check"></i>
-                            Check-in
-                        </a>
-                        @else
-                        @if($expired)
-                        <a href="{{ route(
-                                    'Guide.checkin.show',
-                                    [
-                                        'lichKhoiHanh' => $lichKhoiHanh->id,
-                                        'chiTiet' => $chiTiet->id,
-                                    ]
-                                ) }}" class="btn-location-checkin" title="Đã đóng">
-                            <i class="fas fa-user-check"></i>
-                            Đã đóng
-                        </a>
-                        @else
-                        <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in">
-                            <i class="fas fa-user-check"></i>
-                            Chưa đến giờ
-                        </button>
-                        @endif
-                        @endif
+
                         @endif
                     </div>
                 </div>
@@ -1013,7 +1050,7 @@ return $ngay->chiTiets->count();
     </div>
     @endforelse
     <div class="location-day-card">
-        <div class="location-day-header">
+        <div class="location-day-header {{ $finishCanCheckIn ? '' : 'location-day-header-disabled' }}">
             <div class="location-day-title">
                 <span class="location-day-title-icon">
                     <i class="fas fa-calendar-day"></i>
@@ -1031,7 +1068,7 @@ return $ngay->chiTiets->count();
 
             <div class="location-place-list">
 
-                <div class="location-place-card">
+                <div class="location-place-card {{ $finishCanCheckIn ? '' : 'location-place-card-disabled' }}">
                     <div class="location-place-main">
                         <span class="location-place-icon">
                             <i class="fas fa-map-marker-alt"></i>
@@ -1047,13 +1084,30 @@ return $ngay->chiTiets->count();
                     </div>
 
                     <div class="location-place-action">
-                        <a href="{{ route(
-    'Guide.checkin.ketThuc',
-    $lichKhoiHanh->id
-) }}" class="btn-location-checkin">
+                        @if($finishDone)
+                        <button class="btn-location-checkin btn-success" disabled>
+                            <i class="fas fa-check-circle"></i>
+                            Đã check-in
+                        </button>
+
+                        @elseif($finishExpired)
+                        <a href="{{route('Guide.checkin.ketThuc', $lichKhoiHanh->id) }}" class="btn-location-checkin btn-closed">
+                            <i class="fas fa-lock"></i>
+                            Đã đóng
+                        </a>
+
+                        @elseif($finishCanCheckIn)
+                        <a href="{{ route('Guide.checkin.ketThuc', $lichKhoiHanh->id) }}" class="btn-location-checkin">
                             <i class="fas fa-user-check"></i>
                             Check-in
                         </a>
+
+                        @else
+                        <button class="btn-location-checkin disabled" disabled>
+                            <i class="fas fa-clock"></i>
+                            Chưa đến giờ
+                        </button>
+                        @endif
                     </div>
                 </div>
 

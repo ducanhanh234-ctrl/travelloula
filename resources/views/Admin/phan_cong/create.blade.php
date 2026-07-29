@@ -160,9 +160,23 @@
                 <!-- Info Lịch Khởi Hành -->
                 <div class="bg-light p-3 rounded-3 border mb-4">
                     <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhs->id }}">
-                    <h5 class="text-dark mb-2">
-                        <i class="fas fa-route text-primary me-2"></i>{{ $lichKhoiHanhs->tour->ten_tour }}
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center border rounded p-3 bg-light shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-route text-primary fs-4 me-3"></i>
+                            <div>
+                                <h5 class="mb-0 fw-bold text-dark">
+                                    {{ $lichKhoiHanhs->tour->ten_tour }}
+                                </h5>
+                                <small class="text-muted">
+                                    Mã lịch: #{{ $lichKhoiHanhs->id }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <span class="badge bg-primary fs-6 px-3 py-2">
+                            {{ $lichKhoiHanhs->so_cho_da_dat }}/{{ $lichKhoiHanhs->so_cho }} Chỗ
+                        </span>
+                    </div>
                     <div class="text-muted d-flex align-items-center">
                         <div class="bg-white px-3 py-1 rounded border shadow-sm">
                             <i class="far fa-calendar-alt text-success me-2"></i>
@@ -200,7 +214,12 @@
                                     @foreach($phuongTiens as $xe)
                                     <label class="custom-dropdown-item d-flex align-items-center p-2 mb-1 w-100">
                                         <input type="checkbox" id="vehicle_{{ $xe->id }}" name="phuong_tien_ids[]" value="{{ $xe->id }}" class="form-check-input me-2 vehicle-checkbox" {{ in_array($xe->id, $selectedVehicleIds) ? 'checked' : '' }}>
-                                        <span class="text-dark">🚌 {{ $xe->bien_so_xe }} &nbsp;|&nbsp; <span class="text-muted">{{ $xe->loai_phuong_tien }}</span></span>
+                                        <span class="text-dark">🚌 {{ $xe->bien_so_xe }} &nbsp;|&nbsp; <span class="text-muted">{{ match($xe->loai_phuong_tien) {
+            'xe_45_cho' => 'Xe 45 chỗ',
+            'xe_29_cho' => 'Xe 29 chỗ',
+            'xe_16_cho' => 'Xe 16 chỗ',
+            default => 'Không xác định'
+        } }}</span></span>
                                     </label>
                                     @endforeach
                                     @if(count($phuongTiens) == 0)

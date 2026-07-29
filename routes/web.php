@@ -48,7 +48,31 @@ use App\Http\Controllers\Admin\DatTourController;
 
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
+//Lấy Mk
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
+Route::middleware('guest')->group(function () {
+    Route::get('/quen-mat-khau', [
+        ForgotPasswordController::class,
+        'showLinkRequestForm',
+    ])->name('password.request');
+
+    Route::post('/quen-mat-khau', [
+        ForgotPasswordController::class,
+        'sendResetLinkEmail',
+    ])->name('password.email');
+
+    Route::get('/dat-lai-mat-khau/{token}', [
+        ResetPasswordController::class,
+        'showResetForm',
+    ])->name('password.reset');
+
+    Route::post('/dat-lai-mat-khau', [
+        ResetPasswordController::class,
+        'reset',
+    ])->name('password.update');
+});
 
 /*
 |--------------------------------------------------------------------------

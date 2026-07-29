@@ -487,6 +487,146 @@
             }
 
         }
+
+        .invalid-feedback {
+            display: block;
+            font-size: 14px;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+
+        .is-invalid:focus {
+            box-shadow: 0 0 0 .2rem rgba(220, 53, 69, .15);
+        }
+
+        .alert-success {
+
+            border-radius: 12px;
+
+        }
+
+        .alert-danger {
+
+            border-radius: 12px;
+
+        }
+
+        .toast-container-custom {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 9999;
+        }
+
+        .toast-custom {
+            width: 420px;
+            max-width: calc(100vw - 40px);
+
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 22px;
+
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+
+            border-left: 6px solid #198754;
+
+            transform: translateX(500px);
+            transition: .4s ease;
+
+            overflow: visible;
+        }
+
+        .toast-custom.show {
+
+            transform: translateX(0);
+
+        }
+
+        .toast-custom.hide {
+
+            transform: translateX(450px);
+
+        }
+
+        .toast-icon {
+
+            width: 48px;
+
+            height: 48px;
+
+            border-radius: 50%;
+
+            background: #198754;
+
+            color: #fff;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 22px;
+
+            flex-shrink: 0;
+
+        }
+
+        .toast-title {
+
+            font-weight: 700;
+
+            margin-bottom: 3px;
+
+        }
+
+        .toast-message {
+
+            color: #666;
+
+            font-size: 14px;
+
+        }
+
+        .toast-close {
+
+            margin-left: auto;
+
+            cursor: pointer;
+
+            font-size: 18px;
+
+            color: #999;
+
+        }
+
+        .toast-close:hover {
+
+            color: #000;
+
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .toast-message {
+            color: #666;
+            line-height: 1.6;
+            word-break: break-word;
+        }
     </style>
 
     {{-- ================= Banner ================= --}}
@@ -778,13 +918,34 @@
                             {{-- Thông báo thành công --}}
 
                             @if (session('success'))
-                                <div class="alert alert-success">
+                                <div class="alert alert-success alert-dismissible fade show">
+
+                                    <i class="fas fa-check-circle me-2"></i>
 
                                     {{ session('success') }}
 
+                                    <button class="btn-close" data-bs-dismiss="alert">
+                                    </button>
+
                                 </div>
                             @endif
+                            @if ($errors->any())
 
+                                <div class="alert alert-danger">
+
+                                    <strong>Vui lòng kiểm tra lại thông tin:</strong>
+
+                                    <ul class="mb-0 mt-2">
+
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+
+                                    </ul>
+
+                                </div>
+
+                            @endif
                             <form method="POST" action="{{ route('Client.lien_he.store') }}">
 
                                 @csrf
@@ -1105,5 +1266,67 @@
             });
 
         });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const toast = document.getElementById('successToast');
+
+            if (!toast) return;
+
+            setTimeout(() => {
+
+                toast.classList.add('show');
+
+            }, 200);
+
+            setTimeout(() => {
+
+                toast.classList.remove('show');
+
+                toast.classList.add('hide');
+
+            }, 4000);
+
+            const close = toast.querySelector('.toast-close');
+
+            close.onclick = function() {
+
+                toast.classList.remove('show');
+
+                toast.classList.add('hide');
+
+            }
+
+        });
     </script>
+    @if (session('success'))
+        <div class="toast-container-custom">
+
+            <div class="toast-custom" id="successToast">
+
+                <div class="toast-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+
+                <div class="toast-content">
+
+                    <div class="toast-title">
+                        Thành công
+                    </div>
+
+                    <div class="toast-message">
+                        {{ session('success') }}
+                    </div>
+
+                </div>
+
+                <div class="toast-close">
+                    <i class="fas fa-times"></i>
+                </div>
+
+            </div>
+
+        </div>
+    @endif
 @endsection

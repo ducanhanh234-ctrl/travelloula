@@ -30,27 +30,31 @@ class ClientLienHeController extends Controller
             ],
             'tieu_de' => 'required|string|max:255',
             'noi_dung' => 'required|string|min:10|max:3000',
-        ],[
-            'ho_ten.required' => 'Vui lòng nhập họ tên.',
+        ], [
+            'ho_ten.required' => 'Vui lòng nhập họ và tên.',
+            'ho_ten.max' => 'Họ tên tối đa 150 ký tự.',
+
             'email.required' => 'Vui lòng nhập email.',
-            'email.email' => 'Email không hợp lệ.',
+            'email.email' => 'Email không đúng định dạng.',
 
             'so_dien_thoai.required' => 'Vui lòng nhập số điện thoại.',
             'so_dien_thoai.regex' => 'Số điện thoại không hợp lệ.',
 
             'tieu_de.required' => 'Vui lòng nhập tiêu đề.',
+            'tieu_de.max' => 'Tiêu đề tối đa 255 ký tự.',
 
             'noi_dung.required' => 'Vui lòng nhập nội dung.',
-            'noi_dung.min' => 'Nội dung tối thiểu 10 ký tự.',
+            'noi_dung.min' => 'Nội dung phải có ít nhất 10 ký tự.',
+            'noi_dung.max' => 'Nội dung tối đa 3000 ký tự.',
         ]);
 
         LienHe::create([
-            'ho_ten'         => $request->ho_ten,
-            'email'          => $request->email,
-            'so_dien_thoai'  => $request->so_dien_thoai,
-            'tieu_de'        => $request->tieu_de,
-            'noi_dung'       => $request->noi_dung,
-            'trang_thai'     => 'Chưa xử lý',
+            'ho_ten' => $request->ho_ten,
+            'email' => $request->email,
+            'so_dien_thoai' => $request->so_dien_thoai,
+            'tieu_de' => $request->tieu_de,
+            'noi_dung' => $request->noi_dung,
+            'trang_thai' => 'Chưa xử lý',
         ]);
 
         return redirect()

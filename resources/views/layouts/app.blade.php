@@ -70,7 +70,7 @@
                     </button>
 
                     <div class="user-menu" id="userMenu">
-                        <a href="{{ route('profile') }}">
+                        <a href="{{ route('client.profile.show') }}">
                             <i class="fa-regular fa-id-card"></i>
                             Hồ sơ cá nhân
                         </a>

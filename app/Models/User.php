@@ -2,25 +2,21 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use App\Models\QuyenHan;
-use App\Models\VaiTro;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 use App\Models\BaoCaoSuCo;
+use App\Models\HuongDanVien;
+use App\Models\QuyenHan;
+use App\Models\VaiTro;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -31,21 +27,11 @@ class User extends Authenticatable
         'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
@@ -54,45 +40,73 @@ class User extends Authenticatable
 
     public function hasRole(string $roles): bool
     {
-        $roleNames = array_filter(array_map('trim', preg_split('/[|,]/', $roles)));
+        $roleNames = array_filter(
+            array_map('trim', preg_split('/[|,]/', $roles))
+        );
+
         if (empty($roleNames)) {
             return false;
         }
 
         $lowerRoles = array_map('strtolower', $roleNames);
-        $placeholders = implode(', ', array_fill(0, count($lowerRoles), '?'));
 
-        $hasRole = $this->vaiTros()
-            ->whereRaw("lower(ten_vai_tro) IN ({$placeholders})", $lowerRoles)
+        $placeholders = implode(
+            ', ',
+            array_fill(0, count($lowerRoles), '?')
+        );
+
+        return $this->vaiTros()
+            ->whereRaw(
+                "lower(ten_vai_tro) IN ({$placeholders})",
+                $lowerRoles
+            )
             ->exists();
-
-        return $hasRole;
     }
 
     public function hasPermission(string $permissions): bool
     {
-        $permissionNames = array_filter(array_map('trim', preg_split('/[|,]/', $permissions)));
+        $permissionNames = array_filter(
+            array_map('trim', preg_split('/[|,]/', $permissions))
+        );
+
         if (empty($permissionNames)) {
             return false;
         }
 
-        $lowerPermissions = array_map('strtolower', $permissionNames);
-        $placeholders = implode(', ', array_fill(0, count($lowerPermissions), '?'));
+        $lowerPermissions = array_map(
+            'strtolower',
+            $permissionNames
+        );
 
-        $hasPermission = $this->vaiTros()->whereHas('quyenHans', function ($query) use ($placeholders, $lowerPermissions) {
-            $query->whereRaw("lower(ten) IN ({$placeholders})", $lowerPermissions);
-        })->exists();
+        $placeholders = implode(
+            ', ',
+            array_fill(0, count($lowerPermissions), '?')
+        );
 
-        return $hasPermission;
+        return $this->vaiTros()
+            ->whereHas('quyenHans', function ($query) use (
+                $placeholders,
+                $lowerPermissions
+            ) {
+                $query->whereRaw(
+                    "lower(ten) IN ({$placeholders})",
+                    $lowerPermissions
+                );
+            })
+            ->exists();
     }
 
     public function permissions()
     {
         return QuyenHan::whereHas('vaiTros', function ($query) {
-            $query->whereIn('vai_tros.id', function ($query) {
-                $query->select('vai_tro_id')
+            $query->whereIn('vai_tros.id', function ($subQuery) {
+                $subQuery
+                    ->select('vai_tro_id')
                     ->from('nguoi_dung_vai_tros')
-                    ->whereColumn('nguoi_dung_vai_tros.vai_tro_id', 'vai_tros.id')
+                    ->whereColumn(
+                        'nguoi_dung_vai_tros.vai_tro_id',
+                        'vai_tros.id'
+                    )
                     ->where('nguoi_dung_id', $this->id);
             });
         });
@@ -128,13 +142,22 @@ class User extends Authenticatable
 
     public function vaiTros()
     {
-        return $this->belongsToMany(VaiTro::class, 'nguoi_dung_vai_tros', 'nguoi_dung_id', 'vai_tro_id');
+        return $this->belongsToMany(
+            VaiTro::class,
+            'nguoi_dung_vai_tros',
+            'nguoi_dung_id',
+            'vai_tro_id'
+        );
     }
 
     public function huongDanVien()
     {
-        return $this->hasOne(HuongDanVien::class, 'user_id');
+        return $this->hasOne(
+            HuongDanVien::class,
+            'user_id'
+        );
     }
+
     public function baoCaoSuCosXuLy()
     {
         return $this->hasMany(

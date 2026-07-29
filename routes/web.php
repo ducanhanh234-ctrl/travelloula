@@ -48,7 +48,32 @@ use App\Http\Controllers\Admin\DatTourController;
 
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
+//Lấy Mk
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Client\ProfileController;
 
+Route::middleware('guest')->group(function () {
+    Route::get('/quen-mat-khau', [
+        ForgotPasswordController::class,
+        'showLinkRequestForm',
+    ])->name('password.request');
+
+    Route::post('/quen-mat-khau', [
+        ForgotPasswordController::class,
+        'sendResetLinkEmail',
+    ])->name('password.email');
+
+    Route::get('/dat-lai-mat-khau/{token}', [
+        ResetPasswordController::class,
+        'showResetForm',
+    ])->name('password.reset');
+
+    Route::post('/dat-lai-mat-khau', [
+        ResetPasswordController::class,
+        'reset',
+    ])->name('password.update');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -73,7 +98,41 @@ Route::prefix('danh_gias')->name('danh_gias.')->group(function () {
     Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
     Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
 });
+// profile clien
 
+
+Route::middleware(['auth'])->prefix('tai-khoan')->group(function () {
+    Route::get('/ho-so', [
+        ProfileController::class,
+        'show',
+    ])->name('client.profile.show');
+
+    Route::get('/ho-so/chinh-sua', [
+        ProfileController::class,
+        'edit',
+    ])->name('client.profile.edit');
+
+    Route::put('/ho-so', [
+        ProfileController::class,
+        'update',
+    ])->name('client.profile.update');
+
+    Route::get('/doi-mat-khau', [
+        ProfileController::class,
+        'showChangePasswordForm',
+    ])->name('client.profile.password.edit');
+
+    Route::put('/doi-mat-khau', [
+        ProfileController::class,
+        'changePassword',
+    ])->name('client.profile.password.update');
+
+    Route::delete('/anh-dai-dien', [
+        ProfileController::class,
+        'deleteAvatar',
+    ])->name('client.profile.avatar.delete');
+});
+//
 Route::get('/tour', [TourClientController::class, 'index'])->name('Client.danh_sach_tour.index');
 Route::get('/tour/{id}', [TourClientController::class, 'show'])->name('Client.danh_sach_tour.show');
 

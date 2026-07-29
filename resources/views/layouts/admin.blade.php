@@ -1263,21 +1263,14 @@
 
 <body>
     @php
-    $adminUser = auth()->user();
+        $adminUser = auth()->user();
 
-    $notifications = $adminUser
-        ? $adminUser->unreadNotifications()
-            ->latest()
-            ->take(10)
-            ->get()
-        : collect();
+        $notifications = $adminUser ? $adminUser->unreadNotifications()->latest()->take(10)->get() : collect();
 
-    $notificationCount = $adminUser
-        ? $adminUser->unreadNotifications()->count()
-        : 0;
+        $notificationCount = $adminUser ? $adminUser->unreadNotifications()->count() : 0;
 
-    $suCoMoi = $suCoMoi ?? 0;
-@endphp
+        $suCoMoi = $suCoMoi ?? 0;
+    @endphp
 
     {{-- Sidebar --}}
     <aside class="sidebar" id="sidebar">
@@ -1779,18 +1772,25 @@
                     </div> --}}
 
                     <div class="nav-item">
-                        <a href="#" class="nav-link" title="Hỗ trợ khách hàng">
+                        <a href="{{ route('Admin.lien_hes.index') }}" class="nav-link"
+                            title="Liên hệ & Hỗ trợ khách hàng">
                             <span class="nav-icon">
                                 <i class="fas fa-headset"></i>
                             </span>
 
                             <span class="nav-text">
-                                Hỗ trợ khách hàng
+                                Liên hệ & Hỗ trợ khách hàng
                             </span>
 
-                            <span class="nav-badge nav-badge-warning">
-                                5
-                            </span>
+                            @php
+                                $unreadCount = \App\Models\LienHe::where('trang_thai', 'Chưa đọc')->count();
+                            @endphp
+
+                            @if ($unreadCount > 0)
+                                <span class="nav-badge nav-badge-warning">
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
                         </a>
                     </div>
                 </div>

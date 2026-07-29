@@ -47,11 +47,7 @@
                     Bài viết
                 </a>
 
-                <a href="#">
-                    Ưu đãi
-                </a>
-
-                <a href="#">
+                <a href="{{ route('Client.lien_he.index') }}" class="{{ request()->is('lien_he*') ? 'active' : '' }}">
                     Liên hệ
                 </a>
 

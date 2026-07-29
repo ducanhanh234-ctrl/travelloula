@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminLienHeController;
 use App\Http\Controllers\Admin\BangGiaTourController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,9 @@ use App\Http\Controllers\Admin\DatTourController;
 
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
+use App\Http\Controllers\Client\ClientLienHeController;
+
+
 //Lấy Mk
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -74,6 +78,7 @@ Route::middleware('guest')->group(function () {
         'reset',
     ])->name('password.update');
 });
+
 
 /*
 |--------------------------------------------------------------------------
@@ -162,6 +167,17 @@ Route::get(
 )->name('thanh-toan.download');
 Route::get('/thanh-toan/{id}/view', [ThanhToanController::class, 'viewHoaDon'])
     ->name('thanh-toan.view');
+Route::prefix('lien-he')->name('Client.lien_he.')->group(function () {
+
+    // Trang liên hệ
+    Route::get('/', [ClientLienHeController::class, 'index'])
+        ->name('index');
+
+    // Gửi liên hệ
+    Route::post('/', [ClientLienHeController::class, 'store'])
+        ->name('store');
+
+});
 /*
 |--------------------------------------------------------------------------
 | AUTH ROUTES
@@ -361,6 +377,61 @@ Route::prefix('Admin')
         Route::resource('nhat_ky_tours', NhatKyTourController::class)->only(['index', 'show']);
         Route::post('/import-hanh-khach', [ImportKhachHangController::class, 'import'])
             ->name('import_hanh_khach');
+        // Admin
+        Route::prefix('lien-hes')
+            ->name('lien_hes.')
+            ->group(function () {
+
+            Route::get('/', [AdminLienHeController::class, 'index'])
+                ->name('index');
+
+            Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                ->name('show');
+
+            Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
+                ->name('read');
+
+            Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                ->name('destroy');
+
+        });
+        Route::patch(
+            '{id}/unread',
+            [AdminLienHeController::class, 'markUnread']
+        )
+            ->name('unread');
+        /*
+|--------------------------------------------------------------------------
+| QUẢN LÝ LIÊN HỆ
+|--------------------------------------------------------------------------
+*/
+
+        Route::prefix('admin/lien-he')
+            ->middleware(['auth'])
+            ->name('Admin.lien_he.')
+            ->group(function () {
+
+                // Danh sách
+                Route::get('/', [AdminLienHeController::class, 'index'])
+                    ->name('index');
+
+                // Chi tiết
+                Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                    ->name('show');
+
+                // Cập nhật
+                Route::put('/{id}', [AdminLienHeController::class, 'update'])
+                    ->name('update');
+
+                // Đánh dấu đã xử lý nhanh
+                Route::patch('/{id}/resolve', [AdminLienHeController::class, 'markAsResolved'])
+                    ->name('resolve');
+
+                // Xóa
+                Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                    ->name('destroy');
+
+            });
 
         /*
         |--------------------------------------------------------------------------
@@ -485,7 +556,7 @@ Route::prefix('Guide')
         // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
-
+    
 
         Route::get(
             '/checkin/{lichKhoiHanh}/xuat-phat',

@@ -98,7 +98,7 @@ Route::prefix('danh_gias')->name('danh_gias.')->group(function () {
     Route::get('/{id}', [DanhGiaController::class, 'show'])->name('show');
     Route::delete('/{id}', [DanhGiaController::class, 'destroy'])->name('destroy');
 });
-// profile client
+// profile clien
 
 
 Route::middleware(['auth'])->prefix('tai-khoan')->group(function () {

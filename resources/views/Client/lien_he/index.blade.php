@@ -217,7 +217,7 @@
             height: 100%;
             min-height: 650px;
             background: url('{{ asset('images/contact-form.png') }}') center center no-repeat;
-            background-size: contain;
+            background-size: cover;
             background-color: #f8f9fa;
         }
 
@@ -229,6 +229,261 @@
 
             .contact-form-left {
                 padding: 30px;
+            }
+
+        }
+
+        .map-section {
+            padding: 80px 0;
+            background: #f8fafc;
+        }
+
+        .map-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .map-title h2 {
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .map-title p {
+            color: #6c757d;
+        }
+
+        .map-card {
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .08);
+            border: 1px solid #eee;
+        }
+
+        .map-card iframe {
+            width: 100%;
+            height: 500px;
+            border: 0;
+            display: block;
+        }
+
+        .quick-contact {
+            margin-top: 40px;
+        }
+
+        .quick-item {
+
+            background: #fff;
+
+            border-radius: 18px;
+
+            padding: 25px;
+
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .06);
+
+            text-align: center;
+
+            transition: .3s;
+
+            height: 100%;
+
+            border: 1px solid #eee;
+
+        }
+
+        .quick-item:hover {
+
+            transform: translateY(-8px);
+
+        }
+
+        .quick-item i {
+
+            font-size: 42px;
+
+            color: #0d6efd;
+
+            margin-bottom: 15px;
+
+        }
+
+        .quick-item h5 {
+
+            font-weight: 700;
+
+            margin-bottom: 10px;
+
+        }
+
+        .quick-item p {
+
+            margin-bottom: 0;
+
+            color: #666;
+
+        }
+
+        .faq-section {
+            padding: 90px 0;
+            background: #f8fafc;
+        }
+
+        .faq-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .faq-title span {
+            color: #0d6efd;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .faq-title h2 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .faq-title p {
+            color: #6c757d;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        .faq-list {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .faq-item {
+
+            background: #fff;
+
+            border-radius: 18px;
+
+            margin-bottom: 18px;
+
+            overflow: hidden;
+
+            box-shadow: 0 12px 25px rgba(0, 0, 0, .06);
+
+            transition: .3s;
+
+        }
+
+        .faq-item.active {
+
+            box-shadow: 0 15px 35px rgba(13, 110, 253, .18);
+
+        }
+
+        .faq-question {
+
+            padding: 24px 30px;
+
+            cursor: pointer;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            font-size: 18px;
+
+            font-weight: 600;
+
+        }
+
+        .faq-question:hover {
+
+            color: #0d6efd;
+
+        }
+
+        .faq-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: #eef5ff;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 24px;
+
+            color: #0d6efd;
+
+            transition: .3s;
+
+            flex-shrink: 0;
+
+        }
+
+        .faq-item.active .faq-icon {
+
+            background: #0d6efd;
+
+            color: #fff;
+
+            transform: rotate(45deg);
+
+        }
+
+        .faq-answer {
+
+            max-height: 0;
+
+            overflow: hidden;
+
+            transition: max-height .35s ease;
+
+            padding: 0 30px;
+
+        }
+
+        .faq-answer p {
+
+            color: #6c757d;
+
+            line-height: 1.8;
+
+            padding-bottom: 25px;
+
+            margin: 0;
+
+        }
+
+        @media(max-width:768px) {
+
+            .faq-title h2 {
+
+                font-size: 30px;
+
+            }
+
+            .faq-question {
+
+                font-size: 16px;
+
+                padding: 20px;
+
+            }
+
+            .faq-answer {
+
+                padding: 0 20px;
+
             }
 
         }
@@ -289,6 +544,99 @@
         </div>
 
     </div>
+    <section class="map-section">
+
+        <div class="container">
+
+            <div class="map-title">
+
+                <h2>
+
+                    Vị Trí Của Chúng Tôi
+
+                </h2>
+
+                <p>
+
+                    Ghé thăm văn phòng Travelloula hoặc liên hệ trực tiếp để được tư
+                    vấn nhanh nhất.
+
+                </p>
+
+            </div>
+
+            <div class="map-card">
+
+                <iframe src="https://www.google.com/maps?q=FPT+Polytechnic+Trịnh+Văn+Bô&output=embed" loading="lazy"
+                    allowfullscreen>
+                </iframe>
+
+            </div>
+
+            <div class="row g-4 quick-contact">
+
+                <div class="col-lg-4">
+
+                    <div class="quick-item">
+
+                        <i class="fas fa-headset"></i>
+
+                        <h5>Hỗ trợ 24/7</h5>
+
+                        <p>
+
+                            Đội ngũ chăm sóc khách hàng luôn sẵn sàng hỗ trợ bạn mọi
+                            lúc.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="quick-item">
+
+                        <i class="fas fa-credit-card"></i>
+
+                        <h5>Thanh toán an toàn</h5>
+
+                        <p>
+
+                            Hỗ trợ nhiều phương thức thanh toán bảo mật và nhanh
+                            chóng.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-4">
+
+                    <div class="quick-item">
+
+                        <i class="fas fa-plane-departure"></i>
+
+                        <h5>Hơn 1000+ Tour</h5>
+
+                        <p>
+
+                            Khám phá hàng nghìn tour du lịch trong và ngoài nước với
+                            mức giá hấp dẫn.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
     {{-- ================= Thông tin liên hệ ================= --}}
 
@@ -578,4 +926,184 @@
         </div>
 
     </section>
+    <section class="faq-section">
+
+        <div class="container">
+
+            <div class="faq-title">
+
+                <span>FAQ</span>
+
+                <h2>Câu hỏi thường gặp</h2>
+
+                <p>
+
+                    Một số câu hỏi phổ biến của khách hàng khi đặt tour tại
+                    Travelloula.
+
+                </p>
+
+            </div>
+
+            <div class="faq-list">
+
+                <div class="faq-item">
+
+                    <div class="faq-question">
+
+                        Làm thế nào để đặt tour?
+
+                        <div class="faq-icon">+</div>
+
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+
+                            Chọn tour yêu thích, nhấn "Đặt tour", điền thông tin
+                            và thanh toán trực tuyến. Sau khi thanh toán thành công,
+                            hệ thống sẽ gửi xác nhận qua email.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item">
+
+                    <div class="faq-question">
+
+                        Tôi có thể đổi ngày khởi hành không?
+
+                        <div class="faq-icon">+</div>
+
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+
+                            Có. Bạn có thể đổi ngày khởi hành nếu tour còn chỗ và
+                            đáp ứng chính sách đổi tour của Travelloula.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item">
+
+                    <div class="faq-question">
+
+                        Chính sách hoàn tiền như thế nào?
+
+                        <div class="faq-icon">+</div>
+
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+
+                            Mức hoàn tiền phụ thuộc vào thời điểm hủy tour.
+                            Vui lòng xem mục Điều khoản hoặc liên hệ nhân viên để
+                            được hỗ trợ.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item">
+
+                    <div class="faq-question">
+
+                        Travelloula hỗ trợ thanh toán gì?
+
+                        <div class="faq-icon">+</div>
+
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+
+                            Chúng tôi hỗ trợ VNPay, chuyển khoản ngân hàng và nhiều
+                            phương thức thanh toán trực tuyến khác.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="faq-item">
+
+                    <div class="faq-question">
+
+                        Tôi sẽ nhận được gì sau khi đặt tour?
+
+                        <div class="faq-icon">+</div>
+
+                    </div>
+
+                    <div class="faq-answer">
+
+                        <p>
+
+                            Bạn sẽ nhận email xác nhận, hóa đơn, lịch trình chi tiết
+                            và hướng dẫn trước ngày khởi hành.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+
+            question.addEventListener('click', function() {
+
+                const item = this.parentElement;
+
+                const answer = item.querySelector('.faq-answer');
+
+                document.querySelectorAll('.faq-item').forEach(f => {
+
+                    if (f !== item) {
+
+                        f.classList.remove('active');
+
+                        f.querySelector('.faq-answer').style.maxHeight = null;
+
+                    }
+
+                });
+
+                item.classList.toggle('active');
+
+                if (item.classList.contains('active')) {
+
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+
+                } else {
+
+                    answer.style.maxHeight = null;
+
+                }
+
+            });
+
+        });
+    </script>
 @endsection

@@ -750,6 +750,18 @@ class QuanLyDatTourController extends Controller
 
         ]);
 
+        foreach (($request->hanh_khach ?? []) as $index => $passenger) {
+            if (($passenger['loai_giay_to'] ?? '') === 'CCCD') {
+                $cccd = $passenger['so_giay_to'] ?? '';
+
+                if (!preg_match('/^\d{12}$/', $cccd)) {
+                    return back()
+                        ->withInput()
+                        ->with('error', 'CCCD của hành khách #' . ($index + 1) . ' phải gồm đúng 12 chữ số.');
+                }
+            }
+        }
+
         DB::beginTransaction();
 
         try {

@@ -195,6 +195,13 @@
 
                     <!-- Danh sách form chi tiết hành khách -->
                     <h5 class="font-weight-bold mb-3 text-dark section-title">Thông tin chi tiết từng hành khách</h5>
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                        <small class="text-muted">Bạn có thể import danh sách hành khách từ file Excel để tự động điền thông tin.</small>
+                        <label class="d-flex align-items-center gap-2 mb-0">
+                            <span class="btn btn-outline-primary btn-sm mb-0">Import Excel</span>
+                            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="d-none">
+                        </label>
+                    </div>
                     <div id="passengers-accordion" class="mb-5"></div>
 
                     <!-- Ô TÍCH CAM ĐOAN & NÚT TIẾP TỤC Ở CUỐI TRANG -->
@@ -450,6 +457,7 @@ const tourTitle = {!! $tourTitleJs !!};
 
     const accordionContainer = document.getElementById('passengers-accordion');
     const summaryModalContent = document.getElementById('summaryModalContent');
+    const excelFile = document.getElementById('excelFile');
 
     /* =========================================================
        3. KIỂM TRA ELEMENT
@@ -477,6 +485,40 @@ const tourTitle = {!! $tourTitleJs !!};
 
     function formatVND(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+    }
+
+    function excelDateToDate(value) {
+        if (!value) return '';
+
+        if (typeof value === 'string' && value.includes('/')) {
+            const parts = value.split('/');
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+
+        const date = new Date((value - 25569) * 86400 * 1000);
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
+    function tinhTuoi(ngaySinh) {
+        if (!ngaySinh) {
+            return 0;
+        }
+
+        const birth = new Date(ngaySinh);
+        const today = new Date();
+        let age = today.getFullYear() - birth.getFullYear();
+
+        const monthDiff = today.getMonth() - birth.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+
+        return age;
     }
 
     /* =========================================================
@@ -649,7 +691,7 @@ const tourTitle = {!! $tourTitleJs !!};
                                     type="text"
                                     name="hanh_khach[${index}][so_giay_to]"
                                     class="form-control input-custom bg-white pass-doc-id"
-                                    placeholder="Nhập số định danh..."
+                                    placeholder="Nhập số định danh (12 chữ số cho CCCD)"
                                     required
                                 >
                             </div>
@@ -752,6 +794,82 @@ const tourTitle = {!! $tourTitleJs !!};
         }
 
         accordionContainer.innerHTML = formsHTML;
+    }
+
+    if (excelFile) {
+        excelFile.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('{{ route('Client.import_hanh_khach') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    let adult = 0;
+                    let child = 0;
+
+                    data.forEach((item) => {
+                        const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
+                        if (!ngaySinh) return;
+
+                        const tuoi = tinhTuoi(ngaySinh);
+                        if (tuoi <= 12) {
+                            child++;
+                        } else {
+                            adult++;
+                        }
+                    });
+
+                    elQtyAdult.value = adult || 1;
+                    elQtyChild.value = child || 0;
+                    updateBookingDetails();
+
+                    let adultIndex = 0;
+                    let childIndex = adult || 0;
+
+                    data.forEach((item) => {
+                        const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
+                        const tuoi = tinhTuoi(ngaySinh);
+                        let index = 0;
+
+                        if (tuoi <= 12) {
+                            index = childIndex++;
+                        } else {
+                            index = adultIndex++;
+                        }
+
+                        const hoTenInput = document.querySelector(`[name="hanh_khach[${index}][ho_ten]"]`);
+                        const genderInput = document.querySelector(`[name="hanh_khach[${index}][gioi_tinh]"]`);
+                        const dobInput = document.querySelector(`[name="hanh_khach[${index}][ngay_sinh]"]`);
+                        const nationInput = document.querySelector(`[name="hanh_khach[${index}][quoc_tich]"]`);
+                        const docTypeInput = document.querySelector(`[name="hanh_khach[${index}][loai_giay_to]"]`);
+                        const docIdInput = document.querySelector(`[name="hanh_khach[${index}][so_giay_to]"]`);
+                        const phoneInput = document.querySelector(`[name="hanh_khach[${index}][so_dien_thoai]"]`);
+                        const noteInput = document.querySelector(`[name="hanh_khach[${index}][yeu_cau_dac_biet]"]`);
+
+                        if (hoTenInput) hoTenInput.value = item.ho_ten || '';
+                        if (genderInput) genderInput.value = item.gioi_tinh || 'Nam';
+                        if (dobInput) dobInput.value = ngaySinh;
+                        if (nationInput) nationInput.value = item.quoc_tich || 'Việt Nam';
+                        if (docTypeInput) docTypeInput.value = item.loai_giay_to || 'CCCD';
+                        if (docIdInput) docIdInput.value = item.so_giay_to || '';
+                        if (phoneInput) phoneInput.value = item.so_dien_thoai || '';
+                        if (noteInput) noteInput.value = item.yeu_cau_dac_biet || '';
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                    alert('Import thất bại. Vui lòng thử lại với file Excel phù hợp.');
+                });
+        });
     }
 
     /* =========================================================
@@ -1272,6 +1390,19 @@ if (age < 2 || age > 11) {
             docIdInput,
             `Hành khách #${i + 1}: Số giấy tờ không được vượt quá 30 ký tự.`
         );
+    }
+
+    if (docType === 'CCCD') {
+        const cccdRegex = /^\d{12}$/;
+
+        if (!cccdRegex.test(docId)) {
+            openPassenger(card);
+
+            return showError(
+                docIdInput,
+                `Hành khách #${i + 1}: CCCD phải gồm đúng 12 chữ số.`
+            );
+        }
     }
 
 

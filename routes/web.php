@@ -203,6 +203,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tour_yeu_thich', [TourYeuThichController::class, 'index'])->name('Client.tour_yeu_thich.index');
     Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])->name('Client.tour_yeu_thich.store');
     Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])->name('Client.tour_yeu_thich.destroy');
+    Route::post('/dat_tour/import-hanh-khach', [ImportKhachHangController::class, 'import'])->name('Client.import_hanh_khach');
 });
 
 /*

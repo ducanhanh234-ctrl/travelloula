@@ -226,6 +226,7 @@
                     <!-- ẨN INPUT TỔNG TIỀN ĐỂ SUBMIT VỀ BACKEND -->
                     <input type="hidden" name="tong_tien" id="input_grand_total" value="{{ $tour->gia_nguoi_lon }}">
                     <input type="hidden" name="phuong_thuc_thanh_toan" id="input_payment_method" value="">
+                    <input type="hidden" name="phan_tram_thanh_toan" id="phanTramHidden" value="100">
                 </div>
             </div>
         </form>
@@ -454,6 +455,7 @@ const tourTitle = {!! $tourTitleJs !!};
 
     const elInputGrandTotal = document.getElementById('input_grand_total');
     const elInputPaymentMethod = document.getElementById('input_payment_method');
+    const elInputDepositPercent = document.getElementById('input_phan_tram_thanh_toan');
 
     const accordionContainer = document.getElementById('passengers-accordion');
     const summaryModalContent = document.getElementById('summaryModalContent');
@@ -533,6 +535,16 @@ const tourTitle = {!! $tourTitleJs !!};
         if (paymentMethodSelect && elInputPaymentMethod) {
             elInputPaymentMethod.value =
                 paymentMethodSelect.value || '';
+        }
+    }
+
+    function syncDepositSelection() {
+        const selectedDeposit = document.querySelector(
+            '#summaryModalContent input[name="phan_tram_thanh_toan"]:checked'
+        );
+
+        if (elInputDepositPercent) {
+            elInputDepositPercent.value = selectedDeposit?.value || '100';
         }
     }
 
@@ -1512,366 +1524,276 @@ setTimeout(function () {
 
     function generateSummary() {
 
-        /* Lịch khởi hành */
+    const selectedRadio = document.querySelector(
+        'input[name="lich_khoi_hanh_id"]:checked'
+    );
 
-        const selectedRadio =
-            document.querySelector(
-                'input[name="lich_khoi_hanh_id"]:checked'
-            );
+    let dateText = 'Chưa chọn lịch';
 
-        let dateText = 'Chưa chọn lịch';
+    if (selectedRadio) {
 
-        if (selectedRadio) {
+        const card = selectedRadio.closest('.schedule-card');
 
-            const cardParent =
-                selectedRadio.closest('.schedule-card');
-
-            if (cardParent) {
-
-                const dateElement =
-                    cardParent.querySelector('.schedule-date');
-
-                if (dateElement) {
-                    dateText =
-                        dateElement.textContent.trim();
-                }
-            }
-        }
-
-        /* Thông tin liên hệ */
-
-        const contactName =
-            document.getElementById('contact_name').value;
-
-        const contactEmail =
-            document.getElementById('contact_email').value;
-
-        const contactPhone =
-            document.getElementById('contact_phone').value;
-
-        const contactAddress =
-            document.getElementById('contact_address').value;
-
-        /* Số lượng */
-
-        const adults =
-            parseInt(elQtyAdult.value) || 1;
-
-        const children =
-            parseInt(elQtyChild.value) || 0;
-
-        const totalAdultPrice =
-            adults * priceAdult;
-
-        const totalChildPrice =
-            children * priceChild;
-
-        const finalTotal =
-            totalAdultPrice + totalChildPrice;
-
-        /* =====================================================
-           Danh sách hành khách
-        ===================================================== */
-
-        let passengersHTML = '';
-
-        const passCards =
-            document.querySelectorAll(
-                '#passengers-accordion .passenger-accordion-card'
-            );
-
-        passCards.forEach(function (card, index) {
-
-            const name =
-                card.querySelector('.pass-name')?.value.trim()
-                || '(Chưa nhập)';
-
-            const type =
-                card.querySelector('.pass-type')?.value === 'adult'
-                    ? 'Người lớn'
-                    : 'Trẻ em';
-
-            const gender =
-                card.querySelector('.pass-gender')?.value
-                || '';
-
-            const dob =
-                card.querySelector('.pass-dob')?.value
-                || '(Chưa nhập)';
-
-            const docType =
-                card.querySelector('.pass-doc-type')?.value
-                || '';
-
-            const docId =
-                card.querySelector('.pass-doc-id')?.value.trim()
-                || '(Chưa nhập)';
-
-            passengersHTML += `
-                <tr>
-                    <td class="font-weight-bold">
-                        #${index + 1}
-                    </td>
-
-                    <td>
-                        <strong>
-                            ${name.toUpperCase()}
-                        </strong>
-                    </td>
-
-                    <td>
-                        <span class="badge ${
-                            type === 'Người lớn'
-                                ? 'badge-primary'
-                                : 'badge-info'
-                        }">
-                            ${type}
-                        </span>
-                    </td>
-
-                    <td>${gender}</td>
-
-                    <td>${dob}</td>
-
-                    <td>
-                        <small class="text-muted">
-                            ${docType}:
-                        </small>
-                        ${docId}
-                    </td>
-                </tr>
-            `;
-        });
-
-        /* =====================================================
-           HTML TÓM TẮT
-        ===================================================== */
-
-        const summaryHTML = `
-
-            <!-- THÔNG TIN TOUR -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-map-marked-alt mr-2 text-primary"></i>
-                    Thông tin chuyến đi
-                </div>
-
-                <h5 class="font-weight-bold text-dark mb-2">
-                    ${tourTitle}
-                </h5>
-
-                <p class="mb-0 text-muted">
-                    <i class="fa fa-calendar-alt mr-2 text-danger"></i>
-                    Ngày khởi hành:
-                    <strong class="text-dark">
-                        ${dateText}
-                    </strong>
-                </p>
-
-            </div>
-
-
-            <!-- NGƯỜI LIÊN HỆ -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-id-card mr-2 text-primary"></i>
-                    Người liên hệ đại diện
-                </div>
-
-                <div class="row text-dark">
-
-                    <div class="col-sm-6 mb-2">
-                        <strong>Họ tên:</strong>
-                        ${contactName}
-                    </div>
-
-                    <div class="col-sm-6 mb-2">
-                        <strong>Số điện thoại:</strong>
-                        ${contactPhone || 'Chưa cập nhật'}
-                    </div>
-
-                    <div class="col-sm-6">
-                        <strong>Email:</strong>
-                        ${contactEmail}
-                    </div>
-
-                    <div class="col-sm-6">
-                        <strong>Địa chỉ:</strong>
-                        ${contactAddress || 'Chưa cập nhật'}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- DANH SÁCH HÀNH KHÁCH -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-users mr-2 text-primary"></i>
-                    Danh sách đoàn khách
-                </div>
-
-                <div class="table-responsive">
-
-                    <table
-                        class="table table-sm table-hover mb-0"
-                        style="font-size:0.9rem;"
-                    >
-
-                        <thead class="thead-light">
-
-                            <tr>
-                                <th>STT</th>
-                                <th>Họ và Tên</th>
-                                <th>Loại</th>
-                                <th>Phái</th>
-                                <th>Ngày sinh</th>
-                                <th>Giấy tờ</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-                            ${passengersHTML}
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-
-            <!-- PHƯƠNG THỨC THANH TOÁN -->
-
-            <div class="summary-section-box shadow-sm border border-primary bg-white">
-
-                <div class="summary-section-title text-primary">
-                    <i class="fa fa-credit-card mr-2"></i>
-                    Chọn phương thức thanh toán
-                </div>
-
-                <div class="form-group mb-0">
-
-                    <select
-                        id="paymentMethodSelect"
-                        class="custom-select custom-select-lg font-weight-bold text-dark"
-                        style="font-size:1.05rem;border:2px solid var(--primary);"
-                    >
-
-                        <option value="CHUYEN_KHOAN">
-                            Chuyển khoản ngân hàng trực tiếp
-                        </option>
-
-                        <option value="VNPAY">
-                            Thanh toán trực tuyến bằng cổng VNPAY
-                        </option>
-
-                    </select>
-
-                    <small class="form-text text-muted mt-2">
-                        Vui lòng chọn phương thức thanh toán trước khi xác nhận.
-                    </small>
-
-                </div>
-
-            </div>
-
-
-            <!-- CHI PHÍ -->
-
-            <div class="summary-section-box shadow-sm bg-dark text-white border-0">
-
-                <div class="summary-section-title text-light border-secondary">
-                    <i class="fa fa-calculator mr-2"></i>
-                    Bảng kê chi phí
-                </div>
-
-                <div class="d-flex justify-content-between mb-2">
-
-                    <span>
-                        Người lớn:
-                        ${adults} x ${formatVND(priceAdult)}
-                    </span>
-
-                    <strong>
-                        ${formatVND(totalAdultPrice)}
-                    </strong>
-
-                </div>
-
-                ${
-                    children > 0
-                        ? `
-                            <div class="d-flex justify-content-between mb-2">
-
-                                <span>
-                                    Trẻ em:
-                                    ${children} x ${formatVND(priceChild)}
-                                </span>
-
-                                <strong>
-                                    ${formatVND(totalChildPrice)}
-                                </strong>
-
-                            </div>
-                        `
-                        : ''
-                }
-
-                <div class="d-flex justify-content-between mb-3 text-success">
-
-                    <span>
-                        Thuế giá trị gia tăng & phí dịch vụ
-                    </span>
-
-                    <strong>
-                        Miễn phí
-                    </strong>
-
-                </div>
-
-                <hr class="border-secondary my-2">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <h5 class="mb-0 font-weight-bold text-warning">
-                        TỔNG CỘNG:
-                    </h5>
-
-                    <h3 class="mb-0 font-weight-bold text-white">
-                        ${formatVND(finalTotal)}
-                    </h3>
-
-                </div>
-
-            </div>
-        `;
-
-        summaryModalContent.innerHTML = summaryHTML;
-
-        /* Đồng bộ phương thức thanh toán */
-
-        syncPaymentMethod();
-
-        const paymentMethodSelect =
-            document.getElementById('paymentMethodSelect');
-
-        if (paymentMethodSelect) {
-
-            paymentMethodSelect.addEventListener(
-                'change',
-                syncPaymentMethod
-            );
+        if (card) {
+            dateText = card.querySelector('.schedule-date').innerText.trim();
         }
     }
+
+    const contactName = document.getElementById('contact_name').value;
+    const contactEmail = document.getElementById('contact_email').value;
+    const contactPhone = document.getElementById('contact_phone').value;
+    const contactAddress = document.getElementById('contact_address').value;
+
+    const adults = parseInt(elQtyAdult.value) || 0;
+    const children = parseInt(elQtyChild.value) || 0;
+
+    const totalAdultPrice = adults * priceAdult;
+    const totalChildPrice = children * priceChild;
+    const finalTotal = totalAdultPrice + totalChildPrice;
+
+    let passengersHTML = '';
+
+    document.querySelectorAll(
+        '#passengers-accordion .passenger-accordion-card'
+    ).forEach((card, index) => {
+
+        passengersHTML += `
+        <tr>
+            <td>${index+1}</td>
+            <td>${card.querySelector('.pass-name').value}</td>
+            <td>${card.querySelector('.pass-type').value=='adult'?'Người lớn':'Trẻ em'}</td>
+            <td>${card.querySelector('.pass-gender').value}</td>
+            <td>${card.querySelector('.pass-dob').value}</td>
+            <td>
+                ${card.querySelector('.pass-doc-type').value}
+                :
+                ${card.querySelector('.pass-doc-id').value}
+            </td>
+        </tr>`;
+    });
+
+    summaryModalContent.innerHTML = `
+
+<div class="summary-section-box">
+
+<h5>${tourTitle}</h5>
+
+<p>
+Ngày khởi hành :
+<b>${dateText}</b>
+</p>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<h6>Thông tin liên hệ</h6>
+
+<p><b>${contactName}</b></p>
+
+<p>${contactPhone}</p>
+
+<p>${contactEmail}</p>
+
+<p>${contactAddress}</p>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<h6>Danh sách hành khách</h6>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>STT</th>
+
+<th>Họ tên</th>
+
+<th>Loại</th>
+
+<th>Giới tính</th>
+
+<th>Ngày sinh</th>
+
+<th>Giấy tờ</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${passengersHTML}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<label class="font-weight-bold">
+
+Phương thức thanh toán
+
+</label>
+
+<select
+id="paymentMethodSelect"
+class="form-control mb-3">
+
+<option value="VNPAY">
+
+VNPAY
+
+</option>
+
+</select>
+
+<label class="font-weight-bold">
+
+Hình thức thanh toán
+
+</label>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="100"
+checked>
+
+Thanh toán 100%
+
+</label>
+
+</div>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="50">
+
+Đặt cọc 50%
+
+</label>
+
+</div>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="30">
+
+Đặt cọc 30%
+
+</label>
+
+</div>
+
+</div>
+
+
+<div class="summary-section-box bg-dark text-white">
+
+<div class="d-flex justify-content-between">
+
+<span>Tổng giá tour</span>
+
+<strong>${formatVND(finalTotal)}</strong>
+
+</div>
+
+<hr>
+
+<div class="d-flex justify-content-between">
+
+<span>Thanh toán ngay</span>
+
+<strong id="payNow">${formatVND(finalTotal)}</strong>
+
+</div>
+
+<div class="d-flex justify-content-between mt-2">
+
+<span>Còn lại</span>
+
+<strong id="remainMoney">0đ</strong>
+
+</div>
+
+</div>
+`;
+
+    syncPaymentMethod();
+
+    document
+        .getElementById('paymentMethodSelect')
+        .addEventListener('change', syncPaymentMethod);
+
+    const radios = document.querySelectorAll(
+        'input[name="phan_tram_modal"]'
+    );
+
+    radios.forEach(radio => {
+
+        radio.addEventListener('change', function () {
+
+            const percent = parseInt(this.value);
+
+            const payNow = finalTotal * percent / 100;
+
+            const remain = finalTotal - payNow;
+
+            document.getElementById('payNow').innerHTML =
+                formatVND(payNow);
+
+            document.getElementById('remainMoney').innerHTML =
+                formatVND(remain);
+
+            // Đồng bộ sang form để submit
+            let hidden = document.getElementById('phanTramHidden');
+
+            if (!hidden) {
+
+                hidden = document.createElement('input');
+
+                hidden.type = 'hidden';
+
+                hidden.name = 'phan_tram_thanh_toan';
+
+                hidden.id = 'phanTramHidden';
+
+                bookingForm.appendChild(hidden);
+            }
+
+            hidden.value = percent;
+
+        });
+
+    });
+
+    document.getElementById('phanTramHidden').value = 100;
+}
 
     /* =========================================================
        10. NÚT "TIẾP TỤC & XEM TÓM TẮT"

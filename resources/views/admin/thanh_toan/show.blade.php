@@ -120,7 +120,7 @@
                                 Số tiền
                             </label>
                             <h5 class="text-success fw-bold">
-                                {{ number_format($thanh_toan->datTour->tong_tien ?? 0, 0, ',', '.') }}đ
+                                {{ number_format($thanh_toan->datTour->so_tien_da_thanh_toan ?? 0, 0, ',', '.') }}đ
                             </h5>
                         </div>
 

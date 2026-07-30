@@ -133,7 +133,13 @@ class ThanhToanController extends Controller
         if ($datTour->trang_thai == 'da_thanh_toan') {
             return back()->with('error', 'Đơn này đã được thanh toán.');
         }
+$payment = ThanhToan::where('dat_tour_id', $datTour->id)
+    ->latest()
+    ->first();
 
+if (!$payment) {
+    return back()->with('error', 'Không tìm thấy giao dịch thanh toán.');
+}
         $vnp_TmnCode    = config('services.vnpay.tmn_code');
         $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
         $vnp_Url        = config('services.vnpay.url');
@@ -145,7 +151,7 @@ class ThanhToanController extends Controller
         $inputData = [
             "vnp_Version"    => "2.1.0",
             "vnp_TmnCode"    => $vnp_TmnCode,
-            "vnp_Amount"     => (int)($datTour->tong_tien * 100),
+            "vnp_Amount"     => (int)($payment->so_tien * 100),
             "vnp_Command"    => "pay",
             "vnp_CreateDate" => date("YmdHis"),
             "vnp_CurrCode"   => "VND",
@@ -189,13 +195,9 @@ class ThanhToanController extends Controller
             $vnpSecureHash;
 
         // Cập nhật giao dịch đã tạo trước đó
-        $payment = ThanhToan::where('dat_tour_id', $datTour->id)->first();
-
-        if ($payment) {
-            $payment->update([
-                'ma_giao_dich' => $vnp_TxnRef
-            ]);
-        }
+        $payment->update([
+    'ma_giao_dich' => $vnp_TxnRef
+]);
 
         return redirect($paymentUrl);
     }
@@ -277,12 +279,63 @@ class ThanhToanController extends Controller
             ]);
 
 
-            $payment->datTour->update([
+            $booking = $payment->datTour;
+            $booking->refresh();
+            $payment->refresh();
+            $payment->setRelation('datTour', $booking);
 
-                'so_tien_da_thanh_toan' => $payment->so_tien,
+// Tổng tiền đã thanh toán sau giao dịch này
+$daThanhToan = $booking->so_tien_da_thanh_toan + $payment->so_tien;
+$paymentStatus = 'da_thanh_toan';
 
-                'trang_thai' => 'da_thanh_toan'
-            ]);
+if ($daThanhToan < $booking->tong_tien) {
+    $paymentStatus = 'dat_coc';
+}
+
+// Cập nhật trạng thái giao dịch
+$payment->update([
+    'trang_thai' => $paymentStatus,
+    'thoi_gian_thanh_toan' => now(),
+    'ghi_chu' => $paymentStatus == 'dat_coc'
+        ? 'Khách đã thanh toán tiền đặt cọc'
+        : 'Thanh toán đủ qua VNPAY'
+]);
+// Còn lại bao nhiêu
+$soTienConLai = $booking->tong_tien - $daThanhToan;
+
+// Không để âm
+if ($soTienConLai < 0) {
+    $soTienConLai = 0;
+}
+
+// Nếu đã thanh toán đủ
+if ($soTienConLai == 0) {
+
+    $booking->update([
+
+        'so_tien_da_thanh_toan' => $daThanhToan,
+
+        'so_tien_con_lai' => 0,
+
+        'trang_thai' => 'da_thanh_toan'
+
+    ]);
+
+} else {
+
+    // Mới chỉ đặt cọc
+
+    $booking->update([
+
+        'so_tien_da_thanh_toan' => $daThanhToan,
+
+        'so_tien_con_lai' => $soTienConLai,
+
+        'trang_thai' => 'da_xac_nhan'
+
+    ]);
+
+}
             // ====== TẠO HÓA ĐƠN PDF ======
             $hoaDonService = new HoaDonService();
             $hoaDonService->taoHoaDon($payment);
@@ -367,5 +420,78 @@ class ThanhToanController extends Controller
         return response()->file(
             Storage::disk('public')->path($thanhToan->hoa_don_pdf)
         );
+    }
+    public function paymentConLai($id)
+    {
+        $datTour = DatTour::findOrFail($id);
+
+        $amount = (float) ($datTour->so_tien_con_lai ?? 0);
+
+        if ($amount <= 0) {
+            return back()->with('error', 'Đơn này đã thanh toán đủ.');
+        }
+
+        $vnp_TmnCode    = config('services.vnpay.tmn_code');
+        $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
+        $vnp_Url        = config('services.vnpay.url');
+        $vnp_ReturnUrl  = config('services.vnpay.return_url');
+
+        $vnp_TxnRef = $datTour->ma_dat_tour . '_CONLAI_' . time();
+
+        $inputData = [
+            "vnp_Version"    => "2.1.0",
+            "vnp_TmnCode"    => $vnp_TmnCode,
+            "vnp_Amount"     => (int)($amount * 100),
+            "vnp_Command"    => "pay",
+            "vnp_CreateDate" => date("YmdHis"),
+            "vnp_CurrCode"   => "VND",
+            "vnp_IpAddr"     => request()->ip(),
+            "vnp_Locale"     => "vn",
+            "vnp_OrderInfo"  => "Thanh toan phan con lai don " . $datTour->ma_dat_tour,
+            "vnp_OrderType"  => "billpayment",
+            "vnp_ReturnUrl"  => $vnp_ReturnUrl,
+            "vnp_TxnRef"     => $vnp_TxnRef,
+            "vnp_ExpireDate" => date("YmdHis", strtotime("+15 minutes")),
+        ];
+
+        ksort($inputData);
+
+        $query = "";
+        $hashData = "";
+        $i = 0;
+
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+
+            $query .= urlencode($key) . "=" . urlencode($value) . '&';
+        }
+
+        $vnpSecureHash = hash_hmac(
+            "sha512",
+            $hashData,
+            $vnp_HashSecret
+        );
+
+        $paymentUrl = $vnp_Url
+            . "?"
+            . $query
+            . "vnp_SecureHash="
+            . $vnpSecureHash;
+
+        ThanhToan::create([
+            'dat_tour_id' => $datTour->id,
+            'nguoi_dung_id' => auth()->id(),
+            'ma_giao_dich' => $vnp_TxnRef,
+            'so_tien' => $amount,
+            'phuong_thuc_thanh_toan' => 'VNPAY',
+            'trang_thai' => 'cho_thanh_toan',
+        ]);
+
+        return redirect($paymentUrl);
     }
 }

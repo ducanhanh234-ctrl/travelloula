@@ -20,6 +20,8 @@ class DatTour extends Model
         'so_nguoi_lon',
         'so_tre_em',
         'tong_tien',
+        'phan_tram_thanh_toan',
+        'so_tien_con_lai',
         'so_tien_da_thanh_toan',
         'trang_thai',
         'ghi_chu',
@@ -72,6 +74,8 @@ class DatTour extends Model
     protected $casts = [
         'ngay_dat' => 'datetime',
         'tong_tien' => 'decimal:2',
+        'phan_tram_thanh_toan' => 'integer',
+        'so_tien_con_lai' => 'decimal:2',
         'so_tien_da_thanh_toan' => 'decimal:2',
     ];
 

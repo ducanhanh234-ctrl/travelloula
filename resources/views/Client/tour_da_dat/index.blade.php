@@ -157,7 +157,12 @@
                         Đã thanh toán:
                         {{ number_format($booking->so_tien_da_thanh_toan,0,',','.') }} đ
                     </span>
+<br>
 
+<span class="text-danger">
+    Còn lại:
+    {{ number_format($booking->so_tien_con_lai,0,',','.') }} đ
+</span>
                 </div>
 
                 <div class="col-md-6 text-md-end mt-3 mt-md-0">
@@ -167,7 +172,34 @@
                         <i class="fa-solid fa-eye"></i>
                         Chi tiết
                     </a>
+@if(
+    $booking->so_tien_da_thanh_toan == 0
+    &&
+    $booking->trang_thai == 'cho_xac_nhan'
+)
 
+<a href="{{ route('vnpay.payment',$booking->id) }}"
+   class="btn btn-warning me-2">
+
+    Thanh toán đặt cọc
+
+</a>
+
+@endif
+@if(
+    $booking->so_tien_da_thanh_toan > 0
+    &&
+    $booking->so_tien_con_lai > 0
+)
+
+<a href="{{ route('vnpay.payment.remain',$booking->id) }}"
+   class="btn btn-success me-2">
+
+    Thanh toán phần còn lại
+
+</a>
+
+@endif
                     
 
                     

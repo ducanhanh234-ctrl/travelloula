@@ -292,7 +292,7 @@ class ThanhToanController extends Controller
                 ->send(new HoaDonMail($payment));
 
             return redirect()
-                ->route('home')
+                ->route('tour_da_dat.index')
                 ->with('success', 'Thanh toán thành công.');
         }
 

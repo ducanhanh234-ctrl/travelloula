@@ -37,11 +37,6 @@ public function destroy($id)
     $datTour = DatTour::where('nguoi_dung_id', auth()->id())
         ->findOrFail($id);
 
-    // Không cho hủy nếu đã thanh toán
-    if ($datTour->trang_thai == 'da_thanh_toan') {
-        return back()->with('error', 'Tour đã thanh toán nên không thể hủy.');
-    }
-
     // Nếu có thanh toán thì xóa
     if ($datTour->thanhToan) {
         $datTour->thanhToans()->delete();

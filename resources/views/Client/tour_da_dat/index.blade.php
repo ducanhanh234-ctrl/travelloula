@@ -3,7 +3,16 @@
 @section('content')
 
 <div class="container py-5">
-
+@if (session('success'))
+    <div class="alert alert-success">
+        {{session('success')}}
+    </div>
+@endif
+@if (session('error'))
+    <div class="alert alert-success">
+        {{session('error')}}
+    </div>
+@endif
     <div class="text-center mb-5">
         <h2 class="fw-bold text-primary">
             <i class="fa-solid fa-suitcase"></i>
@@ -67,7 +76,7 @@
 
                     @if($booking->tour->anh_dai_dien)
 
-                        <img src="{{ asset('storage/'.$booking->tour->anh_dai_dien) }}"
+                        <img src="{{ asset($booking->tour->anh_dai_dien) }}"
                              class="img-fluid rounded shadow-sm"
                              style="height:220px;width:100%;object-fit:cover;">
 

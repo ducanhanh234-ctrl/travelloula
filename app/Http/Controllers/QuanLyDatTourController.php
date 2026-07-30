@@ -686,8 +686,6 @@ class QuanLyDatTourController extends Controller
 
             'so_tre_em' => 'nullable|integer|min:0',
 
-            'so_em_be' => 'nullable|integer|min:0',
-
             'phuong_thuc_thanh_toan' => 'required',
 
             'hanh_khach' => 'required|array|min:1',
@@ -723,7 +721,7 @@ class QuanLyDatTourController extends Controller
             // Loại hành khách
             'hanh_khach.*.loai_hanh_khach' => [
                 'required',
-                'in:adult,child,baby'
+                'in:adult,child'
             ],
 
             // Loại giấy tờ
@@ -774,7 +772,7 @@ class QuanLyDatTourController extends Controller
             $soTreEm = (int) ($request->so_tre_em ?? 0);
 
 
-            $tongKhach = $soNguoiLon + $soTreEm + $soEmBe;
+            $tongKhach = $soNguoiLon + $soTreEm ;
             // Kiểm tra số lượng hành khách nhập có khớp không
             if (count($request->hanh_khach) != $tongKhach) {
 
@@ -933,7 +931,7 @@ class QuanLyDatTourController extends Controller
 
             // Thanh toán tiền mặt
             return redirect()
-                ->route('home')
+                ->route('tour_da_dat.index')
                 ->with(
                     'success',
                     'Đặt tour thành công. Vui lòng thanh toán khi nhận dịch vụ.'

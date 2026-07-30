@@ -57,40 +57,92 @@
                     <h5 class="font-weight-bold mb-3 text-dark section-title">Chọn lịch khởi hành</h5>
                     <div class="mb-5 row">
                         @foreach($lichKhoiHanhs as $lich)
-                        <div class="col-md-6 mb-3">
-                            <label class="card border-0 shadow-sm p-3 h-100 schedule-card transition-all m-0" style="cursor: pointer;">
-                                <div class="d-flex align-items-start">
-                                    <input class="form-check-input custom-radio mt-1" type="radio" name="lich_khoi_hanh_id" value="{{ $lich->id }}" required @checked(old('lich_khoi_hanh_id')==$lich->id)>
-                                    <div class="ml-4 w-100">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <strong class="schedule-date" style="font-size: 1.15rem; color: #0f172a;">
-                                                {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
-                                            </strong>
-                                            <span class="badge badge-pill 
-                                                {{ $lich->trang_thai == 'available' ? 'badge-success-soft' : '' }}
-                                                {{ $lich->trang_thai == 'closed' ? 'badge-secondary-soft' : '' }}
-                                                {{ $lich->trang_thai == 'full' ? 'badge-danger-soft' : '' }}">
-                                                @switch($lich->trang_thai)
-                                                @case('available') Mở bán @break
-                                                @case('closed') Đã đóng @break
-                                                @case('full') Đã đầy @break
-                                                @default Không xác định
-                                                @endswitch
-                                            </span>
-                                        </div>
-                                        <small class="d-block {{ $lich->trang_thai == 'full' ? 'text-danger' : 'text-success' }} mb-2">
-                                            <i class="fa fa-users mr-1"></i> Còn <strong>{{ $lich->so_cho - $lich->so_cho_da_dat }}</strong> / {{ $lich->so_cho }} chỗ
-                                        </small>
-                                        <div class="text-right border-top pt-2 mt-2">
-                                            <span class="primary-text font-weight-bold">
-                                                {{ number_format($lich->tour->gia_nguoi_lon) }}đ
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        @endforeach
+    <div class="col-md-6 mb-3
+        {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'schedule-disabled' : '' }}">
+
+        <label
+            class="card border-0 shadow-sm p-3 h-100 schedule-card transition-all m-0"
+            style="cursor: {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'not-allowed' : 'pointer' }};"
+        >
+
+            <div class="d-flex align-items-start">
+
+                <input
+                    class="form-check-input custom-radio mt-1"
+                    type="radio"
+                    name="lich_khoi_hanh_id"
+                    value="{{ $lich->id }}"
+                    required
+                    @checked(old('lich_khoi_hanh_id') == $lich->id)
+                    {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'disabled' : '' }}
+                >
+
+                <div class="ml-4 w-100">
+
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+
+                        <strong
+                            class="schedule-date"
+                            style="font-size: 1.15rem; color: #0f172a;"
+                        >
+                            {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
+                        </strong>
+
+                        <span class="badge badge-pill
+                            {{ $lich->trang_thai == 'available' ? 'badge-success-soft' : '' }}
+                            {{ $lich->trang_thai == 'closed' ? 'badge-secondary-soft' : '' }}
+                            {{ $lich->trang_thai == 'full' ? 'badge-danger-soft' : '' }}"
+                        >
+                            @switch($lich->trang_thai)
+                                @case('available')
+                                    Mở bán
+                                    @break
+
+                                @case('closed')
+                                    Đã đóng
+                                    @break
+
+                                @case('full')
+                                    Đã đầy
+                                    @break
+
+                                @default
+                                    Không xác định
+                            @endswitch
+                        </span>
+
+                    </div>
+
+                    <small class="d-block
+                        {{ $lich->trang_thai == 'full' ? 'text-danger' : 'text-success' }}
+                        mb-2"
+                    >
+                        <i class="fa fa-users mr-1"></i>
+
+                        Còn
+                        <strong>
+                            {{ $lich->so_cho - $lich->so_cho_da_dat }}
+                        </strong>
+
+                        /
+                        {{ $lich->so_cho }}
+                        chỗ
+                    </small>
+
+                    <div class="text-right border-top pt-2 mt-2">
+
+                        <span class="primary-text font-weight-bold">
+                            {{ number_format($lich->tour->gia_nguoi_lon) }}đ
+                        </span>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </label>
+    </div>
+@endforeach
                     </div>
 
                     <!-- Thông tin người đặt -->
@@ -367,316 +419,1464 @@
 @endsection
 
 @section('scripts')
+@php
+    $priceAdult = (float) ($tour->gia_nguoi_lon ?? 0);
+    $priceChild = (float) ($tour->gia_tre_em ?? 0);
+    $tourTitleJs = json_encode($tour->ten_tour ?? '', JSON_UNESCAPED_UNICODE);
+@endphp
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const priceAdult = {
-            {
-                $tour - > gia_nguoi_lon ? ? 0
-            }
-        };
-        const priceChild = {
-            {
-                $tour - > gia_tre_em ? ? 0
-            }
-        };
-        const tourTitle = "{{ $tour->ten_tour }}";
+document.addEventListener('DOMContentLoaded', function () {
 
-        const elQtyAdult = document.getElementById('qty_adult');
-        const elQtyChild = document.getElementById('qty_child');
-        const elInputGrandTotal = document.getElementById('input_grand_total');
-        const accordionContainer = document.getElementById('passengers-accordion');
 
-        // Điều khiển Form & Modal
-        const bookingForm = document.getElementById('bookingForm');
-        const btnPreviewBooking = document.getElementById('btnPreviewBooking');
-        const chkCommitment = document.getElementById('chk_commitment');
-        const summaryModalContent = document.getElementById('summaryModalContent');
-        const btnFinalSubmit = document.getElementById('btnFinalSubmit');
+   const priceAdult = {{ $priceAdult }};
+const priceChild = {{ $priceChild }};
+const tourTitle = {!! $tourTitleJs !!};
 
-        function formatVND(amount) {
-            return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+    /* =========================================================
+       2. LẤY ELEMENT
+    ========================================================= */
+
+    const bookingForm = document.getElementById('bookingForm');
+    const btnPreviewBooking = document.getElementById('btnPreviewBooking');
+    const btnFinalSubmit = document.getElementById('btnFinalSubmit');
+
+    const chkCommitment = document.getElementById('chk_commitment');
+
+    const elQtyAdult = document.getElementById('qty_adult');
+    const elQtyChild = document.getElementById('qty_child');
+
+    const elInputGrandTotal = document.getElementById('input_grand_total');
+    const elInputPaymentMethod = document.getElementById('input_payment_method');
+
+    const accordionContainer = document.getElementById('passengers-accordion');
+    const summaryModalContent = document.getElementById('summaryModalContent');
+
+    /* =========================================================
+       3. KIỂM TRA ELEMENT
+       Nếu thiếu element thì báo lỗi để dễ debug
+    ========================================================= */
+
+    if (!bookingForm) {
+        console.error('Không tìm thấy #bookingForm');
+        return;
+    }
+
+    if (!btnPreviewBooking) {
+        console.error('Không tìm thấy #btnPreviewBooking');
+        return;
+    }
+
+    if (!accordionContainer) {
+        console.error('Không tìm thấy #passengers-accordion');
+        return;
+    }
+
+    /* =========================================================
+       4. FORMAT TIỀN
+    ========================================================= */
+
+    function formatVND(amount) {
+        return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+    }
+
+    /* =========================================================
+       5. ĐỒNG BỘ PHƯƠNG THỨC THANH TOÁN
+    ========================================================= */
+
+    function syncPaymentMethod() {
+
+        const paymentMethodSelect =
+            document.getElementById('paymentMethodSelect');
+
+        if (paymentMethodSelect && elInputPaymentMethod) {
+            elInputPaymentMethod.value =
+                paymentMethodSelect.value || '';
         }
+    }
 
-        function syncPaymentMethod() {
-            const paymentMethodSelect = document.getElementById('paymentMethodSelect');
-            const paymentMethodInput = document.getElementById('input_payment_method');
+    /* =========================================================
+       6. TẠO FORM HÀNH KHÁCH
+    ========================================================= */
 
-            if (paymentMethodSelect && paymentMethodInput) {
-                paymentMethodInput.value = paymentMethodSelect.value || '';
-            }
-        }
+    function getPassengerFormTemplate(index, label, typeValue, isOpen) {
 
-        // Tạo layout dạng Accordion nhập liệu
-        function getPassengerFormTemplate(index, label, typeValue, isOpen) {
-            const collapseClass = isOpen ? 'show' : '';
-            const headerClass = isOpen ? '' : 'collapsed';
-            const badgeBg = typeValue === 'adult' ? 'badge-primary' : 'badge-info';
+        const collapseClass = isOpen ? 'show' : '';
+        const headerClass = isOpen ? '' : 'collapsed';
 
-            return `
-                <div class="passenger-accordion-card mb-3 shadow-sm">
-                    <div class="passenger-accordion-header d-flex justify-content-between align-items-center ${headerClass}" 
-                         data-toggle="collapse" 
-                         data-target="#collapsePassenger${index}" 
-                         aria-expanded="${isOpen}" 
-                         aria-controls="collapsePassenger${index}">
-                        
-                        <div class="d-flex align-items-center">
-                            <i class="fa ${typeValue === 'adult' ? 'fa-user' : 'fa-child'} mr-3" style="font-size: 1.2rem; color: var(--primary);"></i>
-                            <h6 class="mb-0 font-weight-bold text-dark">
-                                ${label} #${index + 1}
-                            </h6>
-                            <span class="badge ${badgeBg} ml-2 p-1 px-2 text-white" style="font-size: 0.7rem;">${typeValue === 'adult' ? 'Người lớn' : 'Trẻ em'}</span>
-                        </div>
-                        <i class="fa fa-chevron-down accordion-icon"></i>
+        const badgeBg =
+            typeValue === 'adult'
+                ? 'badge-primary'
+                : 'badge-info';
+
+        return `
+            <div class="passenger-accordion-card mb-3 shadow-sm">
+
+                <div
+                    class="passenger-accordion-header d-flex justify-content-between align-items-center ${headerClass}"
+                    data-toggle="collapse"
+                    data-target="#collapsePassenger${index}"
+                    aria-expanded="${isOpen}"
+                    aria-controls="collapsePassenger${index}"
+                >
+
+                    <div class="d-flex align-items-center">
+
+                        <i
+                            class="fa ${typeValue === 'adult' ? 'fa-user' : 'fa-child'} mr-3"
+                            style="font-size:1.2rem;color:var(--primary);"
+                        ></i>
+
+                        <h6 class="mb-0 font-weight-bold text-dark">
+                            ${label} #${index + 1}
+                        </h6>
+
+                        <span
+                            class="badge ${badgeBg} ml-2 p-1 px-2 text-white"
+                            style="font-size:0.7rem;"
+                        >
+                            ${typeValue === 'adult' ? 'Người lớn' : 'Trẻ em'}
+                        </span>
+
                     </div>
 
-                    <div id="collapsePassenger${index}" class="collapse ${collapseClass}" data-parent="#passengers-accordion">
-                        <div class="passenger-body">
-                            <input type="hidden" name="hanh_khach[${index}][loai_hanh_khach]" value="${typeValue}" class="pass-type">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="text-muted small font-weight-bold">Họ và tên <span class="text-danger">*</span></label>
-                                    <input type="text" name="hanh_khach[${index}][ho_ten]" class="form-control input-custom bg-white pass-name" placeholder="VD: NGUYEN VAN A" required>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="text-muted small font-weight-bold">Giới tính</label>
-                                    <select name="hanh_khach[${index}][gioi_tinh]" class="custom-select input-custom bg-white pass-gender">
-                                        <option value="Nam">Nam</option>
-                                        <option value="Nữ">Nữ</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label class="text-muted small font-weight-bold">Ngày sinh</label>
-                                    <input type="date" name="hanh_khach[${index}][ngay_sinh]" class="form-control input-custom bg-white pass-dob">
-                                </div>
+                    <i class="fa fa-chevron-down accordion-icon"></i>
 
-                                <div class="col-md-4 mb-3">
-                                    <label class="text-muted small font-weight-bold">Quốc tịch</label>
-                                    <input type="text" name="hanh_khach[${index}][quoc_tich]" class="form-control input-custom bg-white pass-nation" value="Việt Nam">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="text-muted small font-weight-bold">Giấy tờ tùy thân <span class="text-danger">*</span></label>
-                                    <select name="hanh_khach[${index}][loai_giay_to]" class="custom-select input-custom bg-white pass-doc-type" required>
-                                        <option value="CCCD">Căn cước công dân</option>
-                                        <option value="Hộ chiếu">Hộ chiếu</option>
-                                        <option value="Giấy khai sinh">Giấy khai sinh (Trẻ em)</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="text-muted small font-weight-bold">Số giấy tờ <span class="text-danger">*</span></label>
-                                    <input type="text" name="hanh_khach[${index}][so_giay_to]" class="form-control input-custom bg-white pass-doc-id" placeholder="Nhập số số định danh..." required>
-                                </div>
+                </div>
 
-                                <div class="col-md-5 mb-3 mb-md-0">
-                                    <label class="text-muted small font-weight-bold">Số điện thoại</label>
-                                    <input type="tel" name="hanh_khach[${index}][so_dien_thoai]" class="form-control input-custom bg-white pass-phone" placeholder="SĐT liên hệ...">
-                                </div>
-                                <div class="col-md-7">
-                                    <label class="text-muted small font-weight-bold">Yêu cầu đặc biệt</label>
-                                    <input type="text" name="hanh_khach[${index}][yeu_cau_dac_biet]" class="form-control input-custom bg-white pass-note" placeholder="Ăn chay, dị ứng, hỗ trợ y tế...">
-                                </div>
+                <div
+                    id="collapsePassenger${index}"
+                    class="collapse ${collapseClass}"
+                    data-parent="#passengers-accordion"
+                >
+
+                    <div class="passenger-body">
+
+                        <input
+                            type="hidden"
+                            name="hanh_khach[${index}][loai_hanh_khach]"
+                            value="${typeValue}"
+                            class="pass-type"
+                        >
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Họ và tên
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="hanh_khach[${index}][ho_ten]"
+                                    class="form-control input-custom bg-white pass-name"
+                                    placeholder="VD: NGUYEN VAN A"
+                                    required
+                                >
                             </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Giới tính
+                                </label>
+
+                                <select
+                                    name="hanh_khach[${index}][gioi_tinh]"
+                                    class="custom-select input-custom bg-white pass-gender"
+                                >
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Ngày sinh
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="hanh_khach[${index}][ngay_sinh]"
+                                    class="form-control input-custom bg-white pass-dob"
+                                >
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Quốc tịch
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="hanh_khach[${index}][quoc_tich]"
+                                    class="form-control input-custom bg-white pass-nation"
+                                    value="Việt Nam"
+                                >
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Giấy tờ tùy thân
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <select
+                                    name="hanh_khach[${index}][loai_giay_to]"
+                                    class="custom-select input-custom bg-white pass-doc-type"
+                                    required
+                                >
+                                    <option value="CCCD">
+                                        Căn cước công dân
+                                    </option>
+
+                                    <option value="Hộ chiếu">
+                                        Hộ chiếu
+                                    </option>
+
+                                    <option value="Giấy khai sinh">
+                                        Giấy khai sinh (Trẻ em)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="text-muted small font-weight-bold">
+                                    Số giấy tờ
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="hanh_khach[${index}][so_giay_to]"
+                                    class="form-control input-custom bg-white pass-doc-id"
+                                    placeholder="Nhập số định danh..."
+                                    required
+                                >
+                            </div>
+
+                            <div class="col-md-5 mb-3 mb-md-0">
+                                <label class="text-muted small font-weight-bold">
+                                    Số điện thoại
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    name="hanh_khach[${index}][so_dien_thoai]"
+                                    class="form-control input-custom bg-white pass-phone"
+                                    placeholder="SĐT liên hệ..."
+                                >
+                            </div>
+
+                            <div class="col-md-7">
+                                <label class="text-muted small font-weight-bold">
+                                    Yêu cầu đặc biệt
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="hanh_khach[${index}][yeu_cau_dac_biet]"
+                                    class="form-control input-custom bg-white pass-note"
+                                    placeholder="Ăn chay, dị ứng, hỗ trợ..."
+                                >
+                            </div>
+
                         </div>
+
                     </div>
+
                 </div>
-            `;
+
+            </div>
+        `;
+    }
+
+    /* =========================================================
+       7. CẬP NHẬT SỐ LƯỢNG HÀNH KHÁCH
+    ========================================================= */
+
+    function updateBookingDetails() {
+
+        let adults = parseInt(elQtyAdult.value) || 0;
+        let children = parseInt(elQtyChild.value) || 0;
+
+        if (adults < 1) {
+            adults = 1;
+            elQtyAdult.value = 1;
         }
 
-        // Cập nhật số lượng và tính toán số tiền cơ bản
-        function updateBookingDetails() {
-            let adults = parseInt(elQtyAdult.value) || 0;
-            let children = parseInt(elQtyChild.value) || 0;
-
-            if (adults < 1) {
-                adults = 1;
-                elQtyAdult.value = 1;
-            }
-
-            let totalAdult = adults * priceAdult;
-            let totalChild = children * priceChild;
-            let grandTotal = totalAdult + totalChild;
-            elInputGrandTotal.value = grandTotal;
-
-            // Render lại số lượng Accordion hành khách
-            let formsHTML = '';
-            let passengerIndex = 0;
-
-            for (let i = 0; i < adults; i++) {
-                let isOpen = (passengerIndex === 0);
-                formsHTML += getPassengerFormTemplate(passengerIndex, 'Hành khách', 'adult', isOpen);
-                passengerIndex++;
-            }
-            for (let i = 0; i < children; i++) {
-                let isOpen = (passengerIndex === 0);
-                formsHTML += getPassengerFormTemplate(passengerIndex, 'Hành khách', 'child', isOpen);
-                passengerIndex++;
-            }
-
-            accordionContainer.innerHTML = formsHTML;
+        if (children < 0) {
+            children = 0;
+            elQtyChild.value = 0;
         }
 
-        // PHẦN LỚN NHẤT: Thu thập thông tin từ form và xuất ra mã HTML Tóm tắt gửi đơn hàng
-        function generateSummaryScript() {
-            // 1. Tìm lịch khởi hành được chọn
-            const selectedRadio = document.querySelector('input[name="lich_khoi_hanh_id"]:checked');
-            let dateText = "Chưa chọn lịch";
-            if (selectedRadio) {
-                const cardParent = selectedRadio.closest('.schedule-card');
-                dateText = cardParent.querySelector('.schedule-date').textContent.trim();
-            }
+        const totalAdult = adults * priceAdult;
+        const totalChild = children * priceChild;
 
-            // 2. Lấy thông tin liên hệ
-            const contactName = document.getElementById('contact_name').value;
-            const contactEmail = document.getElementById('contact_email').value;
-            const contactPhone = document.getElementById('contact_phone').value;
-            const contactAddress = document.getElementById('contact_address').value;
+        const grandTotal = totalAdult + totalChild;
 
-            // 3. Tính toán chi phí thực tế hiển thị
-            const adults = parseInt(elQtyAdult.value) || 1;
-            const children = parseInt(elQtyChild.value) || 0;
-            const totalAdultPrice = adults * priceAdult;
-            const totalChildPrice = children * priceChild;
-            const finalTotal = totalAdultPrice + totalChildPrice;
+        elInputGrandTotal.value = grandTotal;
 
-            // 4. Thu thập danh sách chi tiết các hành khách đã điền
-            let passengersHTML = '';
-            const passCards = document.querySelectorAll('#passengers-accordion .passenger-accordion-card');
+        let formsHTML = '';
+        let passengerIndex = 0;
 
-            passCards.forEach((card, index) => {
-                const name = card.querySelector('.pass-name').value || '(Chưa nhập)';
-                const type = card.querySelector('.pass-type').value === 'adult' ? 'Người lớn' : 'Trẻ em';
-                const gender = card.querySelector('.pass-gender').value;
-                const dob = card.querySelector('.pass-dob').value || '(Trưa nhập)';
-                const docType = card.querySelector('.pass-doc-type').value;
-                const docId = card.querySelector('.pass-doc-id').value || '(Chưa nhập)';
+        /* Người lớn */
 
-                passengersHTML += `
-                    <tr>
-                        <td class="font-weight-bold">#${index + 1}</td>
-                        <td><strong>${name.toUpperCase()}</strong></td>
-                        <td><span class="badge ${type === 'Người lớn' ? 'badge-primary' : 'badge-info'}">${type}</span></td>
-                        <td>${gender}</td>
-                        <td>${dob}</td>
-                        <td><small class="text-muted">${docType}:</small> ${docId}</td>
-                    </tr>
-                `;
-            });
+        for (let i = 0; i < adults; i++) {
 
-            // 5. Khởi dựng chuỗi HTML cấu trúc Tóm tắt cho Modal
-            let summaryHTML = `
-                <!-- KHỐI 1: TOUR & LỊCH KHỞI HÀNH -->
-                <div class="summary-section-box shadow-sm">
-                    <div class="summary-section-title"><i class="fa fa-map-marked-alt mr-2 text-primary"></i>Thông tin chuyến đi</div>
-                    <h5 class="font-weight-bold text-dark mb-2">${tourTitle}</h5>
-                    <p class="mb-0 text-muted">
-                        <i class="fa fa-calendar-alt mr-2 text-danger"></i>Ngày khởi hành: <strong class="text-dark">${dateText}</strong>
-                    </p>
-                </div>
+            const isOpen = passengerIndex === 0;
 
-                <!-- KHỐI 2: NGƯỜI LIÊN HỆ -->
-                <div class="summary-section-box shadow-sm">
-                    <div class="summary-section-title"><i class="fa fa-id-card mr-2 text-primary"></i>Người liên hệ đại diện</div>
-                    <div class="row text-dark">
-                        <div class="col-sm-6 mb-2"><strong>Họ tên:</strong> ${contactName}</div>
-                        <div class="col-sm-6 mb-2"><strong>Số điện thoại:</strong> ${contactPhone}</div>
-                        <div class="col-sm-6"><strong>Email:</strong> ${contactEmail}</div>
-                        <div class="col-sm-6"><strong>Địa chỉ:</strong> ${contactAddress}</div>
-                    </div>
-                </div>
+            formsHTML += getPassengerFormTemplate(
+                passengerIndex,
+                'Hành khách',
+                'adult',
+                isOpen
+            );
 
-                <!-- KHỐI 3: DANH SÁCH HÀNH KHÁCH CHI TIẾT -->
-                <div class="summary-section-box shadow-sm">
-                    <div class="summary-section-title"><i class="fa fa-users mr-2 text-primary"></i>Danh sách đoàn khách</div>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover mb-0" style="font-size: 0.9rem;">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>STT</th>
-                                    <th>Họ và Tên</th>
-                                    <th>Loại</th>
-                                    <th>Phái</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Giấy tờ thân</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${passengersHTML}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- KHỐI 4: PHƯƠNG THỨC THANH TOÁN (Người dùng chọn trực tiếp tại đây) -->
-                <div class="summary-section-box shadow-sm border border-primary bg-white">
-                    <div class="summary-section-title text-primary"><i class="fa fa-credit-card mr-2"></i>Chọn phương thức thanh toán</div>
-                    <div class="form-group mb-0">
-                        <select id="paymentMethodSelect" class="custom-select custom-select-lg font-weight-bold text-dark" style="font-size: 1.05rem; border: 2px solid var(--primary);">
-                            <option value="CHUYEN_KHOAN">Chuyển khoản ngân hàng trực tiếp</option>
-                            <option value="VNPAY">Thanh toán trực tuyến bằng cổng VNPAY</option>
-                        </select>
-                        <small class="form-text text-muted mt-2">
-                            * Hệ thống sẽ tự động chuyển hướng hoặc cung cấp thông tin tài khoản đích sau khi quý khách xác nhận.
-                        </small>
-                    </div>
-                </div>
-
-                <!-- KHỐI 5: TÍNH TOÁN BẢNG GIÁ VÀ TỔNG TIỀN -->
-                <div class="summary-section-box shadow-sm bg-dark text-white border-0">
-                    <div class="summary-section-title text-light border-secondary"><i class="fa fa-calculator mr-2"></i>Bảng kê chi phí</div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Người lớn: ${adults} x ${formatVND(priceAdult)}</span>
-                        <strong>${formatVND(totalAdultPrice)}</strong>
-                    </div>
-                    ${children > 0 ? `
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Trẻ em: ${children} x ${formatVND(priceChild)}</span>
-                        <strong>${formatVND(totalChildPrice)}</strong>
-                    </div>` : ''}
-                    <div class="d-flex justify-content-between mb-3 text-success">
-                        <span>Thuế giá trị gia tăng & phí dịch vụ</span>
-                        <strong>Miễn phí</strong>
-                    </div>
-                    <hr class="border-secondary my-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0 font-weight-bold text-warning">TỔNG CỘNG THANH TOÁN:</h5>
-                        <h3 class="mb-0 font-weight-bold text-white">${formatVND(finalTotal)}</h3>
-                    </div>
-                </div>
-            `;
-
-            summaryModalContent.innerHTML = summaryHTML;
-            syncPaymentMethod();
-
-            const paymentMethodSelect = document.getElementById('paymentMethodSelect');
-            if (paymentMethodSelect) {
-                paymentMethodSelect.addEventListener('change', syncPaymentMethod);
-            }
+            passengerIndex++;
         }
 
-        // BẮT SỰ KIỆN: Khi người dùng bấm nút Xem tóm tắt
-        btnPreviewBooking.addEventListener('click', function() {
-            // Kiểm tra tính hợp lệ cơ bản của toàn bộ form qua HTML5 Validation (yêu cầu required, radio checked, v.v...)
-            if (bookingForm.reportValidity()) {
-                // Nếu hợp lệ, biên dịch dữ liệu sang giao diện tóm tắt và mở Modal lên
-                generateSummaryScript();
-                $('#summaryModal').modal('show');
-            }
-        });
+        /* Trẻ em */
 
-        // BẮT SỰ KIỆN: Nút submit thật nằm trong Modal xác nhận cuối cùng
-        btnFinalSubmit.addEventListener('click', function() {
-            syncPaymentMethod();
-            btnFinalSubmit.disabled = true;
-            btnFinalSubmit.innerHTML = `<i class="fa fa-spinner fa-spin mr-2"></i>Đang xử lý đơn đặt...`;
-            bookingForm.submit(); // Thực hiện gửi toàn bộ form dữ liệu về Route Laravel
-        });
+        for (let i = 0; i < children; i++) {
 
-        elQtyAdult.addEventListener('change', updateBookingDetails);
-        elQtyChild.addEventListener('change', updateBookingDetails);
+            const isOpen = passengerIndex === 0;
 
-        // Khởi chạy dữ liệu mặc định lần đầu khi load trang
-        updateBookingDetails();
+            formsHTML += getPassengerFormTemplate(
+                passengerIndex,
+                'Hành khách',
+                'child',
+                isOpen
+            );
+
+            passengerIndex++;
+        }
+
+        accordionContainer.innerHTML = formsHTML;
+    }
+
+    /* =========================================================
+       8. VALIDATE FORM TRƯỚC KHI MỞ MODAL
+    ========================================================= */
+
+    function validateBookingForm() {
+
+
+/* =========================================================
+   1. XÓA CÁC LỖI CŨ
+========================================================= */
+
+document.querySelectorAll('.js-error').forEach(function (element) {
+    element.remove();
+});
+
+document.querySelectorAll('.is-invalid').forEach(function (element) {
+    element.classList.remove('is-invalid');
+});
+
+
+/* =========================================================
+   HÀM HIỂN THỊ LỖI
+========================================================= */
+
+function showError(input, message) {
+
+    if (!input) {
+        return false;
+    }
+
+    input.classList.add('is-invalid');
+
+    const error = document.createElement('div');
+
+    error.className = 'js-error text-danger small mt-1';
+
+    error.innerHTML =
+        '<i class="fa fa-exclamation-circle mr-1"></i>' +
+        message;
+
+    /*
+     * Chèn lỗi ngay sau input
+     */
+
+    input.parentNode.appendChild(error);
+
+    return false;
+}
+
+
+/* =========================================================
+   2. TOUR ID
+========================================================= */
+
+const tourId =
+    document.querySelector('input[name="tour_id"]');
+
+if (!tourId || !tourId.value) {
+
+    alert('Không xác định được tour.');
+
+    return false;
+}
+
+
+/* =========================================================
+   3. LỊCH KHỞI HÀNH
+========================================================= */
+
+const selectedSchedule =
+    document.querySelector(
+        'input[name="lich_khoi_hanh_id"]:checked'
+    );
+
+if (!selectedSchedule) {
+
+    alert('Vui lòng chọn lịch khởi hành.');
+
+    const firstSchedule =
+        document.querySelector(
+            'input[name="lich_khoi_hanh_id"]'
+        );
+
+    if (firstSchedule) {
+        firstSchedule.focus();
+    }
+
+    return false;
+}
+
+
+/* =========================================================
+   4. SỐ NGƯỜI LỚN
+   required|integer|min:1
+========================================================= */
+
+const adultInput =
+    document.getElementById('qty_adult');
+
+const adults =
+    parseInt(adultInput?.value);
+
+if (
+    !adultInput ||
+    isNaN(adults) ||
+    adults < 1 ||
+    !Number.isInteger(adults)
+) {
+
+    return showError(
+        adultInput,
+        'Số người lớn phải là số nguyên và ít nhất 1 người.'
+    );
+}
+
+
+/* =========================================================
+   5. SỐ TRẺ EM
+   nullable|integer|min:0
+========================================================= */
+
+const childInput =
+    document.getElementById('qty_child');
+
+const children =
+    childInput.value === ''
+        ? 0
+        : parseInt(childInput.value);
+
+if (
+    isNaN(children) ||
+    children < 0 ||
+    !Number.isInteger(children)
+) {
+
+    return showError(
+        childInput,
+        'Số trẻ em phải là số nguyên từ 0 trở lên.'
+    );
+}
+
+
+/* =========================================================
+   6. CHECKBOX CAM KẾT
+========================================================= */
+
+if (
+    chkCommitment &&
+    !chkCommitment.checked
+) {
+
+    alert(
+        'Vui lòng xác nhận thông tin hành khách là chính xác.'
+    );
+
+    chkCommitment.focus();
+
+    return false;
+}
+
+
+/* =========================================================
+   7. LẤY DANH SÁCH HÀNH KHÁCH
+========================================================= */
+
+const passengerCards =
+    document.querySelectorAll(
+        '#passengers-accordion .passenger-accordion-card'
+    );
+
+const expectedPassengers =
+    adults + children;
+
+
+if (
+    passengerCards.length !== expectedPassengers
+) {
+
+    alert(
+        'Số lượng hành khách chưa khớp với số người lớn và trẻ em.'
+    );
+
+    return false;
+}
+
+
+/* =========================================================
+   8. KIỂM TRA TỪNG HÀNH KHÁCH
+========================================================= */
+
+for (
+    let i = 0;
+    i < passengerCards.length;
+    i++
+) {
+
+    const card =
+        passengerCards[i];
+
+
+    /* =====================================================
+       HỌ TÊN
+       required|string|min:2|max:100
+    ===================================================== */
+
+    const nameInput =
+        card.querySelector('.pass-name');
+
+    const name =
+        nameInput?.value.trim() || '';
+
+    if (!name) {
+
+        openPassenger(card);
+
+        return showError(
+            nameInput,
+            `Hành khách #${i + 1}: Vui lòng nhập họ và tên.`
+        );
+    }
+
+    if (name.length < 2) {
+
+        openPassenger(card);
+
+        return showError(
+            nameInput,
+            `Hành khách #${i + 1}: Họ tên phải có ít nhất 2 ký tự.`
+        );
+    }
+
+    if (name.length > 100) {
+
+        openPassenger(card);
+
+        return showError(
+            nameInput,
+            `Hành khách #${i + 1}: Họ tên không được vượt quá 100 ký tự.`
+        );
+    }
+
+
+    /* =====================================================
+       GIỚI TÍNH
+       required|in:Nam,Nữ
+    ===================================================== */
+
+    const genderInput =
+        card.querySelector('.pass-gender');
+
+    const gender =
+        genderInput?.value || '';
+
+    if (
+        gender !== 'Nam' &&
+        gender !== 'Nữ'
+    ) {
+
+        openPassenger(card);
+
+        return showError(
+            genderInput,
+            `Hành khách #${i + 1}: Vui lòng chọn giới tính Nam hoặc Nữ.`
+        );
+    }
+
+
+    /* =====================================================
+NGÀY SINH
+
+* Người lớn: từ 12 tuổi trở lên
+* Trẻ em: từ 2 đến 11 tuổi
+  ===================================================== */
+
+const dobInput =
+card.querySelector('.pass-dob');
+
+const dob =
+dobInput?.value || '';
+
+/* Bắt buộc nhập ngày sinh */
+
+if (!dob) {
+
+
+openPassenger(card);
+
+return showError(
+    dobInput,
+    `Hành khách #${i + 1}: Vui lòng nhập ngày sinh.`
+);
+
+
+}
+
+/* Kiểm tra ngày sinh hợp lệ */
+
+const dobDate =
+new Date(dob + 'T00:00:00');
+
+const today =
+new Date();
+
+today.setHours(0, 0, 0, 0);
+
+if (isNaN(dobDate.getTime())) {
+
+
+openPassenger(card);
+
+return showError(
+    dobInput,
+    `Hành khách #${i + 1}: Ngày sinh không hợp lệ.`
+);
+
+
+}
+
+/* Không cho ngày sinh hôm nay hoặc tương lai */
+
+if (dobDate >= today) {
+
+
+openPassenger(card);
+
+return showError(
+    dobInput,
+    `Hành khách #${i + 1}: Ngày sinh phải trước ngày hôm nay.`
+);
+
+
+}
+
+/* =====================================================
+TÍNH TUỔI CHÍNH XÁC
+===================================================== */
+
+let age =
+today.getFullYear() -
+dobDate.getFullYear();
+
+const monthDiff =
+today.getMonth() -
+dobDate.getMonth();
+
+const dayDiff =
+today.getDate() -
+dobDate.getDate();
+
+/*
+
+* Nếu chưa đến sinh nhật năm nay
+* thì trừ 1 tuổi
+  */
+
+if (
+monthDiff < 0 ||
+(monthDiff === 0 && dayDiff < 0)
+) {
+age--;
+}
+
+/* =====================================================
+KIỂM TRA THEO LOẠI HÀNH KHÁCH
+===================================================== */
+
+const passengerType =
+card.querySelector('.pass-type')?.value || '';
+
+/* NGƯỜI LỚN */
+
+if (passengerType === 'adult') {
+
+
+if (age < 12) {
+
+    openPassenger(card);
+
+    return showError(
+        dobInput,
+        `Hành khách #${i + 1}: Người lớn phải từ 12 tuổi trở lên. Tuổi hiện tại: ${age} tuổi.`
+    );
+}
+
+
+}
+
+/* TRẺ EM */
+
+if (passengerType === 'child') {
+
+
+if (age < 2 || age > 11) {
+
+    openPassenger(card);
+
+    return showError(
+        dobInput,
+        `Hành khách #${i + 1}: Trẻ em phải từ 2 đến 11 tuổi. Tuổi hiện tại: ${age} tuổi.`
+    );
+}
+
+
+}
+
+
+
+    /* =====================================================
+       QUỐC TỊCH
+       required|string|max:100
+    ===================================================== */
+
+    const nationInput =
+        card.querySelector('.pass-nation');
+
+    const nation =
+        nationInput?.value.trim() || '';
+
+    if (!nation) {
+
+        openPassenger(card);
+
+        return showError(
+            nationInput,
+            `Hành khách #${i + 1}: Vui lòng nhập quốc tịch.`
+        );
+    }
+
+    if (nation.length > 100) {
+
+        openPassenger(card);
+
+        return showError(
+            nationInput,
+            `Hành khách #${i + 1}: Quốc tịch không được vượt quá 100 ký tự.`
+        );
+    }
+
+
+    /* =====================================================
+       LOẠI HÀNH KHÁCH
+       required|in:adult,child
+    ===================================================== */
+
+    
+
+    if (
+        passengerType !== 'adult' &&
+        passengerType !== 'child'
+    ) {
+
+        alert(
+            `Hành khách #${i + 1}: Loại hành khách không hợp lệ.`
+        );
+
+        return false;
+    }
+
+
+    /* =====================================================
+       LOẠI GIẤY TỜ
+       required|in:CCCD,Hộ chiếu,Giấy khai sinh
+    ===================================================== */
+
+    const docTypeInput =
+        card.querySelector('.pass-doc-type');
+
+    const docType =
+        docTypeInput?.value || '';
+
+    const validDocTypes = [
+        'CCCD',
+        'Hộ chiếu',
+        'Giấy khai sinh'
+    ];
+
+    if (
+        !validDocTypes.includes(docType)
+    ) {
+
+        openPassenger(card);
+
+        return showError(
+            docTypeInput,
+            `Hành khách #${i + 1}: Vui lòng chọn loại giấy tờ hợp lệ.`
+        );
+    }
+
+
+    /* =====================================================
+       SỐ GIẤY TỜ
+       required|string|max:30
+    ===================================================== */
+
+    const docIdInput =
+        card.querySelector('.pass-doc-id');
+
+    const docId =
+        docIdInput?.value.trim() || '';
+
+    if (!docId) {
+
+        openPassenger(card);
+
+        return showError(
+            docIdInput,
+            `Hành khách #${i + 1}: Vui lòng nhập số giấy tờ.`
+        );
+    }
+
+    if (docId.length > 30) {
+
+        openPassenger(card);
+
+        return showError(
+            docIdInput,
+            `Hành khách #${i + 1}: Số giấy tờ không được vượt quá 30 ký tự.`
+        );
+    }
+
+
+    /* =====================================================
+       SỐ ĐIỆN THOẠI
+       nullable|regex:/^(0|\+84)[0-9]{9,10}$/
+    ===================================================== */
+
+    const phoneInput =
+        card.querySelector('.pass-phone');
+
+    const phone =
+        phoneInput?.value.trim() || '';
+
+    if (phone) {
+
+        const phoneRegex =
+            /^(0|\+84)[0-9]{9,10}$/;
+
+        if (!phoneRegex.test(phone)) {
+
+            openPassenger(card);
+
+            return showError(
+                phoneInput,
+                `Hành khách #${i + 1}: Số điện thoại không đúng định dạng.`
+            );
+        }
+    }
+
+
+    /* =====================================================
+       YÊU CẦU ĐẶC BIỆT
+       nullable|max:500
+    ===================================================== */
+
+    const noteInput =
+        card.querySelector('.pass-note');
+
+    const note =
+        noteInput?.value.trim() || '';
+
+    if (note.length > 500) {
+
+        openPassenger(card);
+
+        return showError(
+            noteInput,
+            `Hành khách #${i + 1}: Yêu cầu đặc biệt không được vượt quá 500 ký tự.`
+        );
+    }
+}
+
+
+/* =========================================================
+   9. TẤT CẢ HỢP LỆ
+========================================================= */
+
+return true;
+
+
+}
+
+/* =============================================================
+HÀM MỞ ACCORDION HÀNH KHÁCH KHI CÓ LỖI
+============================================================= */
+
+function openPassenger(card) {
+
+
+if (!card) {
+    return;
+}
+
+const collapse =
+    card.querySelector('.collapse');
+
+if (
+    collapse &&
+    typeof $ !== 'undefined' &&
+    typeof $.fn.collapse !== 'undefined'
+) {
+
+    $(collapse).collapse('show');
+}
+
+/*
+ * Cuộn đến hành khách đang lỗi
+ */
+
+setTimeout(function () {
+
+    card.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
     });
 
+}, 100);
+
+
+}
+
+
+    /* =========================================================
+       9. TẠO TÓM TẮT ĐƠN HÀNG
+    ========================================================= */
+
+    function generateSummary() {
+
+        /* Lịch khởi hành */
+
+        const selectedRadio =
+            document.querySelector(
+                'input[name="lich_khoi_hanh_id"]:checked'
+            );
+
+        let dateText = 'Chưa chọn lịch';
+
+        if (selectedRadio) {
+
+            const cardParent =
+                selectedRadio.closest('.schedule-card');
+
+            if (cardParent) {
+
+                const dateElement =
+                    cardParent.querySelector('.schedule-date');
+
+                if (dateElement) {
+                    dateText =
+                        dateElement.textContent.trim();
+                }
+            }
+        }
+
+        /* Thông tin liên hệ */
+
+        const contactName =
+            document.getElementById('contact_name').value;
+
+        const contactEmail =
+            document.getElementById('contact_email').value;
+
+        const contactPhone =
+            document.getElementById('contact_phone').value;
+
+        const contactAddress =
+            document.getElementById('contact_address').value;
+
+        /* Số lượng */
+
+        const adults =
+            parseInt(elQtyAdult.value) || 1;
+
+        const children =
+            parseInt(elQtyChild.value) || 0;
+
+        const totalAdultPrice =
+            adults * priceAdult;
+
+        const totalChildPrice =
+            children * priceChild;
+
+        const finalTotal =
+            totalAdultPrice + totalChildPrice;
+
+        /* =====================================================
+           Danh sách hành khách
+        ===================================================== */
+
+        let passengersHTML = '';
+
+        const passCards =
+            document.querySelectorAll(
+                '#passengers-accordion .passenger-accordion-card'
+            );
+
+        passCards.forEach(function (card, index) {
+
+            const name =
+                card.querySelector('.pass-name')?.value.trim()
+                || '(Chưa nhập)';
+
+            const type =
+                card.querySelector('.pass-type')?.value === 'adult'
+                    ? 'Người lớn'
+                    : 'Trẻ em';
+
+            const gender =
+                card.querySelector('.pass-gender')?.value
+                || '';
+
+            const dob =
+                card.querySelector('.pass-dob')?.value
+                || '(Chưa nhập)';
+
+            const docType =
+                card.querySelector('.pass-doc-type')?.value
+                || '';
+
+            const docId =
+                card.querySelector('.pass-doc-id')?.value.trim()
+                || '(Chưa nhập)';
+
+            passengersHTML += `
+                <tr>
+                    <td class="font-weight-bold">
+                        #${index + 1}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${name.toUpperCase()}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span class="badge ${
+                            type === 'Người lớn'
+                                ? 'badge-primary'
+                                : 'badge-info'
+                        }">
+                            ${type}
+                        </span>
+                    </td>
+
+                    <td>${gender}</td>
+
+                    <td>${dob}</td>
+
+                    <td>
+                        <small class="text-muted">
+                            ${docType}:
+                        </small>
+                        ${docId}
+                    </td>
+                </tr>
+            `;
+        });
+
+        /* =====================================================
+           HTML TÓM TẮT
+        ===================================================== */
+
+        const summaryHTML = `
+
+            <!-- THÔNG TIN TOUR -->
+
+            <div class="summary-section-box shadow-sm">
+
+                <div class="summary-section-title">
+                    <i class="fa fa-map-marked-alt mr-2 text-primary"></i>
+                    Thông tin chuyến đi
+                </div>
+
+                <h5 class="font-weight-bold text-dark mb-2">
+                    ${tourTitle}
+                </h5>
+
+                <p class="mb-0 text-muted">
+                    <i class="fa fa-calendar-alt mr-2 text-danger"></i>
+                    Ngày khởi hành:
+                    <strong class="text-dark">
+                        ${dateText}
+                    </strong>
+                </p>
+
+            </div>
+
+
+            <!-- NGƯỜI LIÊN HỆ -->
+
+            <div class="summary-section-box shadow-sm">
+
+                <div class="summary-section-title">
+                    <i class="fa fa-id-card mr-2 text-primary"></i>
+                    Người liên hệ đại diện
+                </div>
+
+                <div class="row text-dark">
+
+                    <div class="col-sm-6 mb-2">
+                        <strong>Họ tên:</strong>
+                        ${contactName}
+                    </div>
+
+                    <div class="col-sm-6 mb-2">
+                        <strong>Số điện thoại:</strong>
+                        ${contactPhone || 'Chưa cập nhật'}
+                    </div>
+
+                    <div class="col-sm-6">
+                        <strong>Email:</strong>
+                        ${contactEmail}
+                    </div>
+
+                    <div class="col-sm-6">
+                        <strong>Địa chỉ:</strong>
+                        ${contactAddress || 'Chưa cập nhật'}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- DANH SÁCH HÀNH KHÁCH -->
+
+            <div class="summary-section-box shadow-sm">
+
+                <div class="summary-section-title">
+                    <i class="fa fa-users mr-2 text-primary"></i>
+                    Danh sách đoàn khách
+                </div>
+
+                <div class="table-responsive">
+
+                    <table
+                        class="table table-sm table-hover mb-0"
+                        style="font-size:0.9rem;"
+                    >
+
+                        <thead class="thead-light">
+
+                            <tr>
+                                <th>STT</th>
+                                <th>Họ và Tên</th>
+                                <th>Loại</th>
+                                <th>Phái</th>
+                                <th>Ngày sinh</th>
+                                <th>Giấy tờ</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                            ${passengersHTML}
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- PHƯƠNG THỨC THANH TOÁN -->
+
+            <div class="summary-section-box shadow-sm border border-primary bg-white">
+
+                <div class="summary-section-title text-primary">
+                    <i class="fa fa-credit-card mr-2"></i>
+                    Chọn phương thức thanh toán
+                </div>
+
+                <div class="form-group mb-0">
+
+                    <select
+                        id="paymentMethodSelect"
+                        class="custom-select custom-select-lg font-weight-bold text-dark"
+                        style="font-size:1.05rem;border:2px solid var(--primary);"
+                    >
+
+                        <option value="CHUYEN_KHOAN">
+                            Chuyển khoản ngân hàng trực tiếp
+                        </option>
+
+                        <option value="VNPAY">
+                            Thanh toán trực tuyến bằng cổng VNPAY
+                        </option>
+
+                    </select>
+
+                    <small class="form-text text-muted mt-2">
+                        Vui lòng chọn phương thức thanh toán trước khi xác nhận.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- CHI PHÍ -->
+
+            <div class="summary-section-box shadow-sm bg-dark text-white border-0">
+
+                <div class="summary-section-title text-light border-secondary">
+                    <i class="fa fa-calculator mr-2"></i>
+                    Bảng kê chi phí
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+
+                    <span>
+                        Người lớn:
+                        ${adults} x ${formatVND(priceAdult)}
+                    </span>
+
+                    <strong>
+                        ${formatVND(totalAdultPrice)}
+                    </strong>
+
+                </div>
+
+                ${
+                    children > 0
+                        ? `
+                            <div class="d-flex justify-content-between mb-2">
+
+                                <span>
+                                    Trẻ em:
+                                    ${children} x ${formatVND(priceChild)}
+                                </span>
+
+                                <strong>
+                                    ${formatVND(totalChildPrice)}
+                                </strong>
+
+                            </div>
+                        `
+                        : ''
+                }
+
+                <div class="d-flex justify-content-between mb-3 text-success">
+
+                    <span>
+                        Thuế giá trị gia tăng & phí dịch vụ
+                    </span>
+
+                    <strong>
+                        Miễn phí
+                    </strong>
+
+                </div>
+
+                <hr class="border-secondary my-2">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h5 class="mb-0 font-weight-bold text-warning">
+                        TỔNG CỘNG:
+                    </h5>
+
+                    <h3 class="mb-0 font-weight-bold text-white">
+                        ${formatVND(finalTotal)}
+                    </h3>
+
+                </div>
+
+            </div>
+        `;
+
+        summaryModalContent.innerHTML = summaryHTML;
+
+        /* Đồng bộ phương thức thanh toán */
+
+        syncPaymentMethod();
+
+        const paymentMethodSelect =
+            document.getElementById('paymentMethodSelect');
+
+        if (paymentMethodSelect) {
+
+            paymentMethodSelect.addEventListener(
+                'change',
+                syncPaymentMethod
+            );
+        }
+    }
+
+    /* =========================================================
+       10. NÚT "TIẾP TỤC & XEM TÓM TẮT"
+    ========================================================= */
+
+    btnPreviewBooking.addEventListener('click', function (event) {
+
+        event.preventDefault();
+
+        console.log('Đã bấm nút xem tóm tắt');
+
+        /*
+         * Validate TOÀN BỘ FORM trước
+         */
+
+        if (!validateBookingForm()) {
+
+            console.log('Validation thất bại');
+
+            return;
+        }
+
+        console.log('Validation thành công');
+
+        /*
+         * Tạo tóm tắt
+         */
+
+        generateSummary();
+
+        /*
+         * Mở Bootstrap Modal
+         */
+
+        if (typeof $ !== 'undefined' &&
+            typeof $.fn.modal !== 'undefined') {
+
+            $('#summaryModal').modal('show');
+
+        } else {
+
+            console.error(
+                'Bootstrap Modal chưa được load.'
+            );
+
+            alert(
+                'Không thể mở cửa sổ tóm tắt. Vui lòng kiểm tra Bootstrap JS.'
+            );
+        }
+    });
+
+    /* =========================================================
+       11. NÚT XÁC NHẬN ĐẶT TOUR
+    ========================================================= */
+
+    if (btnFinalSubmit) {
+
+        btnFinalSubmit.addEventListener(
+            'click',
+            function () {
+
+                /*
+                 * Kiểm tra lại validation một lần nữa
+                 */
+
+                if (!validateBookingForm()) {
+                    return;
+                }
+
+                /*
+                 * Kiểm tra phương thức thanh toán
+                 */
+
+                syncPaymentMethod();
+
+                if (!elInputPaymentMethod.value) {
+
+                    alert(
+                        'Vui lòng chọn phương thức thanh toán.'
+                    );
+
+                    return;
+                }
+
+                /*
+                 * Khóa nút tránh click nhiều lần
+                 */
+
+                btnFinalSubmit.disabled = true;
+
+                btnFinalSubmit.innerHTML =
+                    '<i class="fa fa-spinner fa-spin mr-2"></i>' +
+                    'Đang xử lý đơn đặt...';
+
+                /*
+                 * Submit form về Laravel
+                 */
+
+                bookingForm.submit();
+            }
+        );
+    }
+
+    /* =========================================================
+       12. THAY ĐỔI SỐ LƯỢNG
+    ========================================================= */
+
+    elQtyAdult.addEventListener(
+        'change',
+        updateBookingDetails
+    );
+
+    elQtyChild.addEventListener(
+        'change',
+        updateBookingDetails
+    );
+
+    elQtyAdult.addEventListener(
+        'input',
+        updateBookingDetails
+    );
+
+    elQtyChild.addEventListener(
+        'input',
+        updateBookingDetails
+    );
+
+    /* =========================================================
+       13. KHỞI TẠO
+    ========================================================= */
+
+    updateBookingDetails();
+
+    console.log('Booking JavaScript đã khởi tạo thành công.');
+
+});
 </script>
+
 @endsection

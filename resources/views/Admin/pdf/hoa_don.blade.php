@@ -39,12 +39,28 @@
 
     <p><strong>Ngày khởi hành:</strong> {{ optional($booking?->lichKhoiHanh)->ngay_khoi_hanh ?? optional($payment->datTour?->lichKhoiHanh)->ngay_khoi_hanh }}</p>
 
-    <p><strong>Tổng tiền:</strong>
-        {{ number_format(optional($booking)->tong_tien ?? optional($payment->datTour)->tong_tien ?? 0) }} VNĐ
-    </p>
-    <p><strong>Số tiền đã thanh toán:</strong>
-        {{ number_format(optional($booking)->so_tien_da_thanh_toan ?? optional($payment->datTour)->so_tien_da_thanh_toan ?? 0) }} VNĐ
-    </p>
+    <p>
+    <strong>Tổng tiền đơn hàng:</strong>
+    {{ number_format($payment->datTour->tong_tien) }} VNĐ
+</p>
+
+<p>
+    <strong>Số tiền giao dịch:</strong>
+    {{ number_format($payment->so_tien) }} VNĐ
+</p>
+
+<p>
+    <strong>Đã thanh toán:</strong>
+    {{ number_format($payment->datTour->so_tien_da_thanh_toan) }} VNĐ
+</p>
+
+<p>
+    <strong>Còn lại:</strong>
+    {{ number_format(max(
+        $payment->datTour->tong_tien - $payment->datTour->so_tien_da_thanh_toan,
+        0
+    )) }} VNĐ
+</p>
 
 </body>
 </html>

@@ -255,87 +255,72 @@ if (!$payment) {
         )->first();
 
         if (!$payment) {
+            $payment = ThanhToan::where('trang_thai', 'cho_thanh_toan')
+                ->latest('id')
+                ->first();
+        }
 
-
+        if (!$payment) {
             return redirect()
                 ->route('client.home')
                 ->with('error', 'Không tìm thấy giao dịch.');
         }
-        $thanhToan = $payment;
-        $datTour = $payment->datTour;
+
+        $booking = $payment->datTour()->first();
+        if (!$booking) {
+            return redirect()
+                ->route('client.home')
+                ->with('error', 'Không tìm thấy đơn đặt tour liên quan.');
+        }
         if (
             $request->vnp_ResponseCode == "00" &&
             $request->vnp_TransactionStatus == "00"
         ) {
-            $payment->update([
-
-
-                'trang_thai' => 'da_thanh_toan',
-
-                'thoi_gian_thanh_toan' => now(),
-
-
-                'ghi_chu' => 'Thanh toán thành công qua VNPAY'
-            ]);
-
-
-            $booking = $payment->datTour;
             $booking->refresh();
             $payment->refresh();
             $payment->setRelation('datTour', $booking);
 
-// Tổng tiền đã thanh toán sau giao dịch này
-$daThanhToan = $booking->so_tien_da_thanh_toan + $payment->so_tien;
-$paymentStatus = 'da_thanh_toan';
+            $payment->update([
+                'trang_thai' => 'da_thanh_toan',
+                'thoi_gian_thanh_toan' => now(),
+                'ghi_chu' => 'Thanh toán thành công qua VNPAY',
+            ]);
 
-if ($daThanhToan < $booking->tong_tien) {
-    $paymentStatus = 'dat_coc';
-}
+            $payment->refresh();
+            $booking->refresh();
+            $payment->setRelation('datTour', $booking);
 
-// Cập nhật trạng thái giao dịch
-$payment->update([
-    'trang_thai' => $paymentStatus,
-    'thoi_gian_thanh_toan' => now(),
-    'ghi_chu' => $paymentStatus == 'dat_coc'
-        ? 'Khách đã thanh toán tiền đặt cọc'
-        : 'Thanh toán đủ qua VNPAY'
-]);
-// Còn lại bao nhiêu
-$soTienConLai = $booking->tong_tien - $daThanhToan;
+            $daThanhToan = (float) $booking->thanhToans()
+                ->whereIn('trang_thai', ['da_thanh_toan', 'dat_coc'])
+                ->sum('so_tien');
 
-// Không để âm
-if ($soTienConLai < 0) {
-    $soTienConLai = 0;
-}
+            $paymentAmount = (float) $payment->so_tien;
+            if ($paymentAmount > 0 && $daThanhToan < $booking->tong_tien) {
+                $daThanhToan = $daThanhToan + $paymentAmount;
+            }
 
-// Nếu đã thanh toán đủ
-if ($soTienConLai == 0) {
+            $paymentStatus = 'da_thanh_toan';
+            if ($daThanhToan < $booking->tong_tien) {
+                $paymentStatus = 'dat_coc';
+            }
 
-    $booking->update([
+            $payment->update([
+                'trang_thai' => $paymentStatus,
+                'thoi_gian_thanh_toan' => now(),
+                'ghi_chu' => $paymentStatus == 'dat_coc'
+                    ? 'Khách đã thanh toán tiền đặt cọc'
+                    : 'Thanh toán đủ qua VNPAY',
+            ]);
 
-        'so_tien_da_thanh_toan' => $daThanhToan,
+            $soTienConLai = max(0, (float) $booking->tong_tien - $daThanhToan);
 
-        'so_tien_con_lai' => 0,
+            $booking->update([
+                'so_tien_da_thanh_toan' => $daThanhToan,
+                'so_tien_con_lai' => $soTienConLai,
+                'trang_thai' => $soTienConLai <= 0 ? 'da_thanh_toan' : 'da_xac_nhan'
+            ]);
 
-        'trang_thai' => 'da_thanh_toan'
-
-    ]);
-
-} else {
-
-    // Mới chỉ đặt cọc
-
-    $booking->update([
-
-        'so_tien_da_thanh_toan' => $daThanhToan,
-
-        'so_tien_con_lai' => $soTienConLai,
-
-        'trang_thai' => 'da_xac_nhan'
-
-    ]);
-
-}
+            $booking->refresh();
             // ====== TẠO HÓA ĐƠN PDF ======
             $hoaDonService = new HoaDonService();
             $hoaDonService->taoHoaDon($payment);
@@ -431,6 +416,14 @@ if ($soTienConLai == 0) {
             return back()->with('error', 'Đơn này đã thanh toán đủ.');
         }
 
+        $payment = ThanhToan::where('dat_tour_id', $datTour->id)
+            ->latest()
+            ->first();
+
+        if (!$payment) {
+            return back()->with('error', 'Không tìm thấy giao dịch thanh toán cho đơn này.');
+        }
+
         $vnp_TmnCode    = config('services.vnpay.tmn_code');
         $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));
         $vnp_Url        = config('services.vnpay.url');
@@ -483,13 +476,9 @@ if ($soTienConLai == 0) {
             . "vnp_SecureHash="
             . $vnpSecureHash;
 
-        ThanhToan::create([
-            'dat_tour_id' => $datTour->id,
-            'nguoi_dung_id' => auth()->id(),
+        $payment->update([
             'ma_giao_dich' => $vnp_TxnRef,
-            'so_tien' => $amount,
-            'phuong_thuc_thanh_toan' => 'VNPAY',
-            'trang_thai' => 'cho_thanh_toan',
+            'ghi_chu' => 'Đang thanh toán phần còn lại',
         ]);
 
         return redirect($paymentUrl);

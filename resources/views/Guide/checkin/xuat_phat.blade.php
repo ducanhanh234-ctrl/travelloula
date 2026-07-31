@@ -1,14 +1,9 @@
 @extends('Layouts.guide')
-
 @section('title', 'Check-in hành khách')
-
 @section('guide', 'Check-in hành khách')
-
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('Guide.checkin.index') }}">
-        Check-in
-    </a>
+    <a href="{{ route('Guide.checkin.index') }}">Check-in</a>
 </li>
 
 <li class="breadcrumb-item active">
@@ -1143,14 +1138,9 @@
 </style>
 
 @php
-$phanTramCheckIn = $tongKhach > 0
-? round(($daCheck / $tongKhach) * 100)
-: 0;
+$phanTramCheckIn = $tongKhach > 0 ? round(($daCheck / $tongKhach) * 100): 0;
 
-$phanTramCheckIn = min(
-max($phanTramCheckIn, 0),
-100
-);
+$phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
 @endphp
 
 <div class="checkin-page fade-in">
@@ -1170,10 +1160,7 @@ max($phanTramCheckIn, 0),
             </div>
         </div>
 
-        <a href="{{ route(
-                    'Guide.checkin.dia-diem',
-                    $lichKhoiHanhId
-                ) }}" class="btn-checkin-back">
+        <a href="{{ route('Guide.checkin.dia-diem', $lichKhoiHanhId) }}" class="btn-checkin-back">
             <i class="fas fa-arrow-left"></i>
             Quay lại
         </a>
@@ -1193,13 +1180,7 @@ max($phanTramCheckIn, 0),
                     </div>
 
                     <div class="checkin-info-value">
-                        {{
-                                $chiTiet
-                                    ->lichTrinh
-                                    ->tour
-                                    ->ten_tour
-                                ?? 'Không xác định'
-                            }}
+                        {{$chiTiet ->lichTrinh ->tour ->ten_tour ?? 'Không xác định'}}
                     </div>
                 </div>
             </div>

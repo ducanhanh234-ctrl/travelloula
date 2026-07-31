@@ -1,19 +1,12 @@
 @extends('Layouts.guide')
-
 @section('title', 'Chọn địa điểm Check-in')
-
 @section('guide', 'Chọn địa điểm Check-in')
-
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('Guide.checkin.index') }}">
-        Check-in
-    </a>
+    <a href="{{ route('Guide.checkin.index') }}">Check-in</a>
 </li>
 
-<li class="breadcrumb-item active">
-    Chọn địa điểm
-</li>
+<li class="breadcrumb-item active">Chọn địa điểm</li>
 @endsection
 
 @section('content')
@@ -706,16 +699,12 @@
 </style>
 
 @php
-$lichTrinhTours =
-$lichKhoiHanh->tour->lichTrinhTours
-?? collect();
+    $lichTrinhTours = $lichKhoiHanh->tour->lichTrinhTours
+        ?? collect();
 
-$tongNgayThamQuan =
-$lichTrinhTours->count();
-
-$tongDiaDiem =
-$lichTrinhTours->sum(function ($ngay) {
-return $ngay->chiTiets->count();
+    $tongNgayThamQuan = $lichTrinhTours->count();
+    $tongDiaDiem = $lichTrinhTours->sum(function ($ngay) {
+        return $ngay->chiTiets->count();
 });
 @endphp
 
@@ -731,10 +720,7 @@ return $ngay->chiTiets->count();
                 <h2>Chọn địa điểm Check-in</h2>
 
                 <p>
-                    {{
-                            $lichKhoiHanh->tour->ten_tour
-                            ?? 'Không xác định'
-                        }}
+                    {{$lichKhoiHanh->tour->ten_tour ?? 'Không xác định'}}
                 </p>
             </div>
         </div>

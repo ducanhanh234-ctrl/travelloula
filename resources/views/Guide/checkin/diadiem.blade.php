@@ -970,20 +970,12 @@
                         @endphp
 
                         @php
-                        $isFirstActivity =
-                        $firstDayOneActivity &&
-                        $firstDayOneActivity->id == $chiTiet->id;
+                            $isFirstActivity = $firstDayOneActivity && $firstDayOneActivity->id == $chiTiet->id;
                         @endphp
-                        @if($activityWindows[$chiTiet->id]['can_checkin'] ?? false)
-                        <a href="{{ route(
-                                    'Guide.checkin.show',
-                                    [
-                                        'lichKhoiHanh' => $lichKhoiHanh->id,
-                                        'chiTiet' => $chiTiet->id,
-                                    ]
-                                ) }}" class="btn-location-checkin">
+                        @if($canCheckIn)
+                        <a href="{{ route('Guide.checkin.show',['lichKhoiHanh' => $lichKhoiHanh->id,'chiTiet' => $chiTiet->id,]) }}" class="btn-location-checkin">
                             <i class="fas fa-user-check"></i>
-                            Check-in
+                                Check-in
                         </a>
                         @else
                         @if($expired)

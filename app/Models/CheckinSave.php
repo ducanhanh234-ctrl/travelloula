@@ -16,6 +16,7 @@ class CheckinSave extends Model
         'chi_tiet_lich_trinh_id',
         'huong_dan_vien_id',
         'action',
+        'ngay_thu',
     ];
 
     public function lichKhoiHanh()

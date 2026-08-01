@@ -5,13 +5,8 @@
     <div class="container-fluid">
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <h4>
-                    Điểm danh trước khi bắt đầu Ngày {{ $ngayThu }}
-                </h4>
-
-                <p class="text-muted mb-0">
-                    Tổng hành khách: <strong>{{ $tongKhach }}</strong>
-                </p>
+                <h4>Điểm danh trước khi bắt đầu Ngày {{ $ngayThu }}</h4>
+                <p class="text-muted mb-0">Tổng hành khách: <strong>{{ $tongKhach }}</strong></p>
             </div>
         </div>
 
@@ -65,69 +60,49 @@
             <input type="hidden" name="ngay_thu" value="{{ $ngayThu }}">
             <input type="hidden" name="trang_thai" value="{{ $diemDanh && $diemDanh->trang_thai == 'co_mat' ? 'co_mat' : 'vang_mat' }}" class="trang-thai-input">
 
-    <div class="form-check form-switch">
-       <input class="form-check-input attendance-switch" type="checkbox"
-            {{ $diemDanh && $diemDanh->trang_thai == 'co_mat' ? 'checked' : '' }}
-                onchange="
-        this.closest('form').querySelector('.trang-thai-input').value =
-            this.checked ? 'co_mat' : 'vang_mat';
-
-        this.closest('form').submit();
-    "
->
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input attendance-switch" type="checkbox"
+                                        {{ $diemDanh && $diemDanh->trang_thai == 'co_mat' ? 'checked' : '' }}
+                                            onchange="this.closest('form').querySelector('.trang-thai-input').value =this.checked ? 'co_mat' : 'vang_mat';
+                                        this.closest('form').submit();">
+                                    </div>
+                                </form>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+                @endforeach
+            </tbody>
+        </table>
     </div>
-</form>
+</div>
 
-@endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    <div class="card shadow-sm mt-4">
+        <div class="card-header">
+            <strong>Chốt điểm danh</strong>
         </div>
 
-        <div class="card shadow-sm mt-4">
-            <div class="card-header">
-                <strong>Chốt điểm danh</strong>
+    <div class="card-body">
+        <form action="{{ route('Guide.checkin.chotDiemDanh') }}" method="POST">
+        @csrf
+            <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
+            <input type="hidden" name="ngay_thu" value="{{ $ngayThu }}">
+            <div class="mb-3">
+                 <label class="form-label">Ghi chú</label>
+                        <textarea name="ghi_chu" class="form-control" rows="4"placeholder="Nhập ghi chú nếu có..."></textarea>
             </div>
 
-            <div class="card-body">
-                <form action="{{ route('Guide.checkin.chotDiemDanh') }}" method="POST">
-                    @csrf
-
-                    <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
-
-                    <input type="hidden" name="ngay_thu" value="{{ $ngayThu }}">
-
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Ghi chú
-                        </label>
-
-                        <textarea name="ghi_chu" class="form-control" rows="4"
-                            placeholder="Nhập ghi chú nếu có..."></textarea>
-                    </div>
-
                     @if(!$daChot)
-    <button
-        type="submit"
-        class="btn btn-success btn-lg px-5"
-    >
-        <i class="fas fa-check-circle me-2"></i>
-        Chốt điểm danh
-    </button>
-@else
-    <button
-        type="button"
-        class="btn btn-secondary btn-lg px-5"
-        disabled
-    >
-        <i class="fas fa-lock me-2"></i>
-        Đã chốt điểm danh
-    </button>
-@endif
+                        <button type="submit" class="btn btn-success btn-lg px-5">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Chốt điểm danh
+                        </button>
+                    @else
+                        <button type="button" class="btn btn-secondary btn-lg px-5"disable>
+                            <i class="fas fa-lock me-2"></i>
+                            Đã chốt điểm danh
+                        </button>
+                    @endif
                 </form>
             </div>
         </div>

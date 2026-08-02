@@ -850,6 +850,7 @@
 
                         // Tạo lại form theo đúng số lượng
                         generatePassengers();
+                        updatePrice();
                         // Đổ dữ liệu từ Excel vào từng form hành khách
                         let adultIndex = 0;
                         let childIndex = adult;

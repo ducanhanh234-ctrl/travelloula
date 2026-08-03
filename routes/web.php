@@ -176,7 +176,6 @@ Route::prefix('lien-he')->name('Client.lien_he.')->group(function () {
     // Gửi liên hệ
     Route::post('/', [ClientLienHeController::class, 'store'])
         ->name('store');
-
 });
 /*
 |--------------------------------------------------------------------------
@@ -383,19 +382,18 @@ Route::prefix('Admin')
             ->name('lien_hes.')
             ->group(function () {
 
-            Route::get('/', [AdminLienHeController::class, 'index'])
-                ->name('index');
+                Route::get('/', [AdminLienHeController::class, 'index'])
+                    ->name('index');
 
-            Route::get('/{id}', [AdminLienHeController::class, 'show'])
-                ->name('show');
+                Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                    ->name('show');
 
-            Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
-                ->name('read');
+                Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
+                    ->name('read');
 
-            Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
-                ->name('destroy');
-
-        });
+                Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                    ->name('destroy');
+            });
         Route::patch(
             '{id}/unread',
             [AdminLienHeController::class, 'markUnread']
@@ -431,7 +429,6 @@ Route::prefix('Admin')
                 // Xóa
                 Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
                     ->name('destroy');
-
             });
 
         /*
@@ -491,7 +488,8 @@ Route::prefix('Guide')
 
         Route::get('/check-in/{lichKhoiHanh}/{chiTiet}', [CheckInController::class, 'show'])
             ->name('checkin.show');
-        Route::post('/check-in', [CheckInController::class, 'checkIn'])->name('checkin.store');
+        Route::post('/check-in', [CheckInController::class, 'checkIn'])
+            ->name('checkin.store');
         Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])->name('checkout');
         Route::post('/check-in/checkin-tat-ca', [CheckInController::class, 'checkInTatCa'])
             ->name('checkin.checkinTatCa');
@@ -512,6 +510,8 @@ Route::prefix('Guide')
         Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
             ->name('checkin.saveLock');
 
+        Route::post('/check-in/{lichKhoiHanh}/finish-tour',[CheckInController::class, 'finishTour'])
+            ->name('checkin.finishTour');
 
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
@@ -557,7 +557,7 @@ Route::prefix('Guide')
         // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
-    
+
 
         Route::get(
             '/checkin/{lichKhoiHanh}/xuat-phat',
@@ -569,13 +569,13 @@ Route::prefix('Guide')
             [CheckInController::class, 'storeXuatPhat']
         )->name('checkin.storeXuatPhat');
 
-        Route::get(
-            '/checkin/{lichKhoiHanh}/ket-thuc',
-            [CheckInController::class, 'showKetThuc']
-        )->name('checkin.ketThuc');
+        // Route::get(
+        //     '/checkin/{lichKhoiHanh}/ket-thuc',
+        //     [CheckInController::class, 'showKetThuc']
+        // )->name('checkin.ketThuc');
 
-        Route::post(
-            '/checkin/{lichKhoiHanh}/ket-thuc',
-            [CheckInController::class, 'storeKetThuc']
-        )->name('checkin.storeKetThuc');
+        // Route::post(
+        //     '/checkin/{lichKhoiHanh}/ket-thuc',
+        //     [CheckInController::class, 'storeKetThuc']
+        // )->name('checkin.storeKetThuc');
     });

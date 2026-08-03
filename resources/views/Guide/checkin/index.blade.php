@@ -2,23 +2,15 @@
 @section('title', 'Check-in hành khách')
 @section('guide', 'Check-in hành khách')
 @section('breadcrumb')
-<li class="breadcrumb-item active">
-    Check-in hành khách
-</li>
+<li class="breadcrumb-item active">Check-in hành khách</li>
 @endsection
-
 @section('title', 'Check-in hành khách')
-
 @section('guide', 'Check-in hành khách')
-
 @section('breadcrumb')
-<li class="breadcrumb-item active">
-    Check-in hành khách
-</li>
+<li class="breadcrumb-item active">Check-in hành khách</li>
 @endsection
 
 @section('content')
-
 <style>
     :root {
         --checkin-primary: #315be8;
@@ -603,10 +595,7 @@
 
             <div>
                 <h2>Check-in hành khách</h2>
-
-                <p>
-                    Theo dõi các Tour được phân công và thực hiện điểm danh.
-                </p>
+                <p>Theo dõi các Tour được phân công và thực hiện điểm danh.</p>
             </div>
         </div>
 
@@ -627,15 +616,9 @@
                 <div>
                     <h4>Danh sách lịch khởi hành</h4>
 
-                    <p>
-                        Chọn lịch khởi hành để tiếp tục chọn địa điểm Check-in.
-
-                    </p>
+                    <p>Chọn lịch khởi hành để tiếp tục chọn địa điểm Check-in.</p>
                 </div>
             </div>
-
-
-
         </div>
 
         @if ($lichKhoiHanhs->isEmpty())
@@ -644,10 +627,7 @@
                 <i class="fas fa-calendar-times"></i>
             </div>
 
-            <div class="checkin-empty-title">
-                Chưa có lịch khởi hành
-            </div>
-
+            <div class="checkin-empty-title">Chưa có lịch khởi hành</div>
             <div class="checkin-empty-text">
                 Hiện tại bạn chưa được phân công lịch khởi hành nào.
                 Các lịch được phân công sẽ xuất hiện tại đây.
@@ -684,15 +664,10 @@
 
                                 <div>
                                     <div class="checkin-tour-name">
-                                        {{
-                                                        $lich->tour->ten_tour
-                                                        ?? 'Không xác định'
-                                                    }}
+                                        {{$lich->tour->ten_tour ?? 'Không xác định'}}
                                     </div>
 
-                                    <div class="checkin-tour-label">
-                                        Lịch khởi hành #{{ $lich->id }}
-                                    </div>
+                                    <div class="checkin-tour-label">Lịch khởi hành #{{ $lich->id }}</div>
                                 </div>
                             </div>
                         </td>
@@ -700,15 +675,10 @@
                         <td>
                             <span class="checkin-date">
                                 <i class="fas fa-plane-departure"></i>
-
                                 @if ($lich->ngay_khoi_hanh)
-                                {{
-                                                    \Carbon\Carbon::parse(
-                                                        $lich->ngay_khoi_hanh
-                                                    )->format('d/m/Y')
-                                                }}
+                                    {{\Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y')}}
                                 @else
-                                Chưa cập nhật
+                                    Chưa cập nhật
                                 @endif
                             </span>
                         </td>
@@ -718,13 +688,9 @@
                                 <i class="fas fa-flag-checkered"></i>
 
                                 @if ($lich->ngay_ket_thuc)
-                                {{
-                                                    \Carbon\Carbon::parse(
-                                                        $lich->ngay_ket_thuc
-                                                    )->format('d/m/Y')
-                                                }}
+                                    {{\Carbon\Carbon::parse($lich->ngay_ket_thuc)->format('d/m/Y')}}
                                 @else
-                                Chưa cập nhật
+                                    Chưa cập nhật
                                 @endif
                             </span>
                         </td>
@@ -734,10 +700,7 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route(
-                                                'Guide.checkin.dia-diem',
-                                                $lich->id
-                                            ) }}" class="btn-select-location">
+                            <a href="{{ route('Guide.checkin.dia-diem',$lich->id) }}" class="btn-select-location">
                                 <i class="fas fa-map-marker-alt"></i>
                                 Chọn địa điểm
                             </a>
@@ -764,5 +727,4 @@
         @endif
     </div>
 </div>
-
 @endsection

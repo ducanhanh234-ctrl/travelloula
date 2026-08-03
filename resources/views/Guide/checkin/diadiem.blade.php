@@ -968,7 +968,7 @@
             <form action="{{ route('Guide.checkin.saveLock', $lichKhoiHanh->id) }}" method="POST">
                 @csrf
                 <input type="hidden" name="ngay_thu" value="{{ $ngay->ngay_thu }}">
-                <input type="hidden" name="action" value="CONFIRM_KET_THUC">
+                <input type="hidden" name="action" value="CONFIRM_KET_THUC_NGAY">
 
                 <button type="submit" class="btn-location-checkin">
                     Chốt ngày
@@ -1030,30 +1030,35 @@
                             </div>
                         </div>
 
-                        <div class="location-place-action">
-                            @if($finishDone)
-                                <button class="btn-location-checkin btn-success" disabled>
-                                    <i class="fas fa-check-circle"></i>
-                                    Đã check-in
-                                </button>
+                        @if($finishDone)
 
-                            @elseif($finishExpired)
-                                <a href="{{route('Guide.checkin.ketThuc', $lichKhoiHanh->id) }}"
-                                    class="btn-location-checkin btn-closed">
-                                    <i class="fas fa-lock"></i>
-                                    Đã đóng
-                                </a>
-                            @elseif($finishCanCheckIn)
-                                <a href="{{ route('Guide.checkin.ketThuc', $lichKhoiHanh->id) }}" class="btn-location-checkin">
-                                    <i class="fas fa-user-check"></i>
-                                    Check-in
-                                </a>
-                            @else
-                                <button class="btn-location-checkin disabled" disabled>
-                                    <i class="fas fa-clock"></i>
-                                    Chưa đến giờ
-                                </button>
-                            @endif
+    <button class="btn-location-checkin btn-success" disabled>
+        <i class="fas fa-lock"></i>
+        Đã chốt
+    </button>
+
+
+@elseif($finishCanCheckIn)
+
+    <form action="{{ route('Guide.checkin.finishTour', $lichKhoiHanh->id) }}" method="POST">
+    @csrf
+
+    <button type="submit" class="btn-location-checkin">
+        <i class="fas fa-check"></i>
+        Xác nhận kết thúc tour
+    </button>
+</form>
+
+
+@else
+
+    <button class="btn-location-checkin disabled" disabled>
+        <i class="fas fa-clock"></i>
+        Chưa đến giờ
+    </button>
+
+@endif
+
                         </div>
                     </div>
                 </div>

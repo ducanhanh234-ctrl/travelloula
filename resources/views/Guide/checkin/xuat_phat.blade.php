@@ -1,14 +1,9 @@
 @extends('Layouts.guide')
-
 @section('title', 'Check-in hành khách')
-
 @section('guide', 'Check-in hành khách')
-
 @section('breadcrumb')
 <li class="breadcrumb-item">
-    <a href="{{ route('Guide.checkin.index') }}">
-        Check-in
-    </a>
+    <a href="{{ route('Guide.checkin.index') }}">Check-in</a>
 </li>
 
 <li class="breadcrumb-item active">
@@ -1143,14 +1138,9 @@
 </style>
 
 @php
-$phanTramCheckIn = $tongKhach > 0
-? round(($daCheck / $tongKhach) * 100)
-: 0;
+$phanTramCheckIn = $tongKhach > 0 ? round(($daCheck / $tongKhach) * 100): 0;
 
-$phanTramCheckIn = min(
-max($phanTramCheckIn, 0),
-100
-);
+$phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
 @endphp
 
 <div class="checkin-page fade-in">
@@ -1163,17 +1153,11 @@ max($phanTramCheckIn, 0),
 
             <div>
                 <h2>Check-in hành khách</h2>
-
-                <p>
-                    {{ $chiTiet->tieu_de ?? 'Điểm tham quan' }}
-                </p>
+                <p>{{ $chiTiet->tieu_de ?? 'Điểm tham quan' }}</p>
             </div>
         </div>
 
-        <a href="{{ route(
-                    'Guide.checkin.dia-diem',
-                    $lichKhoiHanhId
-                ) }}" class="btn-checkin-back">
+        <a href="{{ route('Guide.checkin.dia-diem', $lichKhoiHanhId) }}" class="btn-checkin-back">
             <i class="fas fa-arrow-left"></i>
             Quay lại
         </a>
@@ -1193,13 +1177,7 @@ max($phanTramCheckIn, 0),
                     </div>
 
                     <div class="checkin-info-value">
-                        {{
-                                $chiTiet
-                                    ->lichTrinh
-                                    ->tour
-                                    ->ten_tour
-                                ?? 'Không xác định'
-                            }}
+                        {{$chiTiet ->lichTrinh ->tour ->ten_tour ?? 'Không xác định'}}
                     </div>
                 </div>
             </div>
@@ -1226,17 +1204,9 @@ max($phanTramCheckIn, 0),
                 </span>
 
                 <div class="checkin-info-content">
-                    <div class="checkin-info-label">
-                        Ngày Tour
-                    </div>
-
+                    <div class="checkin-info-label">Ngày Tour</div>
                     <div class="checkin-info-value">
-                        Ngày {{
-                                $chiTiet
-                                    ->lichTrinh
-                                    ->ngay_thu
-                                ?? '-'
-                            }}
+                        Ngày {{$chiTiet->lichTrinh->ngay_thu?? '-'}}
                     </div>
                 </div>
             </div>
@@ -1247,9 +1217,7 @@ max($phanTramCheckIn, 0),
                 </span>
 
                 <div class="checkin-info-content">
-                    <div class="checkin-info-label">
-                        Thời gian
-                    </div>
+                    <div class="checkin-info-label">Thời gian</div>
 
                     <div class="checkin-info-value">
                         {{ $chiTiet->gio_bat_dau ?? '--:--' }}
@@ -1269,13 +1237,9 @@ max($phanTramCheckIn, 0),
             </span>
 
             <div class="checkin-stat-content">
-                <div class="checkin-stat-value">
-                    {{ $tongKhach }}
-                </div>
+                <div class="checkin-stat-value">{{ $tongKhach }}</div>
 
-                <div class="checkin-stat-label">
-                    Tổng hành khách
-                </div>
+                <div class="checkin-stat-label">Tổng hành khách</div>
             </div>
         </div>
 
@@ -1339,9 +1303,7 @@ max($phanTramCheckIn, 0),
     <div class="checkin-alert checkin-alert-success" role="alert">
         <i class="fas fa-check-circle"></i>
 
-        <span>
-            {{ session('success') }}
-        </span>
+        <span>{{ session('success') }}</span>
 
         <button type="button" class="checkin-alert-close" onclick="this.parentElement.remove();" aria-label="Đóng">
             <i class="fas fa-times"></i>
@@ -1353,10 +1315,7 @@ max($phanTramCheckIn, 0),
     <div class="checkin-alert checkin-alert-danger" role="alert">
         <i class="fas fa-exclamation-circle"></i>
 
-        <span>
-            {{ session('error') }}
-        </span>
-
+        <span>{{ session('error') }}</span>
         <button type="button" class="checkin-alert-close" onclick="this.parentElement.remove();" aria-label="Đóng">
             <i class="fas fa-times"></i>
         </button>
@@ -1367,11 +1326,8 @@ max($phanTramCheckIn, 0),
     <div class="checkin-main-actions">
         <form action="{{ route('Guide.checkin.checkinTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn Check-in tất cả hành khách?');">
             @csrf
-
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
-
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
             <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !$canCheckIn ? 'disabled' : '' }} title="{{ ! $canCheckIn && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                 <i class="fas fa-user-check"></i>
                 Check-in tất cả
@@ -1380,11 +1336,8 @@ max($phanTramCheckIn, 0),
 
         <form action="{{ route('Guide.checkin.checkoutTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn Check-out tất cả hành khách?');">
             @csrf
-
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
-
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
             <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-sign-out-alt"></i>
                 Check-out tất cả
@@ -1392,11 +1345,8 @@ max($phanTramCheckIn, 0),
         </form>
         <form action="{{ route('Guide.checkin.undoTatCa') }}" method="POST" onsubmit="return confirm('Bạn có chắc muốn hoàn tác tất cả trạng thái Check-in và Check-out của hành khách?');">
             @csrf
-
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
-
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
             <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-rotate-left"></i>
                 Hoàn tác tất cả
@@ -1432,23 +1382,20 @@ max($phanTramCheckIn, 0),
 
                 <tbody>
                     @php
-                    $stt = 1;
+                        $stt = 1;
                     @endphp
 
                     @if ($tongKhach > 0)
                     @foreach ($datTours as $datTour)
                     @foreach ($datTour->khachHangs as $khach)
+
                     @php
-                    $checkIn =
-                    $checkIns[$khach->id]
-                    ?? null;
+                        $checkIn = $checkIns[$khach->id] ?? null;
                     @endphp
 
                     <tr>
                         <td>
-                            <span class="checkin-number">
-                                {{ $stt++ }}
-                            </span>
+                            <span class="checkin-number">{{ $stt++ }}</span>
                         </td>
 
                         <td>
@@ -1458,13 +1405,9 @@ max($phanTramCheckIn, 0),
                                 </span>
 
                                 <div>
-                                    <div class="checkin-customer-name" title="{{ $khach->ho_ten }}">
-                                        {{ $khach->ho_ten }}
-                                    </div>
+                                    <div class="checkin-customer-name" title="{{ $khach->ho_ten }}">{{ $khach->ho_ten }}</div>
 
-                                    <div class="checkin-customer-label">
-                                        Hành khách
-                                    </div>
+                                    <div class="checkin-customer-label">Hành khách</div>
                                 </div>
                             </div>
                         </td>
@@ -1472,111 +1415,76 @@ max($phanTramCheckIn, 0),
                         <td>
                             <span class="checkin-phone">
                                 <i class="fas fa-phone-alt"></i>
-
-                                {{
-                                                    $khach->so_dien_thoai
-                                                    ?: 'Chưa cập nhật'
-                                                }}
+                                {{$khach->so_dien_thoai ?: 'Chưa cập nhật'}}
                             </span>
                         </td>
 
                         <td>
-                            @if (
-                            !$checkIn ||
-                            $checkIn->trang_thai
-                            === 'chua_check_in'
-                            )
-                            <span class="checkin-status checkin-status-waiting">
-                                <span class="checkin-status-dot"></span>
-                                Chưa Check-in
-                            </span>
-                            @elseif (
-                            $checkIn->trang_thai
-                            === 'da_check_in'
-                            )
-                            <span class="checkin-status checkin-status-checked">
-                                <span class="checkin-status-dot"></span>
-                                Đã Check-in
-                            </span>
+                            @if (!$checkIn || $checkIn->trang_thai === 'chua_check_in')
+                                <span class="checkin-status checkin-status-waiting">
+                                    <span class="checkin-status-dot"></span>
+                                        Chưa Check-in
+                                </span>
+                            @elseif ($checkIn->trang_thai === 'da_check_in')
+                                <span class="checkin-status checkin-status-checked">
+                                    <span class="checkin-status-dot"></span>
+                                    Đã Check-in
+                                </span>
                             @else
-                            <span class="checkin-status checkin-status-checkout">
-                                <span class="checkin-status-dot"></span>
-                                Đã Check-out
-                            </span>
+                                <span class="checkin-status checkin-status-checkout">
+                                    <span class="checkin-status-dot"></span>
+                                    Đã Check-out
+                                </span>
                             @endif
                         </td>
 
                         <td>
-                            @if (
-                            $checkIn &&
-                            $checkIn->ghi_chu
-                            )
-                            <div class="checkin-note">
-                                <i class="fas fa-sticky-note me-1"></i>
-                                {{ $checkIn->ghi_chu }}
-                            </div>
+                            @if ($checkIn && $checkIn->ghi_chu )
+                                <div class="checkin-note">
+                                    <i class="fas fa-sticky-note me-1"></i>
+                                        {{ $checkIn->ghi_chu }}
+                                </div>
                             @else
-                            <span class="checkin-note-empty">
-                                Chưa có ghi chú
-                            </span>
+                                <span class="checkin-note-empty">Chưa có ghi chú</span>
                             @endif
                         </td>
 
                         <td>
                             @if ($checkinExpired ?? false)
-                            <div class="checkin-row-actions">
-                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="Đã đóng">
-                                    <i class="fas fa-user-check"></i>
-                                    Đã đóng
-                                </button>
-                            </div>
-                            @elseif (
-                            !$checkIn ||
-                            $checkIn->trang_thai
-                            === 'chua_check_in'
-                            )
-                            <div class="checkin-row-actions">
-                                @if($canCheckIn)
-                                <form action="{{ route('Guide.checkin.store') }}" method="POST">
-                                    @csrf
-
-                                    <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
-
-                                    <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
-
-                                    <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
-                                    <button type="submit" class="btn-checkin-row btn-row-checkin">
+                                <div class="checkin-row-actions">
+                                    <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="Đã đóng">
                                         <i class="fas fa-user-check"></i>
-                                        Check-in
+                                        Đã đóng
                                     </button>
-                                </form>
-                                @else
-                                <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}">
-                                    <i class="fas fa-user-check"></i>
-                                    {{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}
-                                </button>
-                                @endif
+                                </div>
+                            @elseif (!$checkIn || $checkIn->trang_thai === 'chua_check_in' )
+                                <div class="checkin-row-actions">
+                                    @if($canCheckIn)
+                                        <form action="{{ route('Guide.checkin.store') }}" method="POST">
+                                            @csrf
+                                                <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
+                                                <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
+                                                <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <button type="submit" class="btn-checkin-row btn-row-checkin">
+                                                <i class="fas fa-user-check"></i>
+                                                Check-in
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}">
+                                            <i class="fas fa-user-check"></i>
+                                                {{ ($checkinExpired ?? false) ? 'Đã đóng' : 'Chưa đến giờ' }}
+                                        </button>
+                                    @endif
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
-                                    <i class="fas fa-pen"></i>
-                                    {{
-                                                            $checkIn &&
-                                                            $checkIn->ghi_chu
-                                                                ? 'Sửa ghi chú'
-                                                                : 'Ghi chú'
-                                                        }}
-                                </button>
-                            </div>
-                            @elseif (
-                            $checkIn->trang_thai
-                            === 'da_check_in'
-                            )
+                                    <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}">
+                                        <i class="fas fa-pen"></i>
+                                            {{$checkIn && $checkIn->ghi_chu ? 'Sửa ghi chú' : 'Ghi chú'}}
+                                    </button>
+                                </div>
+                            @elseif ($checkIn->trang_thai === 'da_check_in' )
                             <div class="checkin-row-actions">
-                                <form action="{{ route(
-                                                            'Guide.checkout',
-                                                            $checkIn->id
-                                                        ) }}" method="POST">
+                                <form action="{{ route('Guide.checkout', $checkIn->id) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
 
@@ -1586,12 +1494,8 @@ max($phanTramCheckIn, 0),
                                     </button>
                                 </form>
 
-                                <form action="{{ route(
-                                                            'Guide.checkin.undo',
-                                                            $checkIn->id
-                                                        ) }}" method="POST">
+                                <form action="{{ route('Guide.checkin.undo', $checkIn->id) }}" method="POST">
                                     @csrf
-
                                     <button type="submit" class="btn-checkin-row btn-row-undo" title="Hoàn tác Check-in" onclick="return confirm('Hoàn tác trạng thái Check-in của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
                                         <i class="fas fa-rotate-left"></i>
                                     </button>
@@ -1602,49 +1506,39 @@ max($phanTramCheckIn, 0),
                                     Ghi chú
                                 </button>
                             </div>
-                            @elseif (
-                            $checkIn->trang_thai
-                            === 'da_check_out'
-                            )
-                            <div class="checkin-row-actions">
-                                <form action="{{ route(
-                                                            'Guide.checkout.undo',
-                                                            $checkIn->id
-                                                        ) }}" method="POST">
+
+                            @elseif($checkIn->trang_thai=== 'da_check_out')
+                                <div class="checkin-row-actions">
+                                    <form action="{{ route('Guide.checkout.undo', $checkIn->id) }}" method="POST">
                                     @csrf
 
-                                    <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
-                                        <i class="fas fa-rotate-left"></i>
-                                        Hoàn tác
-                                    </button>
-                                </form>
+                                        <button type="submit" class="btn-checkin-row btn-row-checkout-undo" onclick="return confirm('Hoàn tác trạng thái Check-out của hành khách này?');" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
+                                            <i class="fas fa-rotate-left"></i>
+                                            Hoàn tác
+                                        </button>
+                                    </form>
 
-                                <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
-                                    <i class="fas fa-pen"></i>
-                                    Ghi chú
-                                </button>
-                            </div>
+                                    <button type="button" class="btn-checkin-row btn-row-note" data-bs-toggle="modal" data-bs-target="#ghiChuModal{{ $khach->id }}" {{ ($checkinExpired ?? false) ? 'disabled' : '' }}>
+                                        <i class="fas fa-pen"></i>
+                                        Ghi chú
+                                    </button>
+                                </div>
                             @endif
                         </td>
                     </tr>
                     @endforeach
                     @endforeach
                     @else
-                    <tr>
-                        <td colspan="6" class="checkin-empty-row">
-                            <div class="checkin-empty-icon">
-                                <i class="fas fa-users-slash"></i>
-                            </div>
+                        <tr>
+                            <td colspan="6" class="checkin-empty-row">
+                                <div class="checkin-empty-icon">
+                                    <i class="fas fa-users-slash"></i>
+                                </div>
 
-                            <div class="checkin-empty-title">
-                                Chưa có hành khách
-                            </div>
-
-                            <div class="checkin-empty-text">
-                                Chưa có hành khách trong lịch khởi hành này.
-                            </div>
-                        </td>
-                    </tr>
+                                <div class="checkin-empty-title">Chưa có hành khách</div>
+                                <div class="checkin-empty-text">Chưa có hành khách trong lịch khởi hành này.</div>
+                            </td>
+                        </tr>
                     @endif
                 </tbody>
             </table>
@@ -1677,17 +1571,13 @@ $checkIn = $checkIns[$khach->id] ?? null;
                 </div>
 
                 <div class="modal-body">
-                    <div class="checkin-modal-customer">
-                        <i class="fas fa-user"></i>
+                    <div class="checkin-modal-customer"><i class="fas fa-user"></i>
                         {{ $khach->ho_ten }}
                     </div>
 
                     <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
-
                     <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
-
                     <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
-
                     <label for="ghi_chu_{{ $khach->id }}" class="form-label fw-semibold">
                         Nội dung ghi chú
                     </label>

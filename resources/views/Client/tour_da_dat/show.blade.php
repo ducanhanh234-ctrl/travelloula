@@ -99,7 +99,7 @@
                                             Đã hủy
                                         </span>
                                     @break
-
+                                    
                                     @default
                                         <span class="badge bg-secondary">
                                             {{ $datTour->trang_thai }}
@@ -161,7 +161,11 @@
                                             Đã hủy
                                         </span>
                                     @break
-
+@case('dat_coc')
+                                        <span class="badge bg-warning">
+                                            Đặt Cọc
+                                        </span>
+                                    @break
                                     @default
                                         <span class="badge bg-secondary">
                                             {{ $thanhToan->trang_thai }}

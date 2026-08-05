@@ -31,17 +31,36 @@
 
     <p><strong>Mã giao dịch:</strong> {{ $payment->ma_giao_dich }}</p>
 
-    <p><strong>Khách hàng:</strong> {{ $payment->datTour->NguoiDung->name }}</p>
+    <p><strong>Khách hàng:</strong> {{ optional($booking?->nguoiDung)->name ?? optional($payment->datTour?->nguoiDung)->name }}</p>
 
-    <p><strong>Email:</strong> {{ $payment->datTour->NguoiDung->email }}</p>
+    <p><strong>Email:</strong> {{ optional($booking?->nguoiDung)->email ?? optional($payment->datTour?->nguoiDung)->email }}</p>
 
-    <p><strong>Tour:</strong> {{ $payment->datTour->tour->ten_tour }}</p>
+    <p><strong>Tour:</strong> {{ optional($booking?->tour)->ten_tour ?? optional($payment->datTour?->tour)->ten_tour }}</p>
 
-    <p><strong>Ngày khởi hành:</strong> {{ $payment->datTour->lichKhoiHanh->ngay_khoi_hanh }}</p>
+    <p><strong>Ngày khởi hành:</strong> {{ optional($booking?->lichKhoiHanh)->ngay_khoi_hanh ?? optional($payment->datTour?->lichKhoiHanh)->ngay_khoi_hanh }}</p>
 
-    <p><strong>Tổng tiền:</strong>
-        {{ number_format($payment->datTour->tong_tien) }} VNĐ
-    </p>
+    <p>
+    <strong>Tổng tiền đơn hàng:</strong>
+    {{ number_format($payment->datTour->tong_tien) }} VNĐ
+</p>
+
+<p>
+    <strong>Số tiền giao dịch:</strong>
+    {{ number_format($payment->so_tien) }} VNĐ
+</p>
+
+<p>
+    <strong>Đã thanh toán:</strong>
+    {{ number_format($payment->datTour->so_tien_da_thanh_toan) }} VNĐ
+</p>
+
+<p>
+    <strong>Còn lại:</strong>
+    {{ number_format(max(
+        $payment->datTour->tong_tien - $payment->datTour->so_tien_da_thanh_toan,
+        0
+    )) }} VNĐ
+</p>
 
 </body>
 </html>

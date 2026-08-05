@@ -1132,7 +1132,7 @@
                         <td>
                             <span class="payment-amount">
                                 {{ number_format(
-                                            $thanh_toan->so_tien ?? 0,
+                                            $thanh_toan->datTour->tong_tien ?? 0,
                                             0,
                                             ',',
                                             '.'
@@ -1176,6 +1176,11 @@
                             <span class="payment-status payment-status-refund">
                                 <span class="payment-status-dot"></span>
                                 Hoàn tiền
+                            </span>
+                            @elseif ($thanh_toan->trang_thai === 'dat_coc')
+                            <span class="payment-status payment-status-refund">
+                                <span class="payment-status-dot"></span>
+                               Đặt Cọc
                             </span>
                             @else
                             <span class="payment-status payment-status-unknown">

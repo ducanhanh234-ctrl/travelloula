@@ -157,6 +157,8 @@ Route::resource('tour_da_dat', TourDaDatController::class);
 
 Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])->name('vnpay.return');
+Route::get('/vnpay/payment-con-lai/{id}', [ThanhToanController::class, 'paymentConLai'])
+    ->name('vnpay.payment.remain');
 Route::post(
     '/admin/thanh-toan/{id}/gui-hoa-don',
     [ThanhToanController::class, 'guiHoaDon']

@@ -540,7 +540,7 @@ const tourTitle = {!! $tourTitleJs !!};
 
     function syncDepositSelection() {
         const selectedDeposit = document.querySelector(
-            '#summaryModalContent input[name="phan_tram_thanh_toan"]:checked'
+            '#summaryModalContent input[name="phan_tram_modal"]:checked'
         );
 
         if (elInputDepositPercent) {

@@ -294,11 +294,6 @@ if (!$payment) {
                 ->whereIn('trang_thai', ['da_thanh_toan', 'dat_coc'])
                 ->sum('so_tien');
 
-            $paymentAmount = (float) $payment->so_tien;
-            if ($paymentAmount > 0 && $daThanhToan < $booking->tong_tien) {
-                $daThanhToan = $daThanhToan + $paymentAmount;
-            }
-
             $paymentStatus = 'da_thanh_toan';
             if ($daThanhToan < $booking->tong_tien) {
                 $paymentStatus = 'dat_coc';
@@ -416,13 +411,22 @@ if (!$payment) {
             return back()->with('error', 'Đơn này đã thanh toán đủ.');
         }
 
-        $payment = ThanhToan::where('dat_tour_id', $datTour->id)
+        $lastPayment = ThanhToan::where('dat_tour_id', $datTour->id)
             ->latest()
             ->first();
 
-        if (!$payment) {
+        if (!$lastPayment) {
             return back()->with('error', 'Không tìm thấy giao dịch thanh toán cho đơn này.');
         }
+
+        $payment = ThanhToan::create([
+            'dat_tour_id' => $datTour->id,
+            'nguoi_dung_id' => $lastPayment->nguoi_dung_id,
+            'phuong_thuc_thanh_toan' => $lastPayment->phuong_thuc_thanh_toan,
+            'so_tien' => $amount,
+            'trang_thai' => 'cho_thanh_toan',
+            'ghi_chu' => 'Thanh toán phần còn lại',
+        ]);
 
         $vnp_TmnCode    = config('services.vnpay.tmn_code');
         $vnp_HashSecret = trim(config('services.vnpay.hash_secret'));

@@ -4,271 +4,1505 @@
 
 @section('content')
 
-<div class="container py-5">
+@php
+    $bookingStatus = match($datTour->trang_thai) {
+        'cho_xac_nhan' => [
+            'label' => 'Chờ xác nhận',
+            'class' => 'status-waiting',
+            'icon' => 'fa-clock',
+        ],
+        'da_xac_nhan' => [
+            'label' => 'Đã xác nhận',
+            'class' => 'status-confirmed',
+            'icon' => 'fa-circle-check',
+        ],
+        'da_thanh_toan' => [
+            'label' => 'Đã thanh toán',
+            'class' => 'status-paid',
+            'icon' => 'fa-wallet',
+        ],
+        'da_huy' => [
+            'label' => 'Đã hủy',
+            'class' => 'status-cancelled',
+            'icon' => 'fa-circle-xmark',
+        ],
+        default => [
+            'label' => $datTour->trang_thai,
+            'class' => 'status-default',
+            'icon' => 'fa-circle-info',
+        ],
+    };
+@endphp
 
-    <div class="mb-4">
-        <a href="{{ route('tour_da_dat.index') }}" class="btn btn-secondary">
-            ← Quay lại
-        </a>
-    </div>
+<div class="booking-detail-page">
+    <div class="booking-detail-container">
 
-    <div class="card shadow-sm">
+        <div class="booking-topbar">
+            <a href="{{ route('tour_da_dat.index') }}" class="back-button">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại tour đã đặt
+            </a>
 
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">
-                Chi tiết đơn đặt tour
-            </h3>
+            <span class="booking-code-top">
+                <span>Mã đơn</span>
+                <strong>{{ $datTour->ma_dat_tour }}</strong>
+            </span>
         </div>
 
-        <div class="card-body">
+        <section class="booking-detail-hero">
+            <div class="hero-copy">
+                <span class="hero-kicker">
+                    <i class="fa-solid fa-file-invoice"></i>
+                    Thông tin đơn hàng
+                </span>
 
-            <div class="row">
+                <h1>Chi tiết đặt tour</h1>
 
-                <div class="col-md-6">
+                <p>
+                    Theo dõi thông tin chuyến đi, trạng thái thanh toán và danh sách
+                    hành khách trong đơn đặt tour của bạn.
+                </p>
+            </div>
 
-                    <table class="table">
+            <div class="hero-status {{ $bookingStatus['class'] }}">
+                <i class="fa-solid {{ $bookingStatus['icon'] }}"></i>
 
-                        <tr>
-                            <th>Mã đặt tour</th>
-                            <td>{{ $datTour->ma_dat_tour }}</td>
-                        </tr>
+                <div>
+                    <span>Trạng thái hiện tại</span>
+                    <strong>{{ $bookingStatus['label'] }}</strong>
+                </div>
+            </div>
+        </section>
 
-                        <tr>
-                            <th>Tên tour</th>
-                            <td>{{ $datTour->tour->ten_tour }}</td>
-                        </tr>
+        <div class="booking-detail-grid">
 
-                        <tr>
-                            <th>Ngày khởi hành</th>
-                            <td>
-                                {{ \Carbon\Carbon::parse($datTour->lichKhoiHanh->ngay_khoi_hanh)->format('d/m/Y') }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Ngày kết thúc</th>
-                            <td>
-                                {{ \Carbon\Carbon::parse($datTour->lichKhoiHanh->ngay_ket_thuc)->format('d/m/Y') }}
-                            </td>
-                        </tr>
+            {{-- THÔNG TIN ĐƠN TOUR --}}
+            <section class="detail-panel booking-main-panel">
+                <div class="panel-heading">
+                    <div class="panel-icon">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
 
-                        <tr>
-                            <th>Người lớn</th>
-                            <td>{{ $datTour->so_nguoi_lon }}</td>
-                        </tr>
-
-                        <tr>
-                            <th>Trẻ em</th>
-                            <td>{{ $datTour->so_tre_em }}</td>
-                        </tr>
-
-                        
-
-                        <tr>
-                            <th>Tổng tiền</th>
-                            <td class="text-danger fw-bold">
-                                {{ number_format($datTour->tong_tien,0,',','.') }} đ
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <th>Trạng thái</th>
-                            <td>
-
-                                @switch($datTour->trang_thai)
-
-                                    @case('cho_xac_nhan')
-                                        <span class="badge bg-warning">
-                                            Chờ xác nhận
-                                        </span>
-                                    @break
-
-                                    @case('da_xac_nhan')
-                                        <span class="badge bg-info">
-                                            Đã xác nhận
-                                        </span>
-                                    @break
-
-                                    @case('da_thanh_toan')
-                                        <span class="badge bg-success">
-                                            Đã thanh toán
-                                        </span>
-                                    @break
-
-                                    @case('da_huy')
-                                        <span class="badge bg-danger">
-                                            Đã hủy
-                                        </span>
-                                    @break
-                                    
-                                    @default
-                                        <span class="badge bg-secondary">
-                                            {{ $datTour->trang_thai }}
-                                        </span>
-
-                                @endswitch
-
-                            </td>
-                        </tr>
-
-                    </table>
-
+                    <div>
+                        <span>Thông tin chuyến đi</span>
+                        <h2>{{ $datTour->tour->ten_tour }}</h2>
+                    </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="booking-info-list">
 
-                    <h5>Thông tin thanh toán</h5>
-
-                    @if($datTour->thanhToans)
-
-                        <table class="table">
-
-                            @foreach($datTour->thanhToans as $thanhToan)
-
-<tr>
-    <th>Phương thức</th>
-    <td>{{ $thanhToan->phuong_thuc_thanh_toan }}</td>
-</tr>
-
-<tr>
-    <th>Mã giao dịch</th>
-    <td>{{ $thanhToan->ma_giao_dich }}</td>
-</tr>
-
-<tr>
-    <th>Trạng thái</th>
-    <td> @switch($thanhToan->trang_thai)
-
-                                    @case('cho_thanh_toan')
-                                        <span class="badge bg-warning">
-                                            Chờ thanh toán
-                                        </span>
-                                    @break
-
-                                    @case('da_xac_nhan')
-                                        <span class="badge bg-info">
-                                            Đã xác nhận
-                                        </span>
-                                    @break
-
-                                    @case('da_thanh_toan')
-                                        <span class="badge bg-success">
-                                            Đã thanh toán
-                                        </span>
-                                    @break
-
-                                    @case('da_huy')
-                                        <span class="badge bg-danger">
-                                            Đã hủy
-                                        </span>
-                                    @break
-@case('dat_coc')
-                                        <span class="badge bg-warning">
-                                            Đặt Cọc
-                                        </span>
-                                    @break
-                                    @default
-                                        <span class="badge bg-secondary">
-                                            {{ $thanhToan->trang_thai }}
-                                        </span>
-
-                                @endswitch</td>
-</tr>
-<tr>
-                                <th>Thời gian</th>
-                                <td>{{ $thanhToan->thoi_gian_thanh_toan }}</td>
-                            </tr>
-@endforeach
-
-                            
-
-                        </table>
-
-                    @else
-
-                        <div class="alert alert-warning">
-                            Chưa có thông tin thanh toán.
+                    <div class="booking-info-row">
+                        <div class="info-label">
+                            <i class="fa-solid fa-hashtag"></i>
+                            <span>Mã đặt tour</span>
                         </div>
 
-                    @endif
+                        <strong class="booking-code-value">
+                            {{ $datTour->ma_dat_tour }}
+                        </strong>
+                    </div>
+
+                    <div class="booking-info-row">
+                        <div class="info-label">
+                            <i class="fa-regular fa-calendar-days"></i>
+                            <span>Ngày khởi hành</span>
+                        </div>
+
+                        <strong>
+                            {{ \Carbon\Carbon::parse($datTour->lichKhoiHanh->ngay_khoi_hanh)->format('d/m/Y') }}
+                        </strong>
+                    </div>
+
+                    <div class="booking-info-row">
+                        <div class="info-label">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                            <span>Ngày kết thúc</span>
+                        </div>
+
+                        <strong>
+                            {{ \Carbon\Carbon::parse($datTour->lichKhoiHanh->ngay_ket_thuc)->format('d/m/Y') }}
+                        </strong>
+                    </div>
+
+                    <div class="booking-info-row">
+                        <div class="info-label">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Người lớn</span>
+                        </div>
+
+                        <strong>{{ $datTour->so_nguoi_lon }} người</strong>
+                    </div>
+
+                    <div class="booking-info-row">
+                        <div class="info-label">
+                            <i class="fa-solid fa-child-reaching"></i>
+                            <span>Trẻ em</span>
+                        </div>
+
+                        <strong>{{ $datTour->so_tre_em }} người</strong>
+                    </div>
 
                 </div>
 
-            </div>
+                <div class="booking-total-box">
+                    <div>
+                        <span>Tổng giá trị đơn</span>
+                        <small>Giá trị toàn bộ chuyến đi</small>
+                    </div>
 
-            <hr>
+                    <strong>
+                        {{ number_format($datTour->tong_tien, 0, ',', '.') }}đ
+                    </strong>
+                </div>
+            </section>
 
-            <h4>Danh sách khách</h4>
+            {{-- THÔNG TIN THANH TOÁN --}}
+            <section class="detail-panel payment-panel">
+                <div class="panel-heading">
+                    <div class="panel-icon payment-icon">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
 
-            @if($datTour->khachHangs->count())
-
-                <table class="table table-bordered">
-
-                    <thead class="table-light">
-
-                    <tr>
-                        <th>#</th>
-                        <th>Họ tên</th>
-                        <th>Ngày sinh</th>
-                        <th>Giới tính</th>
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    @foreach($datTour->khachHangs as $index => $khach)
-
-                        <tr>
-
-                            <td>{{ $index+1 }}</td>
-
-                            <td>{{ $khach->ho_ten }}</td>
-
-                            <td>{{ $khach->ngay_sinh }}</td>
-
-                            <td>{{ $khach->gioi_tinh }}</td>
-
-                        </tr>
-
-                    @endforeach
-
-                    </tbody>
-
-                </table>
-
-            @else
-
-                <div class="alert alert-info">
-                    Không có danh sách khách.
+                    <div>
+                        <span>Giao dịch</span>
+                        <h2>Thông tin thanh toán</h2>
+                    </div>
                 </div>
 
-            @endif
+                @php
+                    $tongTien = (float) ($datTour->tong_tien ?? 0);
+                    $daThanhToan = (float) ($datTour->so_tien_da_thanh_toan ?? 0);
+                    $conLai = isset($datTour->so_tien_con_lai)
+                        ? (float) $datTour->so_tien_con_lai
+                        : max(0, $tongTien - $daThanhToan);
 
-            <div class="mt-4">
+                    $phanTramDaThanhToan = $tongTien > 0
+                        ? min(100, round(($daThanhToan / $tongTien) * 100))
+                        : 0;
+                @endphp
 
-                @if($datTour->trang_thai != 'da_thanh_toan')
+                <div class="payment-overview">
+                    <div class="payment-overview-item">
+                        <span>Tổng đơn</span>
+                        <strong>{{ number_format($tongTien, 0, ',', '.') }}đ</strong>
+                    </div>
 
-                    <form action="{{ route('tour_da_dat.destroy',$datTour->id) }}"
-                          method="POST"
-                          onsubmit="return confirm('Bạn có chắc chắn muốn hủy tour?')">
+                    <div class="payment-overview-item is-paid">
+                        <span>Đã thanh toán</span>
+                        <strong>{{ number_format($daThanhToan, 0, ',', '.') }}đ</strong>
+                    </div>
 
-                        @csrf
-                        @method('DELETE')
+                    <div class="payment-overview-item is-remain">
+                        <span>Còn lại</span>
+                        <strong>{{ number_format($conLai, 0, ',', '.') }}đ</strong>
+                    </div>
+                </div>
 
-                        <button class="btn btn-danger">
-                            Hủy tour
-                        </button>
+                <div class="payment-progress">
+                    <div class="payment-progress-head">
+                        <span>Tiến độ thanh toán</span>
+                        <strong>{{ $phanTramDaThanhToan }}%</strong>
+                    </div>
 
-                    </form>
+                    <div class="payment-progress-track">
+                        <span style="width: {{ $phanTramDaThanhToan }}%"></span>
+                    </div>
+                </div>
 
+                @if($datTour->thanhToans && $datTour->thanhToans->count())
+                    <div class="payment-list">
+                        @foreach($datTour->thanhToans as $index => $thanhToan)
+                            @php
+                                $paymentStatus = match($thanhToan->trang_thai) {
+                                    'cho_thanh_toan' => [
+                                        'label' => 'Chờ thanh toán',
+                                        'class' => 'payment-waiting',
+                                        'icon' => 'fa-clock',
+                                    ],
+                                    'da_xac_nhan' => [
+                                        'label' => 'Đã xác nhận',
+                                        'class' => 'payment-confirmed',
+                                        'icon' => 'fa-circle-check',
+                                    ],
+                                    'da_thanh_toan' => [
+                                        'label' => 'Đã thanh toán',
+                                        'class' => 'payment-paid',
+                                        'icon' => 'fa-wallet',
+                                    ],
+                                    'da_huy' => [
+                                        'label' => 'Đã hủy',
+                                        'class' => 'payment-cancelled',
+                                        'icon' => 'fa-circle-xmark',
+                                    ],
+                                    'dat_coc' => [
+                                        'label' => 'Đặt cọc',
+                                        'class' => 'payment-deposit',
+                                        'icon' => 'fa-coins',
+                                    ],
+                                    default => [
+                                        'label' => $thanhToan->trang_thai,
+                                        'class' => 'payment-default',
+                                        'icon' => 'fa-circle-info',
+                                    ],
+                                };
+
+                                $paymentAmount =
+                                    data_get($thanhToan, 'so_tien')
+                                    ?? data_get($thanhToan, 'so_tien_thanh_toan')
+                                    ?? data_get($thanhToan, 'tong_tien');
+
+                                $paymentMethod =
+                                    data_get($thanhToan, 'phuong_thuc_thanh_toan')
+                                    ?? data_get($thanhToan, 'phuong_thuc')
+                                    ?? data_get($thanhToan, 'payment_method');
+
+                                $transactionCode =
+                                    data_get($thanhToan, 'ma_giao_dich')
+                                    ?? data_get($thanhToan, 'ma_thanh_toan')
+                                    ?? data_get($thanhToan, 'transaction_code');
+
+                                $paymentPercent =
+                                    data_get($thanhToan, 'phan_tram_thanh_toan')
+                                    ?? data_get($thanhToan, 'phan_tram');
+
+                                $paymentTime =
+                                    data_get($thanhToan, 'thoi_gian_thanh_toan')
+                                    ?? data_get($thanhToan, 'ngay_thanh_toan')
+                                    ?? data_get($thanhToan, 'created_at');
+                            @endphp
+
+                            <article class="payment-transaction-card">
+                                <div class="payment-transaction-head">
+                                    <div class="payment-transaction-title">
+                                        <span class="payment-number">
+                                            {{ $index + 1 }}
+                                        </span>
+
+                                        <div>
+                                            <small>Giao dịch #{{ $index + 1 }}</small>
+                                            <strong>
+                                                @if($paymentPercent)
+                                                    Thanh toán {{ $paymentPercent }}%
+                                                @elseif($thanhToan->trang_thai === 'dat_coc')
+                                                    Thanh toán đặt cọc
+                                                @else
+                                                    Thanh toán tour
+                                                @endif
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <span class="payment-status {{ $paymentStatus['class'] }}">
+                                        <i class="fa-solid {{ $paymentStatus['icon'] }}"></i>
+                                        {{ $paymentStatus['label'] }}
+                                    </span>
+                                </div>
+
+                                <div class="payment-transaction-grid">
+                                    <div class="payment-detail">
+                                        <i class="fa-solid fa-money-bill-wave"></i>
+                                        <div>
+                                            <span>Số tiền</span>
+                                            <strong>
+                                                @if($paymentAmount !== null)
+                                                    {{ number_format((float) $paymentAmount, 0, ',', '.') }}đ
+                                                @else
+                                                    Chưa cập nhật
+                                                @endif
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="payment-detail">
+                                        <i class="fa-regular fa-credit-card"></i>
+                                        <div>
+                                            <span>Phương thức</span>
+                                            <strong>{{ $paymentMethod ?: 'Chưa cập nhật' }}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="payment-detail">
+                                        <i class="fa-solid fa-barcode"></i>
+                                        <div>
+                                            <span>Mã giao dịch</span>
+                                            <strong>{{ $transactionCode ?: 'Chưa cập nhật' }}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="payment-detail">
+                                        <i class="fa-regular fa-clock"></i>
+                                        <div>
+                                            <span>Thời gian</span>
+                                            <strong>
+                                                @if($paymentTime)
+                                                    {{ \Carbon\Carbon::parse($paymentTime)->format('d/m/Y H:i') }}
+                                                @else
+                                                    Chưa cập nhật
+                                                @endif
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="payment-empty">
+                        <div>
+                            <i class="fa-regular fa-credit-card"></i>
+                        </div>
+
+                        <h3>Chưa có giao dịch thanh toán</h3>
+
+                        <p>
+                            Đơn hàng hiện chưa phát sinh giao dịch. Khi bạn đặt cọc
+                            hoặc thanh toán, lịch sử giao dịch sẽ xuất hiện tại đây.
+                        </p>
+                    </div>
                 @endif
-
-            </div>
-
+            </section>
         </div>
 
-    </div>
+        {{-- DANH SÁCH HÀNH KHÁCH --}}
+        <section class="detail-panel passenger-panel">
+            <div class="passenger-panel-head">
+                <div class="panel-heading">
+                    <div class="panel-icon passenger-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
 
+                    <div>
+                        <span>Hành khách</span>
+                        <h2>Danh sách khách</h2>
+                    </div>
+                </div>
+
+                <span class="passenger-total-badge">
+                    {{ $datTour->khachHangs->count() }} hành khách
+                </span>
+            </div>
+
+            @if($datTour->khachHangs->count())
+                <div class="passenger-table-wrap">
+                    <table class="passenger-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Họ và tên</th>
+                                <th>Ngày sinh</th>
+                                <th>Giới tính</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach($datTour->khachHangs as $index => $khach)
+                                <tr>
+                                    <td>
+                                        <span class="passenger-number">
+                                            {{ $index + 1 }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="passenger-name">
+                                            <span class="passenger-avatar">
+                                                {{ mb_strtoupper(mb_substr($khach->ho_ten ?? 'K', 0, 1)) }}
+                                            </span>
+
+                                            <strong>{{ $khach->ho_ten }}</strong>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        {{ $khach->ngay_sinh }}
+                                    </td>
+
+                                    <td>
+                                        <span class="gender-badge">
+                                            {{ $khach->gioi_tinh }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="passenger-empty">
+                    <i class="fa-regular fa-user"></i>
+                    <span>Không có danh sách khách.</span>
+                </div>
+            @endif
+        </section>
+
+        @if($datTour->trang_thai != 'da_thanh_toan')
+            <section class="danger-zone">
+                <div>
+                    <span>Quản lý đơn</span>
+                    <h3>Bạn cần hủy chuyến đi?</h3>
+                    <p>
+                        Hãy kiểm tra lại thông tin và chính sách hủy tour trước khi
+                        thực hiện thao tác này.
+                    </p>
+                </div>
+
+                <form
+                    action="{{ route('tour_da_dat.destroy', $datTour->id) }}"
+                    method="POST"
+                    onsubmit="return confirm('Bạn có chắc chắn muốn hủy tour?')"
+                >
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit" class="cancel-tour-button">
+                        <i class="fa-regular fa-trash-can"></i>
+                        Hủy tour
+                    </button>
+                </form>
+            </section>
+        @endif
+
+    </div>
 </div>
+
+<style>
+:root{
+    --bd-primary:#2563eb;
+    --bd-primary-dark:#1d4ed8;
+    --bd-primary-light:#3b82f6;
+    --bd-primary-soft:#eff6ff;
+    --bd-cyan:#38bdf8;
+    --bd-text:#0f172a;
+    --bd-text-soft:#334155;
+    --bd-muted:#64748b;
+    --bd-line:#dbe5f1;
+    --bd-white:#ffffff;
+    --bd-green:#059669;
+    --bd-red:#dc2626;
+    --bd-orange:#d97706;
+}
+
+.booking-detail-page{
+    min-height:100vh;
+    padding:clamp(38px,5vw,76px) 0 clamp(70px,6vw,110px);
+    color:var(--bd-text);
+    background:
+        radial-gradient(circle at 7% 2%,rgba(37,99,235,.10),transparent 27%),
+        radial-gradient(circle at 94% 7%,rgba(56,189,248,.08),transparent 24%),
+        linear-gradient(180deg,#ffffff 0%,#f8fbff 45%,#f3f8ff 100%);
+}
+
+.booking-detail-container{
+    width:min(1440px,calc(100% - 40px));
+    margin:0 auto;
+}
+
+/* TOP BAR */
+.booking-topbar{
+    margin-bottom:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+}
+
+.back-button{
+    min-height:44px;
+    padding:0 15px;
+    border:1px solid #d7e2ef;
+    border-radius:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color:#334155;
+    background:#ffffff;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:900;
+    box-shadow:0 8px 20px rgba(15,23,42,.06);
+    transition:.2s ease;
+}
+
+.back-button:hover{
+    color:#ffffff;
+    border-color:var(--bd-primary);
+    background:var(--bd-primary);
+    transform:translateY(-2px);
+    box-shadow:0 11px 24px rgba(37,99,235,.17);
+}
+
+.booking-code-top{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:var(--bd-muted);
+    font-size:12px;
+    font-weight:800;
+}
+
+.booking-code-top strong{
+    padding:7px 10px;
+    border:1px solid #bfdbfe;
+    border-radius:10px;
+    color:var(--bd-primary-dark);
+    background:#eff6ff;
+    font-size:13px;
+    font-weight:1000;
+}
+
+/* HERO */
+.booking-detail-hero{
+    position:relative;
+    overflow:hidden;
+    min-height:230px;
+    margin-bottom:28px;
+    padding:clamp(30px,4vw,50px);
+    border:1px solid #dbeafe;
+    border-radius:30px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:30px;
+    background:
+        radial-gradient(circle at 10% 15%,rgba(59,130,246,.14),transparent 30%),
+        linear-gradient(135deg,#ffffff 0%,#f5f9ff 66%,#eef7ff 100%);
+    box-shadow:
+        0 22px 58px rgba(37,99,235,.10),
+        inset 0 1px 0 rgba(255,255,255,.94);
+}
+
+.booking-detail-hero::after{
+    content:"";
+    position:absolute;
+    width:260px;
+    height:260px;
+    right:-80px;
+    top:-110px;
+    border-radius:50%;
+    background:rgba(56,189,248,.10);
+    pointer-events:none;
+}
+
+.hero-copy{
+    position:relative;
+    z-index:1;
+}
+
+.hero-kicker{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    padding:8px 13px;
+    border:1px solid #bfdbfe;
+    border-radius:999px;
+    color:var(--bd-primary);
+    background:#ffffff;
+    font-size:12px;
+    font-weight:900;
+}
+
+.booking-detail-hero h1{
+    margin:0;
+    color:var(--bd-text);
+    font-size:clamp(34px,4vw,54px);
+    line-height:1.04;
+    font-weight:1000;
+    letter-spacing:-1.6px;
+}
+
+.booking-detail-hero p{
+    max-width:760px;
+    margin:15px 0 0;
+    color:var(--bd-muted);
+    font-size:16px;
+    line-height:1.75;
+    font-weight:600;
+}
+
+.hero-status{
+    position:relative;
+    z-index:1;
+    min-width:220px;
+    padding:20px;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    box-shadow:0 14px 32px rgba(15,23,42,.07);
+}
+
+.hero-status > i{
+    width:46px;
+    height:46px;
+    flex:0 0 46px;
+    border-radius:15px;
+    display:grid;
+    place-items:center;
+    background:rgba(255,255,255,.75);
+    font-size:18px;
+}
+
+.hero-status span{
+    display:block;
+    margin-bottom:3px;
+    font-size:11px;
+    font-weight:800;
+    opacity:.72;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+}
+
+.hero-status strong{
+    display:block;
+    font-size:15px;
+    font-weight:1000;
+}
+
+.status-waiting{
+    color:#a16207;
+    border:1px solid #fde68a;
+    background:#fefce8;
+}
+
+.status-confirmed{
+    color:#0369a1;
+    border:1px solid #bae6fd;
+    background:#f0f9ff;
+}
+
+.status-paid{
+    color:#047857;
+    border:1px solid #a7f3d0;
+    background:#ecfdf5;
+}
+
+.status-cancelled{
+    color:#b91c1c;
+    border:1px solid #fecaca;
+    background:#fef2f2;
+}
+
+.status-default{
+    color:#475569;
+    border:1px solid #e2e8f0;
+    background:#f8fafc;
+}
+
+/* GRID */
+.booking-detail-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);
+    gap:24px;
+    align-items:stretch;
+}
+
+/* PANEL */
+.detail-panel{
+    border:1px solid #dde7f2;
+    border-radius:25px;
+    background:#ffffff;
+    box-shadow:
+        0 18px 48px rgba(15,23,42,.075),
+        0 4px 12px rgba(37,99,235,.035);
+}
+
+.booking-main-panel,
+.payment-panel{
+    padding:25px;
+}
+
+.panel-heading{
+    display:flex;
+    align-items:center;
+    gap:13px;
+}
+
+.panel-icon{
+    width:48px;
+    height:48px;
+    flex:0 0 48px;
+    border-radius:15px;
+    display:grid;
+    place-items:center;
+    color:#ffffff;
+    background:linear-gradient(135deg,#60a5fa,#2563eb);
+    box-shadow:0 10px 22px rgba(37,99,235,.20);
+    font-size:18px;
+}
+
+.panel-icon.payment-icon{
+    background:linear-gradient(135deg,#38bdf8,#2563eb);
+}
+
+.panel-icon.passenger-icon{
+    background:linear-gradient(135deg,#818cf8,#2563eb);
+}
+
+.panel-heading span{
+    display:block;
+    margin-bottom:3px;
+    color:var(--bd-primary);
+    font-size:10px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+}
+
+.panel-heading h2{
+    margin:0;
+    color:var(--bd-text);
+    font-size:21px;
+    line-height:1.3;
+    font-weight:1000;
+    letter-spacing:-.45px;
+}
+
+/* INFO LIST */
+.booking-info-list{
+    margin-top:22px;
+    overflow:hidden;
+    border:1px solid #e4ecf5;
+    border-radius:18px;
+}
+
+.booking-info-row{
+    min-height:58px;
+    padding:13px 16px;
+    border-bottom:1px solid #e8eef6;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    background:#ffffff;
+}
+
+.booking-info-row:last-child{
+    border-bottom:0;
+}
+
+.booking-info-row:nth-child(even){
+    background:#fbfdff;
+}
+
+.info-label{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#64748b;
+    font-size:13px;
+    font-weight:750;
+}
+
+.info-label i{
+    width:31px;
+    height:31px;
+    flex:0 0 31px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    color:var(--bd-primary);
+    background:#eff6ff;
+    font-size:12px;
+}
+
+.booking-info-row > strong{
+    color:#334155;
+    font-size:14px;
+    line-height:1.45;
+    font-weight:900;
+    text-align:right;
+}
+
+.booking-code-value{
+    padding:6px 9px;
+    border-radius:9px;
+    color:var(--bd-primary-dark) !important;
+    background:#eff6ff;
+}
+
+.booking-total-box{
+    margin-top:18px;
+    padding:17px 18px;
+    border:1px solid #dbeafe;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    background:linear-gradient(135deg,#eff6ff,#ffffff);
+}
+
+.booking-total-box span{
+    display:block;
+    color:#334155;
+    font-size:13px;
+    font-weight:900;
+}
+
+.booking-total-box small{
+    display:block;
+    margin-top:3px;
+    color:#94a3b8;
+    font-size:11px;
+    font-weight:700;
+}
+
+.booking-total-box > strong{
+    color:#ef4444;
+    font-size:27px;
+    line-height:1.1;
+    font-weight:1000;
+    letter-spacing:-.5px;
+}
+
+/* PAYMENT */
+.payment-list{
+    margin-top:22px;
+    display:grid;
+    gap:11px;
+}
+
+.payment-item{
+    padding:13px;
+    border:1px solid #e3ebf5;
+    border-radius:16px;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+    align-items:center;
+    gap:11px;
+    background:linear-gradient(135deg,#ffffff,#f8fbff);
+}
+
+.payment-item-index{
+    width:36px;
+    height:36px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
+    color:#2563eb;
+    background:#eff6ff;
+    font-size:12px;
+    font-weight:1000;
+}
+
+.payment-item-info span{
+    display:block;
+    margin-bottom:2px;
+    color:#94a3b8;
+    font-size:10px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.35px;
+}
+
+.payment-item-info strong{
+    color:#334155;
+    font-size:13px;
+    font-weight:900;
+}
+
+.payment-status{
+    min-height:31px;
+    padding:0 10px;
+    border:1px solid transparent;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    white-space:nowrap;
+    font-size:10px;
+    font-weight:900;
+}
+
+.payment-waiting{
+    color:#a16207;
+    background:#fefce8;
+    border-color:#fde68a;
+}
+
+.payment-confirmed{
+    color:#0369a1;
+    background:#f0f9ff;
+    border-color:#bae6fd;
+}
+
+.payment-paid,
+.payment-deposit{
+    color:#047857;
+    background:#ecfdf5;
+    border-color:#a7f3d0;
+}
+
+.payment-cancelled{
+    color:#b91c1c;
+    background:#fef2f2;
+    border-color:#fecaca;
+}
+
+.payment-default{
+    color:#475569;
+    background:#f8fafc;
+    border-color:#e2e8f0;
+}
+
+.payment-empty{
+    margin-top:22px;
+    padding:40px 20px;
+    border:1px dashed #bfdbfe;
+    border-radius:19px;
+    text-align:center;
+    background:#f8fbff;
+}
+
+.payment-empty > div{
+    width:58px;
+    height:58px;
+    margin:0 auto 13px;
+    border-radius:18px;
+    display:grid;
+    place-items:center;
+    color:#2563eb;
+    background:#eff6ff;
+    font-size:22px;
+}
+
+.payment-empty h3{
+    margin:0 0 6px;
+    color:#334155;
+    font-size:16px;
+    font-weight:1000;
+}
+
+.payment-empty p{
+    max-width:390px;
+    margin:0 auto;
+    color:#64748b;
+    font-size:12px;
+    line-height:1.65;
+}
+
+/* PASSENGER PANEL */
+.passenger-panel{
+    margin-top:24px;
+    padding:25px;
+}
+
+.passenger-panel-head{
+    margin-bottom:21px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.passenger-total-badge{
+    min-height:34px;
+    padding:0 12px;
+    border:1px solid #bfdbfe;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    color:#2563eb;
+    background:#eff6ff;
+    font-size:11px;
+    font-weight:900;
+}
+
+.passenger-table-wrap{
+    overflow-x:auto;
+    border:1px solid #e2eaf4;
+    border-radius:18px;
+}
+
+.passenger-table{
+    width:100%;
+    margin:0;
+    border-collapse:collapse;
+}
+
+.passenger-table th{
+    padding:13px 15px;
+    border-bottom:1px solid #dbe5f1;
+    color:#475569;
+    background:#f1f6ff;
+    font-size:11px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.35px;
+    text-align:left;
+    white-space:nowrap;
+}
+
+.passenger-table td{
+    padding:14px 15px;
+    border-bottom:1px solid #edf2f7;
+    color:#475569;
+    font-size:13px;
+    vertical-align:middle;
+}
+
+.passenger-table tbody tr:last-child td{
+    border-bottom:0;
+}
+
+.passenger-table tbody tr:hover{
+    background:#fbfdff;
+}
+
+.passenger-number{
+    width:31px;
+    height:31px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    color:#2563eb;
+    background:#eff6ff;
+    font-size:11px;
+    font-weight:1000;
+}
+
+.passenger-name{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.passenger-avatar{
+    width:35px;
+    height:35px;
+    flex:0 0 35px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    color:#ffffff;
+    background:linear-gradient(135deg,#60a5fa,#2563eb);
+    font-size:12px;
+    font-weight:1000;
+}
+
+.passenger-name strong{
+    color:#334155;
+    font-size:13px;
+    font-weight:900;
+}
+
+.gender-badge{
+    min-height:29px;
+    padding:0 10px;
+    border:1px solid #dbeafe;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    color:#2563eb;
+    background:#f8fbff;
+    font-size:10px;
+    font-weight:900;
+}
+
+.passenger-empty{
+    padding:36px 20px;
+    border:1px dashed #bfdbfe;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    color:#64748b;
+    background:#f8fbff;
+    font-size:13px;
+    font-weight:800;
+}
+
+/* DANGER */
+.danger-zone{
+    margin-top:24px;
+    padding:20px 22px;
+    border:1px solid #fecaca;
+    border-radius:22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:24px;
+    background:linear-gradient(135deg,#fffafa,#ffffff);
+    box-shadow:0 12px 30px rgba(220,38,38,.045);
+}
+
+.danger-zone span{
+    display:block;
+    margin-bottom:3px;
+    color:#dc2626;
+    font-size:10px;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.7px;
+}
+
+.danger-zone h3{
+    margin:0 0 4px;
+    color:#7f1d1d;
+    font-size:17px;
+    font-weight:1000;
+}
+
+.danger-zone p{
+    margin:0;
+    color:#64748b;
+    font-size:12px;
+    line-height:1.6;
+}
+
+.cancel-tour-button{
+    min-height:44px;
+    padding:0 16px;
+    border:1px solid #fecaca;
+    border-radius:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    white-space:nowrap;
+    color:#dc2626;
+    background:#ffffff;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:900;
+    cursor:pointer;
+    transition:.2s ease;
+}
+
+.cancel-tour-button:hover{
+    color:#ffffff;
+    border-color:#dc2626;
+    background:#dc2626;
+    transform:translateY(-2px);
+    box-shadow:0 10px 22px rgba(220,38,38,.16);
+}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+    .booking-detail-grid{
+        grid-template-columns:1fr;
+    }
+
+    .payment-panel{
+        min-height:0;
+    }
+}
+
+@media(max-width:768px){
+    .booking-detail-page{
+        padding-top:26px;
+    }
+
+    .booking-detail-container{
+        width:calc(100% - 20px);
+    }
+
+    .booking-topbar{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .booking-detail-hero{
+        align-items:flex-start;
+        flex-direction:column;
+        border-radius:24px;
+    }
+
+    .hero-status{
+        width:100%;
+        min-width:0;
+    }
+
+    .booking-main-panel,
+    .payment-panel,
+    .passenger-panel{
+        padding:19px;
+        border-radius:21px;
+    }
+
+    .booking-info-row{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:8px;
+    }
+
+    .booking-info-row > strong{
+        width:100%;
+        padding-left:41px;
+        text-align:left;
+    }
+
+    .booking-total-box{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .payment-item{
+        grid-template-columns:auto minmax(0,1fr);
+    }
+
+    .payment-status{
+        grid-column:2;
+        justify-self:start;
+    }
+
+    .passenger-panel-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .danger-zone{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+
+    .danger-zone form,
+    .cancel-tour-button{
+        width:100%;
+    }
+}
+
+@media(max-width:520px){
+    .booking-detail-container{
+        width:calc(100% - 14px);
+    }
+
+    .booking-detail-hero{
+        padding:25px 18px;
+    }
+
+    .booking-detail-hero h1{
+        font-size:34px;
+    }
+
+    .panel-heading{
+        align-items:flex-start;
+    }
+
+    .panel-icon{
+        width:43px;
+        height:43px;
+        flex-basis:43px;
+        border-radius:13px;
+    }
+
+    .panel-heading h2{
+        font-size:19px;
+    }
+
+    .booking-total-box > strong{
+        font-size:24px;
+    }
+
+    .passenger-table{
+        min-width:640px;
+    }
+}
+
+/* =========================================================
+   CHI TIẾT THANH TOÁN - BẢN MỞ RỘNG
+   ========================================================= */
+.payment-overview{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin-top:22px;
+}
+.payment-overview-item{
+    min-width:0;
+    padding:13px 12px;
+    border:1px solid #dbe5f1;
+    border-radius:15px;
+    background:linear-gradient(135deg,#ffffff,#f8fbff);
+}
+.payment-overview-item span{
+    display:block;
+    margin-bottom:5px;
+    color:#94a3b8;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+}
+.payment-overview-item strong{
+    display:block;
+    color:#1e3a8a;
+    font-size:16px;
+    font-weight:1000;
+    white-space:nowrap;
+}
+.payment-overview-item.is-paid{
+    border-color:#bbf7d0;
+    background:linear-gradient(135deg,#ecfdf5,#ffffff);
+}
+.payment-overview-item.is-paid strong{color:#047857}
+.payment-overview-item.is-remain{
+    border-color:#fed7aa;
+    background:linear-gradient(135deg,#fff7ed,#ffffff);
+}
+.payment-overview-item.is-remain strong{color:#c2410c}
+
+.payment-progress{
+    margin-top:13px;
+    padding:13px 14px;
+    border:1px solid #e2eaf4;
+    border-radius:15px;
+    background:#fbfdff;
+}
+.payment-progress-head{
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+.payment-progress-head span{
+    color:#64748b;
+    font-size:11px;
+    font-weight:800;
+}
+.payment-progress-head strong{
+    color:#2563eb;
+    font-size:12px;
+    font-weight:1000;
+}
+.payment-progress-track{
+    height:8px;
+    overflow:hidden;
+    border-radius:999px;
+    background:#e2e8f0;
+}
+.payment-progress-track span{
+    display:block;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg,#38bdf8,#2563eb);
+    box-shadow:0 2px 8px rgba(37,99,235,.20);
+}
+
+.payment-list{
+    margin-top:16px;
+    display:grid;
+    gap:12px;
+}
+.payment-transaction-card{
+    overflow:hidden;
+    border:1px solid #e1eaf4;
+    border-radius:17px;
+    background:#ffffff;
+    box-shadow:0 8px 22px rgba(15,23,42,.045);
+}
+.payment-transaction-head{
+    padding:12px 13px;
+    border-bottom:1px solid #e8eef6;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(135deg,#ffffff,#f8fbff);
+}
+.payment-transaction-title{
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+.payment-number{
+    width:34px;
+    height:34px;
+    flex:0 0 34px;
+    border-radius:11px;
+    display:grid;
+    place-items:center;
+    color:#ffffff;
+    background:linear-gradient(135deg,#60a5fa,#2563eb);
+    box-shadow:0 7px 16px rgba(37,99,235,.17);
+    font-size:11px;
+    font-weight:1000;
+}
+.payment-transaction-title small{
+    display:block;
+    margin-bottom:2px;
+    color:#94a3b8;
+    font-size:9px;
+    font-weight:850;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+}
+.payment-transaction-title strong{
+    display:block;
+    overflow:hidden;
+    color:#334155;
+    font-size:12px;
+    font-weight:1000;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.payment-transaction-grid{
+    padding:12px;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+}
+.payment-detail{
+    min-width:0;
+    padding:10px;
+    border:1px solid #edf2f7;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    background:#fbfdff;
+}
+.payment-detail > i{
+    width:30px;
+    height:30px;
+    flex:0 0 30px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    color:#2563eb;
+    background:#eff6ff;
+    font-size:11px;
+}
+.payment-detail div{min-width:0}
+.payment-detail span{
+    display:block;
+    margin-bottom:2px;
+    color:#94a3b8;
+    font-size:8px;
+    font-weight:900;
+    letter-spacing:.35px;
+    text-transform:uppercase;
+}
+.payment-detail strong{
+    display:block;
+    overflow:hidden;
+    color:#475569;
+    font-size:11px;
+    font-weight:900;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+@media(max-width:1180px){
+    .payment-overview{grid-template-columns:1fr}
+    .payment-transaction-grid{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+    .payment-transaction-head{
+        align-items:flex-start;
+        flex-direction:column;
+    }
+    .payment-status{margin-left:44px}
+    .payment-overview-item strong{font-size:15px}
+}
+
+</style>
 
 @endsection

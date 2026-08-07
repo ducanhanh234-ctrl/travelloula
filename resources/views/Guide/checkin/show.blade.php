@@ -1334,6 +1334,7 @@
 
                 <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
                 <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                                            <input type="hidden" name="checkin_context" value="activity">
                 <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !($canCheckIn ?? false) ? 'disabled' : '' }} title="{{ !($canCheckIn ?? false) && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                     <i class="fas fa-user-check"></i>
                     Check-in tất cả
@@ -1346,6 +1347,7 @@
 
                 <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
                 <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                                            <input type="hidden" name="checkin_context" value="activity">
                 <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                     <i class="fas fa-sign-out-alt"></i>
                     Check-out tất cả
@@ -1358,6 +1360,7 @@
 
                 <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
                 <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                                            <input type="hidden" name="checkin_context" value="activity">
                 <button type="submit" class="btn-checkin btn-checkout-all"
                     style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                     <i class="fas fa-rotate-left"></i>
@@ -1472,6 +1475,7 @@
                                                             <input type="hidden" name="lich_khoi_hanh_id"
                                                                 value="{{ $datTour->lich_khoi_hanh_id }}">
                                                             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                                            <input type="hidden" name="checkin_context" value="activity">
                                                             <button type="submit" class="btn-checkin-row btn-row-checkin">
                                                                 <i class="fas fa-user-check"></i>
                                                                 Check-in
@@ -1607,6 +1611,7 @@
                                 <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
                                 <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
                                 <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                                            <input type="hidden" name="checkin_context" value="activity">
                                 <label for="ghi_chu_{{ $khach->id }}" class="form-label fw-semibold">Nội dung ghi chú</label>
 
                                 <textarea name="ghi_chu" id="ghi_chu_{{ $khach->id }}" class="form-control" rows="4"

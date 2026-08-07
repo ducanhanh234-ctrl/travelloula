@@ -1,6 +1,6 @@
 @extends('Layouts.guide')
-@section('title', 'Check-in hành khách')
-@section('guide', 'Check-in hành khách')
+@section('title', 'Check-in khởi hành')
+@section('guide', 'Check-in khởi hành')
 @section('breadcrumb')
 <li class="breadcrumb-item">
     <a href="{{ route('Guide.checkin.index') }}">Check-in</a>
@@ -1152,7 +1152,7 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
             </span>
 
             <div>
-                <h2>Check-in hành khách</h2>
+                <h2>Check-in khởi hành</h2>
                 <p>{{ $chiTiet->tieu_de ?? 'Điểm tham quan' }}</p>
             </div>
         </div>
@@ -1328,6 +1328,7 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
             @csrf
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <input type="hidden" name="checkin_context" value="departure">
             <button type="submit" class="btn-checkin btn-checkin-all" {{ $tongKhach <= 0 || !$canCheckIn ? 'disabled' : '' }} title="{{ ! $canCheckIn && ($checkinExpired ?? false) ? 'Đã đóng' : '' }}">
                 <i class="fas fa-user-check"></i>
                 Check-in tất cả
@@ -1338,6 +1339,7 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
             @csrf
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <input type="hidden" name="checkin_context" value="departure">
             <button type="submit" class="btn-checkin btn-checkout-all" {{ $tongKhach <= 0 || ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-sign-out-alt"></i>
                 Check-out tất cả
@@ -1347,11 +1349,33 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
             @csrf
             <input type="hidden" name="lich_khoi_hanh_id" value="{{ $lichKhoiHanhId }}">
             <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <input type="hidden" name="checkin_context" value="departure">
             <button type="submit" class="btn-checkin btn-checkout-all" style="background: #4c4c4c; color: #ffffff; border: none" {{ ($checkinExpired ?? false) ? 'disabled' : '' }} title="{{ ($checkinExpired ?? false) ? 'Đã hết giờ' : '' }}">
                 <i class="fas fa-rotate-left"></i>
                 Hoàn tác tất cả
             </button>
         </form>
+    </div>
+
+    {{-- Xác nhận hoàn tất điểm danh khởi hành --}}
+    <div class="checkin-main-actions">
+        @if ($saved)
+            <span class="checkin-status checkin-status-checked">
+                <span class="checkin-status-dot"></span>
+                Đã xác nhận khởi hành
+            </span>
+        @else
+            <form action="{{ route('Guide.checkin.saveLock', $lichKhoiHanhId) }}" method="POST"
+                  onsubmit="return confirm('Xác nhận hoàn tất điểm danh khởi hành?');">
+                @csrf
+                <input type="hidden" name="ngay_thu" value="1">
+                <input type="hidden" name="action" value="CONFIRM_XUATPHAT">
+                <button type="submit" class="btn-checkin btn-save" {{ !($canCheckIn ?? false) ? 'disabled' : '' }}>
+                    <i class="fas fa-check-circle"></i>
+                    Xác nhận khởi hành
+                </button>
+            </form>
+        @endif
     </div>
 
     {{-- Danh sách hành khách --}}
@@ -1465,6 +1489,7 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
                                                 <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
                                                 <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
                                                 <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <input type="hidden" name="checkin_context" value="departure">
                                             <button type="submit" class="btn-checkin-row btn-row-checkin">
                                                 <i class="fas fa-user-check"></i>
                                                 Check-in
@@ -1549,7 +1574,6 @@ $phanTramCheckIn = min(max($phanTramCheckIn, 0),100);
 {{-- Modal ghi chú đặt ngoài Table để HTML hợp lệ --}}
 
 @foreach ($datTours as $datTour)
-@foreach ($datTours as $datTour)
 @foreach ($datTour->khachHangs as $khach)
 @php
 $checkIn = $checkIns[$khach->id] ?? null;
@@ -1578,6 +1602,7 @@ $checkIn = $checkIns[$khach->id] ?? null;
                     <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
                     <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
                     <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+                                            <input type="hidden" name="checkin_context" value="departure">
                     <label for="ghi_chu_{{ $khach->id }}" class="form-label fw-semibold">
                         Nội dung ghi chú
                     </label>

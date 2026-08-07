@@ -483,37 +483,64 @@ Route::prefix('Guide')
         Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])
             ->name('danh-sach-khach');
 
+//checkin
+        Route::get('/check-in', [CheckInController::class, 'index'])
+            ->name('checkin.index');
 
-        Route::get('/check-in', [CheckInController::class, 'index'])->name('checkin.index');
         Route::get('/check-in/{lichKhoiHanh}/dia-diem', [CheckInController::class, 'diaDiem'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.dia-diem');
 
+        // Phải đặt trước route /{lichKhoiHanh}/{chiTiet}.
+        Route::get('/check-in/{lichKhoiHanh}/xuat-phat', [CheckInController::class, 'showXuatPhat'])
+            ->whereNumber('lichKhoiHanh')
+            ->name('checkin.xuatPhat');
+
+        Route::get('/check-in/{lichKhoiHanh}/ket-thuc', [CheckInController::class, 'showKetThuc'])
+            ->whereNumber('lichKhoiHanh')
+            ->name('checkin.ketThuc');
+
         Route::get('/check-in/{lichKhoiHanh}/{chiTiet}', [CheckInController::class, 'show'])
+            ->whereNumber('lichKhoiHanh')
+            ->whereNumber('chiTiet')
             ->name('checkin.show');
+
         Route::post('/check-in', [CheckInController::class, 'checkIn'])
             ->name('checkin.store');
-        Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])->name('checkout');
+
+        Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])
+            ->whereNumber('id')
+            ->name('checkout');
+
         Route::post('/check-in/checkin-tat-ca', [CheckInController::class, 'checkInTatCa'])
             ->name('checkin.checkinTatCa');
+
         Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
             ->name('checkin.checkoutTatCa');
-
 
         Route::post('/check-in/undo-tat-ca', [CheckInController::class, 'undoCheckInTatCa'])
             ->name('checkin.undoTatCa');
 
-        Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
-        Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
-        Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
+        Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])
+            ->whereNumber('id')
+            ->name('checkin.undo');
 
+        Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])
+            ->whereNumber('id')
+            ->name('checkout.undo');
 
+        Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])
+            ->name('checkin.note');
 
-        // Lưu trạng thái điểm danh khởi hành (nút Lưu)
         Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.saveLock');
 
-        Route::post('/check-in/{lichKhoiHanh}/finish-tour',[CheckInController::class, 'finishTour'])
+        Route::post('/check-in/{lichKhoiHanh}/finish-tour', [CheckInController::class, 'finishTour'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.finishTour');
+
+            //checkin context
 
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');

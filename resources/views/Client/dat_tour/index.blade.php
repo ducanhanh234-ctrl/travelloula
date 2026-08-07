@@ -57,92 +57,78 @@
                     <h5 class="font-weight-bold mb-3 text-dark section-title">Chọn lịch khởi hành</h5>
                     <div class="mb-5 row">
                         @foreach($lichKhoiHanhs as $lich)
-    <div class="col-md-6 mb-3
+                        <div class="col-md-6 mb-3
         {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'schedule-disabled' : '' }}">
 
-        <label
-            class="card border-0 shadow-sm p-3 h-100 schedule-card transition-all m-0"
-            style="cursor: {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'not-allowed' : 'pointer' }};"
-        >
+                            <label class="card border-0 shadow-sm p-3 h-100 schedule-card transition-all m-0" style="cursor: {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'not-allowed' : 'pointer' }};">
 
-            <div class="d-flex align-items-start">
+                                <div class="d-flex align-items-start">
 
-                <input
-                    class="form-check-input custom-radio mt-1"
-                    type="radio"
-                    name="lich_khoi_hanh_id"
-                    value="{{ $lich->id }}"
-                    required
-                    @checked(old('lich_khoi_hanh_id') == $lich->id)
-                    {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'disabled' : '' }}
-                >
+                                    <input class="form-check-input custom-radio mt-1" type="radio" name="lich_khoi_hanh_id" value="{{ $lich->id }}" required @checked(old('lich_khoi_hanh_id')==$lich->id)
+                                    {{ in_array($lich->trang_thai, ['closed', 'full']) ? 'disabled' : '' }}
+                                    >
 
-                <div class="ml-4 w-100">
+                                    <div class="ml-4 w-100">
 
-                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
 
-                        <strong
-                            class="schedule-date"
-                            style="font-size: 1.15rem; color: #0f172a;"
-                        >
-                            {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
-                        </strong>
+                                            <strong class="schedule-date" style="font-size: 1.15rem; color: #0f172a;">
+                                                {{ \Carbon\Carbon::parse($lich->ngay_khoi_hanh)->format('d/m/Y') }}
+                                            </strong>
 
-                        <span class="badge badge-pill
+                                            <span class="badge badge-pill
                             {{ $lich->trang_thai == 'available' ? 'badge-success-soft' : '' }}
                             {{ $lich->trang_thai == 'closed' ? 'badge-secondary-soft' : '' }}
-                            {{ $lich->trang_thai == 'full' ? 'badge-danger-soft' : '' }}"
-                        >
-                            @switch($lich->trang_thai)
-                                @case('available')
-                                    Mở bán
-                                    @break
+                            {{ $lich->trang_thai == 'full' ? 'badge-danger-soft' : '' }}">
+                                                @switch($lich->trang_thai)
+                                                @case('available')
+                                                Mở bán
+                                                @break
 
-                                @case('closed')
-                                    Đã đóng
-                                    @break
+                                                @case('closed')
+                                                Đã đóng
+                                                @break
 
-                                @case('full')
-                                    Đã đầy
-                                    @break
+                                                @case('full')
+                                                Đã đầy
+                                                @break
 
-                                @default
-                                    Không xác định
-                            @endswitch
-                        </span>
+                                                @default
+                                                Không xác định
+                                                @endswitch
+                                            </span>
 
-                    </div>
+                                        </div>
 
-                    <small class="d-block
+                                        <small class="d-block
                         {{ $lich->trang_thai == 'full' ? 'text-danger' : 'text-success' }}
-                        mb-2"
-                    >
-                        <i class="fa fa-users mr-1"></i>
+                        mb-2">
+                                            <i class="fa fa-users mr-1"></i>
 
-                        Còn
-                        <strong>
-                            {{ $lich->so_cho - $lich->so_cho_da_dat }}
-                        </strong>
+                                            Còn
+                                            <strong>
+                                                {{ $lich->so_cho - $lich->so_cho_da_dat }}
+                                            </strong>
 
-                        /
-                        {{ $lich->so_cho }}
-                        chỗ
-                    </small>
+                                            /
+                                            {{ $lich->so_cho }}
+                                            chỗ
+                                        </small>
 
-                    <div class="text-right border-top pt-2 mt-2">
+                                        <div class="text-right border-top pt-2 mt-2">
 
-                        <span class="primary-text font-weight-bold">
-                            {{ number_format($lich->tour->gia_nguoi_lon) }}đ
-                        </span>
+                                            <span class="primary-text font-weight-bold">
+                                                {{ number_format($lich->tour->gia_nguoi_lon) }}đ
+                                            </span>
 
-                    </div>
+                                        </div>
 
-                </div>
-            </div>
+                                    </div>
+                                </div>
 
-        </label>
-    </div>
-@endforeach
+                            </label>
+                        </div>
+                        @endforeach
                     </div>
 
                     <!-- Thông tin người đặt -->
@@ -428,141 +414,151 @@
 
 @section('scripts')
 @php
-    $priceAdult = (float) ($tour->gia_nguoi_lon ?? 0);
-    $priceChild = (float) ($tour->gia_tre_em ?? 0);
-    $tourTitleJs = json_encode($tour->ten_tour ?? '', JSON_UNESCAPED_UNICODE);
+$priceAdult = (float) ($tour->gia_nguoi_lon ?? 0);
+$priceChild = (float) ($tour->gia_tre_em ?? 0);
+$tourTitleJs = json_encode($tour->ten_tour ?? '', JSON_UNESCAPED_UNICODE);
 @endphp
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
 
-   const priceAdult = {{ $priceAdult }};
-const priceChild = {{ $priceChild }};
-const tourTitle = {!! $tourTitleJs !!};
+        const priceAdult = {
+            {
+                $priceAdult
+            }
+        };
+        const priceChild = {
+            {
+                $priceChild
+            }
+        };
+        const tourTitle = {
+            !!$tourTitleJs!!
+        };
 
-    /* =========================================================
-       2. LẤY ELEMENT
-    ========================================================= */
+        /* =========================================================
+           2. LẤY ELEMENT
+        ========================================================= */
 
-    const bookingForm = document.getElementById('bookingForm');
-    const btnPreviewBooking = document.getElementById('btnPreviewBooking');
-    const btnFinalSubmit = document.getElementById('btnFinalSubmit');
+        const bookingForm = document.getElementById('bookingForm');
+        const btnPreviewBooking = document.getElementById('btnPreviewBooking');
+        const btnFinalSubmit = document.getElementById('btnFinalSubmit');
 
-    const chkCommitment = document.getElementById('chk_commitment');
+        const chkCommitment = document.getElementById('chk_commitment');
 
-    const elQtyAdult = document.getElementById('qty_adult');
-    const elQtyChild = document.getElementById('qty_child');
+        const elQtyAdult = document.getElementById('qty_adult');
+        const elQtyChild = document.getElementById('qty_child');
 
-    const elInputGrandTotal = document.getElementById('input_grand_total');
-    const elInputPaymentMethod = document.getElementById('input_payment_method');
-    const elInputDepositPercent = document.getElementById('input_phan_tram_thanh_toan');
+        const elInputGrandTotal = document.getElementById('input_grand_total');
+        const elInputPaymentMethod = document.getElementById('input_payment_method');
+        const elInputDepositPercent = document.getElementById('input_phan_tram_thanh_toan');
 
-    const accordionContainer = document.getElementById('passengers-accordion');
-    const summaryModalContent = document.getElementById('summaryModalContent');
-    const excelFile = document.getElementById('excelFile');
+        const accordionContainer = document.getElementById('passengers-accordion');
+        const summaryModalContent = document.getElementById('summaryModalContent');
+        const excelFile = document.getElementById('excelFile');
 
-    /* =========================================================
-       3. KIỂM TRA ELEMENT
-       Nếu thiếu element thì báo lỗi để dễ debug
-    ========================================================= */
+        /* =========================================================
+           3. KIỂM TRA ELEMENT
+           Nếu thiếu element thì báo lỗi để dễ debug
+        ========================================================= */
 
-    if (!bookingForm) {
-        console.error('Không tìm thấy #bookingForm');
-        return;
-    }
-
-    if (!btnPreviewBooking) {
-        console.error('Không tìm thấy #btnPreviewBooking');
-        return;
-    }
-
-    if (!accordionContainer) {
-        console.error('Không tìm thấy #passengers-accordion');
-        return;
-    }
-
-    /* =========================================================
-       4. FORMAT TIỀN
-    ========================================================= */
-
-    function formatVND(amount) {
-        return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
-    }
-
-    function excelDateToDate(value) {
-        if (!value) return '';
-
-        if (typeof value === 'string' && value.includes('/')) {
-            const parts = value.split('/');
-            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        if (!bookingForm) {
+            console.error('Không tìm thấy #bookingForm');
+            return;
         }
 
-        const date = new Date((value - 25569) * 86400 * 1000);
-        const year = date.getUTCFullYear();
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(date.getUTCDate()).padStart(2, '0');
-
-        return `${year}-${month}-${day}`;
-    }
-
-    function tinhTuoi(ngaySinh) {
-        if (!ngaySinh) {
-            return 0;
+        if (!btnPreviewBooking) {
+            console.error('Không tìm thấy #btnPreviewBooking');
+            return;
         }
 
-        const birth = new Date(ngaySinh);
-        const today = new Date();
-        let age = today.getFullYear() - birth.getFullYear();
-
-        const monthDiff = today.getMonth() - birth.getMonth();
-
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-            age--;
+        if (!accordionContainer) {
+            console.error('Không tìm thấy #passengers-accordion');
+            return;
         }
 
-        return age;
-    }
+        /* =========================================================
+           4. FORMAT TIỀN
+        ========================================================= */
 
-    /* =========================================================
-       5. ĐỒNG BỘ PHƯƠNG THỨC THANH TOÁN
-    ========================================================= */
-
-    function syncPaymentMethod() {
-
-        const paymentMethodSelect =
-            document.getElementById('paymentMethodSelect');
-
-        if (paymentMethodSelect && elInputPaymentMethod) {
-            elInputPaymentMethod.value =
-                paymentMethodSelect.value || '';
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
         }
-    }
 
-    function syncDepositSelection() {
-        const selectedDeposit = document.querySelector(
-            '#summaryModalContent input[name="phan_tram_modal"]:checked'
-        );
+        function excelDateToDate(value) {
+            if (!value) return '';
 
-        if (elInputDepositPercent) {
-            elInputDepositPercent.value = selectedDeposit?.value || '100';
+            if (typeof value === 'string' && value.includes('/')) {
+                const parts = value.split('/');
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+
+            const date = new Date((value - 25569) * 86400 * 1000);
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(date.getUTCDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
-    }
 
-    /* =========================================================
-       6. TẠO FORM HÀNH KHÁCH
-    ========================================================= */
+        function tinhTuoi(ngaySinh) {
+            if (!ngaySinh) {
+                return 0;
+            }
 
-    function getPassengerFormTemplate(index, label, typeValue, isOpen) {
+            const birth = new Date(ngaySinh);
+            const today = new Date();
+            let age = today.getFullYear() - birth.getFullYear();
 
-        const collapseClass = isOpen ? 'show' : '';
-        const headerClass = isOpen ? '' : 'collapsed';
+            const monthDiff = today.getMonth() - birth.getMonth();
 
-        const badgeBg =
-            typeValue === 'adult'
-                ? 'badge-primary'
-                : 'badge-info';
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
 
-        return `
+            return age;
+        }
+
+        /* =========================================================
+           5. ĐỒNG BỘ PHƯƠNG THỨC THANH TOÁN
+        ========================================================= */
+
+        function syncPaymentMethod() {
+
+            const paymentMethodSelect =
+                document.getElementById('paymentMethodSelect');
+
+            if (paymentMethodSelect && elInputPaymentMethod) {
+                elInputPaymentMethod.value =
+                    paymentMethodSelect.value || '';
+            }
+        }
+
+        function syncDepositSelection() {
+            const selectedDeposit = document.querySelector(
+                '#summaryModalContent input[name="phan_tram_modal"]:checked'
+            );
+
+            if (elInputDepositPercent) {
+                elInputDepositPercent.value = selectedDeposit ? .value || '100';
+            }
+        }
+
+        /* =========================================================
+           6. TẠO FORM HÀNH KHÁCH
+        ========================================================= */
+
+        function getPassengerFormTemplate(index, label, typeValue, isOpen) {
+
+            const collapseClass = isOpen ? 'show' : '';
+            const headerClass = isOpen ? '' : 'collapsed';
+
+            const badgeBg =
+                typeValue === 'adult' ?
+                'badge-primary' :
+                'badge-info';
+
+            return `
             <div class="passenger-accordion-card mb-3 shadow-sm">
 
                 <div
@@ -742,822 +738,821 @@ const tourTitle = {!! $tourTitleJs !!};
 
             </div>
         `;
-    }
-
-    /* =========================================================
-       7. CẬP NHẬT SỐ LƯỢNG HÀNH KHÁCH
-    ========================================================= */
-
-    function updateBookingDetails() {
-
-        let adults = parseInt(elQtyAdult.value) || 0;
-        let children = parseInt(elQtyChild.value) || 0;
-
-        if (adults < 1) {
-            adults = 1;
-            elQtyAdult.value = 1;
         }
 
-        if (children < 0) {
-            children = 0;
-            elQtyChild.value = 0;
+        /* =========================================================
+           7. CẬP NHẬT SỐ LƯỢNG HÀNH KHÁCH
+        ========================================================= */
+
+        function updateBookingDetails() {
+
+            let adults = parseInt(elQtyAdult.value) || 0;
+            let children = parseInt(elQtyChild.value) || 0;
+
+            if (adults < 1) {
+                adults = 1;
+                elQtyAdult.value = 1;
+            }
+
+            if (children < 0) {
+                children = 0;
+                elQtyChild.value = 0;
+            }
+
+            const totalAdult = adults * priceAdult;
+            const totalChild = children * priceChild;
+
+            const grandTotal = totalAdult + totalChild;
+
+            elInputGrandTotal.value = grandTotal;
+
+            let formsHTML = '';
+            let passengerIndex = 0;
+
+            /* Người lớn */
+
+            for (let i = 0; i < adults; i++) {
+
+                const isOpen = passengerIndex === 0;
+
+                formsHTML += getPassengerFormTemplate(
+                    passengerIndex
+                    , 'Hành khách'
+                    , 'adult'
+                    , isOpen
+                );
+
+                passengerIndex++;
+            }
+
+            /* Trẻ em */
+
+            for (let i = 0; i < children; i++) {
+
+                const isOpen = passengerIndex === 0;
+
+                formsHTML += getPassengerFormTemplate(
+                    passengerIndex
+                    , 'Hành khách'
+                    , 'child'
+                    , isOpen
+                );
+
+                passengerIndex++;
+            }
+
+            accordionContainer.innerHTML = formsHTML;
         }
 
-        const totalAdult = adults * priceAdult;
-        const totalChild = children * priceChild;
+        if (excelFile) {
+            excelFile.addEventListener('change', function() {
+                const file = this.files[0];
+                if (!file) return;
 
-        const grandTotal = totalAdult + totalChild;
+                const formData = new FormData();
+                formData.append('file', file);
 
-        elInputGrandTotal.value = grandTotal;
+                fetch('{{ route('
+                        Client.import_hanh_khach ') }}', {
+                            method: 'POST'
+                            , headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            }
+                            , body: formData
+                        })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        let adult = 0;
+                        let child = 0;
 
-        let formsHTML = '';
-        let passengerIndex = 0;
+                        data.forEach((item) => {
+                            const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
+                            if (!ngaySinh) return;
 
-        /* Người lớn */
+                            const tuoi = tinhTuoi(ngaySinh);
+                            if (tuoi <= 12) {
+                                child++;
+                            } else {
+                                adult++;
+                            }
+                        });
 
-        for (let i = 0; i < adults; i++) {
+                        elQtyAdult.value = adult || 1;
+                        elQtyChild.value = child || 0;
+                        updateBookingDetails();
 
-            const isOpen = passengerIndex === 0;
+                        let adultIndex = 0;
+                        let childIndex = adult || 0;
 
-            formsHTML += getPassengerFormTemplate(
-                passengerIndex,
-                'Hành khách',
-                'adult',
-                isOpen
-            );
+                        data.forEach((item) => {
+                            const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
+                            const tuoi = tinhTuoi(ngaySinh);
+                            let index = 0;
 
-            passengerIndex++;
-        }
+                            if (tuoi <= 12) {
+                                index = childIndex++;
+                            } else {
+                                index = adultIndex++;
+                            }
 
-        /* Trẻ em */
+                            const hoTenInput = document.querySelector(`[name="hanh_khach[${index}][ho_ten]"]`);
+                            const genderInput = document.querySelector(`[name="hanh_khach[${index}][gioi_tinh]"]`);
+                            const dobInput = document.querySelector(`[name="hanh_khach[${index}][ngay_sinh]"]`);
+                            const nationInput = document.querySelector(`[name="hanh_khach[${index}][quoc_tich]"]`);
+                            const docTypeInput = document.querySelector(`[name="hanh_khach[${index}][loai_giay_to]"]`);
+                            const docIdInput = document.querySelector(`[name="hanh_khach[${index}][so_giay_to]"]`);
+                            const phoneInput = document.querySelector(`[name="hanh_khach[${index}][so_dien_thoai]"]`);
+                            const noteInput = document.querySelector(`[name="hanh_khach[${index}][yeu_cau_dac_biet]"]`);
 
-        for (let i = 0; i < children; i++) {
-
-            const isOpen = passengerIndex === 0;
-
-            formsHTML += getPassengerFormTemplate(
-                passengerIndex,
-                'Hành khách',
-                'child',
-                isOpen
-            );
-
-            passengerIndex++;
-        }
-
-        accordionContainer.innerHTML = formsHTML;
-    }
-
-    if (excelFile) {
-        excelFile.addEventListener('change', function () {
-            const file = this.files[0];
-            if (!file) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('{{ route('Client.import_hanh_khach') }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: formData
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    let adult = 0;
-                    let child = 0;
-
-                    data.forEach((item) => {
-                        const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
-                        if (!ngaySinh) return;
-
-                        const tuoi = tinhTuoi(ngaySinh);
-                        if (tuoi <= 12) {
-                            child++;
-                        } else {
-                            adult++;
-                        }
+                            if (hoTenInput) hoTenInput.value = item.ho_ten || '';
+                            if (genderInput) genderInput.value = item.gioi_tinh || 'Nam';
+                            if (dobInput) dobInput.value = ngaySinh;
+                            if (nationInput) nationInput.value = item.quoc_tich || 'Việt Nam';
+                            if (docTypeInput) docTypeInput.value = item.loai_giay_to || 'CCCD';
+                            if (docIdInput) docIdInput.value = item.so_giay_to || '';
+                            if (phoneInput) phoneInput.value = item.so_dien_thoai || '';
+                            if (noteInput) noteInput.value = item.yeu_cau_dac_biet || '';
+                        });
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        alert('Import thất bại. Vui lòng thử lại với file Excel phù hợp.');
                     });
+            });
+        }
 
-                    elQtyAdult.value = adult || 1;
-                    elQtyChild.value = child || 0;
-                    updateBookingDetails();
+        /* =========================================================
+           8. VALIDATE FORM TRƯỚC KHI MỞ MODAL
+        ========================================================= */
 
-                    let adultIndex = 0;
-                    let childIndex = adult || 0;
+        function validateBookingForm() {
 
-                    data.forEach((item) => {
-                        const ngaySinh = item.ngay_sinh ? excelDateToDate(item.ngay_sinh) : '';
-                        const tuoi = tinhTuoi(ngaySinh);
-                        let index = 0;
 
-                        if (tuoi <= 12) {
-                            index = childIndex++;
-                        } else {
-                            index = adultIndex++;
-                        }
+            /* =========================================================
+               1. XÓA CÁC LỖI CŨ
+            ========================================================= */
 
-                        const hoTenInput = document.querySelector(`[name="hanh_khach[${index}][ho_ten]"]`);
-                        const genderInput = document.querySelector(`[name="hanh_khach[${index}][gioi_tinh]"]`);
-                        const dobInput = document.querySelector(`[name="hanh_khach[${index}][ngay_sinh]"]`);
-                        const nationInput = document.querySelector(`[name="hanh_khach[${index}][quoc_tich]"]`);
-                        const docTypeInput = document.querySelector(`[name="hanh_khach[${index}][loai_giay_to]"]`);
-                        const docIdInput = document.querySelector(`[name="hanh_khach[${index}][so_giay_to]"]`);
-                        const phoneInput = document.querySelector(`[name="hanh_khach[${index}][so_dien_thoai]"]`);
-                        const noteInput = document.querySelector(`[name="hanh_khach[${index}][yeu_cau_dac_biet]"]`);
+            document.querySelectorAll('.js-error').forEach(function(element) {
+                element.remove();
+            });
 
-                        if (hoTenInput) hoTenInput.value = item.ho_ten || '';
-                        if (genderInput) genderInput.value = item.gioi_tinh || 'Nam';
-                        if (dobInput) dobInput.value = ngaySinh;
-                        if (nationInput) nationInput.value = item.quoc_tich || 'Việt Nam';
-                        if (docTypeInput) docTypeInput.value = item.loai_giay_to || 'CCCD';
-                        if (docIdInput) docIdInput.value = item.so_giay_to || '';
-                        if (phoneInput) phoneInput.value = item.so_dien_thoai || '';
-                        if (noteInput) noteInput.value = item.yeu_cau_dac_biet || '';
-                    });
-                })
-                .catch((err) => {
-                    console.error(err);
-                    alert('Import thất bại. Vui lòng thử lại với file Excel phù hợp.');
-                });
-        });
-    }
+            document.querySelectorAll('.is-invalid').forEach(function(element) {
+                element.classList.remove('is-invalid');
+            });
 
-    /* =========================================================
-       8. VALIDATE FORM TRƯỚC KHI MỞ MODAL
-    ========================================================= */
 
-    function validateBookingForm() {
+            /* =========================================================
+               HÀM HIỂN THỊ LỖI
+            ========================================================= */
 
+            function showError(input, message) {
 
-/* =========================================================
-   1. XÓA CÁC LỖI CŨ
-========================================================= */
+                if (!input) {
+                    return false;
+                }
 
-document.querySelectorAll('.js-error').forEach(function (element) {
-    element.remove();
-});
+                input.classList.add('is-invalid');
 
-document.querySelectorAll('.is-invalid').forEach(function (element) {
-    element.classList.remove('is-invalid');
-});
+                const error = document.createElement('div');
 
+                error.className = 'js-error text-danger small mt-1';
 
-/* =========================================================
-   HÀM HIỂN THỊ LỖI
-========================================================= */
+                error.innerHTML =
+                    '<i class="fa fa-exclamation-circle mr-1"></i>' +
+                    message;
 
-function showError(input, message) {
+                /*
+                 * Chèn lỗi ngay sau input
+                 */
 
-    if (!input) {
-        return false;
-    }
+                input.parentNode.appendChild(error);
 
-    input.classList.add('is-invalid');
+                return false;
+            }
 
-    const error = document.createElement('div');
 
-    error.className = 'js-error text-danger small mt-1';
+            /* =========================================================
+               2. TOUR ID
+            ========================================================= */
 
-    error.innerHTML =
-        '<i class="fa fa-exclamation-circle mr-1"></i>' +
-        message;
+            const tourId =
+                document.querySelector('input[name="tour_id"]');
 
-    /*
-     * Chèn lỗi ngay sau input
-     */
+            if (!tourId || !tourId.value) {
 
-    input.parentNode.appendChild(error);
+                alert('Không xác định được tour.');
 
-    return false;
-}
+                return false;
+            }
 
 
-/* =========================================================
-   2. TOUR ID
-========================================================= */
+            /* =========================================================
+               3. LỊCH KHỞI HÀNH
+            ========================================================= */
 
-const tourId =
-    document.querySelector('input[name="tour_id"]');
+            const selectedSchedule =
+                document.querySelector(
+                    'input[name="lich_khoi_hanh_id"]:checked'
+                );
 
-if (!tourId || !tourId.value) {
+            if (!selectedSchedule) {
 
-    alert('Không xác định được tour.');
+                alert('Vui lòng chọn lịch khởi hành.');
 
-    return false;
-}
+                const firstSchedule =
+                    document.querySelector(
+                        'input[name="lich_khoi_hanh_id"]'
+                    );
 
+                if (firstSchedule) {
+                    firstSchedule.focus();
+                }
 
-/* =========================================================
-   3. LỊCH KHỞI HÀNH
-========================================================= */
+                return false;
+            }
 
-const selectedSchedule =
-    document.querySelector(
-        'input[name="lich_khoi_hanh_id"]:checked'
-    );
 
-if (!selectedSchedule) {
+            /* =========================================================
+               4. SỐ NGƯỜI LỚN
+               required|integer|min:1
+            ========================================================= */
 
-    alert('Vui lòng chọn lịch khởi hành.');
+            const adultInput =
+                document.getElementById('qty_adult');
 
-    const firstSchedule =
-        document.querySelector(
-            'input[name="lich_khoi_hanh_id"]'
-        );
+            const adults =
+                parseInt(adultInput ? .value);
 
-    if (firstSchedule) {
-        firstSchedule.focus();
-    }
+            if (
+                !adultInput ||
+                isNaN(adults) ||
+                adults < 1 ||
+                !Number.isInteger(adults)
+            ) {
 
-    return false;
-}
+                return showError(
+                    adultInput
+                    , 'Số người lớn phải là số nguyên và ít nhất 1 người.'
+                );
+            }
 
 
-/* =========================================================
-   4. SỐ NGƯỜI LỚN
-   required|integer|min:1
-========================================================= */
+            /* =========================================================
+               5. SỐ TRẺ EM
+               nullable|integer|min:0
+            ========================================================= */
 
-const adultInput =
-    document.getElementById('qty_adult');
+            const childInput =
+                document.getElementById('qty_child');
 
-const adults =
-    parseInt(adultInput?.value);
+            const children =
+                childInput.value === '' ?
+                0 :
+                parseInt(childInput.value);
 
-if (
-    !adultInput ||
-    isNaN(adults) ||
-    adults < 1 ||
-    !Number.isInteger(adults)
-) {
+            if (
+                isNaN(children) ||
+                children < 0 ||
+                !Number.isInteger(children)
+            ) {
 
-    return showError(
-        adultInput,
-        'Số người lớn phải là số nguyên và ít nhất 1 người.'
-    );
-}
+                return showError(
+                    childInput
+                    , 'Số trẻ em phải là số nguyên từ 0 trở lên.'
+                );
+            }
 
 
-/* =========================================================
-   5. SỐ TRẺ EM
-   nullable|integer|min:0
-========================================================= */
+            /* =========================================================
+               6. CHECKBOX CAM KẾT
+            ========================================================= */
 
-const childInput =
-    document.getElementById('qty_child');
+            if (
+                chkCommitment &&
+                !chkCommitment.checked
+            ) {
 
-const children =
-    childInput.value === ''
-        ? 0
-        : parseInt(childInput.value);
+                alert(
+                    'Vui lòng xác nhận thông tin hành khách là chính xác.'
+                );
 
-if (
-    isNaN(children) ||
-    children < 0 ||
-    !Number.isInteger(children)
-) {
+                chkCommitment.focus();
 
-    return showError(
-        childInput,
-        'Số trẻ em phải là số nguyên từ 0 trở lên.'
-    );
-}
+                return false;
+            }
 
 
-/* =========================================================
-   6. CHECKBOX CAM KẾT
-========================================================= */
+            /* =========================================================
+               7. LẤY DANH SÁCH HÀNH KHÁCH
+            ========================================================= */
 
-if (
-    chkCommitment &&
-    !chkCommitment.checked
-) {
+            const passengerCards =
+                document.querySelectorAll(
+                    '#passengers-accordion .passenger-accordion-card'
+                );
 
-    alert(
-        'Vui lòng xác nhận thông tin hành khách là chính xác.'
-    );
+            const expectedPassengers =
+                adults + children;
 
-    chkCommitment.focus();
 
-    return false;
-}
+            if (
+                passengerCards.length !== expectedPassengers
+            ) {
 
+                alert(
+                    'Số lượng hành khách chưa khớp với số người lớn và trẻ em.'
+                );
 
-/* =========================================================
-   7. LẤY DANH SÁCH HÀNH KHÁCH
-========================================================= */
+                return false;
+            }
 
-const passengerCards =
-    document.querySelectorAll(
-        '#passengers-accordion .passenger-accordion-card'
-    );
 
-const expectedPassengers =
-    adults + children;
+            /* =========================================================
+               8. KIỂM TRA TỪNG HÀNH KHÁCH
+            ========================================================= */
 
+            for (
+                let i = 0; i < passengerCards.length; i++
+            ) {
 
-if (
-    passengerCards.length !== expectedPassengers
-) {
+                const card =
+                    passengerCards[i];
 
-    alert(
-        'Số lượng hành khách chưa khớp với số người lớn và trẻ em.'
-    );
 
-    return false;
-}
+                /* =====================================================
+                   HỌ TÊN
+                   required|string|min:2|max:100
+                ===================================================== */
 
+                const nameInput =
+                    card.querySelector('.pass-name');
 
-/* =========================================================
-   8. KIỂM TRA TỪNG HÀNH KHÁCH
-========================================================= */
+                const name =
+                    nameInput ? .value.trim() || '';
 
-for (
-    let i = 0;
-    i < passengerCards.length;
-    i++
-) {
+                if (!name) {
 
-    const card =
-        passengerCards[i];
+                    openPassenger(card);
 
+                    return showError(
+                        nameInput
+                        , `Hành khách #${i + 1}: Vui lòng nhập họ và tên.`
+                    );
+                }
 
-    /* =====================================================
-       HỌ TÊN
-       required|string|min:2|max:100
-    ===================================================== */
+                if (name.length < 2) {
 
-    const nameInput =
-        card.querySelector('.pass-name');
+                    openPassenger(card);
 
-    const name =
-        nameInput?.value.trim() || '';
+                    return showError(
+                        nameInput
+                        , `Hành khách #${i + 1}: Họ tên phải có ít nhất 2 ký tự.`
+                    );
+                }
 
-    if (!name) {
+                if (name.length > 100) {
 
-        openPassenger(card);
+                    openPassenger(card);
 
-        return showError(
-            nameInput,
-            `Hành khách #${i + 1}: Vui lòng nhập họ và tên.`
-        );
-    }
+                    return showError(
+                        nameInput
+                        , `Hành khách #${i + 1}: Họ tên không được vượt quá 100 ký tự.`
+                    );
+                }
 
-    if (name.length < 2) {
 
-        openPassenger(card);
+                /* =====================================================
+                   GIỚI TÍNH
+                   required|in:Nam,Nữ
+                ===================================================== */
 
-        return showError(
-            nameInput,
-            `Hành khách #${i + 1}: Họ tên phải có ít nhất 2 ký tự.`
-        );
-    }
+                const genderInput =
+                    card.querySelector('.pass-gender');
 
-    if (name.length > 100) {
+                const gender =
+                    genderInput ? .value || '';
 
-        openPassenger(card);
+                if (
+                    gender !== 'Nam' &&
+                    gender !== 'Nữ'
+                ) {
 
-        return showError(
-            nameInput,
-            `Hành khách #${i + 1}: Họ tên không được vượt quá 100 ký tự.`
-        );
-    }
+                    openPassenger(card);
 
+                    return showError(
+                        genderInput
+                        , `Hành khách #${i + 1}: Vui lòng chọn giới tính Nam hoặc Nữ.`
+                    );
+                }
 
-    /* =====================================================
-       GIỚI TÍNH
-       required|in:Nam,Nữ
-    ===================================================== */
 
-    const genderInput =
-        card.querySelector('.pass-gender');
-
-    const gender =
-        genderInput?.value || '';
-
-    if (
-        gender !== 'Nam' &&
-        gender !== 'Nữ'
-    ) {
-
-        openPassenger(card);
-
-        return showError(
-            genderInput,
-            `Hành khách #${i + 1}: Vui lòng chọn giới tính Nam hoặc Nữ.`
-        );
-    }
-
-
-    /* =====================================================
+                /* =====================================================
 NGÀY SINH
 
 * Người lớn: từ 12 tuổi trở lên
 * Trẻ em: từ 2 đến 11 tuổi
   ===================================================== */
 
-const dobInput =
-card.querySelector('.pass-dob');
+                const dobInput =
+                    card.querySelector('.pass-dob');
 
-const dob =
-dobInput?.value || '';
+                const dob =
+                    dobInput ? .value || '';
 
-/* Bắt buộc nhập ngày sinh */
+                /* Bắt buộc nhập ngày sinh */
 
-if (!dob) {
+                if (!dob) {
 
 
-openPassenger(card);
+                    openPassenger(card);
 
-return showError(
-    dobInput,
-    `Hành khách #${i + 1}: Vui lòng nhập ngày sinh.`
-);
+                    return showError(
+                        dobInput
+                        , `Hành khách #${i + 1}: Vui lòng nhập ngày sinh.`
+                    );
 
 
-}
+                }
 
-/* Kiểm tra ngày sinh hợp lệ */
+                /* Kiểm tra ngày sinh hợp lệ */
 
-const dobDate =
-new Date(dob + 'T00:00:00');
+                const dobDate =
+                    new Date(dob + 'T00:00:00');
 
-const today =
-new Date();
+                const today =
+                    new Date();
 
-today.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
 
-if (isNaN(dobDate.getTime())) {
+                if (isNaN(dobDate.getTime())) {
 
 
-openPassenger(card);
+                    openPassenger(card);
 
-return showError(
-    dobInput,
-    `Hành khách #${i + 1}: Ngày sinh không hợp lệ.`
-);
+                    return showError(
+                        dobInput
+                        , `Hành khách #${i + 1}: Ngày sinh không hợp lệ.`
+                    );
 
 
-}
+                }
 
-/* Không cho ngày sinh hôm nay hoặc tương lai */
+                /* Không cho ngày sinh hôm nay hoặc tương lai */
 
-if (dobDate >= today) {
+                if (dobDate >= today) {
 
 
-openPassenger(card);
+                    openPassenger(card);
 
-return showError(
-    dobInput,
-    `Hành khách #${i + 1}: Ngày sinh phải trước ngày hôm nay.`
-);
+                    return showError(
+                        dobInput
+                        , `Hành khách #${i + 1}: Ngày sinh phải trước ngày hôm nay.`
+                    );
 
 
-}
+                }
 
-/* =====================================================
-TÍNH TUỔI CHÍNH XÁC
-===================================================== */
+                /* =====================================================
+                TÍNH TUỔI CHÍNH XÁC
+                ===================================================== */
 
-let age =
-today.getFullYear() -
-dobDate.getFullYear();
+                let age =
+                    today.getFullYear() -
+                    dobDate.getFullYear();
 
-const monthDiff =
-today.getMonth() -
-dobDate.getMonth();
+                const monthDiff =
+                    today.getMonth() -
+                    dobDate.getMonth();
 
-const dayDiff =
-today.getDate() -
-dobDate.getDate();
+                const dayDiff =
+                    today.getDate() -
+                    dobDate.getDate();
 
-/*
+                /*
 
-* Nếu chưa đến sinh nhật năm nay
-* thì trừ 1 tuổi
-  */
+                * Nếu chưa đến sinh nhật năm nay
+                * thì trừ 1 tuổi
+                  */
 
-if (
-monthDiff < 0 ||
-(monthDiff === 0 && dayDiff < 0)
-) {
-age--;
-}
+                if (
+                    monthDiff < 0 ||
+                    (monthDiff === 0 && dayDiff < 0)
+                ) {
+                    age--;
+                }
 
-/* =====================================================
-KIỂM TRA THEO LOẠI HÀNH KHÁCH
-===================================================== */
+                /* =====================================================
+                KIỂM TRA THEO LOẠI HÀNH KHÁCH
+                ===================================================== */
 
-const passengerType =
-card.querySelector('.pass-type')?.value || '';
+                const passengerType =
+                    card.querySelector('.pass-type') ? .value || '';
 
-/* NGƯỜI LỚN */
+                /* NGƯỜI LỚN */
 
-if (passengerType === 'adult') {
+                if (passengerType === 'adult') {
 
 
-if (age < 12) {
+                    if (age < 12) {
 
-    openPassenger(card);
+                        openPassenger(card);
 
-    return showError(
-        dobInput,
-        `Hành khách #${i + 1}: Người lớn phải từ 12 tuổi trở lên. Tuổi hiện tại: ${age} tuổi.`
-    );
-}
+                        return showError(
+                            dobInput
+                            , `Hành khách #${i + 1}: Người lớn phải từ 12 tuổi trở lên. Tuổi hiện tại: ${age} tuổi.`
+                        );
+                    }
 
 
-}
+                }
 
-/* TRẺ EM */
+                /* TRẺ EM */
 
-if (passengerType === 'child') {
+                if (passengerType === 'child') {
 
 
-if (age < 2 || age > 11) {
+                    if (age < 2 || age > 11) {
 
-    openPassenger(card);
+                        openPassenger(card);
 
-    return showError(
-        dobInput,
-        `Hành khách #${i + 1}: Trẻ em phải từ 2 đến 11 tuổi. Tuổi hiện tại: ${age} tuổi.`
-    );
-}
+                        return showError(
+                            dobInput
+                            , `Hành khách #${i + 1}: Trẻ em phải từ 2 đến 11 tuổi. Tuổi hiện tại: ${age} tuổi.`
+                        );
+                    }
 
 
-}
+                }
 
 
 
-    /* =====================================================
-       QUỐC TỊCH
-       required|string|max:100
-    ===================================================== */
+                /* =====================================================
+                   QUỐC TỊCH
+                   required|string|max:100
+                ===================================================== */
 
-    const nationInput =
-        card.querySelector('.pass-nation');
+                const nationInput =
+                    card.querySelector('.pass-nation');
 
-    const nation =
-        nationInput?.value.trim() || '';
+                const nation =
+                    nationInput ? .value.trim() || '';
 
-    if (!nation) {
+                if (!nation) {
 
-        openPassenger(card);
+                    openPassenger(card);
 
-        return showError(
-            nationInput,
-            `Hành khách #${i + 1}: Vui lòng nhập quốc tịch.`
-        );
-    }
+                    return showError(
+                        nationInput
+                        , `Hành khách #${i + 1}: Vui lòng nhập quốc tịch.`
+                    );
+                }
 
-    if (nation.length > 100) {
+                if (nation.length > 100) {
 
-        openPassenger(card);
+                    openPassenger(card);
 
-        return showError(
-            nationInput,
-            `Hành khách #${i + 1}: Quốc tịch không được vượt quá 100 ký tự.`
-        );
-    }
+                    return showError(
+                        nationInput
+                        , `Hành khách #${i + 1}: Quốc tịch không được vượt quá 100 ký tự.`
+                    );
+                }
 
 
-    /* =====================================================
-       LOẠI HÀNH KHÁCH
-       required|in:adult,child
-    ===================================================== */
+                /* =====================================================
+                   LOẠI HÀNH KHÁCH
+                   required|in:adult,child
+                ===================================================== */
 
-    
 
-    if (
-        passengerType !== 'adult' &&
-        passengerType !== 'child'
-    ) {
 
-        alert(
-            `Hành khách #${i + 1}: Loại hành khách không hợp lệ.`
-        );
+                if (
+                    passengerType !== 'adult' &&
+                    passengerType !== 'child'
+                ) {
 
-        return false;
-    }
+                    alert(
+                        `Hành khách #${i + 1}: Loại hành khách không hợp lệ.`
+                    );
 
+                    return false;
+                }
 
-    /* =====================================================
-       LOẠI GIẤY TỜ
-       required|in:CCCD,Hộ chiếu,Giấy khai sinh
-    ===================================================== */
 
-    const docTypeInput =
-        card.querySelector('.pass-doc-type');
+                /* =====================================================
+                   LOẠI GIẤY TỜ
+                   required|in:CCCD,Hộ chiếu,Giấy khai sinh
+                ===================================================== */
 
-    const docType =
-        docTypeInput?.value || '';
+                const docTypeInput =
+                    card.querySelector('.pass-doc-type');
 
-    const validDocTypes = [
-        'CCCD',
-        'Hộ chiếu',
-        'Giấy khai sinh'
-    ];
+                const docType =
+                    docTypeInput ? .value || '';
 
-    if (
-        !validDocTypes.includes(docType)
-    ) {
+                const validDocTypes = [
+                    'CCCD'
+                    , 'Hộ chiếu'
+                    , 'Giấy khai sinh'
+                ];
 
-        openPassenger(card);
+                if (
+                    !validDocTypes.includes(docType)
+                ) {
 
-        return showError(
-            docTypeInput,
-            `Hành khách #${i + 1}: Vui lòng chọn loại giấy tờ hợp lệ.`
-        );
-    }
+                    openPassenger(card);
 
+                    return showError(
+                        docTypeInput
+                        , `Hành khách #${i + 1}: Vui lòng chọn loại giấy tờ hợp lệ.`
+                    );
+                }
 
-    /* =====================================================
-       SỐ GIẤY TỜ
-       required|string|max:30
-    ===================================================== */
 
-    const docIdInput =
-        card.querySelector('.pass-doc-id');
+                /* =====================================================
+                   SỐ GIẤY TỜ
+                   required|string|max:30
+                ===================================================== */
 
-    const docId =
-        docIdInput?.value.trim() || '';
+                const docIdInput =
+                    card.querySelector('.pass-doc-id');
 
-    if (!docId) {
+                const docId =
+                    docIdInput ? .value.trim() || '';
 
-        openPassenger(card);
+                if (!docId) {
 
-        return showError(
-            docIdInput,
-            `Hành khách #${i + 1}: Vui lòng nhập số giấy tờ.`
-        );
-    }
+                    openPassenger(card);
 
-    if (docId.length > 30) {
+                    return showError(
+                        docIdInput
+                        , `Hành khách #${i + 1}: Vui lòng nhập số giấy tờ.`
+                    );
+                }
 
-        openPassenger(card);
+                if (docId.length > 30) {
 
-        return showError(
-            docIdInput,
-            `Hành khách #${i + 1}: Số giấy tờ không được vượt quá 30 ký tự.`
-        );
-    }
+                    openPassenger(card);
 
-    if (docType === 'CCCD') {
-        const cccdRegex = /^\d{12}$/;
+                    return showError(
+                        docIdInput
+                        , `Hành khách #${i + 1}: Số giấy tờ không được vượt quá 30 ký tự.`
+                    );
+                }
 
-        if (!cccdRegex.test(docId)) {
-            openPassenger(card);
+                if (docType === 'CCCD') {
+                    const cccdRegex = /^\d{12}$/;
 
-            return showError(
-                docIdInput,
-                `Hành khách #${i + 1}: CCCD phải gồm đúng 12 chữ số.`
+                    if (!cccdRegex.test(docId)) {
+                        openPassenger(card);
+
+                        return showError(
+                            docIdInput
+                            , `Hành khách #${i + 1}: CCCD phải gồm đúng 12 chữ số.`
+                        );
+                    }
+                }
+
+
+                /* =====================================================
+                   SỐ ĐIỆN THOẠI
+                   nullable|regex:/^(0|\+84)[0-9]{9,10}$/
+                ===================================================== */
+
+                const phoneInput =
+                    card.querySelector('.pass-phone');
+
+                const phone =
+                    phoneInput ? .value.trim() || '';
+
+                if (phone) {
+
+                    const phoneRegex =
+                        /^(0|\+84)[0-9]{9,10}$/;
+
+                    if (!phoneRegex.test(phone)) {
+
+                        openPassenger(card);
+
+                        return showError(
+                            phoneInput
+                            , `Hành khách #${i + 1}: Số điện thoại không đúng định dạng.`
+                        );
+                    }
+                }
+
+
+                /* =====================================================
+                   YÊU CẦU ĐẶC BIỆT
+                   nullable|max:500
+                ===================================================== */
+
+                const noteInput =
+                    card.querySelector('.pass-note');
+
+                const note =
+                    noteInput ? .value.trim() || '';
+
+                if (note.length > 500) {
+
+                    openPassenger(card);
+
+                    return showError(
+                        noteInput
+                        , `Hành khách #${i + 1}: Yêu cầu đặc biệt không được vượt quá 500 ký tự.`
+                    );
+                }
+            }
+
+
+            /* =========================================================
+               9. TẤT CẢ HỢP LỆ
+            ========================================================= */
+
+            return true;
+
+
+        }
+
+        /* =============================================================
+        HÀM MỞ ACCORDION HÀNH KHÁCH KHI CÓ LỖI
+        ============================================================= */
+
+        function openPassenger(card) {
+
+
+            if (!card) {
+                return;
+            }
+
+            const collapse =
+                card.querySelector('.collapse');
+
+            if (
+                collapse &&
+                typeof $ !== 'undefined' &&
+                typeof $.fn.collapse !== 'undefined'
+            ) {
+
+                $(collapse).collapse('show');
+            }
+
+            /*
+             * Cuộn đến hành khách đang lỗi
+             */
+
+            setTimeout(function() {
+
+                card.scrollIntoView({
+                    behavior: 'smooth'
+                    , block: 'center'
+                });
+
+            }, 100);
+
+
+        }
+
+
+        /* =========================================================
+           9. TẠO TÓM TẮT ĐƠN HÀNG
+        ========================================================= */
+
+        function generateSummary() {
+
+            const selectedRadio = document.querySelector(
+                'input[name="lich_khoi_hanh_id"]:checked'
             );
-        }
-    }
 
+            let dateText = 'Chưa chọn lịch';
 
-    /* =====================================================
-       SỐ ĐIỆN THOẠI
-       nullable|regex:/^(0|\+84)[0-9]{9,10}$/
-    ===================================================== */
+            if (selectedRadio) {
 
-    const phoneInput =
-        card.querySelector('.pass-phone');
+                const card = selectedRadio.closest('.schedule-card');
 
-    const phone =
-        phoneInput?.value.trim() || '';
+                if (card) {
+                    dateText = card.querySelector('.schedule-date').innerText.trim();
+                }
+            }
 
-    if (phone) {
+            const contactName = document.getElementById('contact_name').value;
+            const contactEmail = document.getElementById('contact_email').value;
+            const contactPhone = document.getElementById('contact_phone').value;
+            const contactAddress = document.getElementById('contact_address').value;
 
-        const phoneRegex =
-            /^(0|\+84)[0-9]{9,10}$/;
+            const adults = parseInt(elQtyAdult.value) || 0;
+            const children = parseInt(elQtyChild.value) || 0;
 
-        if (!phoneRegex.test(phone)) {
+            const totalAdultPrice = adults * priceAdult;
+            const totalChildPrice = children * priceChild;
+            const finalTotal = totalAdultPrice + totalChildPrice;
 
-            openPassenger(card);
+            let passengersHTML = '';
 
-            return showError(
-                phoneInput,
-                `Hành khách #${i + 1}: Số điện thoại không đúng định dạng.`
-            );
-        }
-    }
+            document.querySelectorAll(
+                '#passengers-accordion .passenger-accordion-card'
+            ).forEach((card, index) => {
 
-
-    /* =====================================================
-       YÊU CẦU ĐẶC BIỆT
-       nullable|max:500
-    ===================================================== */
-
-    const noteInput =
-        card.querySelector('.pass-note');
-
-    const note =
-        noteInput?.value.trim() || '';
-
-    if (note.length > 500) {
-
-        openPassenger(card);
-
-        return showError(
-            noteInput,
-            `Hành khách #${i + 1}: Yêu cầu đặc biệt không được vượt quá 500 ký tự.`
-        );
-    }
-}
-
-
-/* =========================================================
-   9. TẤT CẢ HỢP LỆ
-========================================================= */
-
-return true;
-
-
-}
-
-/* =============================================================
-HÀM MỞ ACCORDION HÀNH KHÁCH KHI CÓ LỖI
-============================================================= */
-
-function openPassenger(card) {
-
-
-if (!card) {
-    return;
-}
-
-const collapse =
-    card.querySelector('.collapse');
-
-if (
-    collapse &&
-    typeof $ !== 'undefined' &&
-    typeof $.fn.collapse !== 'undefined'
-) {
-
-    $(collapse).collapse('show');
-}
-
-/*
- * Cuộn đến hành khách đang lỗi
- */
-
-setTimeout(function () {
-
-    card.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-    });
-
-}, 100);
-
-
-}
-
-
-    /* =========================================================
-       9. TẠO TÓM TẮT ĐƠN HÀNG
-    ========================================================= */
-
-    function generateSummary() {
-
-    const selectedRadio = document.querySelector(
-        'input[name="lich_khoi_hanh_id"]:checked'
-    );
-
-    let dateText = 'Chưa chọn lịch';
-
-    if (selectedRadio) {
-
-        const card = selectedRadio.closest('.schedule-card');
-
-        if (card) {
-            dateText = card.querySelector('.schedule-date').innerText.trim();
-        }
-    }
-
-    const contactName = document.getElementById('contact_name').value;
-    const contactEmail = document.getElementById('contact_email').value;
-    const contactPhone = document.getElementById('contact_phone').value;
-    const contactAddress = document.getElementById('contact_address').value;
-
-    const adults = parseInt(elQtyAdult.value) || 0;
-    const children = parseInt(elQtyChild.value) || 0;
-
-    const totalAdultPrice = adults * priceAdult;
-    const totalChildPrice = children * priceChild;
-    const finalTotal = totalAdultPrice + totalChildPrice;
-
-    let passengersHTML = '';
-
-    document.querySelectorAll(
-        '#passengers-accordion .passenger-accordion-card'
-    ).forEach((card, index) => {
-
-        passengersHTML += `
+                passengersHTML += `
         <tr>
             <td>${index+1}</td>
             <td>${card.querySelector('.pass-name').value}</td>
@@ -1570,9 +1565,9 @@ setTimeout(function () {
                 ${card.querySelector('.pass-doc-id').value}
             </td>
         </tr>`;
-    });
+            });
 
-    summaryModalContent.innerHTML = `
+            summaryModalContent.innerHTML = `
 
 <div class="summary-section-box">
 
@@ -1744,192 +1739,193 @@ value="30">
 </div>
 `;
 
-    syncPaymentMethod();
+            syncPaymentMethod();
 
-    document
-        .getElementById('paymentMethodSelect')
-        .addEventListener('change', syncPaymentMethod);
+            document
+                .getElementById('paymentMethodSelect')
+                .addEventListener('change', syncPaymentMethod);
 
-    const radios = document.querySelectorAll(
-        'input[name="phan_tram_modal"]'
-    );
+            const radios = document.querySelectorAll(
+                'input[name="phan_tram_modal"]'
+            );
 
-    radios.forEach(radio => {
+            radios.forEach(radio => {
 
-        radio.addEventListener('change', function () {
+                radio.addEventListener('change', function() {
 
-            const percent = parseInt(this.value);
+                    const percent = parseInt(this.value);
 
-            const payNow = finalTotal * percent / 100;
+                    const payNow = finalTotal * percent / 100;
 
-            const remain = finalTotal - payNow;
+                    const remain = finalTotal - payNow;
 
-            document.getElementById('payNow').innerHTML =
-                formatVND(payNow);
+                    document.getElementById('payNow').innerHTML =
+                        formatVND(payNow);
 
-            document.getElementById('remainMoney').innerHTML =
-                formatVND(remain);
+                    document.getElementById('remainMoney').innerHTML =
+                        formatVND(remain);
 
-            // Đồng bộ sang form để submit
-            let hidden = document.getElementById('phanTramHidden');
+                    // Đồng bộ sang form để submit
+                    let hidden = document.getElementById('phanTramHidden');
 
-            if (!hidden) {
+                    if (!hidden) {
 
-                hidden = document.createElement('input');
+                        hidden = document.createElement('input');
 
-                hidden.type = 'hidden';
+                        hidden.type = 'hidden';
 
-                hidden.name = 'phan_tram_thanh_toan';
+                        hidden.name = 'phan_tram_thanh_toan';
 
-                hidden.id = 'phanTramHidden';
+                        hidden.id = 'phanTramHidden';
 
-                bookingForm.appendChild(hidden);
+                        bookingForm.appendChild(hidden);
+                    }
+
+                    hidden.value = percent;
+
+                });
+
+            });
+
+            document.getElementById('phanTramHidden').value = 100;
+        }
+
+        /* =========================================================
+           10. NÚT "TIẾP TỤC & XEM TÓM TẮT"
+        ========================================================= */
+
+        btnPreviewBooking.addEventListener('click', function(event) {
+
+            event.preventDefault();
+
+            console.log('Đã bấm nút xem tóm tắt');
+
+            /*
+             * Validate TOÀN BỘ FORM trước
+             */
+
+            if (!validateBookingForm()) {
+
+                console.log('Validation thất bại');
+
+                return;
             }
 
-            hidden.value = percent;
+            console.log('Validation thành công');
 
+            /*
+             * Tạo tóm tắt
+             */
+
+            generateSummary();
+
+            /*
+             * Mở Bootstrap Modal
+             */
+
+            if (typeof $ !== 'undefined' &&
+                typeof $.fn.modal !== 'undefined') {
+
+                $('#summaryModal').modal('show');
+
+            } else {
+
+                console.error(
+                    'Bootstrap Modal chưa được load.'
+                );
+
+                alert(
+                    'Không thể mở cửa sổ tóm tắt. Vui lòng kiểm tra Bootstrap JS.'
+                );
+            }
         });
 
-    });
+        /* =========================================================
+           11. NÚT XÁC NHẬN ĐẶT TOUR
+        ========================================================= */
 
-    document.getElementById('phanTramHidden').value = 100;
-}
+        if (btnFinalSubmit) {
 
-    /* =========================================================
-       10. NÚT "TIẾP TỤC & XEM TÓM TẮT"
-    ========================================================= */
+            btnFinalSubmit.addEventListener(
+                'click'
+                , function() {
 
-    btnPreviewBooking.addEventListener('click', function (event) {
+                    /*
+                     * Kiểm tra lại validation một lần nữa
+                     */
 
-        event.preventDefault();
+                    if (!validateBookingForm()) {
+                        return;
+                    }
 
-        console.log('Đã bấm nút xem tóm tắt');
+                    /*
+                     * Kiểm tra phương thức thanh toán
+                     */
 
-        /*
-         * Validate TOÀN BỘ FORM trước
-         */
+                    syncPaymentMethod();
 
-        if (!validateBookingForm()) {
+                    if (!elInputPaymentMethod.value) {
 
-            console.log('Validation thất bại');
+                        alert(
+                            'Vui lòng chọn phương thức thanh toán.'
+                        );
 
-            return;
-        }
+                        return;
+                    }
 
-        console.log('Validation thành công');
+                    /*
+                     * Khóa nút tránh click nhiều lần
+                     */
 
-        /*
-         * Tạo tóm tắt
-         */
+                    btnFinalSubmit.disabled = true;
 
-        generateSummary();
+                    btnFinalSubmit.innerHTML =
+                        '<i class="fa fa-spinner fa-spin mr-2"></i>' +
+                        'Đang xử lý đơn đặt...';
 
-        /*
-         * Mở Bootstrap Modal
-         */
+                    /*
+                     * Submit form về Laravel
+                     */
 
-        if (typeof $ !== 'undefined' &&
-            typeof $.fn.modal !== 'undefined') {
-
-            $('#summaryModal').modal('show');
-
-        } else {
-
-            console.error(
-                'Bootstrap Modal chưa được load.'
-            );
-
-            alert(
-                'Không thể mở cửa sổ tóm tắt. Vui lòng kiểm tra Bootstrap JS.'
+                    bookingForm.submit();
+                }
             );
         }
-    });
 
-    /* =========================================================
-       11. NÚT XÁC NHẬN ĐẶT TOUR
-    ========================================================= */
+        /* =========================================================
+           12. THAY ĐỔI SỐ LƯỢNG
+        ========================================================= */
 
-    if (btnFinalSubmit) {
-
-        btnFinalSubmit.addEventListener(
-            'click',
-            function () {
-
-                /*
-                 * Kiểm tra lại validation một lần nữa
-                 */
-
-                if (!validateBookingForm()) {
-                    return;
-                }
-
-                /*
-                 * Kiểm tra phương thức thanh toán
-                 */
-
-                syncPaymentMethod();
-
-                if (!elInputPaymentMethod.value) {
-
-                    alert(
-                        'Vui lòng chọn phương thức thanh toán.'
-                    );
-
-                    return;
-                }
-
-                /*
-                 * Khóa nút tránh click nhiều lần
-                 */
-
-                btnFinalSubmit.disabled = true;
-
-                btnFinalSubmit.innerHTML =
-                    '<i class="fa fa-spinner fa-spin mr-2"></i>' +
-                    'Đang xử lý đơn đặt...';
-
-                /*
-                 * Submit form về Laravel
-                 */
-
-                bookingForm.submit();
-            }
+        elQtyAdult.addEventListener(
+            'change'
+            , updateBookingDetails
         );
-    }
 
-    /* =========================================================
-       12. THAY ĐỔI SỐ LƯỢNG
-    ========================================================= */
+        elQtyChild.addEventListener(
+            'change'
+            , updateBookingDetails
+        );
 
-    elQtyAdult.addEventListener(
-        'change',
-        updateBookingDetails
-    );
+        elQtyAdult.addEventListener(
+            'input'
+            , updateBookingDetails
+        );
 
-    elQtyChild.addEventListener(
-        'change',
-        updateBookingDetails
-    );
+        elQtyChild.addEventListener(
+            'input'
+            , updateBookingDetails
+        );
 
-    elQtyAdult.addEventListener(
-        'input',
-        updateBookingDetails
-    );
+        /* =========================================================
+           13. KHỞI TẠO
+        ========================================================= */
 
-    elQtyChild.addEventListener(
-        'input',
-        updateBookingDetails
-    );
+        updateBookingDetails();
 
-    /* =========================================================
-       13. KHỞI TẠO
-    ========================================================= */
+        console.log('Booking JavaScript đã khởi tạo thành công.');
 
-    updateBookingDetails();
+    });
 
-    console.log('Booking JavaScript đã khởi tạo thành công.');
-
-});
 </script>
 
 @endsection

@@ -1625,5 +1625,4 @@ $checkIn = $checkIns[$khach->id] ?? null;
 </div>
 @endforeach
 @endforeach
-@endforeach
 @endsection

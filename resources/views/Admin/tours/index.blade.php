@@ -1346,7 +1346,7 @@
                                         <div class="tour-image-box">
                                             @if ($tour->anh_dai_dien)
                                                 <img
-                                                    src="{{ asset('storage/' . $tour->anh_dai_dien) }}"
+                                                    src="{{ asset($tour->anh_dai_dien) }}"
                                                     alt="{{ $tour->ten_tour }}"
                                                     loading="lazy"
                                                 >

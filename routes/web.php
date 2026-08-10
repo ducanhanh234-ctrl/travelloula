@@ -24,7 +24,7 @@ use App\Http\Controllers\TrangDieuKhoanClientController;
 use App\Http\Controllers\TrangDieuKhoanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
-
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BaoCaoSuCoController as AdminBaoCaoSuCoController;
 use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\Admin\GopDoanController;
@@ -384,24 +384,28 @@ Route::prefix('Admin')
             ->name('lien_hes.')
             ->group(function () {
 
-                Route::get('/', [AdminLienHeController::class, 'index'])
-                    ->name('index');
+            Route::get('/', [AdminLienHeController::class, 'index'])
+                ->name('index');
 
-                Route::get('/{id}', [AdminLienHeController::class, 'show'])
-                    ->name('show');
+            Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                ->name('show');
 
-                Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
-                    ->name('read');
+            Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
+                ->name('read');
 
-                Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
-                    ->name('destroy');
-            });
+            Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                ->name('destroy');
+        });
         Route::patch(
             '{id}/unread',
             [AdminLienHeController::class, 'markUnread']
         )
             ->name('unread');
+
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
         /*
+
 |--------------------------------------------------------------------------
 | QUẢN LÝ LIÊN HỆ
 |--------------------------------------------------------------------------
@@ -483,7 +487,7 @@ Route::prefix('Guide')
         Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])
             ->name('danh-sach-khach');
 
-//checkin
+        //checkin
         Route::get('/check-in', [CheckInController::class, 'index'])
             ->name('checkin.index');
 
@@ -540,8 +544,8 @@ Route::prefix('Guide')
             ->whereNumber('lichKhoiHanh')
             ->name('checkin.finishTour');
 
-            //checkin context
-
+        //checkin context
+    
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
 
@@ -586,7 +590,7 @@ Route::prefix('Guide')
         // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
-
+    
 
         Route::get(
             '/checkin/{lichKhoiHanh}/xuat-phat',
@@ -602,7 +606,7 @@ Route::prefix('Guide')
         //     '/checkin/{lichKhoiHanh}/ket-thuc',
         //     [CheckInController::class, 'showKetThuc']
         // )->name('checkin.ketThuc');
-
+    
         // Route::post(
         //     '/checkin/{lichKhoiHanh}/ket-thuc',
         //     [CheckInController::class, 'storeKetThuc']

@@ -247,7 +247,7 @@ class DashboardController extends Controller
                 ->get();
         }
 
-        return view('Admin.dashboard', compact(
+        return view('Admin.dashboards.index', compact(
             'tongDoanhThu',
             'tongGiaTriDon',
             'congNoConLai',

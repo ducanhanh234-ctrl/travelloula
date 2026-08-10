@@ -196,14 +196,20 @@
                     <span>
                         <i class="fa-solid fa-location-dot"></i>
                     </span>
-                    <p>Hà Nội, Việt Nam</p>
+                    <p>Travelloula Travel
+
+FPT Polytechnic
+
+Trịnh Văn Bô
+
+Nam Từ Liêm - Hà Nội</p>
                 </div>
 
                 <div class="contact-item">
                     <span>
                         <i class="fa-solid fa-phone"></i>
                     </span>
-                    <p>1900 1234</p>
+                    <p>1900 9999</p>
                 </div>
 
                 <div class="contact-item">

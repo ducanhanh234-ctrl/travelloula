@@ -42,6 +42,7 @@ use App\Http\Controllers\Guide\BaoCaoSuCoController as GuideBaoCaoSuCoController
 use App\Http\Controllers\Guide\CheckInController;
 use App\Http\Controllers\Guide\GuideController;
 use App\Http\Controllers\Guide\NhatKyHuongDanVienController;
+use App\Http\Controllers\Guide\GuideDashboardController;
 use App\Http\Controllers\Admin\YeuCauGopDoanController;
 use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
 use App\Http\Controllers\Admin\HinhAnhTourController;
@@ -548,6 +549,8 @@ Route::prefix('Guide')
     
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
+        Route::get('/', [GuideDashboardController::class, 'index'])
+            ->name('dashboard');
 
         /*
         |--------------------------------------------------------------------------

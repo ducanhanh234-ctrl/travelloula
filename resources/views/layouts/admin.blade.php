@@ -1322,7 +1322,7 @@
                         </a>
                     </div>
 
-                    <div class="nav-item">
+                    {{-- <div class="nav-item">
                         <a href="{{ route('Admin.trang_dieu_khoans.edit') }}"
                             class="nav-link {{ request()->routeIs('Admin.trang_dieu_khoans*') ? 'active' : '' }}"
                             title="Điều khoản">
@@ -1334,8 +1334,8 @@
                                 Điều khoản
                             </span>
                         </a>
-                    </div>
-                    <div class="nav-item">
+                    </div> --}}
+                    {{-- <div class="nav-item">
                         <a href="{{ route('Admin.bai_viets.index') }}"
                             class="nav-link {{ request()->routeIs('Admin.bai_viet*') ? 'active' : '' }}"
                             title="Bài viết">
@@ -1347,7 +1347,7 @@
                                 Bài viết
                             </span>
                         </a>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 

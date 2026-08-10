@@ -17,7 +17,7 @@ class QuyenHanController extends Controller
 
     public function index()
     {
-        $quyenHans = QuyenHan::paginate(10);
+        $quyenHans = QuyenHan::paginate(20);
         return view('Admin.quyen_hans.index', compact('quyenHans'));
     }
     public function create()

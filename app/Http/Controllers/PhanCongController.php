@@ -100,7 +100,7 @@ class PhanCongController extends Controller
             return $vehicle->so_cho ?? (int) preg_replace('/\D/', '', $vehicle->loai_phuong_tien);
         });
 
-        $soKhach = $lich->tour->so_khach_toi_da;
+        $soKhach = $lich->so_khach_da_dat;
 
         if ($totalSeats < $soKhach) {
             return back()
@@ -264,7 +264,7 @@ class PhanCongController extends Controller
             $totalSeats = $phuongTiens->sum(function ($vehicle) {
                 return $vehicle->so_cho ?? (int) preg_replace('/\D/', '', $vehicle->loai_phuong_tien);
             });
-            $soKhach = $lich->tour->so_khach_toi_da;
+            $soKhach = $lich->so_khach_da_dat;
 
             if ($totalSeats < $soKhach) {
                 return back()

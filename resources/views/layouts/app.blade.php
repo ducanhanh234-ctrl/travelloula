@@ -26,7 +26,7 @@
                     Trang chủ
                 </a>
 
-                <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour*') ? 'active' : '' }}">
+                <a href="{{ route('Client.danh_sach_tour.index') }}" class="{{ request()->is('tour') ? 'active' : '' }}">
                     Tour
                 </a>
 
@@ -47,7 +47,7 @@
                     Bài viết
                 </a>
 
-                <a href="{{ route('Client.lien_he.index') }}" class="{{ request()->is('lien_he*') ? 'active' : '' }}">
+                <a href="{{ route('Client.lien_he.index') }}" class="{{ request()->is('lien-he') ? 'active' : '' }}">
                     Liên hệ
                 </a>
 

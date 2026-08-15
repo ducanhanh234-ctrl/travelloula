@@ -34,7 +34,7 @@
                     <div class="card border-0 shadow-sm mb-5 tour-info-card">
                         <div class="row no-gutters">
                             <div class="col-md-4">
-                                <img src="{{ asset($tour->anh_dai_dien) }}" alt="{{ $tour->ten_tour }}" class="img-fluid h-100 w-100 tour-img" class="img-fluid h-100 w-100 tour-img" alt="{{ $tour->ten_tour }}">
+                                <img src="{{ asset($tour->anh_dai_dien) }}" alt="{{ $tour->ten_tour }}" class="img-fluid h-100 w-100 tour-img">
                             </div>
                             <div class="col-md-8 p-4 d-flex flex-column justify-content-center">
                                 <h4 class="font-weight-bold mb-3">{{ $tour->ten_tour }}</h4>
@@ -226,6 +226,7 @@
                     <!-- ẨN INPUT TỔNG TIỀN ĐỂ SUBMIT VỀ BACKEND -->
                     <input type="hidden" name="tong_tien" id="input_grand_total" value="{{ $tour->gia_nguoi_lon }}">
                     <input type="hidden" name="phuong_thuc_thanh_toan" id="input_payment_method" value="">
+                    <input type="hidden" name="phan_tram_thanh_toan" id="phanTramHidden" value="100">
                 </div>
             </div>
         </form>
@@ -261,166 +262,1315 @@
 </div>
 
 <style>
-    :root {
-        --primary: #0757d8;
-        --primary-light: #e6effb;
-        --bg: #f8fbff;
-        --text: #0f172a;
+:root{
+    --primary:#2563eb;
+    --primary-dark:#1d4ed8;
+    --primary-light:#3b82f6;
+    --primary-soft:#eff6ff;
+    --primary-pale:#f8fbff;
+    --cyan:#38bdf8;
+    --text:#0f172a;
+    --text-soft:#334155;
+    --muted:#64748b;
+    --line:#dbe5f1;
+    --line-soft:#e8eef6;
+    --white:#fff;
+    --success:#059669;
+    --success-soft:#ecfdf5;
+    --danger:#dc2626;
+    --danger-soft:#fef2f2;
+    --shadow-sm:0 10px 28px rgba(15,23,42,.07);
+    --shadow:0 18px 48px rgba(37,99,235,.10);
+    --shadow-lg:0 28px 80px rgba(15,23,42,.15);
+    --radius:18px;
+    --radius-lg:26px;
+}
+
+html,body{
+    width:100%;
+    max-width:100%;
+    overflow-x:hidden;
+}
+
+body{
+    color:var(--text);
+    background:#f8fbff;
+}
+
+.page-bg{
+    position:relative;
+    min-height:100vh;
+    padding-top:clamp(46px,5vw,78px)!important;
+    padding-bottom:clamp(60px,6vw,100px)!important;
+    background:
+        radial-gradient(circle at 8% 3%,rgba(37,99,235,.10),transparent 30%),
+        radial-gradient(circle at 92% 8%,rgba(56,189,248,.10),transparent 26%),
+        linear-gradient(180deg,#fff 0%,#f8fbff 42%,#f3f8ff 100%);
+}
+
+.page-bg::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background-image:
+        linear-gradient(rgba(37,99,235,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(37,99,235,.025) 1px,transparent 1px);
+    background-size:34px 34px;
+    mask-image:linear-gradient(to bottom,rgba(0,0,0,.45),transparent 55%);
+}
+
+.page-bg>.container{
+    position:relative;
+    z-index:1;
+    width:min(1380px,calc(100% - 32px));
+    max-width:1380px;
+    padding-left:0;
+    padding-right:0;
+}
+
+.page-bg .col-xl-9.col-lg-10.mx-auto{
+    flex:0 0 100%;
+    width:100%;
+    max-width:1180px;
+}
+
+/* HEADER */
+.page-bg .mb-4.text-center{
+    position:relative;
+    overflow:hidden;
+    margin-bottom:34px!important;
+    padding:30px 24px 28px;
+    border:1px solid #dbeafe;
+    border-radius:var(--radius-lg);
+    background:
+        radial-gradient(circle at 12% 20%,rgba(59,130,246,.13),transparent 30%),
+        linear-gradient(135deg,#fff,#f5f9ff);
+    box-shadow:var(--shadow);
+}
+
+.page-bg .mb-4.text-center::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    right:-65px;
+    top:-85px;
+    border-radius:50%;
+    background:rgba(56,189,248,.10);
+}
+
+.page-bg .mb-4.text-center h2{
+    position:relative;
+    z-index:1;
+    margin:0 0 8px!important;
+    color:var(--text)!important;
+    font-size:clamp(29px,3vw,42px);
+    line-height:1.18;
+    font-weight:900!important;
+    letter-spacing:-1px;
+}
+
+.page-bg .mb-4.text-center h2 i{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:50px;
+    height:50px;
+    margin-right:12px!important;
+    border-radius:16px;
+    color:#fff!important;
+    background:linear-gradient(135deg,var(--primary-light),var(--primary));
+    box-shadow:0 12px 26px rgba(37,99,235,.24);
+    vertical-align:middle;
+    font-size:21px;
+}
+
+.page-bg .mb-4.text-center p{
+    position:relative;
+    z-index:1;
+    max-width:720px;
+    margin:0 auto!important;
+    color:var(--muted)!important;
+    font-size:15px!important;
+    line-height:1.7;
+    font-weight:600;
+}
+
+.primary-text{color:var(--primary)!important}
+.rounded-custom{border-radius:var(--radius)!important}
+
+/* ALERT */
+.page-bg .alert-danger{
+    border:1px solid #fecaca!important;
+    border-radius:16px!important;
+    color:#991b1b;
+    background:#fff7f7;
+    box-shadow:0 12px 28px rgba(220,38,38,.08)!important;
+    font-weight:700;
+}
+
+/* SECTION TITLE */
+.section-title{
+    position:relative;
+    display:flex;
+    align-items:center;
+    margin:0 0 15px!important;
+    padding-left:18px;
+    border-left:0;
+    color:var(--text)!important;
+    font-size:18px;
+    line-height:1.4;
+    font-weight:900!important;
+    letter-spacing:-.25px;
+}
+.section-title::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:2px;
+    bottom:2px;
+    width:5px;
+    border-radius:999px;
+    background:linear-gradient(180deg,var(--primary-light),var(--primary));
+    box-shadow:0 4px 12px rgba(37,99,235,.22);
+}
+
+/* TOUR INFO */
+.tour-info-card{
+    overflow:hidden;
+    border:1px solid #dbeafe!important;
+    border-radius:24px!important;
+    background:#fff;
+    box-shadow:var(--shadow)!important;
+}
+.tour-info-card .row{min-height:245px}
+.tour-img{
+    width:100%;
+    height:100%;
+    min-height:245px;
+    border-radius:0;
+    object-fit:cover;
+    display:block;
+}
+.tour-info-card .col-md-8{
+    position:relative;
+    padding:34px 38px!important;
+    background:
+        radial-gradient(circle at 100% 0,rgba(37,99,235,.08),transparent 35%),
+        linear-gradient(180deg,#fff,#fbfdff);
+}
+.tour-info-card h4:first-child{
+    color:var(--text);
+    font-size:clamp(23px,2vw,30px);
+    line-height:1.35;
+    font-weight:900!important;
+    letter-spacing:-.5px;
+}
+.tour-info-card .text-muted{
+    color:var(--muted)!important;
+    font-weight:600;
+}
+.tour-info-card h4.primary-text{
+    margin-top:18px!important;
+    padding-top:18px;
+    border-top:1px dashed #dbe5f1;
+    font-size:27px;
+    color:var(--primary-dark)!important;
+}
+
+/* CONTENT CARDS */
+.page-bg .card.border-0.shadow-sm.p-4,
+.page-bg .card.border-0.shadow-sm.p-4.mb-5{
+    border:1px solid var(--line-soft)!important;
+    border-radius:22px!important;
+    background:rgba(255,255,255,.97);
+    box-shadow:var(--shadow-sm)!important;
+}
+
+/* SCHEDULE */
+.schedule-card{
+    position:relative;
+    overflow:hidden;
+    min-height:132px;
+    border:1.5px solid #dbe5f1!important;
+    border-radius:18px!important;
+    background:linear-gradient(135deg,#fff,#fbfdff);
+    box-shadow:0 10px 26px rgba(15,23,42,.065)!important;
+    transition:.22s ease;
+}
+.schedule-card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:4px;
+    background:#dbeafe;
+}
+.schedule-card:hover{
+    transform:translateY(-3px);
+    border-color:#93c5fd!important;
+    box-shadow:0 16px 36px rgba(37,99,235,.12)!important;
+}
+.schedule-card:has(input[type="radio"]:checked){
+    border-color:var(--primary)!important;
+    background:linear-gradient(135deg,#eff6ff,#fff);
+    box-shadow:0 18px 38px rgba(37,99,235,.16)!important;
+}
+.schedule-card:has(input[type="radio"]:checked)::before{
+    background:linear-gradient(180deg,var(--primary-light),var(--primary));
+}
+.schedule-disabled{opacity:.68}
+.schedule-disabled .schedule-card{
+    background:#f8fafc;
+    box-shadow:none!important;
+}
+.schedule-disabled .schedule-card:hover{
+    transform:none;
+    border-color:#e2e8f0!important;
+    box-shadow:none!important;
+}
+.custom-radio{
+    width:20px;
+    height:20px;
+    margin-top:4px!important;
+    accent-color:var(--primary);
+}
+.schedule-date{
+    color:var(--text)!important;
+    font-size:17px!important;
+    font-weight:900!important;
+}
+.schedule-card .border-top{border-color:#e6edf7!important}
+.badge{
+    border-radius:999px;
+    letter-spacing:.1px;
+}
+.badge-success-soft,.badge-secondary-soft,.badge-danger-soft{
+    padding:7px 11px;
+    border:1px solid transparent;
+    font-size:11px;
+    line-height:1;
+    font-weight:900;
+}
+.badge-success-soft{
+    color:#047857;
+    background:var(--success-soft);
+    border-color:#a7f3d0;
+}
+.badge-secondary-soft{
+    color:#475569;
+    background:#f1f5f9;
+    border-color:#e2e8f0;
+}
+.badge-danger-soft{
+    color:#b91c1c;
+    background:var(--danger-soft);
+    border-color:#fecaca;
+}
+
+/* INPUT */
+.page-bg label{color:#475569}
+.input-custom,
+.page-bg .form-control,
+.page-bg .custom-select{
+    min-height:50px;
+    border:1px solid #d7e2ef;
+    border-radius:13px;
+    color:var(--text);
+    background:#fff!important;
+    padding:.72rem .95rem;
+    font-size:14px;
+    font-weight:650;
+    box-shadow:none;
+    transition:.2s ease;
+}
+.page-bg .form-control[readonly]{
+    color:#475569;
+    background:#f8fafc!important;
+    border-color:#e2e8f0;
+}
+.input-custom:focus,
+.page-bg .form-control:focus,
+.page-bg .custom-select:focus{
+    border-color:#60a5fa;
+    background:#fff!important;
+    box-shadow:0 0 0 4px rgba(37,99,235,.10);
+    outline:none;
+}
+.page-bg .input-group-text{
+    min-width:50px;
+    justify-content:center;
+    border-color:#d7e2ef;
+    border-radius:13px 0 0 13px;
+    color:var(--primary);
+    background:#eff6ff!important;
+}
+.page-bg .input-group .form-control{
+    border-radius:0 13px 13px 0;
+}
+.page-bg .is-invalid{
+    border-color:#ef4444!important;
+    box-shadow:0 0 0 4px rgba(239,68,68,.08)!important;
+}
+.js-error{font-weight:700}
+
+/* IMPORT EXCEL */
+.page-bg label .btn-outline-primary{
+    min-height:40px;
+    padding:0 16px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #93c5fd;
+    border-radius:12px;
+    color:var(--primary);
+    background:#fff;
+    font-weight:900;
+    box-shadow:0 8px 18px rgba(37,99,235,.07);
+}
+.page-bg label .btn-outline-primary:hover{
+    color:#fff;
+    border-color:var(--primary);
+    background:var(--primary);
+    transform:translateY(-1px);
+}
+
+/* PASSENGER */
+.passenger-accordion-card{
+    overflow:hidden;
+    border:1px solid #dbe5f1;
+    border-radius:18px!important;
+    background:#fff;
+    box-shadow:0 10px 28px rgba(15,23,42,.06)!important;
+    transition:.22s ease;
+}
+.passenger-accordion-card:hover{
+    border-color:#bfdbfe;
+    box-shadow:0 16px 34px rgba(37,99,235,.10)!important;
+}
+.passenger-accordion-header{
+    min-height:68px;
+    padding:16px 20px;
+    color:var(--text);
+    background:linear-gradient(135deg,#fff,#f8fbff);
+    cursor:pointer;
+}
+.passenger-accordion-header:hover{background:#f1f7ff}
+.passenger-accordion-header .badge-primary{
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+}
+.passenger-accordion-header .badge-info{
+    background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+}
+.accordion-icon{
+    color:var(--primary);
+    transition:transform .25s ease,color .25s ease;
+}
+.passenger-accordion-header.collapsed .accordion-icon{
+    color:#94a3b8;
+    transform:rotate(-90deg);
+}
+.passenger-body{
+    padding:22px;
+    border-top:1px solid #e6edf7;
+    background:#fbfdff;
+}
+
+/* COMMITMENT */
+#chk_commitment + .custom-control-label{
+    line-height:1.7;
+    color:#334155!important;
+}
+.custom-control-input:checked~.custom-control-label::before{
+    border-color:var(--primary);
+    background-color:var(--primary);
+}
+
+/* CTA */
+.btn-checkout{
+    min-height:58px;
+    border:0!important;
+    border-radius:16px!important;
+    color:#fff;
+    background:linear-gradient(135deg,#3b82f6 0%,#2563eb 58%,#1d4ed8 100%)!important;
+    box-shadow:0 14px 30px rgba(37,99,235,.24)!important;
+    transition:.22s ease;
+}
+.btn-checkout:hover,.btn-checkout:focus{
+    color:#fff;
+    transform:translateY(-2px);
+    box-shadow:0 18px 38px rgba(37,99,235,.30)!important;
+}
+
+/* SUMMARY MODAL */
+#summaryModal .modal-dialog{max-width:1000px}
+#summaryModal .modal-content{
+    overflow:hidden;
+    border:1px solid #dbeafe!important;
+    border-radius:24px!important;
+    background:#fff;
+    box-shadow:var(--shadow-lg)!important;
+}
+#summaryModal .modal-header{
+    position:relative;
+    padding:22px 28px!important;
+    border-bottom:1px solid #dbeafe!important;
+    background:
+        radial-gradient(circle at 10% 0,rgba(37,99,235,.10),transparent 32%),
+        linear-gradient(135deg,#fff,#f4f8ff)!important;
+}
+#summaryModal .modal-title{
+    color:var(--text)!important;
+    font-size:23px;
+    font-weight:900!important;
+}
+#summaryModal .close{
+    position:absolute;
+    right:18px;
+    top:50%;
+    width:40px;
+    height:40px;
+    margin:0;
+    padding:0;
+    transform:translateY(-50%);
+    border-radius:50%;
+    color:#64748b;
+    background:#fff;
+    opacity:1;
+    box-shadow:0 6px 16px rgba(15,23,42,.08);
+}
+#summaryModal .modal-body{
+    padding:24px!important;
+    background:#f8fbff!important;
+}
+#summaryModal .modal-footer{
+    padding:18px 24px!important;
+    border-top:1px solid #e2e8f0!important;
+    background:#fff!important;
+}
+#summaryModal .btn-secondary,
+#summaryModal .btn-success{
+    min-height:46px;
+    border-radius:13px!important;
+    font-weight:900!important;
+}
+#summaryModal .btn-secondary{
+    border:1px solid #cbd5e1;
+    color:#475569;
+    background:#fff;
+}
+#summaryModal .btn-success{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#10b981,#059669);
+    box-shadow:0 12px 24px rgba(5,150,105,.20)!important;
+}
+
+/* GENERATED SUMMARY */
+.summary-section-box{
+    margin-bottom:14px;
+    padding:18px;
+    border:1px solid #dfe8f3;
+    border-radius:17px;
+    background:#fff;
+    box-shadow:0 8px 22px rgba(15,23,42,.045);
+}
+.summary-section-box h5,.summary-section-box h6{
+    margin-bottom:12px;
+    color:var(--text);
+    font-weight:900;
+}
+.summary-section-box p{
+    margin-bottom:6px;
+    color:#475569;
+    line-height:1.6;
+}
+.summary-section-title{
+    margin-bottom:12px;
+    padding-bottom:9px;
+    border-bottom:1px dashed #dbe5f1;
+    color:var(--primary);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.75px;
+    text-transform:uppercase;
+}
+.summary-section-box .table{margin-bottom:0;background:#fff}
+.summary-section-box .table thead th{
+    border-color:#dbe5f1;
+    color:#334155;
+    background:#eff6ff;
+    font-size:12px;
+    font-weight:900;
+    white-space:nowrap;
+}
+.summary-section-box .table td{
+    border-color:#e5edf6;
+    color:#475569;
+    font-size:13px;
+    vertical-align:middle;
+}
+.summary-section-box.bg-dark{
+    border:0!important;
+    color:#fff!important;
+    background:linear-gradient(135deg,#0f172a,#1e3a8a)!important;
+    box-shadow:0 16px 34px rgba(15,23,42,.20);
+}
+.summary-section-box.bg-dark span,
+.summary-section-box.bg-dark strong{color:#fff}
+.summary-section-box.bg-dark hr{border-color:rgba(255,255,255,.18)}
+
+.page-bg .mb-5{margin-bottom:34px!important}
+
+@media(min-width:1600px){
+    .page-bg .col-xl-9.col-lg-10.mx-auto{max-width:1260px}
+    .tour-info-card .row{min-height:270px}
+}
+
+@media(max-width:991px){
+    .page-bg{padding-top:42px!important}
+    .page-bg>.container{width:calc(100% - 26px)}
+    .page-bg .col-xl-9.col-lg-10.mx-auto{max-width:100%}
+    .tour-info-card .col-md-8{padding:26px 28px!important}
+}
+
+@media(max-width:767px){
+    .page-bg{
+        padding-top:28px!important;
+        padding-bottom:60px!important;
+    }
+    .page-bg>.container{width:calc(100% - 20px)}
+    .page-bg .mb-4.text-center{
+        padding:24px 18px;
+        border-radius:20px;
+    }
+    .page-bg .mb-4.text-center h2{font-size:28px}
+    .page-bg .mb-4.text-center h2 i{
+        width:44px;
+        height:44px;
+        border-radius:14px;
+    }
+    .tour-info-card{border-radius:20px!important}
+    .tour-info-card .row{min-height:0}
+    .tour-img{
+        min-height:220px;
+        max-height:260px;
+    }
+    .tour-info-card .col-md-8{padding:22px 20px!important}
+    .tour-info-card h4:first-child{font-size:22px}
+    .schedule-card{min-height:0}
+    .page-bg .card.border-0.shadow-sm.p-4,
+    .page-bg .card.border-0.shadow-sm.p-4.mb-5{
+        padding:20px!important;
+        border-radius:18px!important;
+    }
+    .passenger-body{padding:18px}
+    #summaryModal .modal-dialog{margin:10px}
+    #summaryModal .modal-header{padding:18px 52px 18px 18px!important}
+    #summaryModal .modal-title{
+        text-align:left!important;
+        font-size:19px;
+    }
+    #summaryModal .modal-body{padding:15px!important}
+    #summaryModal .modal-footer{
+        gap:10px;
+        flex-direction:column-reverse;
+        align-items:stretch!important;
+    }
+    #summaryModal .modal-footer .btn{
+        width:100%;
+        margin:0!important;
+    }
+    .summary-section-box{overflow-x:auto}
+}
+
+@media(max-width:520px){
+    .page-bg>.container{width:calc(100% - 14px)}
+    .page-bg .mb-4.text-center h2{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:10px;
+    }
+    .page-bg .mb-4.text-center h2 i{margin-right:0!important}
+    .section-title{font-size:17px}
+    .schedule-card{padding:14px!important}
+    .schedule-card .ml-4{margin-left:14px!important}
+    .schedule-card .d-flex.justify-content-between{
+        gap:8px;
+        align-items:flex-start!important;
+        flex-direction:column;
+    }
+    .tour-info-card h4.primary-text{font-size:24px}
+    .passenger-accordion-header{padding:14px 15px}
+    .passenger-body{padding:15px}
+    .btn-checkout{
+        min-height:54px;
+        font-size:14px;
+    }
+}
+
+/* =========================================================
+   TINH CHỈNH GIAO DIỆN ĐẶT TOUR - PREMIUM BLUE / WHITE
+   ========================================================= */
+
+/* Tổng thể gọn, sáng và cân đối hơn */
+#bookingForm{
+    counter-reset:booking-step;
+}
+
+.page-bg{
+    padding-top:44px !important;
+    background:
+        radial-gradient(circle at 12% 0%,rgba(59,130,246,.10),transparent 28%),
+        radial-gradient(circle at 90% 8%,rgba(14,165,233,.07),transparent 24%),
+        linear-gradient(180deg,#f8fbff 0%,#ffffff 48%,#f7fbff 100%) !important;
+}
+
+.page-bg > .container{
+    width:min(1320px,calc(100% - 36px)) !important;
+    max-width:1320px !important;
+}
+
+.page-bg .col-xl-9.col-lg-10.mx-auto{
+    max-width:1180px !important;
+}
+
+/* Tiêu đề đầu trang */
+.page-bg .mb-4.text-center{
+    margin-bottom:38px !important;
+    padding:32px 28px !important;
+    border:1px solid #dbeafe !important;
+    border-radius:28px !important;
+    background:
+        linear-gradient(120deg,rgba(239,246,255,.95),rgba(255,255,255,.98) 48%,rgba(240,249,255,.92)) !important;
+    box-shadow:
+        0 18px 46px rgba(37,99,235,.09),
+        inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+
+.page-bg .mb-4.text-center h2{
+    font-size:clamp(30px,3vw,43px) !important;
+    letter-spacing:-1.1px !important;
+}
+
+.page-bg .mb-4.text-center p{
+    color:#64748b !important;
+    font-size:15px !important;
+}
+
+/* Card thông tin tour */
+.tour-info-card{
+    margin-bottom:42px !important;
+    border:1px solid #dbeafe !important;
+    border-radius:26px !important;
+    box-shadow:
+        0 22px 54px rgba(37,99,235,.10),
+        0 4px 14px rgba(15,23,42,.04) !important;
+}
+
+.tour-info-card .row{
+    min-height:238px !important;
+}
+
+.tour-img{
+    min-height:238px !important;
+}
+
+.tour-info-card .col-md-8{
+    padding:32px 38px !important;
+}
+
+.tour-info-card h4:first-child{
+    margin-bottom:18px !important;
+    font-size:clamp(23px,2vw,29px) !important;
+}
+
+.tour-info-card .d-flex.align-items-center{
+    min-height:34px;
+    margin-bottom:6px !important;
+    color:#53657d !important;
+    font-size:15px;
+}
+
+.tour-info-card .d-flex.align-items-center i{
+    width:34px !important;
+    height:34px;
+    margin-right:10px !important;
+    border-radius:10px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#eff6ff;
+}
+
+.tour-info-card .d-flex.align-items-center .text-danger{
+    color:#ef4444 !important;
+    background:#fff1f2;
+}
+
+.tour-info-card h4.primary-text{
+    margin-top:18px !important;
+    padding-top:20px !important;
+    border-top:1px dashed #cbdcf1 !important;
+    color:#1d4ed8 !important;
+    font-size:30px !important;
+}
+
+/* Tiêu đề từng bước */
+.section-title{
+    counter-increment:booking-step;
+    display:flex !important;
+    align-items:center !important;
+    gap:11px !important;
+    min-height:36px;
+    margin:0 0 17px !important;
+    padding:0 !important;
+    border:0 !important;
+    color:#0f172a !important;
+    font-size:21px !important;
+    font-weight:900 !important;
+    letter-spacing:-.45px;
+}
+
+/* Nhãn bước mới: nhẹ, sang, không còn cảm giác như một nút bấm */
+.section-title::before{
+    content:"BƯỚC " counter(booking-step) !important;
+    position:static !important;
+    width:auto !important;
+    height:30px !important;
+    flex:0 0 auto !important;
+    padding:0 10px !important;
+    border:1px solid #bfdbfe !important;
+    border-radius:999px !important;
+    display:inline-flex !important;
+    align-items:center;
+    justify-content:center;
+    color:#2563eb !important;
+    background:linear-gradient(180deg,#ffffff,#eff6ff) !important;
+    box-shadow:none !important;
+    font-size:10px !important;
+    line-height:1 !important;
+    font-weight:1000 !important;
+    letter-spacing:.7px !important;
+    white-space:nowrap;
+}
+
+.section-title::after{
+    content:"";
+    height:1px;
+    flex:1;
+    margin-left:6px;
+    background:linear-gradient(90deg,#cfe0f8 0%,rgba(207,224,248,.25) 70%,transparent 100%);
+}
+
+/* Khu vực lịch khởi hành */
+.section-title + .mb-5.row{
+    margin-left:-7px !important;
+    margin-right:-7px !important;
+    margin-bottom:42px !important;
+}
+
+.section-title + .mb-5.row > [class*="col-md-6"]{
+    padding-left:7px !important;
+    padding-right:7px !important;
+}
+
+/* Khi chỉ có một lịch thì card dùng toàn bộ bề ngang */
+.section-title + .mb-5.row > [class*="col-md-6"]:only-child{
+    flex:0 0 100% !important;
+    max-width:100% !important;
+}
+
+/* Tối đa 2 cột, nhưng mỗi card không bị quá dài */
+.schedule-card{
+    min-height:146px !important;
+    padding:20px 22px !important;
+    border:1px solid #d9e5f5 !important;
+    border-radius:20px !important;
+    background:
+        radial-gradient(circle at 100% 0,rgba(59,130,246,.05),transparent 32%),
+        #ffffff !important;
+    box-shadow:0 12px 30px rgba(15,23,42,.06) !important;
+}
+
+.schedule-card::before{
+    width:5px !important;
+    background:#dbeafe !important;
+}
+
+.schedule-card:hover{
+    transform:translateY(-3px) !important;
+    border-color:#93c5fd !important;
+    box-shadow:0 18px 38px rgba(37,99,235,.12) !important;
+}
+
+.schedule-card:has(input[type="radio"]:checked){
+    border-color:#3b82f6 !important;
+    background:
+        linear-gradient(135deg,#eff6ff 0%,#ffffff 72%) !important;
+    box-shadow:
+        0 18px 42px rgba(37,99,235,.15),
+        inset 0 0 0 1px rgba(59,130,246,.08) !important;
+}
+
+.schedule-card:has(input[type="radio"]:checked)::before{
+    background:linear-gradient(180deg,#3b82f6,#2563eb) !important;
+}
+
+.custom-radio{
+    width:22px !important;
+    height:22px !important;
+    margin-top:1px !important;
+    accent-color:#2563eb !important;
+}
+
+.schedule-card .ml-4{
+    margin-left:18px !important;
+}
+
+.schedule-date{
+    font-size:18px !important;
+    color:#0f172a !important;
+    letter-spacing:-.2px;
+}
+
+.schedule-card small{
+    font-size:13px;
+    font-weight:700;
+}
+
+.schedule-card .badge{
+    padding:8px 13px !important;
+    font-size:11px !important;
+    font-weight:900 !important;
+}
+
+.schedule-card .text-right{
+    padding-top:13px !important;
+    margin-top:12px !important;
+}
+
+.schedule-card .text-right .primary-text{
+    color:#1d4ed8 !important;
+    font-size:18px;
+    font-weight:900 !important;
+}
+
+/* Các khối form */
+.page-bg .card.border-0.shadow-sm.p-4,
+.page-bg .card.border-0.shadow-sm.p-4.mb-5{
+    margin-bottom:42px !important;
+    padding:26px !important;
+    border:1px solid #e0e9f4 !important;
+    border-radius:22px !important;
+    background:#ffffff !important;
+    box-shadow:
+        0 14px 36px rgba(15,23,42,.065),
+        inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+
+.page-bg .card .row{
+    margin-left:-9px;
+    margin-right:-9px;
+}
+
+.page-bg .card .row > [class*="col-"]{
+    padding-left:9px;
+    padding-right:9px;
+}
+
+/* Label và input */
+.page-bg label.font-weight-bold.small.text-muted{
+    margin-bottom:8px;
+    color:#475569 !important;
+    font-size:12px;
+    letter-spacing:.25px;
+    text-transform:uppercase;
+}
+
+.input-custom,
+.page-bg .form-control,
+.page-bg .custom-select{
+    min-height:52px !important;
+    border:1px solid #d7e2ef !important;
+    border-radius:14px !important;
+    background:#ffffff !important;
+    color:#0f172a !important;
+    font-size:14px !important;
+    font-weight:650 !important;
+    box-shadow:inset 0 1px 2px rgba(15,23,42,.02) !important;
+}
+
+.page-bg .form-control[readonly]{
+    color:#52637a !important;
+    background:#f8fafc !important;
+}
+
+.input-custom:focus,
+.page-bg .form-control:focus,
+.page-bg .custom-select:focus{
+    border-color:#60a5fa !important;
+    box-shadow:0 0 0 4px rgba(37,99,235,.10) !important;
+}
+
+.page-bg .input-group-text{
+    min-width:52px !important;
+    border-color:#d7e2ef !important;
+    border-radius:14px 0 0 14px !important;
+    color:#2563eb !important;
+    background:linear-gradient(180deg,#eff6ff,#f8fbff) !important;
+}
+
+/* Import Excel */
+.page-bg .d-flex.flex-wrap.align-items-center.justify-content-between{
+    margin-bottom:14px !important;
+    padding:14px 16px;
+    border:1px dashed #bfdbfe;
+    border-radius:16px;
+    background:#f8fbff;
+}
+
+.page-bg .d-flex.flex-wrap.align-items-center.justify-content-between small{
+    color:#64748b !important;
+    font-size:13px;
+}
+
+.page-bg label .btn-outline-primary{
+    min-height:42px !important;
+    padding:0 17px !important;
+    border-radius:12px !important;
+    border-color:#93c5fd !important;
+    background:#ffffff !important;
+    color:#2563eb !important;
+}
+
+.page-bg label .btn-outline-primary:hover{
+    color:#fff !important;
+    background:#2563eb !important;
+}
+
+/* Accordion hành khách */
+.passenger-accordion-card{
+    margin-bottom:14px !important;
+    border:1px solid #dce7f3 !important;
+    border-radius:19px !important;
+    box-shadow:0 10px 26px rgba(15,23,42,.055) !important;
+}
+
+.passenger-accordion-header{
+    min-height:72px !important;
+    padding:17px 20px !important;
+    background:linear-gradient(135deg,#ffffff,#f8fbff) !important;
+}
+
+.passenger-accordion-header:hover{
+    background:#f2f7ff !important;
+}
+
+.passenger-body{
+    padding:24px 22px !important;
+    border-top:1px solid #e5edf6 !important;
+    background:#fbfdff !important;
+}
+
+/* Cam kết */
+#chk_commitment + .custom-control-label{
+    max-width:880px;
+    color:#334155 !important;
+    font-size:14px !important;
+    line-height:1.75 !important;
+}
+
+#chk_commitment + .custom-control-label::before,
+#chk_commitment + .custom-control-label::after{
+    top:.16rem;
+}
+
+/* Nút tiếp tục */
+.btn-checkout{
+    min-height:60px !important;
+    border-radius:16px !important;
+    font-size:15px !important;
+    letter-spacing:.1px;
+    background:linear-gradient(135deg,#3b82f6,#2563eb 58%,#1d4ed8) !important;
+    box-shadow:0 16px 34px rgba(37,99,235,.24) !important;
+}
+
+.btn-checkout:hover{
+    transform:translateY(-2px) !important;
+    box-shadow:0 20px 42px rgba(37,99,235,.30) !important;
+}
+
+/* Modal */
+#summaryModal .modal-content{
+    border-radius:26px !important;
+}
+
+#summaryModal .modal-header{
+    padding:24px 28px !important;
+}
+
+#summaryModal .modal-title{
+    font-size:22px !important;
+}
+
+#summaryModal .modal-body{
+    padding:26px !important;
+}
+
+.summary-section-box{
+    border-radius:18px !important;
+    border-color:#dce7f3 !important;
+    box-shadow:0 9px 24px rgba(15,23,42,.05) !important;
+}
+
+.summary-section-box.bg-dark{
+    background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 100%) !important;
+}
+
+/* Desktop: nếu có nhiều lịch giữ 2 cột cân đối */
+@media(min-width:768px){
+    .section-title + .mb-5.row > [class*="col-md-6"]{
+        flex:0 0 50%;
+        max-width:50%;
     }
 
-    .page-bg {
-        background-color: var(--bg);
+    .section-title + .mb-5.row > [class*="col-md-6"]:only-child{
+        flex:0 0 100% !important;
+        max-width:100% !important;
+    }
+}
+
+/* Tablet */
+@media(max-width:991px){
+    .page-bg > .container{
+        width:calc(100% - 26px) !important;
     }
 
-    .primary-text {
-        color: var(--primary) !important;
+    .tour-info-card .col-md-8{
+        padding:26px 28px !important;
     }
 
-    .rounded-custom {
-        border-radius: 12px !important;
+    .section-title{
+        font-size:19px !important;
+    }
+}
+
+/* Mobile */
+@media(max-width:767px){
+    .page-bg{
+        padding-top:24px !important;
     }
 
-    .input-custom {
-        border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        padding: 0.6rem 1rem;
-        height: auto;
+    .page-bg > .container{
+        width:calc(100% - 18px) !important;
     }
 
-    .input-custom:focus {
-        box-shadow: 0 0 0 0.2rem rgba(7, 87, 216, 0.15);
-        border-color: var(--primary);
+    .page-bg .mb-4.text-center{
+        padding:24px 18px !important;
+        border-radius:22px !important;
     }
 
-    .section-title {
-        border-left: 4px solid var(--primary);
-        padding-left: 12px;
-        color: var(--text);
+    .tour-info-card{
+        border-radius:20px !important;
     }
 
-    .tour-img {
-        border-radius: 12px 0 0 12px;
-        object-fit: cover;
-        min-height: 200px;
+    .tour-info-card .row{
+        min-height:0 !important;
     }
 
-    @media(max-width: 768px) {
-        .tour-img {
-            border-radius: 12px 12px 0 0;
-        }
+    .tour-img{
+        min-height:220px !important;
+        max-height:250px !important;
     }
 
-    .tour-info-card {
-        border-radius: 12px;
+    .tour-info-card .col-md-8{
+        padding:22px 20px !important;
     }
 
-    .schedule-card {
-        border: 2px solid transparent !important;
-        border-radius: 12px !important;
-        background: #fff;
+    .section-title{
+        gap:9px !important;
+        font-size:18px !important;
     }
 
-    .schedule-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+    .section-title::before{
+        width:auto !important;
+        height:28px !important;
+        flex:0 0 auto !important;
+        padding:0 9px !important;
+        border-radius:999px !important;
+        font-size:9px !important;
     }
 
-    .schedule-card:has(input[type="radio"]:checked) {
-        border-color: var(--primary) !important;
-        background-color: var(--primary-light);
+    .section-title::after{
+        margin-left:3px;
     }
 
-    .custom-radio {
-        width: 1.25rem;
-        height: 1.25rem;
-        accent-color: var(--primary);
+    .section-title + .mb-5.row > [class*="col-md-6"]{
+        flex:0 0 100% !important;
+        max-width:100% !important;
     }
 
-    .badge-success-soft {
-        background: #dcfce7;
-        color: #166534;
-        padding: 6px 12px;
-        font-weight: 600;
+    .schedule-card{
+        min-height:0 !important;
+        padding:17px !important;
     }
 
-    .badge-secondary-soft {
-        background: #f1f5f9;
-        color: #475569;
-        padding: 6px 12px;
-        font-weight: 600;
+    .page-bg .card.border-0.shadow-sm.p-4,
+    .page-bg .card.border-0.shadow-sm.p-4.mb-5{
+        padding:20px !important;
+        border-radius:19px !important;
     }
 
-    .badge-danger-soft {
-        background: #fee2e2;
-        color: #991b1b;
-        padding: 6px 12px;
-        font-weight: 600;
+    .passenger-body{
+        padding:18px 16px !important;
     }
 
-    .passenger-accordion-card {
-        border: 1px solid #e2e8f0;
-        border-radius: 12px !important;
-        overflow: hidden;
-        background: #fff;
+    .btn-checkout{
+        min-height:56px !important;
+        font-size:14px !important;
+    }
+}
+
+/* Mobile nhỏ */
+@media(max-width:480px){
+    .page-bg > .container{
+        width:calc(100% - 14px) !important;
     }
 
-    .passenger-accordion-header {
-        background-color: #fff;
-        padding: 1rem 1.25rem;
-        cursor: pointer;
-        transition: background 0.2s;
+    .tour-info-card h4.primary-text{
+        font-size:25px !important;
     }
 
-    .passenger-accordion-header:hover {
-        background-color: #f8fafc;
+    .schedule-card .d-flex.justify-content-between.align-items-center{
+        align-items:flex-start !important;
+        gap:8px;
+        flex-direction:column;
     }
 
-    .accordion-icon {
-        transition: transform 0.3s ease;
-        color: var(--primary);
+    .schedule-card .badge{
+        align-self:flex-start;
     }
 
-    .passenger-accordion-header.collapsed .accordion-icon {
-        transform: rotate(-90deg);
-        color: #94a3b8;
+    .page-bg .d-flex.flex-wrap.align-items-center.justify-content-between{
+        align-items:flex-start !important;
+        gap:12px;
+        flex-direction:column;
+    }
+}
+
+
+/* =========================================================
+   RADIO CHỌN LỊCH KHỞI HÀNH - KIỂU HIỆN ĐẠI
+   ========================================================= */
+.schedule-card .custom-radio,
+.schedule-card input[type="radio"].custom-radio{
+    -webkit-appearance:none !important;
+    appearance:none !important;
+    position:relative !important;
+    top:0 !important;
+    left:0 !important;
+    width:24px !important;
+    height:24px !important;
+    min-width:24px !important;
+    min-height:24px !important;
+    flex:0 0 24px !important;
+    margin:0 !important;
+    margin-top:1px !important;
+    border:2px solid #bfdbfe !important;
+    border-radius:50% !important;
+    outline:none !important;
+    background:#ffffff !important;
+    box-shadow:
+        0 3px 10px rgba(15,23,42,.08),
+        inset 0 0 0 0 #ffffff !important;
+    cursor:pointer !important;
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        transform .18s ease,
+        background .18s ease !important;
+}
+
+.schedule-card .custom-radio:hover,
+.schedule-card input[type="radio"].custom-radio:hover{
+    border-color:#60a5fa !important;
+    transform:scale(1.06);
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,.08),
+        0 4px 12px rgba(15,23,42,.09) !important;
+}
+
+.schedule-card .custom-radio:focus-visible,
+.schedule-card input[type="radio"].custom-radio:focus-visible{
+    border-color:#2563eb !important;
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,.14),
+        0 4px 12px rgba(15,23,42,.08) !important;
+}
+
+.schedule-card .custom-radio:checked,
+.schedule-card input[type="radio"].custom-radio:checked{
+    border-color:#2563eb !important;
+    background:
+        radial-gradient(
+            circle at center,
+            #2563eb 0 5px,
+            #ffffff 5.5px 100%
+        ) !important;
+    box-shadow:
+        0 0 0 4px rgba(37,99,235,.10),
+        0 5px 14px rgba(37,99,235,.16) !important;
+}
+
+.schedule-card .custom-radio:disabled,
+.schedule-card input[type="radio"].custom-radio:disabled{
+    border-color:#cbd5e1 !important;
+    background:#f1f5f9 !important;
+    box-shadow:none !important;
+    cursor:not-allowed !important;
+    transform:none !important;
+}
+
+/* Căn lại hàng chứa radio để radio không dính vào mép card */
+.schedule-card > .d-flex.align-items-start{
+    gap:16px !important;
+    align-items:flex-start !important;
+}
+
+.schedule-card > .d-flex.align-items-start > .ml-4{
+    margin-left:0 !important;
+    flex:1;
+    min-width:0;
+}
+
+/* Khi lịch được chọn, làm radio và card đồng bộ */
+.schedule-card:has(.custom-radio:checked){
+    border-color:#60a5fa !important;
+}
+
+.schedule-card:has(.custom-radio:checked)::before{
+    width:5px !important;
+    background:linear-gradient(180deg,#60a5fa,#2563eb) !important;
+}
+
+@media(max-width:520px){
+    .schedule-card .custom-radio,
+    .schedule-card input[type="radio"].custom-radio{
+        width:22px !important;
+        height:22px !important;
+        min-width:22px !important;
+        min-height:22px !important;
+        flex-basis:22px !important;
     }
 
-    .passenger-body {
-        background-color: #fafbfc;
-        padding: 1.5rem;
-        border-top: 1px solid #e2e8f0;
+    .schedule-card > .d-flex.align-items-start{
+        gap:12px !important;
     }
-
-    .btn-checkout {
-        background-color: var(--primary);
-        border-color: var(--primary);
-        transition: all 0.3s;
-    }
-
-    .btn-checkout:hover {
-        background-color: #0546b5;
-        box-shadow: 0 8px 15px rgba(7, 87, 216, 0.2);
-    }
-
-    /* Phong cách riêng cho khu vực Modal tóm tắt */
-    .summary-section-box {
-        background-color: #fff;
-        border-radius: 10px;
-        padding: 1.25rem;
-        margin-bottom: 1rem;
-        border: 1px solid #e2e8f0;
-    }
-
-    .summary-section-title {
-        font-size: 0.95rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #64748b;
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        border-bottom: 1px dashed #e2e8f0;
-        padding-bottom: 0.5rem;
-    }
+}
 
 </style>
 @endsection
@@ -454,6 +1604,7 @@ const tourTitle = {!! $tourTitleJs !!};
 
     const elInputGrandTotal = document.getElementById('input_grand_total');
     const elInputPaymentMethod = document.getElementById('input_payment_method');
+    const elInputDepositPercent = document.getElementById('input_phan_tram_thanh_toan');
 
     const accordionContainer = document.getElementById('passengers-accordion');
     const summaryModalContent = document.getElementById('summaryModalContent');
@@ -533,6 +1684,16 @@ const tourTitle = {!! $tourTitleJs !!};
         if (paymentMethodSelect && elInputPaymentMethod) {
             elInputPaymentMethod.value =
                 paymentMethodSelect.value || '';
+        }
+    }
+
+    function syncDepositSelection() {
+        const selectedDeposit = document.querySelector(
+            '#summaryModalContent input[name="phan_tram_modal"]:checked'
+        );
+
+        if (elInputDepositPercent) {
+            elInputDepositPercent.value = selectedDeposit?.value || '100';
         }
     }
 
@@ -1512,366 +2673,276 @@ setTimeout(function () {
 
     function generateSummary() {
 
-        /* Lịch khởi hành */
+    const selectedRadio = document.querySelector(
+        'input[name="lich_khoi_hanh_id"]:checked'
+    );
 
-        const selectedRadio =
-            document.querySelector(
-                'input[name="lich_khoi_hanh_id"]:checked'
-            );
+    let dateText = 'Chưa chọn lịch';
 
-        let dateText = 'Chưa chọn lịch';
+    if (selectedRadio) {
 
-        if (selectedRadio) {
+        const card = selectedRadio.closest('.schedule-card');
 
-            const cardParent =
-                selectedRadio.closest('.schedule-card');
-
-            if (cardParent) {
-
-                const dateElement =
-                    cardParent.querySelector('.schedule-date');
-
-                if (dateElement) {
-                    dateText =
-                        dateElement.textContent.trim();
-                }
-            }
-        }
-
-        /* Thông tin liên hệ */
-
-        const contactName =
-            document.getElementById('contact_name').value;
-
-        const contactEmail =
-            document.getElementById('contact_email').value;
-
-        const contactPhone =
-            document.getElementById('contact_phone').value;
-
-        const contactAddress =
-            document.getElementById('contact_address').value;
-
-        /* Số lượng */
-
-        const adults =
-            parseInt(elQtyAdult.value) || 1;
-
-        const children =
-            parseInt(elQtyChild.value) || 0;
-
-        const totalAdultPrice =
-            adults * priceAdult;
-
-        const totalChildPrice =
-            children * priceChild;
-
-        const finalTotal =
-            totalAdultPrice + totalChildPrice;
-
-        /* =====================================================
-           Danh sách hành khách
-        ===================================================== */
-
-        let passengersHTML = '';
-
-        const passCards =
-            document.querySelectorAll(
-                '#passengers-accordion .passenger-accordion-card'
-            );
-
-        passCards.forEach(function (card, index) {
-
-            const name =
-                card.querySelector('.pass-name')?.value.trim()
-                || '(Chưa nhập)';
-
-            const type =
-                card.querySelector('.pass-type')?.value === 'adult'
-                    ? 'Người lớn'
-                    : 'Trẻ em';
-
-            const gender =
-                card.querySelector('.pass-gender')?.value
-                || '';
-
-            const dob =
-                card.querySelector('.pass-dob')?.value
-                || '(Chưa nhập)';
-
-            const docType =
-                card.querySelector('.pass-doc-type')?.value
-                || '';
-
-            const docId =
-                card.querySelector('.pass-doc-id')?.value.trim()
-                || '(Chưa nhập)';
-
-            passengersHTML += `
-                <tr>
-                    <td class="font-weight-bold">
-                        #${index + 1}
-                    </td>
-
-                    <td>
-                        <strong>
-                            ${name.toUpperCase()}
-                        </strong>
-                    </td>
-
-                    <td>
-                        <span class="badge ${
-                            type === 'Người lớn'
-                                ? 'badge-primary'
-                                : 'badge-info'
-                        }">
-                            ${type}
-                        </span>
-                    </td>
-
-                    <td>${gender}</td>
-
-                    <td>${dob}</td>
-
-                    <td>
-                        <small class="text-muted">
-                            ${docType}:
-                        </small>
-                        ${docId}
-                    </td>
-                </tr>
-            `;
-        });
-
-        /* =====================================================
-           HTML TÓM TẮT
-        ===================================================== */
-
-        const summaryHTML = `
-
-            <!-- THÔNG TIN TOUR -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-map-marked-alt mr-2 text-primary"></i>
-                    Thông tin chuyến đi
-                </div>
-
-                <h5 class="font-weight-bold text-dark mb-2">
-                    ${tourTitle}
-                </h5>
-
-                <p class="mb-0 text-muted">
-                    <i class="fa fa-calendar-alt mr-2 text-danger"></i>
-                    Ngày khởi hành:
-                    <strong class="text-dark">
-                        ${dateText}
-                    </strong>
-                </p>
-
-            </div>
-
-
-            <!-- NGƯỜI LIÊN HỆ -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-id-card mr-2 text-primary"></i>
-                    Người liên hệ đại diện
-                </div>
-
-                <div class="row text-dark">
-
-                    <div class="col-sm-6 mb-2">
-                        <strong>Họ tên:</strong>
-                        ${contactName}
-                    </div>
-
-                    <div class="col-sm-6 mb-2">
-                        <strong>Số điện thoại:</strong>
-                        ${contactPhone || 'Chưa cập nhật'}
-                    </div>
-
-                    <div class="col-sm-6">
-                        <strong>Email:</strong>
-                        ${contactEmail}
-                    </div>
-
-                    <div class="col-sm-6">
-                        <strong>Địa chỉ:</strong>
-                        ${contactAddress || 'Chưa cập nhật'}
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- DANH SÁCH HÀNH KHÁCH -->
-
-            <div class="summary-section-box shadow-sm">
-
-                <div class="summary-section-title">
-                    <i class="fa fa-users mr-2 text-primary"></i>
-                    Danh sách đoàn khách
-                </div>
-
-                <div class="table-responsive">
-
-                    <table
-                        class="table table-sm table-hover mb-0"
-                        style="font-size:0.9rem;"
-                    >
-
-                        <thead class="thead-light">
-
-                            <tr>
-                                <th>STT</th>
-                                <th>Họ và Tên</th>
-                                <th>Loại</th>
-                                <th>Phái</th>
-                                <th>Ngày sinh</th>
-                                <th>Giấy tờ</th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-                            ${passengersHTML}
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-
-            <!-- PHƯƠNG THỨC THANH TOÁN -->
-
-            <div class="summary-section-box shadow-sm border border-primary bg-white">
-
-                <div class="summary-section-title text-primary">
-                    <i class="fa fa-credit-card mr-2"></i>
-                    Chọn phương thức thanh toán
-                </div>
-
-                <div class="form-group mb-0">
-
-                    <select
-                        id="paymentMethodSelect"
-                        class="custom-select custom-select-lg font-weight-bold text-dark"
-                        style="font-size:1.05rem;border:2px solid var(--primary);"
-                    >
-
-                        <option value="CHUYEN_KHOAN">
-                            Chuyển khoản ngân hàng trực tiếp
-                        </option>
-
-                        <option value="VNPAY">
-                            Thanh toán trực tuyến bằng cổng VNPAY
-                        </option>
-
-                    </select>
-
-                    <small class="form-text text-muted mt-2">
-                        Vui lòng chọn phương thức thanh toán trước khi xác nhận.
-                    </small>
-
-                </div>
-
-            </div>
-
-
-            <!-- CHI PHÍ -->
-
-            <div class="summary-section-box shadow-sm bg-dark text-white border-0">
-
-                <div class="summary-section-title text-light border-secondary">
-                    <i class="fa fa-calculator mr-2"></i>
-                    Bảng kê chi phí
-                </div>
-
-                <div class="d-flex justify-content-between mb-2">
-
-                    <span>
-                        Người lớn:
-                        ${adults} x ${formatVND(priceAdult)}
-                    </span>
-
-                    <strong>
-                        ${formatVND(totalAdultPrice)}
-                    </strong>
-
-                </div>
-
-                ${
-                    children > 0
-                        ? `
-                            <div class="d-flex justify-content-between mb-2">
-
-                                <span>
-                                    Trẻ em:
-                                    ${children} x ${formatVND(priceChild)}
-                                </span>
-
-                                <strong>
-                                    ${formatVND(totalChildPrice)}
-                                </strong>
-
-                            </div>
-                        `
-                        : ''
-                }
-
-                <div class="d-flex justify-content-between mb-3 text-success">
-
-                    <span>
-                        Thuế giá trị gia tăng & phí dịch vụ
-                    </span>
-
-                    <strong>
-                        Miễn phí
-                    </strong>
-
-                </div>
-
-                <hr class="border-secondary my-2">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <h5 class="mb-0 font-weight-bold text-warning">
-                        TỔNG CỘNG:
-                    </h5>
-
-                    <h3 class="mb-0 font-weight-bold text-white">
-                        ${formatVND(finalTotal)}
-                    </h3>
-
-                </div>
-
-            </div>
-        `;
-
-        summaryModalContent.innerHTML = summaryHTML;
-
-        /* Đồng bộ phương thức thanh toán */
-
-        syncPaymentMethod();
-
-        const paymentMethodSelect =
-            document.getElementById('paymentMethodSelect');
-
-        if (paymentMethodSelect) {
-
-            paymentMethodSelect.addEventListener(
-                'change',
-                syncPaymentMethod
-            );
+        if (card) {
+            dateText = card.querySelector('.schedule-date').innerText.trim();
         }
     }
+
+    const contactName = document.getElementById('contact_name').value;
+    const contactEmail = document.getElementById('contact_email').value;
+    const contactPhone = document.getElementById('contact_phone').value;
+    const contactAddress = document.getElementById('contact_address').value;
+
+    const adults = parseInt(elQtyAdult.value) || 0;
+    const children = parseInt(elQtyChild.value) || 0;
+
+    const totalAdultPrice = adults * priceAdult;
+    const totalChildPrice = children * priceChild;
+    const finalTotal = totalAdultPrice + totalChildPrice;
+
+    let passengersHTML = '';
+
+    document.querySelectorAll(
+        '#passengers-accordion .passenger-accordion-card'
+    ).forEach((card, index) => {
+
+        passengersHTML += `
+        <tr>
+            <td>${index+1}</td>
+            <td>${card.querySelector('.pass-name').value}</td>
+            <td>${card.querySelector('.pass-type').value=='adult'?'Người lớn':'Trẻ em'}</td>
+            <td>${card.querySelector('.pass-gender').value}</td>
+            <td>${card.querySelector('.pass-dob').value}</td>
+            <td>
+                ${card.querySelector('.pass-doc-type').value}
+                :
+                ${card.querySelector('.pass-doc-id').value}
+            </td>
+        </tr>`;
+    });
+
+    summaryModalContent.innerHTML = `
+
+<div class="summary-section-box">
+
+<h5>${tourTitle}</h5>
+
+<p>
+Ngày khởi hành :
+<b>${dateText}</b>
+</p>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<h6>Thông tin liên hệ</h6>
+
+<p><b>${contactName}</b></p>
+
+<p>${contactPhone}</p>
+
+<p>${contactEmail}</p>
+
+<p>${contactAddress}</p>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<h6>Danh sách hành khách</h6>
+
+<table class="table table-bordered">
+
+<thead>
+
+<tr>
+
+<th>STT</th>
+
+<th>Họ tên</th>
+
+<th>Loại</th>
+
+<th>Giới tính</th>
+
+<th>Ngày sinh</th>
+
+<th>Giấy tờ</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${passengersHTML}
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<div class="summary-section-box">
+
+<label class="font-weight-bold">
+
+Phương thức thanh toán
+
+</label>
+
+<select
+id="paymentMethodSelect"
+class="form-control mb-3">
+
+<option value="VNPAY">
+
+VNPAY
+
+</option>
+
+</select>
+
+<label class="font-weight-bold">
+
+Hình thức thanh toán
+
+</label>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="100"
+checked>
+
+Thanh toán 100%
+
+</label>
+
+</div>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="50">
+
+Đặt cọc 50%
+
+</label>
+
+</div>
+
+<div>
+
+<label>
+
+<input
+type="radio"
+name="phan_tram_modal"
+value="30">
+
+Đặt cọc 30%
+
+</label>
+
+</div>
+
+</div>
+
+
+<div class="summary-section-box bg-dark text-white">
+
+<div class="d-flex justify-content-between">
+
+<span>Tổng giá tour</span>
+
+<strong>${formatVND(finalTotal)}</strong>
+
+</div>
+
+<hr>
+
+<div class="d-flex justify-content-between">
+
+<span>Thanh toán ngay</span>
+
+<strong id="payNow">${formatVND(finalTotal)}</strong>
+
+</div>
+
+<div class="d-flex justify-content-between mt-2">
+
+<span>Còn lại</span>
+
+<strong id="remainMoney">0đ</strong>
+
+</div>
+
+</div>
+`;
+
+    syncPaymentMethod();
+
+    document
+        .getElementById('paymentMethodSelect')
+        .addEventListener('change', syncPaymentMethod);
+
+    const radios = document.querySelectorAll(
+        'input[name="phan_tram_modal"]'
+    );
+
+    radios.forEach(radio => {
+
+        radio.addEventListener('change', function () {
+
+            const percent = parseInt(this.value);
+
+            const payNow = finalTotal * percent / 100;
+
+            const remain = finalTotal - payNow;
+
+            document.getElementById('payNow').innerHTML =
+                formatVND(payNow);
+
+            document.getElementById('remainMoney').innerHTML =
+                formatVND(remain);
+
+            // Đồng bộ sang form để submit
+            let hidden = document.getElementById('phanTramHidden');
+
+            if (!hidden) {
+
+                hidden = document.createElement('input');
+
+                hidden.type = 'hidden';
+
+                hidden.name = 'phan_tram_thanh_toan';
+
+                hidden.id = 'phanTramHidden';
+
+                bookingForm.appendChild(hidden);
+            }
+
+            hidden.value = percent;
+
+        });
+
+    });
+
+    document.getElementById('phanTramHidden').value = 100;
+}
 
     /* =========================================================
        10. NÚT "TIẾP TỤC & XEM TÓM TẮT"

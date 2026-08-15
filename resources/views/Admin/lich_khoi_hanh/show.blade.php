@@ -44,7 +44,7 @@
                     <div class="col-md-5">
 
                         @if ($item->tour->anh_dai_dien)
-                            <img src="{{ asset('images/avt_tour/' . $item->tour->anh_dai_dien) }}"
+                            <img src="{{ asset( $item->tour->anh_dai_dien) }}"
                                 alt="{{ $item->tour->ten_tour }}" class="img-fluid rounded shadow tour-image">
                         @else
                             <div class="bg-light border rounded d-flex align-items-center justify-content-center"

@@ -9,10 +9,17 @@ class PhuongTienController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('permission:phuong_tiens.view')->only(['index', 'show']);
-        $this->middleware('permission:phuong_tiens.create')->only(['create', 'store']);
-        $this->middleware('permission:phuong_tiens.edit')->only(['edit', 'update']);
-        $this->middleware('permission:phuong_tiens.delete')->only(['destroy']);
+        $this->middleware('permission:phuong_tiens.view')
+            ->only(['index', 'show']);
+
+        $this->middleware('permission:phuong_tiens.create')
+            ->only(['create', 'store']);
+
+        $this->middleware('permission:phuong_tiens.edit')
+            ->only(['edit', 'update']);
+
+        $this->middleware('permission:phuong_tiens.delete')
+            ->only(['destroy']);
     }
 
     public function index(Request $request)
@@ -27,7 +34,11 @@ class PhuongTienController extends Controller
                     ->orWhere('loai_phuong_tien', 'like', "%{$keyword}%")
                     ->orWhere('hang_xe', 'like', "%{$keyword}%")
                     ->orWhere('ten_tai_xe', 'like', "%{$keyword}%")
-                    ->orWhere('so_dien_thoai_tai_xe', 'like', "%{$keyword}%");
+                    ->orWhere(
+                        'so_dien_thoai_tai_xe',
+                        'like',
+                        "%{$keyword}%"
+                    );
             });
         }
 
@@ -40,7 +51,10 @@ class PhuongTienController extends Controller
             ->paginate(10)
             ->appends($request->query());
 
-        return view('Admin.phuong_tiens.index', compact('phuongTiens'));
+        return view(
+            'Admin.phuong_tiens.index',
+            compact('phuongTiens')
+        );
     }
 
     public function create()
@@ -51,18 +65,32 @@ class PhuongTienController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe',
+            'bien_so_xe' =>
+                'required|max:255|unique:phuong_tiens,bien_so_xe',
 
-            'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
+            'loai_phuong_tien' =>
+                'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
 
             'hang_xe' => 'required|max:255',
-            'nam_san_xuat' => 'required|integer|min:1990|max:' . date('Y'),
+
+            'nam_san_xuat' =>
+                'required|integer|min:1990|max:' . date('Y'),
+
             'mau_xe' => 'required|max:255',
-            'trang_thai' => 'required|in:1,2,3,4,5',
-            'ten_tai_xe' => 'required|max:255',
-            'so_dien_thoai_tai_xe' => 'required|max:255',
-            'ghi_chu' => 'nullable|string',
+
+            'trang_thai' =>
+                'required|in:1,2,3,4,5',
+
+            'ten_tai_xe' =>
+                'required|max:255',
+
+            'so_dien_thoai_tai_xe' =>
+                'required|max:255',
+
+            'ghi_chu' =>
+                'nullable|string',
         ]);
+
         switch ($data['loai_phuong_tien']) {
             case 'xe_16_cho':
                 $data['so_cho'] = 16;
@@ -88,57 +116,87 @@ class PhuongTienController extends Controller
     {
         $phuongTien = PhuongTien::findOrFail($id);
 
-        return view('Admin.phuong_tiens.show', compact('phuongTien'));
+        return view(
+            'Admin.phuong_tiens.show',
+            compact('phuongTien')
+        );
     }
 
     public function edit($id)
     {
         $phuongTien = PhuongTien::findOrFail($id);
 
-        return view('Admin.phuong_tiens.edit', compact('phuongTien'));
+        return view(
+            'Admin.phuong_tiens.edit',
+            compact('phuongTien')
+        );
     }
 
     public function update(Request $request, $id)
     {
         $phuongTien = PhuongTien::findOrFail($id);
 
+        /*
+        |--------------------------------------------------------------------------
+        | CHỈ CHO PHÉP SỬA THÔNG TIN VẬN HÀNH
+        |--------------------------------------------------------------------------
+        |
+        | Không cho phép sửa:
+        | - bien_so_xe
+        | - loai_phuong_tien
+        | - hang_xe
+        | - nam_san_xuat
+        | - mau_xe
+        | - so_cho
+        |
+        | Chỉ cho phép sửa:
+        | - trang_thai
+        | - ten_tai_xe
+        | - so_dien_thoai_tai_xe
+        | - ghi_chu
+        |
+        */
+
         $data = $request->validate([
-            'bien_so_xe' => 'required|max:255|unique:phuong_tiens,bien_so_xe,' . $phuongTien->id,
+            'trang_thai' =>
+                'required|in:1,2,3,4,5',
 
-            'loai_phuong_tien' => 'required|in:xe_16_cho,xe_29_cho,xe_45_cho',
+            'ten_tai_xe' =>
+                'required|string|max:255',
 
-            'hang_xe' => 'required|max:255',
-            'nam_san_xuat' => 'required|integer|min:1990|max:' . date('Y'),
-            'mau_xe' => 'required|max:255',
-            'trang_thai' => 'required|in:1,2,3,4,5',
-            'ten_tai_xe' => 'required|max:255',
-            'so_dien_thoai_tai_xe' => 'required|max:255',
-            'ghi_chu' => 'nullable|string',
+            'so_dien_thoai_tai_xe' =>
+                'required|string|max:255',
+
+            'ghi_chu' =>
+                'nullable|string',
         ]);
-        switch ($data['loai_phuong_tien']) {
-            case 'xe_16_cho':
-                $data['so_cho'] = 16;
-                break;
 
-            case 'xe_29_cho':
-                $data['so_cho'] = 29;
-                break;
+        $phuongTien->update([
+            'trang_thai' =>
+                $data['trang_thai'],
 
-            case 'xe_45_cho':
-                $data['so_cho'] = 45;
-                break;
-        }
+            'ten_tai_xe' =>
+                $data['ten_tai_xe'],
 
-        $phuongTien->update($data);
+            'so_dien_thoai_tai_xe' =>
+                $data['so_dien_thoai_tai_xe'],
+
+            'ghi_chu' =>
+                $data['ghi_chu'] ?? null,
+        ]);
 
         return redirect()
             ->route('Admin.phuong-tiens.index')
-            ->with('success', 'Cập nhật xe thành công');
+            ->with(
+                'success',
+                'Cập nhật trạng thái và thông tin tài xế thành công'
+            );
     }
 
     public function destroy($id)
     {
         $phuongTien = PhuongTien::findOrFail($id);
+
         $phuongTien->delete();
 
         return redirect()

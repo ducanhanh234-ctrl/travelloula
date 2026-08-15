@@ -335,6 +335,7 @@ class PhanCongController extends Controller
 
             $lich->update([
                 'huong_dan_vien_id' => $selectedHdvIds[0],
+                'trang_thai' => 'assigned',
             ]);
 
             return redirect()
@@ -350,31 +351,42 @@ class PhanCongController extends Controller
     {
         $lich = $phanCong->lichKhoiHanh;
 
-        // Chỉ cho phép xóa khi lịch đang ở trạng thái Đã phân công
-        if ($lich->trang_thai != 2) {
-
+        if (!$lich) {
             return back()->with(
                 'error',
-                'Chỉ được xóa phân công khi tour chưa khởi hành.'
+                'Không tìm thấy lịch khởi hành của phân công này.'
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Chỉ cho xóa phân công trước khi tour khởi hành
+        |--------------------------------------------------------------------------
+        |
+        | assigned = đã phân công nhưng chưa khởi hành.
+        | Sau khi xóa, lịch quay lại finalized để Admin phân công lại.
+        |
+        */
+        if ($lich->trang_thai !== 'assigned') {
+            return back()->with(
+                'error',
+                'Chỉ được xóa phân công khi tour đang ở trạng thái Đã phân công và chưa khởi hành.'
             );
         }
 
         $phanCong->delete();
 
-        // Trả lịch về trạng thái Chờ phân công
-        $phanCong->delete();
-
         $lich->update([
             'huong_dan_vien_id' => null,
-            'phuong_tien_id'    => null,
-            'trang_thai'        => 1,
+            'phuong_tien_id' => null,
+            'trang_thai' => 'finalized',
         ]);
 
         return redirect()
             ->route('Admin.phan-cong.index')
             ->with(
                 'success',
-                'Xóa phân công thành công.'
+                'Đã xóa phân công. Lịch đã quay về trạng thái Đã chốt để phân công lại.'
             );
     }
 }

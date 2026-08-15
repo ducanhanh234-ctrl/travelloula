@@ -25,7 +25,7 @@ use App\Http\Controllers\TrangDieuKhoanClientController;
 use App\Http\Controllers\TrangDieuKhoanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VaiTroController;
-
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BaoCaoSuCoController as AdminBaoCaoSuCoController;
 use App\Http\Controllers\Admin\ChiTietLichTrinhController;
 use App\Http\Controllers\Admin\GopDoanController;
@@ -43,6 +43,7 @@ use App\Http\Controllers\Guide\BaoCaoSuCoController as GuideBaoCaoSuCoController
 use App\Http\Controllers\Guide\CheckInController;
 use App\Http\Controllers\Guide\GuideController;
 use App\Http\Controllers\Guide\NhatKyHuongDanVienController;
+use App\Http\Controllers\Guide\GuideDashboardController;
 use App\Http\Controllers\Admin\YeuCauGopDoanController;
 use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
 use App\Http\Controllers\Admin\HinhAnhTourController;
@@ -159,6 +160,8 @@ Route::resource('tour_da_dat', TourDaDatController::class);
 
 Route::get('/vnpay/payment/{id}', [ThanhToanController::class, 'createPayment'])->name('vnpay.payment');
 Route::get('/vnpay/return', [ThanhToanController::class, 'vnpayReturn'])->name('vnpay.return');
+Route::get('/vnpay/payment-con-lai/{id}', [ThanhToanController::class, 'paymentConLai'])
+    ->name('vnpay.payment.remain');
 Route::post(
     '/admin/thanh-toan/{id}/gui-hoa-don',
     [ThanhToanController::class, 'guiHoaDon']
@@ -384,24 +387,28 @@ Route::prefix('Admin')
             ->name('lien_hes.')
             ->group(function () {
 
-                Route::get('/', [AdminLienHeController::class, 'index'])
-                    ->name('index');
+            Route::get('/', [AdminLienHeController::class, 'index'])
+                ->name('index');
 
-                Route::get('/{id}', [AdminLienHeController::class, 'show'])
-                    ->name('show');
+            Route::get('/{id}', [AdminLienHeController::class, 'show'])
+                ->name('show');
 
-                Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
-                    ->name('read');
+            Route::patch('/{id}/read', [AdminLienHeController::class, 'markRead'])
+                ->name('read');
 
-                Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
-                    ->name('destroy');
-            });
+            Route::delete('/{id}', [AdminLienHeController::class, 'destroy'])
+                ->name('destroy');
+        });
         Route::patch(
             '{id}/unread',
             [AdminLienHeController::class, 'markUnread']
         )
             ->name('unread');
+
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
         /*
+
 |--------------------------------------------------------------------------
 | QUẢN LÝ LIÊN HỆ
 |--------------------------------------------------------------------------
@@ -505,38 +512,65 @@ Route::prefix('Guide')
         Route::get('/danh-sach-khach/{phanCongId}', [GuideController::class, 'khachhangdattour'])
             ->name('danh-sach-khach');
 
+        //checkin
+        Route::get('/check-in', [CheckInController::class, 'index'])
+            ->name('checkin.index');
 
-        Route::get('/check-in', [CheckInController::class, 'index'])->name('checkin.index');
         Route::get('/check-in/{lichKhoiHanh}/dia-diem', [CheckInController::class, 'diaDiem'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.dia-diem');
 
+        // Phải đặt trước route /{lichKhoiHanh}/{chiTiet}.
+        Route::get('/check-in/{lichKhoiHanh}/xuat-phat', [CheckInController::class, 'showXuatPhat'])
+            ->whereNumber('lichKhoiHanh')
+            ->name('checkin.xuatPhat');
+
+        Route::get('/check-in/{lichKhoiHanh}/ket-thuc', [CheckInController::class, 'showKetThuc'])
+            ->whereNumber('lichKhoiHanh')
+            ->name('checkin.ketThuc');
+
         Route::get('/check-in/{lichKhoiHanh}/{chiTiet}', [CheckInController::class, 'show'])
+            ->whereNumber('lichKhoiHanh')
+            ->whereNumber('chiTiet')
             ->name('checkin.show');
+
         Route::post('/check-in', [CheckInController::class, 'checkIn'])
             ->name('checkin.store');
-        Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])->name('checkout');
+
+        Route::patch('/check-out/{id}', [CheckInController::class, 'checkOut'])
+            ->whereNumber('id')
+            ->name('checkout');
+
         Route::post('/check-in/checkin-tat-ca', [CheckInController::class, 'checkInTatCa'])
             ->name('checkin.checkinTatCa');
+
         Route::post('/check-in/checkout-tat-ca', [CheckInController::class, 'checkOutTatCa'])
             ->name('checkin.checkoutTatCa');
-
 
         Route::post('/check-in/undo-tat-ca', [CheckInController::class, 'undoCheckInTatCa'])
             ->name('checkin.undoTatCa');
 
-        Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])->name('checkin.undo');
-        Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])->name('checkout.undo');
-        Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])->name('checkin.note');
+        Route::post('/check-in/{id}/undo', [CheckInController::class, 'undoCheckIn'])
+            ->whereNumber('id')
+            ->name('checkin.undo');
 
+        Route::post('/check-out/{id}/undo', [CheckInController::class, 'undoCheckOut'])
+            ->whereNumber('id')
+            ->name('checkout.undo');
 
+        Route::post('/check-in/ghi-chu', [CheckInController::class, 'saveNote'])
+            ->name('checkin.note');
 
-        // Lưu trạng thái điểm danh khởi hành (nút Lưu)
         Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.saveLock');
 
         Route::post('/check-in/{lichKhoiHanh}/finish-tour', [CheckInController::class, 'finishTour'])
+            ->whereNumber('lichKhoiHanh')
             ->name('checkin.finishTour');
 
+        //checkin context
+    
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
         // Check-in bù
@@ -559,6 +593,10 @@ Route::prefix('Guide')
             '/check-in/{lichKhoiHanh}/{chiTiet}/thay-doi-lich',
             [CheckInController::class, 'khoiPhucLichTrinh']
         )->name('checkin.khoiPhucLichTrinh');
+
+        Route::get('/', [GuideDashboardController::class, 'index'])
+            ->name('dashboard');
+
         /*
         |--------------------------------------------------------------------------
         | GUIDE - BÁO CÁO SỰ CỐ
@@ -608,6 +646,7 @@ Route::prefix('Guide')
             ->name('ho-tro.store');
 
 
+
         Route::get(
             '/checkin/{lichKhoiHanh}/xuat-phat',
             [CheckInController::class, 'showXuatPhat']
@@ -622,7 +661,7 @@ Route::prefix('Guide')
         //     '/checkin/{lichKhoiHanh}/ket-thuc',
         //     [CheckInController::class, 'showKetThuc']
         // )->name('checkin.ketThuc');
-
+    
         // Route::post(
         //     '/checkin/{lichKhoiHanh}/ket-thuc',
         //     [CheckInController::class, 'storeKetThuc']

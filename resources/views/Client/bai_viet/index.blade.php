@@ -94,7 +94,7 @@
             <article class="post-card">
                 <a href="{{ route('Client.bai_viet.detail', $baiViet->duong_dan) }}" class="post-visual">
                     @if($baiViet->anh_dai_dien)
-                    <img src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}" alt="{{ $baiViet->tieu_de }}">
+                    <img src="images/tours/gallery/ha-long-yen-tu-3n2d/ha-long-yen-tu-3n2d-1.jpg" alt="{{ $baiViet->tieu_de }}">
                     @else
                     <div class="post-fallback">
                         <i class="fa-solid fa-map-location-dot"></i>

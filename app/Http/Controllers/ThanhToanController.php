@@ -13,6 +13,24 @@ use Illuminate\Support\Facades\Storage;
 
 class ThanhToanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:payments.view')
+            ->only([
+                'index',
+                'show',
+                'paymentHistory',
+            ]);
+        $this->middleware('permission:payments.edit')
+            ->only([
+                'editStatus',
+                'updateStatus',
+            ]);
+        $this->middleware('permission:thanh_toans.delete')
+            ->only([
+                'destroy',
+            ]);
+    }
     public function index(Request $request)
     {
         $query = ThanhToan::with([

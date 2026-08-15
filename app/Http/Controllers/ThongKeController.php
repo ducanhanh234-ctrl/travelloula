@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\DB;
 
 class ThongKeController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:reports.view')
+            ->only([
+                'index',
+                'export',
+            ]);
+    }
     public function index()
     {
         $tongDoanhThu = ThanhToan::where('trang_thai', 1)

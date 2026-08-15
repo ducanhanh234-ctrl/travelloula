@@ -938,6 +938,47 @@
             border-color: var(--checkin-info);
         }
 
+        .btn-row-checkin-bu {
+            color: #8a5a00;
+            background: #fff7e8;
+            border-color: #efd79f;
+        }
+
+        .btn-row-checkin-bu:hover {
+            color: var(--checkin-white);
+            background: #dc941e;
+            border-color: #dc941e;
+        }
+
+        .btn-row-checkout-bu {
+            color: #8a3f00;
+            background: #fff3e8;
+            border-color: #f0c79f;
+        }
+
+        .btn-row-checkout-bu:hover {
+            color: var(--checkin-white);
+            background: #d97706;
+            border-color: #d97706;
+        }
+
+        .checkin-status-makeup {
+            color: #8a5a00;
+            background: #fff7e8;
+            border-color: #efd79f;
+        }
+
+        .checkin-makeup-note {
+            color: #8a5a00;
+        }
+
+        .checkin-makeup-time {
+            margin-top: 4px;
+            color: #8b97aa;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
         /* Empty */
         .checkin-empty-row {
             padding: 50px 20px !important;
@@ -1434,20 +1475,83 @@
                                                     <span class="checkin-status-dot"></span>
                                                     Chưa Check-in
                                                 </span>
+
                                             @elseif ($checkIn->trang_thai === 'da_check_in')
-                                                <span class="checkin-status checkin-status-checked">
-                                                    <span class="checkin-status-dot"></span>
-                                                    Đã Check-in
-                                                </span>
-                                            @else
+                                                @if ($checkIn->is_checkin_bu ?? false)
+                                                    <span class="checkin-status checkin-status-makeup">
+                                                        <span class="checkin-status-dot"></span>
+                                                        Đã Check-in bù
+                                                    </span>
+                                                @else
+                                                    <span class="checkin-status checkin-status-checked">
+                                                        <span class="checkin-status-dot"></span>
+                                                        Đã Check-in
+                                                    </span>
+                                                @endif
+
+                                            @elseif ($checkIn->trang_thai === 'da_check_out')
                                                 <span class="checkin-status checkin-status-checkout">
                                                     <span class="checkin-status-dot"></span>
-                                                    Đã Check-out
+                                                    @if ($checkIn->is_checkout_bu ?? false)
+                                                        Hoàn thành (bù)
+                                                    @else
+                                                        Hoàn thành
+                                                    @endif
                                                 </span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($checkIn && $checkIn->ghi_chu)
+                                            @if ($checkIn && ($checkIn->is_checkout_bu ?? false))
+                                                <div class="checkin-note checkin-makeup-note">
+                                                    <div>
+                                                        <i class="fas fa-sign-out-alt me-1"></i>
+                                                        <strong>Lý do Check-out bù:</strong>
+                                                    </div>
+
+                                                    <div class="mt-1">
+                                                        {{ $checkIn->ly_do_checkout_bu }}
+                                                    </div>
+
+                                                    @if ($checkIn->thoi_gian_ghi_nhan_checkout_bu)
+                                                        <div class="checkin-makeup-time">
+                                                            Ghi nhận:
+                                                            {{ $checkIn->thoi_gian_ghi_nhan_checkout_bu->format('H:i d/m/Y') }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                @if ($checkIn->is_checkin_bu ?? false)
+                                                    <div class="checkin-note checkin-makeup-note mt-2">
+                                                        <div>
+                                                            <i class="fas fa-history me-1"></i>
+                                                            <strong>Lý do Check-in bù:</strong>
+                                                        </div>
+                                                        <div class="mt-1">
+                                                            {{ $checkIn->ly_do_checkin_bu }}
+                                                        </div>
+                                                    </div>
+                                                @endif
+
+                                            @elseif ($checkIn && ($checkIn->is_checkin_bu ?? false))
+                                                <div class="checkin-note checkin-makeup-note">
+                                                    <div>
+                                                        <i class="fas fa-history me-1"></i>
+                                                        <strong>Lý do Check-in bù:</strong>
+                                                    </div>
+
+                                                    <div class="mt-1">
+                                                        {{ $checkIn->ly_do_checkin_bu }}
+                                                    </div>
+
+                                                    @if ($checkIn->thoi_gian_ghi_nhan_bu)
+                                                        <div class="checkin-makeup-time">
+                                                            Ghi nhận:
+                                                            {{ $checkIn->thoi_gian_ghi_nhan_bu->format('H:i d/m/Y') }}
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                            @elseif ($checkIn && $checkIn->ghi_chu)
                                                 <div class="checkin-note">
                                                     <i class="fas fa-sticky-note me-1"></i>
                                                     {{ $checkIn->ghi_chu }}
@@ -1461,10 +1565,38 @@
                                         <td>
                                             @if ($checkinExpired ?? false)
                                                 <div class="checkin-row-actions">
-                                                    <button type="button" class="btn-checkin-row btn-row-checkin" disabled title="Đã đóng">
-                                                        <i class="fas fa-user-check"></i>
-                                                        Đã đóng
-                                                    </button>
+
+                                                    @if (!$checkIn || $checkIn->trang_thai === 'chua_check_in')
+                                                        <button type="button"
+                                                            class="btn-checkin-row btn-row-checkin-bu"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#checkinBuModal{{ $khach->id }}"
+                                                            title="Hoạt động đã kết thúc - thực hiện Check-in bù">
+                                                            <i class="fas fa-history"></i>
+                                                            Check-in bù
+                                                        </button>
+
+                                                    @elseif ($checkIn->trang_thai === 'da_check_in')
+                                                        <button type="button"
+                                                            class="btn-checkin-row btn-row-checkout-bu"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#checkoutBuModal{{ $khach->id }}"
+                                                            title="Hoạt động đã kết thúc - thực hiện Check-out bù">
+                                                            <i class="fas fa-sign-out-alt"></i>
+                                                            Check-out bù
+                                                        </button>
+
+                                                    @elseif ($checkIn->trang_thai === 'da_check_out')
+                                                        <span class="checkin-status checkin-status-checkout">
+                                                            <span class="checkin-status-dot"></span>
+                                                            @if ($checkIn->is_checkout_bu ?? false)
+                                                                Hoàn thành (bù)
+                                                            @else
+                                                                Hoàn thành
+                                                            @endif
+                                                        </span>
+                                                    @endif
+
                                                 </div>
                                             @elseif (!$checkIn || $checkIn->trang_thai === 'chua_check_in')
                                                 <div class="checkin-row-actions">
@@ -1634,6 +1766,166 @@
                     </div>
                 </div>
             </div>
+
+            @if (($checkinExpired ?? false) && (!$checkIn || $checkIn->trang_thai === 'chua_check_in'))
+                <div class="modal fade checkin-modal" id="checkinBuModal{{ $khach->id }}" tabindex="-1"
+                    aria-labelledby="checkinBuModalLabel{{ $khach->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <form action="{{ route('Guide.checkin.check-in-bu') }}" method="POST">
+                                @csrf
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="checkinBuModalLabel{{ $khach->id }}">
+                                        <i class="fas fa-history"></i>
+                                        Check-in bù
+                                    </h5>
+
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="checkin-modal-customer">
+                                        <i class="fas fa-user"></i>
+                                        {{ $khach->ho_ten }}
+                                    </div>
+
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Hoạt động đã kết thúc. Thao tác này sẽ được ghi nhận là
+                                        <strong>Check-in bù</strong>.
+                                    </div>
+
+                                    <input type="hidden" name="khach_hang_dat_tour_id" value="{{ $khach->id }}">
+                                    <input type="hidden" name="lich_khoi_hanh_id" value="{{ $datTour->lich_khoi_hanh_id }}">
+                                    <input type="hidden" name="chi_tiet_lich_trinh_id" value="{{ $chiTiet->id }}">
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Hoạt động</label>
+                                        <div class="form-control bg-light">
+                                            {{ $chiTiet->tieu_de }}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="ly_do_checkin_bu_{{ $khach->id }}" class="form-label fw-semibold">
+                                            Lý do Check-in bù
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <textarea name="ly_do_checkin_bu"
+                                            id="ly_do_checkin_bu_{{ $khach->id }}"
+                                            class="form-control"
+                                            rows="4"
+                                            maxlength="500"
+                                            placeholder="Ví dụ: Mất kết nối mạng tại địa điểm nên chưa thể thực hiện Check-in..."
+                                            required></textarea>
+
+                                        <div class="form-text">
+                                            Vui lòng ghi rõ lý do thực hiện điểm danh sau thời gian hoạt động.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                                        <i class="fas fa-times"></i>
+                                        Hủy
+                                    </button>
+
+                                    <button type="submit" class="btn-modal-save">
+                                        <i class="fas fa-user-check"></i>
+                                        Xác nhận Check-in bù
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if (
+                ($checkinExpired ?? false)
+                && $checkIn
+                && $checkIn->trang_thai === 'da_check_in'
+            )
+                <div class="modal fade checkin-modal" id="checkoutBuModal{{ $khach->id }}" tabindex="-1"
+                    aria-labelledby="checkoutBuModalLabel{{ $khach->id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <form action="{{ route('Guide.checkout.check-out-bu', $checkIn->id) }}" method="POST">
+                                @csrf
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="checkoutBuModalLabel{{ $khach->id }}">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                        Check-out bù
+                                    </h5>
+
+                                    <button type="button" class="btn-close btn-close-white"
+                                        data-bs-dismiss="modal" aria-label="Đóng"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="checkin-modal-customer">
+                                        <i class="fas fa-user"></i>
+                                        {{ $khach->ho_ten }}
+                                    </div>
+
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Hoạt động đã kết thúc. Thao tác này sẽ được ghi nhận là
+                                        <strong>Check-out bù</strong>.
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Hoạt động</label>
+                                        <div class="form-control bg-light">
+                                            {{ $chiTiet->tieu_de }}
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="ly_do_checkout_bu_{{ $khach->id }}"
+                                            class="form-label fw-semibold">
+                                            Lý do Check-out bù
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <textarea name="ly_do_checkout_bu"
+                                            id="ly_do_checkout_bu_{{ $khach->id }}"
+                                            class="form-control"
+                                            rows="4"
+                                            maxlength="500"
+                                            placeholder="Ví dụ: HDV quên thực hiện Check-out trong thời gian hoạt động..."
+                                            required></textarea>
+
+                                        <div class="form-text">
+                                            Vui lòng ghi rõ lý do thực hiện Check-out sau thời gian hoạt động.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">
+                                        <i class="fas fa-times"></i>
+                                        Hủy
+                                    </button>
+
+                                    <button type="submit" class="btn-modal-save">
+                                        <i class="fas fa-check"></i>
+                                        Xác nhận Check-out bù
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            @endif
         @endforeach
     @endforeach
 @endsection

@@ -16,6 +16,7 @@ use App\Models\NhatKyHuongDanVien;
 use App\Models\CheckinSave;
 use App\Models\PhanCong;
 use App\Models\LichTrinhTour;
+use App\Models\ThayDoiLichTrinh;
 
 class CheckInController extends Controller
 {
@@ -97,7 +98,7 @@ class CheckInController extends Controller
 
             $finished = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
                 ->where('ngay_thu', $currentDay - 1)
-                ->where('action', 'CONFIRM_KET_THUC_NGAY')
+                ->where('action', 'CONFIRM_KET_THUC')
                 ->exists();
 
             if (!$finished) {
@@ -108,26 +109,26 @@ class CheckInController extends Controller
                         'Ngày ' . ($currentDay - 1) . ' chưa được chốt. Vui lòng hoàn tất điểm danh trước.'
                     );
             }
-        }
+            // Ngoài kiểm tra theo ngày, nếu trong cùng một ngày có nhiều hoạt động
+            // thì chỉ cho phép điểm danh hoạt động hiện tại khi hoạt động trước đó
+            // đã được xác nhận (CONFIRM_CHI_TIET).
+            if (!empty($chiTietObj->thu_tu) && $chiTietObj->thu_tu > 1) {
+                $previousThuTu = $chiTietObj->thu_tu - 1;
+                $previous = ChiTietLichTrinh::where('lich_trinh_tour_id', $chiTietObj->lich_trinh_tour_id)
+                    ->where('thu_tu', $previousThuTu)
+                    ->first();
 
-        // Trong cùng một ngày, hoạt động sau chỉ được mở khi hoạt động trước đã được xác nhận.
-        // Đặt ngoài điều kiện $currentDay > 1 để ngày 1 cũng áp dụng đúng.
-        if (!empty($chiTietObj->thu_tu) && $chiTietObj->thu_tu > 1) {
-            $previousThuTu = $chiTietObj->thu_tu - 1;
-            $previous = ChiTietLichTrinh::where('lich_trinh_tour_id', $chiTietObj->lich_trinh_tour_id)
-                ->where('thu_tu', $previousThuTu)
-                ->first();
+                if ($previous) {
+                    $prevConfirmed = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
+                        ->where('chi_tiet_lich_trinh_id', $previous->id)
+                        ->where('action', 'CONFIRM_CHI_TIET')
+                        ->exists();
 
-            if ($previous) {
-                $prevConfirmed = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-                    ->where('chi_tiet_lich_trinh_id', $previous->id)
-                    ->where('action', 'CONFIRM_CHI_TIET')
-                    ->exists();
-
-                if (!$prevConfirmed) {
-                    return redirect()
-                        ->route('Guide.checkin.dia-diem', $lichKhoiHanhId)
-                        ->with('error', 'Vui lòng hoàn tất điểm danh hoạt động trước đó trước khi điểm danh hoạt động này.');
+                    if (!$prevConfirmed) {
+                        return redirect()
+                            ->route('Guide.checkin.dia-diem', $lichKhoiHanhId)
+                            ->with('error', 'Vui lòng hoàn tất điểm danh hoạt động trước đó trước khi điểm danh hoạt động này.');
+                    }
                 }
             }
         }
@@ -144,12 +145,10 @@ class CheckInController extends Controller
 
         $chiTiet = $chiTietObj;
 
-        $checkedIds = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-            ->where('checkin_context', 'activity')
-            ->where(
-                'chi_tiet_lich_trinh_id',
-                $chiTietId
-            )
+        $checkedIds = CheckInKhachHang::where(
+            'chi_tiet_lich_trinh_id',
+            $chiTietId
+        )
             ->whereIn('trang_thai', [
                 'da_check_in',
                 'da_check_out'
@@ -157,12 +156,10 @@ class CheckInController extends Controller
             ->pluck('khach_hang_dat_tour_id')
             ->toArray();
 
-        $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-            ->where('checkin_context', 'activity')
-            ->where(
-                'chi_tiet_lich_trinh_id',
-                $chiTietId
-            )
+        $checkIns = CheckInKhachHang::where(
+            'chi_tiet_lich_trinh_id',
+            $chiTietId
+        )
             ->get()
             ->keyBy('khach_hang_dat_tour_id');
 
@@ -187,12 +184,10 @@ class CheckInController extends Controller
         //     ->exists();
 
         $allCheckedOut = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-            ->where('checkin_context', 'activity')
             ->where('chi_tiet_lich_trinh_id', $chiTietId)
             ->count() > 0
             &&
             !CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-                ->where('checkin_context', 'activity')
                 ->where('chi_tiet_lich_trinh_id', $chiTietId)
                 ->where('trang_thai', '!=', 'da_check_out')
                 ->exists();
@@ -217,7 +212,6 @@ class CheckInController extends Controller
         $checkinExpired = $checkinWindowEnd
             ? now()->gt($checkinWindowEnd)
             : false;
-        $checkinContext = 'activity';
         return view(
             'Guide.checkin.show',
             compact(
@@ -234,7 +228,6 @@ class CheckInController extends Controller
                 'checkinWindowStart',
                 'checkinWindowEnd',
                 'checkinExpired',
-                'checkinContext',
                 // 'locked',
                 'allCheckedOut'
 
@@ -242,17 +235,54 @@ class CheckInController extends Controller
         );
     }
 
+    protected function getActivityScheduleChange(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): ?ThayDoiLichTrinh {
+        return ThayDoiLichTrinh::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
+            ->first();
+    }
+
+    protected function getEffectiveActivitySchedule(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): array {
+        $change = $this->getActivityScheduleChange($lichKhoiHanh, $chiTiet);
+
+        return [
+            'change' => $change,
+            'cancelled' => $change && $change->loai_thay_doi === 'huy',
+            'title' => $change && $change->tieu_de_moi
+                ? $change->tieu_de_moi
+                : $chiTiet->tieu_de,
+            'start_time' => $change && $change->gio_bat_dau_moi
+                ? $change->gio_bat_dau_moi
+                : $chiTiet->gio_bat_dau,
+            'end_time' => $change && $change->gio_ket_thuc_moi
+                ? $change->gio_ket_thuc_moi
+                : $chiTiet->gio_ket_thuc,
+        ];
+    }
+
     protected function getScheduledStartAt(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet)
     {
-        if (!$chiTiet->lichTrinh || !$chiTiet->lichTrinh->ngay_thu || !$chiTiet->gio_bat_dau) {
+        if (!$chiTiet->lichTrinh || !$chiTiet->lichTrinh->ngay_thu) {
+            return null;
+        }
+
+        $effective = $this->getEffectiveActivitySchedule($lichKhoiHanh, $chiTiet);
+
+        if ($effective['cancelled'] || !$effective['start_time']) {
             return null;
         }
 
         $date = Carbon::parse($lichKhoiHanh->ngay_khoi_hanh)
             ->addDays($chiTiet->lichTrinh->ngay_thu - 1)
             ->format('Y-m-d');
+
         try {
-            return Carbon::parse($date . ' ' . $chiTiet->gio_bat_dau);
+            return Carbon::parse($date . ' ' . $effective['start_time']);
         } catch (\Exception $e) {
             return null;
         }
@@ -260,7 +290,13 @@ class CheckInController extends Controller
 
     protected function getScheduledEndAt(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet)
     {
-        if (!$chiTiet->lichTrinh || !$chiTiet->lichTrinh->ngay_thu || !$chiTiet->gio_ket_thuc) {
+        if (!$chiTiet->lichTrinh || !$chiTiet->lichTrinh->ngay_thu) {
+            return null;
+        }
+
+        $effective = $this->getEffectiveActivitySchedule($lichKhoiHanh, $chiTiet);
+
+        if ($effective['cancelled'] || !$effective['end_time']) {
             return null;
         }
 
@@ -269,19 +305,16 @@ class CheckInController extends Controller
             ->format('Y-m-d');
 
         try {
-            return Carbon::parse($date . ' ' . $chiTiet->gio_ket_thuc);
+            return Carbon::parse($date . ' ' . $effective['end_time']);
         } catch (\Exception $e) {
             return null;
         }
     }
 
-    /**
-     * Cửa sổ điểm danh của một hoạt động:
-     * từ đúng giờ bắt đầu đến đúng giờ kết thúc hoạt động.
-     */
     protected function getCheckinWindow(
         LichKhoiHanhTour $lichKhoiHanh,
-        ChiTietLichTrinh $chiTiet
+        ChiTietLichTrinh $chiTiet,
+        bool $allowEarlyDeparture = false
     ) {
         $startAt = $this->getScheduledStartAt($lichKhoiHanh, $chiTiet);
         $endAt = $this->getScheduledEndAt($lichKhoiHanh, $chiTiet);
@@ -290,148 +323,80 @@ class CheckInController extends Controller
             return [null, null];
         }
 
+        // Check-in khởi hành
+        if ($allowEarlyDeparture) {
+            return [
+                $startAt->copy()->subHour(), // trước 1 tiếng
+                $startAt->copy(),             // đến giờ bắt đầu sự kiện 1
+            ];
+        }
+
+        // Check-in hoạt động
         return [
             $startAt->copy(),
             $endAt->copy(),
         ];
     }
 
-    /**
-     * Cửa sổ check-in khởi hành:
-     * từ 00:00 ngày khởi hành đến giờ bắt đầu hoạt động đầu tiên của ngày 1.
-     */
-    protected function getDepartureCheckinWindow(LichKhoiHanhTour $lichKhoiHanh)
+    protected function isCheckinWindowOpen(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet, bool $allowEarlyDeparture = false)
     {
-        $firstActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
-        if (!$firstActivity) {
-            return [null, null];
+        [$windowStart, $windowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet, $allowEarlyDeparture);
+        if (!$windowStart || !$windowEnd) {
+            return false;
         }
 
-        $firstActivityStart = $this->getScheduledStartAt($lichKhoiHanh, $firstActivity);
-        if (!$firstActivityStart) {
-            return [null, null];
-        }
-
-        return [
-            $firstActivityStart->copy()->startOfDay(),
-            $firstActivityStart->copy(),
-        ];
+        $result = Carbon::now()->between($windowStart, $windowEnd);
+        return $result;
     }
 
-    protected function isCheckinWindowOpen(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet)
+    protected function isCheckinWindowExpired(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet, bool $allowEarlyDeparture = false)
     {
-        [$windowStart, $windowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet);
-
-        return $windowStart && $windowEnd
-            ? Carbon::now()->between($windowStart, $windowEnd)
-            : false;
-    }
-
-    protected function isCheckinWindowExpired(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet)
-    {
-        [, $windowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet);
-
-        return $windowEnd
-            ? Carbon::now()->gt($windowEnd)
-            : false;
-    }
-
-    protected function isDepartureCheckinWindowOpen(LichKhoiHanhTour $lichKhoiHanh)
-    {
-        [$windowStart, $windowEnd] = $this->getDepartureCheckinWindow($lichKhoiHanh);
-
-        return $windowStart && $windowEnd
-            ? Carbon::now()->between($windowStart, $windowEnd)
-            : false;
-    }
-
-    protected function isDepartureCheckinWindowExpired(LichKhoiHanhTour $lichKhoiHanh)
-    {
-        [, $windowEnd] = $this->getDepartureCheckinWindow($lichKhoiHanh);
-
-        return $windowEnd
-            ? Carbon::now()->gt($windowEnd)
-            : false;
-    }
-
-    /**
-     * Tách dữ liệu điểm danh theo từng ngữ cảnh để khởi hành không dùng chung
-     * trạng thái với hoạt động đầu tiên và kết thúc không dùng chung hoạt động cuối.
-     */
-    protected function normalizeCheckinContext(?string $context): string
-    {
-        return in_array($context, ['departure', 'activity', 'finish'], true)
-            ? $context
-            : 'activity';
-    }
-
-    protected function isContextWindowOpen(
-        LichKhoiHanhTour $lichKhoiHanh,
-        ChiTietLichTrinh $chiTiet,
-        string $context
-    ): bool {
-        $context = $this->normalizeCheckinContext($context);
-
-        if ($context === 'departure') {
-            return $this->isDepartureCheckinWindowOpen($lichKhoiHanh);
+        [$windowStart, $windowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet, $allowEarlyDeparture);
+        if (!$windowStart || !$windowEnd) {
+            return false;
         }
-
-        if ($context === 'finish') {
-            [$start, $end] = $this->getFinishCheckinWindow($lichKhoiHanh);
-            return $start && $end ? Carbon::now()->between($start, $end) : false;
-        }
-
-        return $this->isCheckinWindowOpen($lichKhoiHanh, $chiTiet);
+        return Carbon::now()->gt($windowEnd);
     }
 
-    protected function isContextWindowExpired(
-        LichKhoiHanhTour $lichKhoiHanh,
-        ChiTietLichTrinh $chiTiet,
-        string $context
-    ): bool {
-        $context = $this->normalizeCheckinContext($context);
-
-        if ($context === 'departure') {
-            return $this->isDepartureCheckinWindowExpired($lichKhoiHanh);
-        }
-
-        if ($context === 'finish') {
-            [, $end] = $this->getFinishCheckinWindow($lichKhoiHanh);
-            return $end ? Carbon::now()->gt($end) : false;
-        }
-
-        return $this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet);
-    }
-
-    protected function contextMatchesActivity(
-        LichKhoiHanhTour $lichKhoiHanh,
-        ChiTietLichTrinh $chiTiet,
-        string $context
-    ): bool {
-        if ($context === 'departure') {
-            $first = $this->getFirstDayOneActivity($lichKhoiHanh);
-            return $first && (int) $first->id === (int) $chiTiet->id;
-        }
-
-        if ($context === 'finish') {
-            $last = $this->getLastDayLastActivity($lichKhoiHanh);
-            return $last && (int) $last->id === (int) $chiTiet->id;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Giữ hành vi auto-lock cũ nhưng tách khởi hành khỏi hoạt động.
-     * Hoạt động đầu tiên sau khi hết giờ vẫn được CONFIRM_CHI_TIET như các hoạt động khác.
-     */
     protected function autoLockExpiredActivity(LichKhoiHanhTour $lichKhoiHanh, ChiTietLichTrinh $chiTiet)
     {
-        if (!$this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+        $firstDayOneActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
+        $allowEarlyDeparture = $firstDayOneActivity && $firstDayOneActivity->id === $chiTiet->id;
+
+        // if (!$this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet, $allowEarlyDeparture)) {
+        //     return;
+        // }
+        $expired = $this->isCheckinWindowExpired(
+            $lichKhoiHanh,
+            $chiTiet,
+            $allowEarlyDeparture
+        );
+
+        if (!$expired) {
             return;
         }
 
+        if ($firstDayOneActivity && $chiTiet->id === $firstDayOneActivity->id) {
+            CheckinSave::updateOrCreate(
+                [
+                    'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                    'action' => 'CONFIRM_XUATPHAT',
+                ],
+                [
+                    'chi_tiet_lich_trinh_id' => null,
+                    'ngay_thu' => 1,
+                    'huong_dan_vien_id' => HuongDanVien::where('user_id', Auth::id())->value('id'),
+                ]
+            );
+
+            return;
+        }
+
+        //                   dd([
+        //     'chiTiet_id' => $chiTiet->id,
+        //     'lichTrinh' => $chiTiet->lichTrinh,
+        //     'ngay_thu' => $chiTiet->lichTrinh?->ngay_thu,
+        // ]);
         CheckinSave::updateOrCreate(
             [
                 'lich_khoi_hanh_id' => $lichKhoiHanh->id,
@@ -447,6 +412,7 @@ class CheckInController extends Controller
         $lastActivity = $this->getLastDayLastActivity($lichKhoiHanh);
 
         if ($lastActivity && $chiTiet->id === $lastActivity->id) {
+
             CheckinSave::updateOrCreate(
                 [
                     'lich_khoi_hanh_id' => $lichKhoiHanh->id,
@@ -458,25 +424,6 @@ class CheckInController extends Controller
                 ]
             );
         }
-    }
-
-    protected function autoLockExpiredDeparture(LichKhoiHanhTour $lichKhoiHanh)
-    {
-        if (!$this->isDepartureCheckinWindowExpired($lichKhoiHanh)) {
-            return;
-        }
-
-        CheckinSave::updateOrCreate(
-            [
-                'lich_khoi_hanh_id' => $lichKhoiHanh->id,
-                'action' => 'CONFIRM_XUATPHAT',
-            ],
-            [
-                'chi_tiet_lich_trinh_id' => null,
-                'ngay_thu' => 1,
-                'huong_dan_vien_id' => HuongDanVien::where('user_id', Auth::id())->value('id'),
-            ]
-        );
     }
 
     protected function getFirstDayOneActivity(LichKhoiHanhTour $lichKhoiHanh)
@@ -513,33 +460,40 @@ class CheckInController extends Controller
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($request->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($request->input('checkin_context'));
+        $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
 
-        if (!$this->contextMatchesActivity($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Ngữ cảnh điểm danh không khớp với lịch trình.');
+        $firstDayOneActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
+
+        $allowEarlyDeparture =
+            $firstDayOneActivity &&
+            $firstDayOneActivity->id == $chiTiet->id;
+
+        if (
+            !$this->isCheckinWindowOpen(
+                $lichKhoiHanh,
+                $chiTiet,
+                $allowEarlyDeparture
+            )
+        ) {
+            return back()->with('error', 'Chưa đến giờ check-in hoặc đã quá giờ.');
         }
+        // Lấy hướng dẫn viên hiện tại
+        $checkIn = CheckInKhachHang::where(
+            'khach_hang_dat_tour_id',
+            $request->khach_hang_dat_tour_id
+        )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $request->chi_tiet_lich_trinh_id
+            )
 
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            $message = match ($context) {
-                'departure' => 'Check-in khởi hành chỉ được thực hiện từ 00:00 đến giờ bắt đầu hoạt động đầu tiên.',
-                'finish' => 'Check-in kết thúc chỉ được thực hiện từ giờ kết thúc hoạt động cuối đến 23:59.',
-                default => 'Hoạt động chỉ được điểm danh từ giờ bắt đầu đến giờ kết thúc.',
-            };
-            return back()->with('error', $message);
-        }
-
-        $checkIn = CheckInKhachHang::where('khach_hang_dat_tour_id', $request->khach_hang_dat_tour_id)
-            ->where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
-            ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
-            ->where('checkin_context', $context)
             ->first();
 
-        if ($checkIn && $checkIn->trang_thai === 'da_check_in') {
+        if ($checkIn && $checkIn->trang_thai == 'da_check_in') {
             return back()->with('error', 'Khách đã check-in.');
         }
 
-        if ($checkIn && $checkIn->trang_thai === 'da_check_out') {
+        if ($checkIn && $checkIn->trang_thai == 'da_check_out') {
             return back()->with('error', 'Khách đã check-out và không thể check-in lại.');
         }
 
@@ -549,20 +503,15 @@ class CheckInController extends Controller
             $checkIn->lich_khoi_hanh_id = $request->lich_khoi_hanh_id;
             $checkIn->chi_tiet_lich_trinh_id = $request->chi_tiet_lich_trinh_id;
             $checkIn->huong_dan_vien_id = $guide->id;
-            $checkIn->checkin_context = $context;
         }
 
         $checkIn->thoi_gian_check_in = now();
         $checkIn->thoi_gian_check_out = null;
         $checkIn->trang_thai = 'da_check_in';
         $checkIn->save();
-
+        // Ghi nhật ký hướng dẫn viên
         $khach = KhachHangDatTour::findOrFail($request->khach_hang_dat_tour_id);
-        $contextLabel = match ($context) {
-            'departure' => 'khởi hành',
-            'finish' => 'kết thúc tour',
-            default => $chiTiet->tieu_de,
-        };
+        $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
 
         NhatKyHuongDanVien::create([
             'lich_khoi_hanh_id' => $request->lich_khoi_hanh_id,
@@ -570,10 +519,306 @@ class CheckInController extends Controller
             'khach_hang_dat_tour_id' => $khach->id,
             'huong_dan_vien_id' => $guide->id,
             'hanh_dong' => 'CHECK_IN',
-            'noi_dung' => 'Check-in khách "' . $khach->ho_ten . '" tại "' . $contextLabel . '"',
+            'noi_dung' => 'Check-in khách "' .
+                $khach->ho_ten .
+                '" tại "' .
+                $chiTiet->tieu_de .
+                '"'
+
+        ]);
+        return back()->with(
+            'success',
+            'Check-in thành công.'
+        );
+    }
+    public function checkInBu(Request $request)
+    {
+        $request->validate([
+            'lich_khoi_hanh_id' => [
+                'required',
+                'integer',
+                'exists:lich_khoi_hanh_tours,id',
+            ],
+
+            'chi_tiet_lich_trinh_id' => [
+                'required',
+                'integer',
+                'exists:chi_tiet_lich_trinhs,id',
+            ],
+
+            'khach_hang_dat_tour_id' => [
+                'required',
+                'integer',
+                'exists:khach_hang_dat_tours,id',
+            ],
+
+            'ly_do_checkin_bu' => [
+                'required',
+                'string',
+                'max:500',
+            ],
+        ], [
+            'ly_do_checkin_bu.required' =>
+            'Vui lòng nhập lý do check-in bù.',
         ]);
 
-        return back()->with('success', 'Check-in thành công.');
+
+        /*
+    |--------------------------------------------------------------------------
+    | 1. Lấy HDV đang đăng nhập
+    |--------------------------------------------------------------------------
+    */
+
+        $guide = HuongDanVien::where(
+            'user_id',
+            Auth::id()
+        )->firstOrFail();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 2. Lấy lịch khởi hành và hoạt động
+    |--------------------------------------------------------------------------
+    */
+
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail(
+            $request->lich_khoi_hanh_id
+        );
+
+        $chiTiet = ChiTietLichTrinh::with('lichTrinh')
+            ->findOrFail(
+                $request->chi_tiet_lich_trinh_id
+            );
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 3. Kiểm tra HDV có được phân công tour này không
+    |--------------------------------------------------------------------------
+    */
+
+        $assigned = false;
+
+        if (
+            $lichKhoiHanh->huong_dan_vien_id
+            &&
+            (int) $lichKhoiHanh->huong_dan_vien_id === (int) $guide->id
+        ) {
+            $assigned = true;
+        } else {
+            $assigned = PhanCong::where(
+                'lich_khoi_hanh_id',
+                $lichKhoiHanh->id
+            )
+                ->whereJsonContains(
+                    'hdv_ids',
+                    (string) $guide->id
+                )
+                ->exists();
+        }
+
+        if (!$assigned) {
+            return back()->with(
+                'error',
+                'Bạn không có quyền điểm danh tour này.'
+            );
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 4. Check-in bù CHỈ được dùng khi hoạt động đã hết giờ
+    |--------------------------------------------------------------------------
+    */
+
+        if (
+            !$this->isCheckinWindowExpired(
+                $lichKhoiHanh,
+                $chiTiet
+            )
+        ) {
+            return back()->with(
+                'error',
+                'Hoạt động chưa kết thúc. Vui lòng sử dụng check-in thông thường.'
+            );
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 5. Kiểm tra khách có thuộc lịch khởi hành này không
+    |--------------------------------------------------------------------------
+    */
+
+        $khach = KhachHangDatTour::findOrFail(
+            $request->khach_hang_dat_tour_id
+        );
+
+        $khachThuocTour = DatTour::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanh->id
+        )
+            ->whereHas('khachHangs', function ($query) use ($khach) {
+                $query->where(
+                    'khach_hang_dat_tours.id',
+                    $khach->id
+                );
+            })
+            ->exists();
+
+        if (!$khachThuocTour) {
+            return back()->with(
+                'error',
+                'Khách hàng không thuộc lịch khởi hành này.'
+            );
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 6. Tìm dữ liệu check-in của khách tại hoạt động
+    |--------------------------------------------------------------------------
+    */
+
+        $checkIn = CheckInKhachHang::where(
+            'khach_hang_dat_tour_id',
+            $khach->id
+        )
+            ->where(
+                'lich_khoi_hanh_id',
+                $lichKhoiHanh->id
+            )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $chiTiet->id
+            )
+            ->where(
+                'checkin_context',
+                'activity'
+            )
+            ->first();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 7. Nếu đã check-in/check-out rồi thì không cho check-in bù
+    |--------------------------------------------------------------------------
+    */
+
+        if (
+            $checkIn
+            &&
+            in_array(
+                $checkIn->trang_thai,
+                ['da_check_in', 'da_check_out'],
+                true
+            )
+        ) {
+            return back()->with(
+                'error',
+                'Khách này đã được điểm danh tại hoạt động.'
+            );
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 8. Nếu chưa có record thì tạo
+    |--------------------------------------------------------------------------
+    */
+
+        if (!$checkIn) {
+            $checkIn = new CheckInKhachHang();
+
+            $checkIn->khach_hang_dat_tour_id =
+                $khach->id;
+
+            $checkIn->lich_khoi_hanh_id =
+                $lichKhoiHanh->id;
+
+            $checkIn->chi_tiet_lich_trinh_id =
+                $chiTiet->id;
+
+            $checkIn->huong_dan_vien_id =
+                $guide->id;
+
+            $checkIn->checkin_context =
+                'activity';
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 9. Lưu check-in bù
+    |--------------------------------------------------------------------------
+    */
+
+        $checkIn->trang_thai = 'da_check_in';
+
+        /*
+     * Không back-date.
+     *
+     * Đây là thời điểm HDV thực sự thực hiện thao tác bù.
+     */
+        $checkIn->thoi_gian_check_in = now();
+
+        $checkIn->thoi_gian_check_out = null;
+
+        $checkIn->is_checkin_bu = true;
+
+        $checkIn->ly_do_checkin_bu =
+            trim($request->ly_do_checkin_bu);
+
+        $checkIn->thoi_gian_ghi_nhan_bu =
+            now();
+
+        $checkIn->save();
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 10. Ghi nhật ký HDV
+    |--------------------------------------------------------------------------
+    */
+
+        NhatKyHuongDanVien::create([
+            'lich_khoi_hanh_id' =>
+            $lichKhoiHanh->id,
+
+            'chi_tiet_lich_trinh_id' =>
+            $chiTiet->id,
+
+            'khach_hang_dat_tour_id' =>
+            $khach->id,
+
+            'huong_dan_vien_id' =>
+            $guide->id,
+
+            'hanh_dong' =>
+            'CHECK_IN_BU',
+
+            'noi_dung' =>
+            'Check-in bù khách "' .
+                $khach->ho_ten .
+                '" tại hoạt động "' .
+                $chiTiet->tieu_de .
+                '". Lý do: ' .
+                trim($request->ly_do_checkin_bu),
+        ]);
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | 11. Trả về
+    |--------------------------------------------------------------------------
+    */
+
+        return back()->with(
+            'success',
+            'Check-in bù khách "' .
+                $khach->ho_ten .
+                '" thành công.'
+        );
     }
 
     /**
@@ -607,55 +852,20 @@ class CheckInController extends Controller
         // Instead record a per-(lich,chiTiet) confirmation so other days are unaffected.
         $action = $request->action ?? 'CONFIRM_CHI_TIET';
 
-        // Không chỉ khóa nút ở giao diện: luôn kiểm tra lại thời gian ở backend.
-        if ($action === 'CONFIRM_XUATPHAT') {
-            if (!$this->isDepartureCheckinWindowOpen($lich)) {
-                return back()->with(
-                    'error',
-                    'Check-in khởi hành chỉ được xác nhận từ 00:00 đến giờ bắt đầu hoạt động đầu tiên.'
-                );
-            }
-        }
-
-        if ($action === 'CONFIRM_CHI_TIET') {
-            $chiTietId = $request->chi_tiet_id;
-            $chiTiet = $chiTietId ? ChiTietLichTrinh::with('lichTrinh')->find($chiTietId) : null;
-
-            if (!$chiTiet || !$this->isCheckinWindowOpen($lich, $chiTiet)) {
-                return back()->with(
-                    'error',
-                    'Chỉ được xác nhận hoạt động trong khoảng từ giờ bắt đầu đến giờ kết thúc.'
-                );
-            }
-        }
-
-        // Mỗi loại xác nhận có khóa riêng để không ghi đè dữ liệu của ngày/hoạt động khác.
-        $lookup = [
-            'lich_khoi_hanh_id' => $lich->id,
-            'action' => $action,
-        ];
-
-        if ($action === 'CONFIRM_CHI_TIET') {
-            $lookup['chi_tiet_lich_trinh_id'] = $request->chi_tiet_id;
-        } elseif ($action === 'CONFIRM_KET_THUC_NGAY') {
-            $lookup['ngay_thu'] = $ngayThu;
-        } elseif ($action !== 'CONFIRM_XUATPHAT') {
-            $lookup['chi_tiet_lich_trinh_id'] = $request->chi_tiet_id ?? null;
-        }
-
-        $values = [
-            'ngay_thu' => $ngayThu,
-            'huong_dan_vien_id' => $guide->id,
-            'updated_at' => now(),
-        ];
-
-        if ($action === 'CONFIRM_XUATPHAT') {
-            $values['chi_tiet_lich_trinh_id'] = null;
-            $values['ngay_thu'] = 1;
-        }
-
+        // Upsert into checkin_saves to persist saved state per (lich, chiTiet, action)
         try {
-            CheckinSave::updateOrCreate($lookup, $values);
+            CheckinSave::updateOrCreate(
+                [
+                    'lich_khoi_hanh_id' => $lich->id,
+                    'chi_tiet_lich_trinh_id' => $request->chi_tiet_id ?? null,
+                    'action' => $action,
+                ],
+                [
+                    'ngay_thu' => $ngayThu,
+                    'huong_dan_vien_id' => $guide->id,
+                    'updated_at' => now(),
+                ]
+            );
         } catch (\Exception $e) {
             // Unique constraint may conflict with concurrent requests; ignore duplicate insert errors
             return response()->json([
@@ -708,29 +918,32 @@ class CheckInController extends Controller
     {
         $lichKhoiHanh = LichKhoiHanhTour::with('tour.lichTrinhTours.chiTiets')
             ->findOrFail($lichKhoiHanhId);
+
         $activityWindows = [];
         $dayStatus = [];
+
         $firstDayOneActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
+
         $departureCanCheckIn = false;
         $departureWindowStart = null;
         $departureWindowEnd = null;
         $finishCanCheckIn = false;
-
-        if ($firstDayOneActivity) {
-            $this->autoLockExpiredDeparture($lichKhoiHanh);
-        }
-
-        $departureDone = (bool) $lichKhoiHanh->da_checkin_khoi_hanh
-            || CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
-                ->where('action', 'CONFIRM_XUATPHAT')
-                ->exists();
-
+        $departureDone = (bool) $lichKhoiHanh->da_checkin_khoi_hanh;
         $finishExpired = false;
+
+        $tongKhach = DatTour::withCount('khachHangs')
+            ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->get()
+            ->sum('khach_hangs_count');
+
         if ($firstDayOneActivity) {
-            [$departureWindowStart, $departureWindowEnd] = $this->getDepartureCheckinWindow($lichKhoiHanh);
+            [$departureWindowStart, $departureWindowEnd] =
+                $this->getCheckinWindow($lichKhoiHanh, $firstDayOneActivity, true);
+
             $departureCanCheckIn = $departureWindowStart && $departureWindowEnd
                 ? Carbon::now()->between($departureWindowStart, $departureWindowEnd)
                 : false;
+
             $departureExpired = $departureWindowEnd
                 ? Carbon::now()->gt($departureWindowEnd)
                 : false;
@@ -743,6 +956,7 @@ class CheckInController extends Controller
                 ->where('action', 'CONFIRM_CHI_TIET')
                 ->where('ngay_thu', $ngay->ngay_thu)
                 ->count();
+
             $dayStatus[$ngay->ngay_thu] = [
                 'done' => $confirmedCount == $ngay->chiTiets->count(),
 
@@ -753,21 +967,83 @@ class CheckInController extends Controller
             ];
 
             foreach ($ngay->chiTiets as $chiTiet) {
-                $this->autoLockExpiredActivity($lichKhoiHanh, $chiTiet);
+                $effective = $this->getEffectiveActivitySchedule($lichKhoiHanh, $chiTiet);
+
+                if (!$effective['cancelled']) {
+                    $this->autoLockExpiredActivity($lichKhoiHanh, $chiTiet);
+                }
 
                 [$windowStart, $windowEnd] = $this->getCheckinWindow(
                     $lichKhoiHanh,
-                    $chiTiet
+                    $chiTiet,
+                    false
                 );
 
-                $activityWindows[$chiTiet->id] = [
-                    'can_checkin' => $windowStart && $windowEnd
-                        ? now()->between($windowStart, $windowEnd)
-                        : false,
+                $activityCheckIns = CheckInKhachHang::where(
+                    'lich_khoi_hanh_id',
+                    $lichKhoiHanh->id
+                )
+                    ->where('chi_tiet_lich_trinh_id', $chiTiet->id);
 
-                    'expired' => $windowEnd
-                        ? now()->gt($windowEnd)
-                        : false,
+                $checkedInCount = (clone $activityCheckIns)
+                    ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
+                    ->count();
+
+                $checkedOutCount = (clone $activityCheckIns)
+                    ->where('trang_thai', 'da_check_out')
+                    ->count();
+
+                $hasCheckedIn = $checkedInCount > 0;
+
+                $completed = $tongKhach > 0
+                    && $checkedOutCount >= $tongKhach;
+
+                if ($effective['cancelled']) {
+                    $status = 'cancelled';
+                    $completed = true;
+                } elseif ($completed) {
+                    $status = 'completed';
+                } elseif ($hasCheckedIn) {
+                    $status = 'checked_in';
+                } else {
+                    $status = 'pending';
+                }
+
+                $expired = $windowEnd
+                    ? Carbon::now()->gt($windowEnd)
+                    : false;
+
+                $canCheckInByTime = $windowStart && $windowEnd
+                    ? Carbon::now()->between($windowStart, $windowEnd)
+                    : false;
+
+                $canCheckIn = !$effective['cancelled']
+                    && $canCheckInByTime
+                    && !$hasCheckedIn
+                    && !$completed;
+
+                $canCheckInBu = !$effective['cancelled']
+                    && $expired
+                    && !$completed;
+
+                $activityWindows[$chiTiet->id] = [
+                    'can_checkin' => $canCheckIn,
+                    'can_checkin_bu' => $canCheckInBu,
+                    'expired' => $expired,
+
+                    'status' => $status,
+                    'has_checked_in' => $hasCheckedIn,
+                    'completed' => $completed,
+
+                    'checked_in_count' => $checkedInCount,
+                    'checked_out_count' => $checkedOutCount,
+                    'total_guests' => $tongKhach,
+
+                    'schedule_change' => $effective['change'],
+                    'cancelled' => $effective['cancelled'],
+                    'display_title' => $effective['title'],
+                    'display_start_time' => $effective['start_time'],
+                    'display_end_time' => $effective['end_time'],
 
                     'starts_at' => $windowStart,
                     'ends_at' => $windowEnd,
@@ -796,10 +1072,10 @@ class CheckInController extends Controller
             && $finishEnd
             && now()->between($finishStart, $finishEnd);
 
-        $finishExpired =
-            $finishEnd
+        $finishExpired = $finishEnd
             ? now()->gt($finishEnd)
             : false;
+
         return view(
             'Guide.checkin.diadiem',
             compact(
@@ -821,36 +1097,303 @@ class CheckInController extends Controller
     }
 
 
+    protected function hasActivityCheckIn(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): bool {
+        return CheckInKhachHang::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanh->id
+        )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $chiTiet->id
+            )
+            ->whereIn(
+                'trang_thai',
+                ['da_check_in', 'da_check_out']
+            )
+            ->exists();
+    }
+
+
+    protected function isActivityCompleted(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): bool {
+        $tongKhach = DatTour::withCount('khachHangs')
+            ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->get()
+            ->sum('khach_hangs_count');
+
+        if ($tongKhach <= 0) {
+            return false;
+        }
+
+        $checkedOutCount = CheckInKhachHang::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanh->id
+        )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $chiTiet->id
+            )
+            ->where(
+                'trang_thai',
+                'da_check_out'
+            )
+            ->count();
+
+        return $checkedOutCount >= $tongKhach;
+    }
+
+
+    public function thayDoiLichTrinh(Request $request, $lichKhoiHanhId, $chiTietId)
+    {
+        /*
+         * Input type=time hoặc dữ liệu DB có thể có dạng HH:MM:SS.
+         * Chuẩn hóa về HH:MM trước khi validate để tránh validation fail âm thầm.
+         */
+        $normalizeTime = function ($value) {
+            if (!$value) {
+                return null;
+            }
+
+            $value = trim((string) $value);
+
+            // 07:30:00 -> 07:30
+            if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $value)) {
+                return substr($value, 0, 5);
+            }
+
+            return $value;
+        };
+
+        $request->merge([
+            'gio_bat_dau_moi' => $normalizeTime($request->gio_bat_dau_moi),
+            'gio_ket_thuc_moi' => $normalizeTime($request->gio_ket_thuc_moi),
+        ]);
+
+        $request->validate([
+            'loai_thay_doi' => ['required', 'in:thay_the,doi_gio,huy'],
+            'tieu_de_moi' => ['nullable', 'string', 'max:255'],
+            'gio_bat_dau_moi' => ['nullable', 'date_format:H:i'],
+            'gio_ket_thuc_moi' => ['nullable', 'date_format:H:i'],
+            'ly_do' => ['required', 'string', 'max:1000'],
+        ], [
+            'loai_thay_doi.required' => 'Vui lòng chọn loại thay đổi.',
+            'loai_thay_doi.in' => 'Loại thay đổi không hợp lệ.',
+            'tieu_de_moi.max' => 'Tên hoạt động mới không được vượt quá 255 ký tự.',
+            'gio_bat_dau_moi.date_format' => 'Giờ bắt đầu phải đúng định dạng HH:MM.',
+            'gio_ket_thuc_moi.date_format' => 'Giờ kết thúc phải đúng định dạng HH:MM.',
+            'ly_do.required' => 'Vui lòng nhập lý do thay đổi lịch trình.',
+            'ly_do.max' => 'Lý do không được vượt quá 1000 ký tự.',
+        ]);
+
+        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($lichKhoiHanhId);
+        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($chiTietId);
+
+        /*
+         * Chỉ được thay đổi lịch khi CHƯA có bất kỳ khách nào Check-in.
+         * Chỉ cần một khách da_check_in hoặc da_check_out là khóa lịch.
+         */
+        if ($this->hasActivityCheckIn($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Hoạt động đã có khách Check-in nên không thể thay đổi lịch.'
+            );
+        }
+
+        if (
+            !$chiTiet->lichTrinh
+            || (int) $chiTiet->lichTrinh->tour_id !== (int) $lichKhoiHanh->tour_id
+        ) {
+            return back()->with('error', 'Hoạt động không thuộc tour của lịch khởi hành này.');
+        }
+
+        $assigned = (
+            $lichKhoiHanh->huong_dan_vien_id
+            && (int) $lichKhoiHanh->huong_dan_vien_id === (int) $guide->id
+        ) || PhanCong::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->whereJsonContains('hdv_ids', (string) $guide->id)
+            ->exists();
+
+        if (!$assigned) {
+            return back()->with('error', 'Bạn không có quyền thay đổi lịch trình này.');
+        }
+
+        $loai = $request->loai_thay_doi;
+
+        if ($loai === 'thay_the' && !$request->filled('tieu_de_moi')) {
+            return back()->withInput()->with(
+                'error',
+                'Vui lòng nhập tên hoạt động thay thế.'
+            );
+        }
+
+        $start = $request->gio_bat_dau_moi;
+        $end = $request->gio_ket_thuc_moi;
+
+        if ($start && $end && $end <= $start) {
+            return back()->withInput()->with(
+                'error',
+                'Giờ kết thúc mới phải sau giờ bắt đầu mới.'
+            );
+        }
+
+        try {
+            $change = ThayDoiLichTrinh::updateOrCreate(
+                [
+                    'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                    'chi_tiet_lich_trinh_id' => $chiTiet->id,
+                ],
+                [
+                    'huong_dan_vien_id' => $guide->id,
+                    'loai_thay_doi' => $loai,
+
+                    'tieu_de_moi' => $loai === 'huy'
+                        ? null
+                        : ($request->tieu_de_moi ?: $chiTiet->tieu_de),
+
+                    'gio_bat_dau_moi' => $loai === 'huy'
+                        ? null
+                        : ($start ?: $chiTiet->gio_bat_dau),
+
+                    'gio_ket_thuc_moi' => $loai === 'huy'
+                        ? null
+                        : ($end ?: $chiTiet->gio_ket_thuc),
+
+                    'ly_do' => trim($request->ly_do),
+                ]
+            );
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Không thể lưu thay đổi lịch trình: ' . $e->getMessage());
+        }
+
+        $moTa = match ($loai) {
+            'huy' => 'Hủy hoạt động "' . $chiTiet->tieu_de . '"',
+            'doi_gio' => 'Đổi giờ hoạt động "' . $chiTiet->tieu_de . '"',
+            default => 'Thay hoạt động "' . $chiTiet->tieu_de . '" thành "' . $change->tieu_de_moi . '"',
+        };
+
+        /*
+         * Lưu nhật ký là phần phụ. Nếu bảng nhật ký dùng ENUM chưa có
+         * THAY_DOI_LICH_TRINH thì không được làm mất kết quả đã lưu lịch.
+         */
+        try {
+            NhatKyHuongDanVien::create([
+                'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                'chi_tiet_lich_trinh_id' => $chiTiet->id,
+                'khach_hang_dat_tour_id' => null,
+                'huong_dan_vien_id' => $guide->id,
+                'hanh_dong' => 'THAY_DOI_LICH_TRINH',
+                'noi_dung' => $moTa . '. Lý do: ' . trim($request->ly_do),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
+        return redirect()
+            ->route('Guide.checkin.dia-diem', $lichKhoiHanh->id)
+            ->with('success', 'Đã cập nhật lịch trình thực tế của chuyến.');
+    }
+
+    public function khoiPhucLichTrinh($lichKhoiHanhId, $chiTietId)
+    {
+        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($lichKhoiHanhId);
+        $chiTiet = ChiTietLichTrinh::findOrFail($chiTietId);
+
+        /*
+         * Đã có khách Check-in thì không được khôi phục lịch gốc nữa.
+         */
+        if ($this->hasActivityCheckIn($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Hoạt động đã có khách Check-in nên không thể khôi phục lịch gốc.'
+            );
+        }
+
+        $assigned = (
+            $lichKhoiHanh->huong_dan_vien_id
+            && (int) $lichKhoiHanh->huong_dan_vien_id === (int) $guide->id
+        ) || PhanCong::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->whereJsonContains('hdv_ids', (string) $guide->id)
+            ->exists();
+
+        if (!$assigned) {
+            return back()->with('error', 'Bạn không có quyền khôi phục lịch trình này.');
+        }
+
+        $change = ThayDoiLichTrinh::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
+            ->first();
+
+        if (!$change) {
+            return back()->with('warning', 'Hoạt động này đang dùng lịch gốc.');
+        }
+
+        $oldReason = $change->ly_do;
+        $change->delete();
+
+        NhatKyHuongDanVien::create([
+            'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+            'chi_tiet_lich_trinh_id' => $chiTiet->id,
+            'khach_hang_dat_tour_id' => null,
+            'huong_dan_vien_id' => $guide->id,
+            'hanh_dong' => 'KHOI_PHUC_LICH_TRINH',
+            'noi_dung' => 'Khôi phục hoạt động "' . $chiTiet->tieu_de .
+                '" về lịch tour gốc. Lý do thay đổi trước đó: ' . $oldReason,
+        ]);
+
+        return back()->with('success', 'Đã khôi phục lịch trình gốc.');
+    }
+
+
     public function checkOut($id)
     {
         $checkIn = CheckInKhachHang::findOrFail($id);
-
-        if ($checkIn->thoi_gian_check_out !== null) {
-            return back()->with('error', 'Khách đã check-out.');
+        if ($checkIn->thoi_gian_check_out != null) {
+            return back()->with(
+                'error',
+                'Khách đã check-out.'
+            );
         }
 
-        if ($checkIn->trang_thai !== 'da_check_in') {
-            return back()->with('error', 'Hành khách chưa check-in hoặc đã check-out.');
+        // Chỉ cho check-out nếu đã check-in
+        if ($checkIn->trang_thai != 'da_check_in') {
+
+            return back()->with(
+                'error',
+                'Hành khách chưa check-in hoặc đã check-out.'
+            );
         }
 
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($checkIn->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($checkIn->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($checkIn->checkin_context ?? 'activity');
+        $chiTiet = ChiTietLichTrinh::findOrFail($checkIn->chi_tiet_lich_trinh_id);
 
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác hiện không mở.');
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
         $checkIn->thoi_gian_check_out = now();
         $checkIn->trang_thai = 'da_check_out';
         $checkIn->save();
-
+        // Nếu đây là lần check-in đầu tiên của chuyến thì đánh dấu đã khởi hành
+        // Kiểm tra còn ai chưa checkout không
         $khach = $checkIn->khachHang;
-        $contextLabel = match ($context) {
-            'departure' => 'khởi hành',
-            'finish' => 'kết thúc tour',
-            default => $chiTiet->tieu_de,
-        };
+
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $checkIn->chi_tiet_lich_trinh_id
+        );
 
         NhatKyHuongDanVien::create([
             'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
@@ -858,10 +1401,25 @@ class CheckInController extends Controller
             'khach_hang_dat_tour_id' => $khach->id,
             'huong_dan_vien_id' => $checkIn->huong_dan_vien_id,
             'hanh_dong' => 'CHECK_OUT',
-            'noi_dung' => 'Check-out khách "' . $khach->ho_ten . '" tại "' . $contextLabel . '"',
+            'noi_dung' => 'Check-out khách "' .
+                $khach->ho_ten .
+                '" tại "' .
+                $chiTiet->tieu_de .
+                '"'
         ]);
 
-        return back()->with('success', 'Check-out thành công.');
+        // $lichKhoiHanh = LichKhoiHanhTour::findOrFail($checkIn->lich_khoi_hanh_id);
+
+        // $lichTrinhNgay1 = LichTrinhTour::where('tour_id', $lichKhoiHanh->tour_id)
+        //     ->where('ngay_thu', 1)
+        //     ->with('chiTiets')
+        //     ->first();
+
+        // $chiTiet = $lichTrinhNgay1->chiTiets->first();
+        return back()->with(
+            'success',
+            'Check-out thành công.'
+        );
     }
 
 
@@ -869,30 +1427,46 @@ class CheckInController extends Controller
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($request->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($request->input('checkin_context'));
+        $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
 
-        if (!$this->contextMatchesActivity($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Ngữ cảnh điểm danh không khớp với lịch trình.');
-        }
+        $firstDayOneActivity = $this->getFirstDayOneActivity($lichKhoiHanh);
+        $allowEarlyDeparture =
+            $firstDayOneActivity &&
+            $chiTiet->id == $firstDayOneActivity->id;
 
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Không thể check-in tất cả vì chưa đúng thời gian.');
+        if (
+            !$this->isCheckinWindowOpen(
+                $lichKhoiHanh,
+                $chiTiet,
+                $allowEarlyDeparture
+            )
+        ) {
+            return back()->with(
+                'error',
+                'Không thể check-in tất cả vì chưa đúng thời gian.'
+            );
         }
 
         $datTours = DatTour::with('khachHangs')
-            ->where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
+            ->where(
+                'lich_khoi_hanh_id',
+                $request->lich_khoi_hanh_id
+            )
             ->get();
 
         foreach ($datTours as $datTour) {
             foreach ($datTour->khachHangs as $khach) {
-                $checkIn = CheckInKhachHang::where('khach_hang_dat_tour_id', $khach->id)
-                    ->where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
-                    ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
-                    ->where('checkin_context', $context)
+                $checkIn = CheckInKhachHang::where(
+                    'khach_hang_dat_tour_id',
+                    $khach->id
+                )
+                    ->where(
+                        'chi_tiet_lich_trinh_id',
+                        $request->chi_tiet_lich_trinh_id
+                    )
                     ->first();
 
-                if ($checkIn && $checkIn->trang_thai === 'da_check_out') {
+                if ($checkIn && $checkIn->trang_thai == 'da_check_out') {
                     continue;
                 }
 
@@ -902,7 +1476,6 @@ class CheckInController extends Controller
                     $checkIn->lich_khoi_hanh_id = $request->lich_khoi_hanh_id;
                     $checkIn->chi_tiet_lich_trinh_id = $request->chi_tiet_lich_trinh_id;
                     $checkIn->huong_dan_vien_id = $guide->id;
-                    $checkIn->checkin_context = $context;
                 }
 
                 if ($checkIn->trang_thai !== 'da_check_in') {
@@ -910,40 +1483,50 @@ class CheckInController extends Controller
                     $checkIn->thoi_gian_check_out = null;
                     $checkIn->trang_thai = 'da_check_in';
                     $checkIn->save();
-
                     NhatKyHuongDanVien::create([
                         'lich_khoi_hanh_id' => $request->lich_khoi_hanh_id,
                         'chi_tiet_lich_trinh_id' => $request->chi_tiet_lich_trinh_id,
                         'khach_hang_dat_tour_id' => $khach->id,
                         'huong_dan_vien_id' => $guide->id,
                         'hanh_dong' => 'CHECK_IN',
-                        'noi_dung' => 'Check-in khách "' . $khach->ho_ten . '".',
+                        'noi_dung' => 'Check-in khách "' .
+                            $khach->ho_ten .
+                            '" tại "' .
+                            $chiTiet->tieu_de .
+                            '"'
                     ]);
                 }
             }
         }
-
-        return back()->with('success', 'Đã check-in toàn bộ hành khách.');
+        return back()->with(
+            'success',
+            'Đã check-in toàn bộ hành khách.'
+        );
     }
 
     public function checkOutTatCa(Request $request)
     {
-        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
+        $guide = HuongDanVien::where(
+            'user_id',
+            Auth::id()
+        )->firstOrFail();
+
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $request->chi_tiet_lich_trinh_id
+        );
+
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($request->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($request->input('checkin_context'));
-
-        if (!$this->contextMatchesActivity($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Ngữ cảnh điểm danh không khớp với lịch trình.');
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác hiện không mở.');
-        }
-
-        $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
-            ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
-            ->where('checkin_context', $context)
+        $checkIns = CheckInKhachHang::where(
+            'chi_tiet_lich_trinh_id',
+            $request->chi_tiet_lich_trinh_id
+        )
             ->where('trang_thai', 'da_check_in')
             ->get();
 
@@ -952,18 +1535,33 @@ class CheckInController extends Controller
                 'trang_thai' => 'da_check_out',
                 'thoi_gian_check_out' => now(),
             ]);
-
             NhatKyHuongDanVien::create([
                 'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
                 'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
                 'khach_hang_dat_tour_id' => $checkIn->khach_hang_dat_tour_id,
                 'huong_dan_vien_id' => $guide->id,
                 'hanh_dong' => 'CHECK_OUT',
-                'noi_dung' => 'Check-out khách "' . $checkIn->khachHang->ho_ten . '".',
+                'noi_dung' => 'Check-out khách "' .
+                    $checkIn->khachHang->ho_ten .
+                    '" tại "' .
+                    $chiTiet->tieu_de .
+                    '"'
             ]);
         }
+        // Sau khi tất cả đã checkout
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
 
-        return back()->with('success', 'Đã check-out toàn bộ hành khách.');
+        $lichTrinhNgay1 = LichTrinhTour::where('tour_id', $lichKhoiHanh->tour_id)
+            ->where('ngay_thu', 1)
+            ->with('chiTiets')
+            ->first();
+
+        $chiTiet = $lichTrinhNgay1->chiTiets->first();
+
+        return back()->with(
+            'success',
+            'Đã check-out toàn bộ hành khách.'
+        );
     }
 
 
@@ -971,51 +1569,71 @@ class CheckInController extends Controller
     public function undoCheckIn($id)
     {
         $checkIn = CheckInKhachHang::findOrFail($id);
-
-        if ($checkIn->trang_thai !== 'da_check_in') {
-            return back()->with('error', 'Không thể hoàn tác Check-in.');
+        // Chỉ hoàn tác khi đang ở trạng thái đã check-in
+        if ($checkIn->trang_thai != 'da_check_in') {
+            return back()->with(
+                'error',
+                'Không thể hoàn tác Check-in.'
+            );
         }
 
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($checkIn->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($checkIn->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($checkIn->checkin_context ?? 'activity');
-
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác hiện không mở.');
+        $chiTiet = ChiTietLichTrinh::findOrFail($checkIn->chi_tiet_lich_trinh_id);
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
+        // Đưa về trạng thái ban đầu
         $checkIn->update([
             'trang_thai' => 'chua_check_in',
             'thoi_gian_check_in' => null,
             'thoi_gian_check_out' => null,
         ]);
 
+        // Lấy địa điểm
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $checkIn->chi_tiet_lich_trinh_id
+        );
+
+        // Ghi nhật ký
         NhatKyHuongDanVien::create([
             'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
             'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
             'khach_hang_dat_tour_id' => $checkIn->khach_hang_dat_tour_id,
             'huong_dan_vien_id' => $checkIn->huong_dan_vien_id,
             'hanh_dong' => 'UNDO_CHECK_IN',
-            'noi_dung' => 'Hoàn tác Check-in khách "' . $checkIn->khachHang->ho_ten . '".',
+            'noi_dung' => 'Hoàn tác Check-in khách "' .
+                $checkIn->khachHang->ho_ten .
+                '" tại "' .
+                $chiTiet->tieu_de .
+                '"'
+
         ]);
 
-        return back()->with('success', 'Đã hoàn tác Check-in.');
+        return back()->with(
+            'success',
+            'Đã hoàn tác Check-in.'
+        );
     }
 
     public function undoCheckInTatCa(Request $request)
     {
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
-        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($request->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($request->input('checkin_context'));
 
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác hiện không mở.');
+        $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
         $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
             ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
-            ->where('checkin_context', $context)
             ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
             ->get();
 
@@ -1032,88 +1650,133 @@ class CheckInController extends Controller
                 'khach_hang_dat_tour_id' => $checkIn->khach_hang_dat_tour_id,
                 'huong_dan_vien_id' => $guide->id,
                 'hanh_dong' => 'UNDO_CHECKIN_ALL',
-                'noi_dung' => 'Hoàn tác tất cả trạng thái Check-in/Check-out của hành khách "' . $checkIn->khachHang->ho_ten . '"',
+                'noi_dung' => 'Hoàn tác tất cả trạng thái Check-in/Check-out của hành khách "' . $checkIn->khachHang->ho_ten . '"'
             ]);
         }
 
-        return back()->with('success', 'Đã hoàn tác tất cả hành khách về trạng thái chưa check-in.');
+        return back()->with(
+            'success',
+            'Đã hoàn tác tất cả hành khách về trạng thái chưa check-in.'
+        );
     }
 
     //quay lại khi lỡ check out
     public function undoCheckOut($id)
     {
         $checkIn = CheckInKhachHang::findOrFail($id);
-
-        if ($checkIn->trang_thai !== 'da_check_out') {
-            return back()->with('error', 'Không thể hoàn tác Check-out.');
+        // Chỉ hoàn tác khi đã check-out
+        if ($checkIn->trang_thai != 'da_check_out') {
+            return back()->with(
+                'error',
+                'Không thể hoàn tác Check-out.'
+            );
         }
 
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($checkIn->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($checkIn->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($checkIn->checkin_context ?? 'activity');
-
-        if (!$this->isContextWindowOpen($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác hiện không mở.');
+        $chiTiet = ChiTietLichTrinh::findOrFail($checkIn->chi_tiet_lich_trinh_id);
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
+        // Quay lại trạng thái đã check-in
         $checkIn->update([
             'trang_thai' => 'da_check_in',
             'thoi_gian_check_out' => null,
         ]);
 
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $checkIn->chi_tiet_lich_trinh_id
+        );
+
+        // Ghi nhật ký
         NhatKyHuongDanVien::create([
             'lich_khoi_hanh_id' => $checkIn->lich_khoi_hanh_id,
             'chi_tiet_lich_trinh_id' => $checkIn->chi_tiet_lich_trinh_id,
             'khach_hang_dat_tour_id' => $checkIn->khach_hang_dat_tour_id,
             'huong_dan_vien_id' => $checkIn->huong_dan_vien_id,
             'hanh_dong' => 'UNDO_CHECK_OUT',
-            'noi_dung' => 'Hoàn tác Check-out khách "' . $checkIn->khachHang->ho_ten . '".',
+            'noi_dung' => 'Hoàn tác Check-out khách "' .
+                $checkIn->khachHang->ho_ten .
+                '" tại "' .
+                $chiTiet->tieu_de .
+                '"'
         ]);
 
-        return back()->with('success', 'Đã hoàn tác Check-out.');
+        return back()->with(
+            'success',
+            'Đã hoàn tác Check-out.'
+        );
     }
 
     public function saveNote(Request $request)
     {
-        $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
-        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
-        $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($request->chi_tiet_lich_trinh_id);
-        $context = $this->normalizeCheckinContext($request->input('checkin_context'));
+        $guide = HuongDanVien::where(
+            'user_id',
+            Auth::id()
+        )->firstOrFail();
 
-        if ($this->isContextWindowExpired($lichKhoiHanh, $chiTiet, $context)) {
-            return back()->with('error', 'Thời gian thao tác đã kết thúc.');
-        }
-
-        $checkIn = CheckInKhachHang::where('khach_hang_dat_tour_id', $request->khach_hang_dat_tour_id)
-            ->where('lich_khoi_hanh_id', $request->lich_khoi_hanh_id)
-            ->where('chi_tiet_lich_trinh_id', $request->chi_tiet_lich_trinh_id)
-            ->where('checkin_context', $context)
+        $checkIn = CheckInKhachHang::where(
+            'khach_hang_dat_tour_id',
+            $request->khach_hang_dat_tour_id
+        )
+            ->where(
+                'lich_khoi_hanh_id',
+                $request->lich_khoi_hanh_id
+            )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $request->chi_tiet_lich_trinh_id
+            )
             ->first();
 
-        if (!$checkIn) {
-            $checkIn = new CheckInKhachHang();
-            $checkIn->khach_hang_dat_tour_id = $request->khach_hang_dat_tour_id;
-            $checkIn->lich_khoi_hanh_id = $request->lich_khoi_hanh_id;
-            $checkIn->chi_tiet_lich_trinh_id = $request->chi_tiet_lich_trinh_id;
-            $checkIn->huong_dan_vien_id = $guide->id;
-            $checkIn->checkin_context = $context;
-            $checkIn->trang_thai = 'chua_check_in';
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail($request->lich_khoi_hanh_id);
+        $chiTiet = ChiTietLichTrinh::findOrFail($request->chi_tiet_lich_trinh_id);
+        if ($this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Thời gian thao tác đã kết thúc.'
+            );
         }
 
-        $checkIn->ghi_chu = $request->ghi_chu;
-        $checkIn->save();
+        if (!$checkIn) {
 
-        return back()->with('success', 'Đã lưu ghi chú.');
+            $checkIn = CheckInKhachHang::create([
+                'khach_hang_dat_tour_id' => $request->khach_hang_dat_tour_id,
+                'lich_khoi_hanh_id' => $request->lich_khoi_hanh_id,
+                'chi_tiet_lich_trinh_id' => $request->chi_tiet_lich_trinh_id,
+                'huong_dan_vien_id' => $guide->id,
+                'trang_thai' => 'chua_check_in',
+                'ghi_chu' => $request->ghi_chu,
+            ]);
+        } else {
+
+            $checkIn->ghi_chu = $request->ghi_chu;
+            $checkIn->save();
+        }
+
+        return back()->with(
+            'success',
+            'Đã lưu ghi chú.'
+        );
     }
     public function showXuatPhat(LichKhoiHanhTour $lichKhoiHanh)
     {
-        $lichKhoiHanh->load('tour.lichTrinhTours.chiTiets');
 
+        // Lấy danh sách đặt tour và địa điểm ngày 1 (sử dụng địa điểm đầu tiên của ngày 1)
         $datTours = DatTour::with('khachHangs')
             ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
             ->get();
 
-        $chiTiet = $this->getFirstDayOneActivity($lichKhoiHanh);
+        $firstLichTrinh = $lichKhoiHanh->tour->lichTrinhTours->firstWhere('ngay_thu', 1);
+
+        $chiTiet = null;
+
+        if ($firstLichTrinh && $firstLichTrinh->chiTiets->isNotEmpty()) {
+            $chiTiet = $firstLichTrinh->chiTiets->first();
+        }
 
         if (!$chiTiet) {
             return redirect()
@@ -1121,35 +1784,36 @@ class CheckInController extends Controller
                 ->with('error', 'Không có địa điểm để Check-in khởi hành. Vui lòng kiểm tra lịch trình.');
         }
 
-        $checkedIds = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
-            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
-            ->where('checkin_context', 'departure')
+        $checkedIds = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
             ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
             ->pluck('khach_hang_dat_tour_id')
             ->toArray();
 
-        $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
-            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
-            ->where('checkin_context', 'departure')
+        $checkIns = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
             ->get()
             ->keyBy('khach_hang_dat_tour_id');
 
-        $tongKhach = $datTours->sum(fn ($datTour) => $datTour->khachHangs->count());
+        $tongKhach = 0;
+        foreach ($datTours as $datTour) {
+            $tongKhach += $datTour->khachHangs->count();
+        }
+
         $daCheck = count($checkedIds);
-        $chuaCheck = max(0, $tongKhach - $daCheck);
+        $chuaCheck = $tongKhach - $daCheck;
+
         $lichKhoiHanhId = $lichKhoiHanh->id;
 
-        $this->autoLockExpiredDeparture($lichKhoiHanh);
-
+        // server-side saved flag for this lich/chiTiet (from CheckinSave)
         $saved = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
+            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
             ->where('action', 'CONFIRM_XUATPHAT')
             ->exists();
 
-        [$checkinWindowStart, $checkinWindowEnd] = $this->getDepartureCheckinWindow($lichKhoiHanh);
-        $canCheckIn = $this->isDepartureCheckinWindowOpen($lichKhoiHanh) && !$saved;
-        $checkinExpired = $this->isDepartureCheckinWindowExpired($lichKhoiHanh);
-        $checkinContext = 'departure';
+        $this->autoLockExpiredActivity($lichKhoiHanh, $chiTiet);
 
+        [$checkinWindowStart, $checkinWindowEnd] = $this->getCheckinWindow($lichKhoiHanh, $chiTiet, true);
+        $canCheckIn = $this->isCheckinWindowOpen($lichKhoiHanh, $chiTiet, true);
+        $checkinExpired = $this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet, true);
         return view('Guide.checkin.xuat_phat', compact(
             'lichKhoiHanh',
             'datTours',
@@ -1164,56 +1828,61 @@ class CheckInController extends Controller
             'canCheckIn',
             'checkinWindowStart',
             'checkinWindowEnd',
-            'checkinExpired',
-            'checkinContext'
+            'checkinExpired'
         ));
     }
 
     public function showKetThuc(LichKhoiHanhTour $lichKhoiHanh)
     {
-        $lichKhoiHanh->load('tour.lichTrinhTours.chiTiets');
-
+        // Lấy danh sách đặt tour và địa điểm ngày cuối cùng (hoạt động cuối)
         $datTours = DatTour::with('khachHangs')
             ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
             ->get();
 
-        $chiTiet = $this->getLastDayLastActivity($lichKhoiHanh);
+        $lastLichTrinh = $lichKhoiHanh->tour->lichTrinhTours->sortBy('ngay_thu')->last();
+        $chiTiet = null;
+
+        if ($lastLichTrinh && $lastLichTrinh->chiTiets->isNotEmpty()) {
+            // Lấy hoạt động cuối cùng của ngày cuối
+            $chiTiet = $lastLichTrinh->chiTiets->sortBy('gio_ket_thuc')->last();
+        }
 
         if (!$chiTiet) {
             return redirect()
                 ->route('Guide.checkin.dia-diem', $lichKhoiHanh->id)
                 ->with('error', 'Không có địa điểm để Check-in kết thúc tour. Vui lòng kiểm tra lịch trình.');
         }
-
-        $checkedIds = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
-            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
-            ->where('checkin_context', 'finish')
+        $checkedIds = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
             ->whereIn('trang_thai', ['da_check_in', 'da_check_out'])
             ->pluck('khach_hang_dat_tour_id')
             ->toArray();
-
-        $checkIns = CheckInKhachHang::where('lich_khoi_hanh_id', $lichKhoiHanh->id)
-            ->where('chi_tiet_lich_trinh_id', $chiTiet->id)
-            ->where('checkin_context', 'finish')
+        $checkIns = CheckInKhachHang::where('chi_tiet_lich_trinh_id', $chiTiet->id)
             ->get()
             ->keyBy('khach_hang_dat_tour_id');
+        $tongKhach = 0;
+        foreach ($datTours as $datTour) {
+            $tongKhach += $datTour->khachHangs->count();
+        }
 
-        $tongKhach = $datTours->sum(fn ($datTour) => $datTour->khachHangs->count());
         $daCheck = count($checkedIds);
-        $chuaCheck = max(0, $tongKhach - $daCheck);
+        $chuaCheck = $tongKhach - $daCheck;
         $lichKhoiHanhId = $lichKhoiHanh->id;
-
+        // server-side saved flag for this lich/chiTiet (from CheckinSave)
+        $this->autoLockExpiredActivity($lichKhoiHanh, $chiTiet);
         $saved = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanhId)
-            ->where('action', 'CONFIRM_KET_THUC_TOUR')
+            ->where('action', 'CONFIRM_KET_THUC')
             ->exists();
 
-        [$checkinWindowStart, $checkinWindowEnd] = $this->getFinishCheckinWindow($lichKhoiHanh);
-        $canCheckIn = $checkinWindowStart && $checkinWindowEnd
-            ? Carbon::now()->between($checkinWindowStart, $checkinWindowEnd) && !$saved
-            : false;
-        $checkinExpired = $checkinWindowEnd ? Carbon::now()->gt($checkinWindowEnd) : false;
-        $checkinContext = 'finish';
 
+        // Cửa sổ check-in cho kết thúc: từ gio_ket_thuc đến gio_ket_thuc + 30 phút
+        [$checkinWindowStart, $checkinWindowEnd] =
+            $this->getCheckinWindow($lichKhoiHanh, $chiTiet);
+
+        $canCheckIn =
+            $this->isCheckinWindowOpen($lichKhoiHanh, $chiTiet);
+
+        $checkinExpired =
+            $this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet);
         return view('Guide.checkin.ket_thuc', compact(
             'lichKhoiHanh',
             'datTours',
@@ -1229,7 +1898,6 @@ class CheckInController extends Controller
             'checkinWindowStart',
             'checkinWindowEnd',
             'checkinExpired',
-            'checkinContext'
         ));
     }
 
@@ -1295,15 +1963,6 @@ class CheckInController extends Controller
                 'Tour này đã được kết thúc trước đó.'
             );
         }
-
-        [$finishStart, $finishEnd] = $this->getFinishCheckinWindow($lichKhoiHanh);
-        if (!$finishStart || !$finishEnd || !Carbon::now()->between($finishStart, $finishEnd)) {
-            return back()->with(
-                'error',
-                'Chỉ được xác nhận kết thúc tour từ khi hoạt động cuối kết thúc đến 23:59 của ngày cuối.'
-            );
-        }
-
         $totalDays = $lichKhoiHanh->tour->lichTrinhTours()->count();
 
         $lockedDays = CheckinSave::where('lich_khoi_hanh_id', $lichKhoiHanh->id)

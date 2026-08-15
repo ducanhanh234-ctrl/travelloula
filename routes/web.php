@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCheckInController;
 use App\Http\Controllers\Admin\AdminLienHeController;
 use App\Http\Controllers\Admin\BangGiaTourController;
 use Illuminate\Support\Facades\Route;
@@ -462,6 +463,16 @@ Route::prefix('Admin')
                 Route::delete('/{id}', [AdminBaoCaoSuCoController::class, 'destroy'])
                     ->name('destroy');
             });
+
+        Route::get(
+            '/check-in-hdv',
+            [AdminCheckInController::class, 'index']
+        )->name('checkin-hdv.index');
+
+        Route::get(
+            '/check-in-hdv/{lichKhoiHanh}',
+            [AdminCheckInController::class, 'show']
+        )->name('checkin-hdv.show');
     });
 
 /*
@@ -549,6 +560,27 @@ Route::prefix('Guide')
     
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
+        // Check-in bù
+        Route::post(
+            '/check-in/check-in-bu',
+            [CheckInController::class, 'checkInBu']
+        )->name('checkin.check-in-bu');
+        // Check-out bù
+        Route::post(
+            '/check-out/{id}/check-out-bu',
+            [CheckInController::class, 'checkOutBu']
+        )->name('checkout.check-out-bu');
+        //thay lịch
+        Route::post(
+            '/check-in/{lichKhoiHanh}/{chiTiet}/thay-doi-lich',
+            [CheckInController::class, 'thayDoiLichTrinh']
+        )->name('checkin.thayDoiLichTrinh');
+
+        Route::delete(
+            '/check-in/{lichKhoiHanh}/{chiTiet}/thay-doi-lich',
+            [CheckInController::class, 'khoiPhucLichTrinh']
+        )->name('checkin.khoiPhucLichTrinh');
+
         Route::get('/', [GuideDashboardController::class, 'index'])
             ->name('dashboard');
 

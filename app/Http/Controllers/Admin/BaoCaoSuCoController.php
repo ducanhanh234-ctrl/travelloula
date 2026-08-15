@@ -10,6 +10,19 @@ use Illuminate\Support\Facades\DB;
 
 class BaoCaoSuCoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:bao_cao_su_co.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+        $this->middleware('permission:bao_cao_su_co.update')
+            ->only([
+                'tiepNhan',
+                'update',
+            ]);
+    }
     public function index(Request $request)
     {
         $query = BaoCaoSuCo::with([

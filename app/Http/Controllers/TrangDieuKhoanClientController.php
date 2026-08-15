@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class TrangDieuKhoanClientController extends Controller
 {
+   public function __construct()
+    {
+        $this->middleware('permission:terms.view')
+            ->only([
+                'index',
+                'clientShow',
+            ]);
+    }
      public function index()
     {
         $trangDieuKhoan = TrangDieuKhoan::where('duong_dan', 'dieu-khoan')

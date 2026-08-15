@@ -1422,6 +1422,120 @@ class CheckInController extends Controller
         );
     }
 
+    public function checkOutBu(Request $request, $id)
+    {
+        $request->validate([
+            'ly_do_checkout_bu' => [
+                'required',
+                'string',
+                'max:500',
+            ],
+        ], [
+            'ly_do_checkout_bu.required' =>
+            'Vui lòng nhập lý do check-out bù.',
+        ]);
+
+        $guide = HuongDanVien::where(
+            'user_id',
+            Auth::id()
+        )->firstOrFail();
+
+        $checkIn = CheckInKhachHang::findOrFail($id);
+
+        // Phải check-in rồi mới được check-out bù
+        if ($checkIn->trang_thai !== 'da_check_in') {
+            return back()->with(
+                'error',
+                'Khách chưa check-in hoặc đã check-out.'
+            );
+        }
+
+        $lichKhoiHanh = LichKhoiHanhTour::findOrFail(
+            $checkIn->lich_khoi_hanh_id
+        );
+
+        $chiTiet = ChiTietLichTrinh::findOrFail(
+            $checkIn->chi_tiet_lich_trinh_id
+        );
+
+        // Check-out bù chỉ dùng khi hoạt động đã hết thời gian
+        if (!$this->isCheckinWindowExpired($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Hoạt động chưa kết thúc. Vui lòng sử dụng check-out thông thường.'
+            );
+        }
+
+        // Kiểm tra HDV có được phân công tour không
+        $assigned =
+            (
+                $lichKhoiHanh->huong_dan_vien_id &&
+                (int) $lichKhoiHanh->huong_dan_vien_id === (int) $guide->id
+            )
+            ||
+            PhanCong::where(
+                'lich_khoi_hanh_id',
+                $lichKhoiHanh->id
+            )
+            ->whereJsonContains(
+                'hdv_ids',
+                (string) $guide->id
+            )
+            ->exists();
+
+        if (!$assigned) {
+            return back()->with(
+                'error',
+                'Bạn không có quyền điểm danh tour này.'
+            );
+        }
+
+        // Check-out bù
+        $checkIn->thoi_gian_check_out = now();
+        $checkIn->trang_thai = 'da_check_out';
+
+        // Nếu DB của bạn ĐÃ CÓ các cột này thì mở ra:
+        /*
+    $checkIn->is_checkout_bu = true;
+    $checkIn->ly_do_checkout_bu =
+        trim($request->ly_do_checkout_bu);
+    $checkIn->thoi_gian_ghi_nhan_checkout_bu = now();
+    */
+
+        $checkIn->save();
+
+        $khach = $checkIn->khachHang;
+
+        NhatKyHuongDanVien::create([
+            'lich_khoi_hanh_id' =>
+            $checkIn->lich_khoi_hanh_id,
+
+            'chi_tiet_lich_trinh_id' =>
+            $checkIn->chi_tiet_lich_trinh_id,
+
+            'khach_hang_dat_tour_id' =>
+            $checkIn->khach_hang_dat_tour_id,
+
+            'huong_dan_vien_id' =>
+            $guide->id,
+
+            'hanh_dong' =>
+            'CHECK_OUT_BU',
+
+            'noi_dung' =>
+            'Check-out bù khách "' .
+                ($khach->ho_ten ?? '') .
+                '" tại "' .
+                $chiTiet->tieu_de .
+                '". Lý do: ' .
+                trim($request->ly_do_checkout_bu),
+        ]);
+
+        return back()->with(
+            'success',
+            'Check-out bù thành công.'
+        );
+    }
 
     public function checkInTatCa(Request $request)
     {

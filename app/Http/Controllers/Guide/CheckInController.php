@@ -1097,19 +1097,113 @@ class CheckInController extends Controller
     }
 
 
+    protected function hasActivityCheckIn(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): bool {
+        return CheckInKhachHang::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanh->id
+        )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $chiTiet->id
+            )
+            ->whereIn(
+                'trang_thai',
+                ['da_check_in', 'da_check_out']
+            )
+            ->exists();
+    }
+
+
+    protected function isActivityCompleted(
+        LichKhoiHanhTour $lichKhoiHanh,
+        ChiTietLichTrinh $chiTiet
+    ): bool {
+        $tongKhach = DatTour::withCount('khachHangs')
+            ->where('lich_khoi_hanh_id', $lichKhoiHanh->id)
+            ->get()
+            ->sum('khach_hangs_count');
+
+        if ($tongKhach <= 0) {
+            return false;
+        }
+
+        $checkedOutCount = CheckInKhachHang::where(
+            'lich_khoi_hanh_id',
+            $lichKhoiHanh->id
+        )
+            ->where(
+                'chi_tiet_lich_trinh_id',
+                $chiTiet->id
+            )
+            ->where(
+                'trang_thai',
+                'da_check_out'
+            )
+            ->count();
+
+        return $checkedOutCount >= $tongKhach;
+    }
+
+
     public function thayDoiLichTrinh(Request $request, $lichKhoiHanhId, $chiTietId)
     {
+        /*
+         * Input type=time hoặc dữ liệu DB có thể có dạng HH:MM:SS.
+         * Chuẩn hóa về HH:MM trước khi validate để tránh validation fail âm thầm.
+         */
+        $normalizeTime = function ($value) {
+            if (!$value) {
+                return null;
+            }
+
+            $value = trim((string) $value);
+
+            // 07:30:00 -> 07:30
+            if (preg_match('/^\d{2}:\d{2}:\d{2}$/', $value)) {
+                return substr($value, 0, 5);
+            }
+
+            return $value;
+        };
+
+        $request->merge([
+            'gio_bat_dau_moi' => $normalizeTime($request->gio_bat_dau_moi),
+            'gio_ket_thuc_moi' => $normalizeTime($request->gio_ket_thuc_moi),
+        ]);
+
         $request->validate([
             'loai_thay_doi' => ['required', 'in:thay_the,doi_gio,huy'],
             'tieu_de_moi' => ['nullable', 'string', 'max:255'],
             'gio_bat_dau_moi' => ['nullable', 'date_format:H:i'],
             'gio_ket_thuc_moi' => ['nullable', 'date_format:H:i'],
             'ly_do' => ['required', 'string', 'max:1000'],
+        ], [
+            'loai_thay_doi.required' => 'Vui lòng chọn loại thay đổi.',
+            'loai_thay_doi.in' => 'Loại thay đổi không hợp lệ.',
+            'tieu_de_moi.max' => 'Tên hoạt động mới không được vượt quá 255 ký tự.',
+            'gio_bat_dau_moi.date_format' => 'Giờ bắt đầu phải đúng định dạng HH:MM.',
+            'gio_ket_thuc_moi.date_format' => 'Giờ kết thúc phải đúng định dạng HH:MM.',
+            'ly_do.required' => 'Vui lòng nhập lý do thay đổi lịch trình.',
+            'ly_do.max' => 'Lý do không được vượt quá 1000 ký tự.',
         ]);
 
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($lichKhoiHanhId);
         $chiTiet = ChiTietLichTrinh::with('lichTrinh')->findOrFail($chiTietId);
+
+        /*
+         * Chỉ được thay đổi lịch khi CHƯA có bất kỳ khách nào Check-in.
+         * Chỉ cần một khách da_check_in hoặc da_check_out là khóa lịch.
+         */
+        if ($this->hasActivityCheckIn($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Hoạt động đã có khách Check-in nên không thể thay đổi lịch.'
+            );
+        }
 
         if (
             !$chiTiet->lichTrinh
@@ -1148,30 +1242,38 @@ class CheckInController extends Controller
             );
         }
 
-        $change = ThayDoiLichTrinh::updateOrCreate(
-            [
-                'lich_khoi_hanh_id' => $lichKhoiHanh->id,
-                'chi_tiet_lich_trinh_id' => $chiTiet->id,
-            ],
-            [
-                'huong_dan_vien_id' => $guide->id,
-                'loai_thay_doi' => $loai,
+        try {
+            $change = ThayDoiLichTrinh::updateOrCreate(
+                [
+                    'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                    'chi_tiet_lich_trinh_id' => $chiTiet->id,
+                ],
+                [
+                    'huong_dan_vien_id' => $guide->id,
+                    'loai_thay_doi' => $loai,
 
-                'tieu_de_moi' => $loai === 'huy'
-                    ? null
-                    : ($request->tieu_de_moi ?: $chiTiet->tieu_de),
+                    'tieu_de_moi' => $loai === 'huy'
+                        ? null
+                        : ($request->tieu_de_moi ?: $chiTiet->tieu_de),
 
-                'gio_bat_dau_moi' => $loai === 'huy'
-                    ? null
-                    : ($start ?: $chiTiet->gio_bat_dau),
+                    'gio_bat_dau_moi' => $loai === 'huy'
+                        ? null
+                        : ($start ?: $chiTiet->gio_bat_dau),
 
-                'gio_ket_thuc_moi' => $loai === 'huy'
-                    ? null
-                    : ($end ?: $chiTiet->gio_ket_thuc),
+                    'gio_ket_thuc_moi' => $loai === 'huy'
+                        ? null
+                        : ($end ?: $chiTiet->gio_ket_thuc),
 
-                'ly_do' => trim($request->ly_do),
-            ]
-        );
+                    'ly_do' => trim($request->ly_do),
+                ]
+            );
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Không thể lưu thay đổi lịch trình: ' . $e->getMessage());
+        }
 
         $moTa = match ($loai) {
             'huy' => 'Hủy hoạt động "' . $chiTiet->tieu_de . '"',
@@ -1179,16 +1281,26 @@ class CheckInController extends Controller
             default => 'Thay hoạt động "' . $chiTiet->tieu_de . '" thành "' . $change->tieu_de_moi . '"',
         };
 
-        NhatKyHuongDanVien::create([
-            'lich_khoi_hanh_id' => $lichKhoiHanh->id,
-            'chi_tiet_lich_trinh_id' => $chiTiet->id,
-            'khach_hang_dat_tour_id' => null,
-            'huong_dan_vien_id' => $guide->id,
-            'hanh_dong' => 'THAY_DOI_LICH_TRINH',
-            'noi_dung' => $moTa . '. Lý do: ' . trim($request->ly_do),
-        ]);
+        /*
+         * Lưu nhật ký là phần phụ. Nếu bảng nhật ký dùng ENUM chưa có
+         * THAY_DOI_LICH_TRINH thì không được làm mất kết quả đã lưu lịch.
+         */
+        try {
+            NhatKyHuongDanVien::create([
+                'lich_khoi_hanh_id' => $lichKhoiHanh->id,
+                'chi_tiet_lich_trinh_id' => $chiTiet->id,
+                'khach_hang_dat_tour_id' => null,
+                'huong_dan_vien_id' => $guide->id,
+                'hanh_dong' => 'THAY_DOI_LICH_TRINH',
+                'noi_dung' => $moTa . '. Lý do: ' . trim($request->ly_do),
+            ]);
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
-        return back()->with('success', 'Đã cập nhật lịch trình thực tế của chuyến.');
+        return redirect()
+            ->route('Guide.checkin.dia-diem', $lichKhoiHanh->id)
+            ->with('success', 'Đã cập nhật lịch trình thực tế của chuyến.');
     }
 
     public function khoiPhucLichTrinh($lichKhoiHanhId, $chiTietId)
@@ -1196,6 +1308,16 @@ class CheckInController extends Controller
         $guide = HuongDanVien::where('user_id', Auth::id())->firstOrFail();
         $lichKhoiHanh = LichKhoiHanhTour::findOrFail($lichKhoiHanhId);
         $chiTiet = ChiTietLichTrinh::findOrFail($chiTietId);
+
+        /*
+         * Đã có khách Check-in thì không được khôi phục lịch gốc nữa.
+         */
+        if ($this->hasActivityCheckIn($lichKhoiHanh, $chiTiet)) {
+            return back()->with(
+                'error',
+                'Hoạt động đã có khách Check-in nên không thể khôi phục lịch gốc.'
+            );
+        }
 
         $assigned = (
             $lichKhoiHanh->huong_dan_vien_id

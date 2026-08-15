@@ -47,7 +47,7 @@ use App\Http\Controllers\Admin\YeuCauGopDoanController;
 use App\Http\Controllers\Admin\NgayKhoiHanhTourController;
 use App\Http\Controllers\Admin\HinhAnhTourController;
 use App\Http\Controllers\Admin\DatTourController;
-
+use App\Http\Controllers\Admin\HoTroHdvController;
 use App\Http\Controllers\Admin\ImportKhachHangController;
 
 use App\Http\Controllers\Client\ClientLienHeController;
@@ -57,6 +57,7 @@ use App\Http\Controllers\Client\ClientLienHeController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Client\ProfileController;
+use App\Http\Controllers\Guide\HoTroController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/quen-mat-khau', [
@@ -466,8 +467,20 @@ Route::prefix('Admin')
             '/check-in-hdv/{lichKhoiHanh}',
             [AdminCheckInController::class, 'show']
         )->name('checkin-hdv.show');
+         Route::get('/ho-tro-hdv', [HoTroHdvController::class, 'index'])
+        ->name('ho-tro-hdv.index');
+
+        Route::get('/ho-tro-hdv/{id}', [HoTroHdvController::class, 'show'])
+        ->name('ho-tro-hdv.show');
+
+        Route::post('/ho-tro-hdv/{id}/duyet', [HoTroHdvController::class, 'approve'])
+        ->name('ho-tro-hdv.approve');
+
+        Route::post('/ho-tro-hdv/{id}/tu-choi', [HoTroHdvController::class, 'reject'])
+        ->name('ho-tro-hdv.reject');
     });
 
+       
 /*
 |--------------------------------------------------------------------------
 | GUIDE ROUTES
@@ -587,6 +600,12 @@ Route::prefix('Guide')
         // Route::put('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'update'])->name('baocaosuco.update');
         // Route::delete('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'destroy'])->name('baocaosuco.destroy');
         // Route::get('/bao-cao-su-co/{id}', [BaoCaoSuCoController::class, 'show'])->name('baocaosuco.show');
+
+        Route::get('/ho-tro', [HoTroController::class, 'index'])
+            ->name('ho-tro.index');
+
+        Route::post('/ho-tro', [HoTroController::class, 'store'])
+            ->name('ho-tro.store');
 
 
         Route::get(

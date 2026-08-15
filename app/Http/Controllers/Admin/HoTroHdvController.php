@@ -12,11 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class HoTroHdvController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('permission:ho_tro_hdv.view')->only(['index', 'show']);
-    //     $this->middleware('permission:ho_tro_hdv.process')->only(['approve', 'reject']);
-    // }
+    public function __construct()
+    {
+        $this->middleware('permission:ho_tro_hdv.view')->only(['index', 'show']);
+        $this->middleware('permission:ho_tro_hdv.process')->only(['approve', 'reject']);
+    }
 
     public function index(Request $request)
     {

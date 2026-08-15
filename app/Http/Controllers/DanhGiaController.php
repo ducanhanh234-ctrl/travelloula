@@ -15,6 +15,19 @@ class DanhGiaController extends Controller
      * Admin xem toàn bộ đánh giá.
      * Không còn quy trình chờ duyệt, duyệt hoặc ẩn.
      */
+    public function __construct()
+    {
+        $this->middleware('permission:reviews.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+        $this->middleware('permission:reviews.create')
+            ->only([
+                'store',
+            ]);
+    }
+
     public function index(Request $request): View
     {
         $query = DanhGia::query()

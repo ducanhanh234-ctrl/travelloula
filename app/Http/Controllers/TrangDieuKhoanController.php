@@ -7,6 +7,27 @@ use Illuminate\Http\Request;
 
 class TrangDieuKhoanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:dieu_khoan.view')
+            ->only([
+                'index',
+                'clientShow',
+            ]);
+            $this->middleware('permission:dieu_khoan.edit')
+            ->only([
+                'edit',
+                'update',
+            ]);
+    }
+     public function index()
+    {
+        $trangDieuKhoan = TrangDieuKhoan::where('duong_dan', 'dieu-khoan')
+            ->where('trang_thai', 1)
+            ->firstOrFail();
+
+        return view('Client.dieu_khoan.index', compact('trangDieuKhoan'));
+    }
     public function edit()
     {
         $trangDieuKhoan = TrangDieuKhoan::where('duong_dan', 'dieu-khoan')->first();

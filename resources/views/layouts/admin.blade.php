@@ -1460,6 +1460,19 @@
                             </span>
                         </a>
                     </div>
+                    <div class="nav-item">
+                        <a href="{{ route('Admin.checkin-hdv.index') }}"
+                            class="nav-link {{ request()->routeIs('Admin.checkin-hdv*') ? 'active' : '' }}"
+                            title="Quản lý Banner">
+                            <span class="nav-icon">
+                                <i class="fas fa-image"></i>
+                            </span>
+
+                            <span class="nav-text">
+                                Điểm Danh
+                            </span>
+                        </a>
+                    </div>
 
                     <div class="nav-item">
                         <a href="{{ route('Admin.nhat_ky_tours.index') }}"
@@ -1622,21 +1635,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="nav-item">
-                        <a href="{{ route('Admin.checkin-hdv.index') }}"
-                            class="nav-link {{ request()->routeIs('Admin.checkin-hdv*') ? 'active' : '' }}"
-                            title="Quản lý Banner">
-                            <span class="nav-icon">
-                                <i class="fas fa-image"></i>
-                            </span>
-
-                            <span class="nav-text">
-                                Điểm Danh
-                            </span>
-                        </a>
-                    </div>
-
             {{-- Nội dung --}}
             <div class="nav-section" data-nav-section="noi-dung">
                 <button type="button" class="nav-section-toggle" aria-expanded="true">

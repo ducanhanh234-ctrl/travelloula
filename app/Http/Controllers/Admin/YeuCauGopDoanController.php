@@ -22,6 +22,20 @@ class YeuCauGopDoanController extends Controller
     ) {
         $this->gopDoanService = $gopDoanService;
         $this->yeuCauGopDoanService = $yeuCauGopDoanService;
+        $this->middleware('permission:yeu_cau_gop_doan.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+        $this->middleware('permission:yeu_cau_gop_doan.update')
+            ->only([
+                'capNhatTrangThaiLienHe',
+                'chotGop',
+            ]);
+        $this->middleware('permission:yeu_cau_gop_doan.delete')
+            ->only([
+                'destroy',
+            ]);
     }
 
     public function index()

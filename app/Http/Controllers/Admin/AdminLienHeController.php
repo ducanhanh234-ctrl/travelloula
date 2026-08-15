@@ -11,6 +11,25 @@ class AdminLienHeController extends Controller
     /**
      * Danh sách liên hệ
      */
+    public function __construct()
+    {
+        $this->middleware('permission:lien_hes.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+        $this->middleware('permission:lien_hes.edit')
+            ->only([
+                'update',
+                'markRead',
+                'markUnread',
+                'markAsResolved',
+            ]);
+        $this->middleware('permission:lien_hes.delete')
+            ->only([
+                'destroy',
+            ]);
+    }
     public function index(Request $request)
     {
         $query = LienHe::query();
@@ -53,7 +72,7 @@ class AdminLienHeController extends Controller
     {
         $lienHe = LienHe::findOrFail($id);
 
-        
+
 
         return view('Admin.lien_hes.show', compact('lienHe'));
     }

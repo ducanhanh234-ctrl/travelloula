@@ -9,6 +9,28 @@ use Illuminate\Support\Str;
 
 class BaiVietController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:bai_viets.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+        $this->middleware('permission:bai_viets.create')
+            ->only([
+                'create',
+                'store',
+            ]);
+        $this->middleware('permission:bai_viets.edit')
+            ->only([
+                'edit',
+                'update',
+            ]);
+        $this->middleware('permission:bai_viets.delete')
+            ->only([
+                'destroy',
+            ]);
+    }
     public function index(Request $request)
     {
         $keyword = $request->keyword;

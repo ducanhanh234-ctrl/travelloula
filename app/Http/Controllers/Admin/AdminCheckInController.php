@@ -18,14 +18,24 @@ class AdminCheckInController extends Controller
      * Danh sách lịch khởi hành để Admin theo dõi điểm danh HDV.
      * Chỉ đọc dữ liệu, không có hành động Check-in/Check-out.
      */
+    public function __construct()
+    {
+        $this->middleware('permission:checkin_hdv.view')
+            ->only([
+                'index',
+                'show',
+            ]);
+    }
     public function index(Request $request)
     {
         $query = LichKhoiHanhTour::with([
             'tour',
             'huongDanVien',
         ])
-            ->orderByDesc('ngay_khoi_hanh')
-            ->orderByDesc('id');
+            // Admin chỉ theo dõi các tour đang diễn ra
+            ->where('trang_thai', 'running')
+            ->orderBy('ngay_khoi_hanh')
+            ->orderBy('id');
 
         if ($request->filled('q')) {
             $keyword = trim($request->q);
@@ -36,10 +46,6 @@ class AdminCheckInController extends Controller
                         $tourQuery->where('ten_tour', 'like', '%' . $keyword . '%');
                     });
             });
-        }
-
-        if ($request->filled('trang_thai')) {
-            $query->where('trang_thai', $request->trang_thai);
         }
 
         $lichKhoiHanhs = $query

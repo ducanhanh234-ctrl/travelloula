@@ -520,6 +520,11 @@ Route::prefix('Guide')
             '/check-in/check-in-bu',
             [CheckInController::class, 'checkInBu']
         )->name('checkin.check-in-bu');
+    // Check-out bù
+        Route::post(
+            '/check-out/{id}/check-out-bu',
+            [CheckInController::class, 'checkOutBu']
+        )->name('checkout.check-out-bu');
         /*
         |--------------------------------------------------------------------------
         | GUIDE - BÁO CÁO SỰ CỐ

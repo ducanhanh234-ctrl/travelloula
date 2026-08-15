@@ -1824,6 +1824,23 @@
                     @endif
                 </a>
             </div>
+            <div class="nav-item">
+                <a href="{{ route('Admin.ho-tro-hdv.index') }}"
+                    class="nav-link {{ request()->routeIs('Admin.ho-tro.*') ? 'active' : '' }}">
+
+                    <span class="nav-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </span>
+
+                    <span class="nav-text">Hỗ trợ HDV</span>
+
+                    @if (($suCoMoi ?? 0) > 0)
+                        <span class="badge bg-danger ms-auto">
+                            {{ ($suCoMoi ?? 0) > 99 ? '99+' : $suCoMoi ?? 0 }}
+                        </span>
+                    @endif
+                </a>
+            </div>
         </nav>
     </aside>
 

@@ -1167,6 +1167,30 @@
                         </span>
                     </a>
                 </div>
+                <div class="guide-nav-item">
+                    <a href="{{ route('Guide.ho-tro.index') }}"
+                        class="guide-nav-link
+                            {{ request()->routeIs('Guide.ho-tro.*') ? 'active' : '' }}"
+                        title="Hỗ trợ HDV">
+                        <span class="guide-nav-icon">
+                            <i class="fas fa-hands-helping"></i>
+                        </span>
+
+                        <span class="guide-nav-text">
+                            Hỗ trợ HDV
+                        </span>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Tài khoản --}}
+                        </span>
+
+                        <span class="guide-nav-text">
+                            Báo cáo sự cố
+                        </span>
+                    </a>
+                </div>
             </div>
 
             {{-- Tài khoản --}}

@@ -1186,9 +1186,6 @@
             {{-- Tài khoản --}}
                         </span>
 
-                        <span class="guide-nav-text">
-                            Báo cáo sự cố
-                        </span>
                     </a>
                 </div>
             </div>

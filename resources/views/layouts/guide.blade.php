@@ -1079,9 +1079,9 @@
                 </div>
 
                 <div class="guide-nav-item">
-                    <a href="{{ route('Guide.tour-phan-cong.index') }}"
+                    <a href="{{ route('Guide.dashboard') }}"
                         class="guide-nav-link
-                            {{ request()->routeIs('Guide.tour-phan-cong.*') ? 'active' : '' }}"
+                            {{ request()->routeIs('Guide.dashboard') ? 'active' : '' }}"
                         title="Dashboard hướng dẫn viên">
                         <span class="guide-nav-icon">
                             <i class="fas fa-tachometer-alt"></i>

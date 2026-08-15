@@ -9,8 +9,18 @@ class HoaDonService
 {
     public function taoHoaDon(ThanhToan $payment)
     {
+        $payment->refresh();
+
+        $booking = $payment->datTour()->first();
+        if ($booking) {
+            $booking->refresh();
+            $booking->load(['nguoiDung', 'tour', 'lichKhoiHanh']);
+            $payment->setRelation('datTour', $booking);
+        }
+
         $pdf = Pdf::loadView('Admin.pdf.hoa_don', [
-            'payment' => $payment
+            'payment' => $payment,
+            'booking' => $booking,
         ]);
 
         $fileName = 'hoa_don_' . $payment->id . '.pdf';

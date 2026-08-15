@@ -129,7 +129,7 @@
                 <thead>
                     <tr>
                         <th width="70">#</th>
-                        <th width="120">Ảnh</th>
+                        {{-- <th width="120">Ảnh</th> --}}
                         <th>Bài viết</th>
                         <th width="160">Tác giả</th>
                         <th width="120">Lượt xem</th>
@@ -147,17 +147,17 @@
                                 </span>
                             </td>
 
-                            <td>
+                            {{-- <td>
                                 @if($baiViet->anh_dai_dien)
                                     <img class="post-thumb"
-                                         src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}"
+                                         src="{{ asset($baiViet->anh_dai_dien) }}"
                                          alt="{{ $baiViet->tieu_de }}">
                                 @else
                                     <div class="post-no-image">
                                         <i class="fa-regular fa-image"></i>
                                     </div>
                                 @endif
-                            </td>
+                            </td> --}}
 
                             <td>
                                 <div class="post-info">

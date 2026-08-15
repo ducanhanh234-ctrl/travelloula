@@ -114,6 +114,34 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, .15);
         }
 
+        .input-control.is-locked {
+            background: #f1f5f9;
+            color: #64748b;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .locked-note {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            color: #1e40af;
+            background: #eff6ff;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
+        .locked-note i {
+            margin-top: 2px;
+            color: #2563eb;
+        }
+
         .alert-custom {
             background: #fee2e2;
             color: #991b1b;
@@ -224,10 +252,19 @@
             @csrf
             @method('PUT')
 
+            <div class="locked-note">
+                <i class="fa fa-lock"></i>
+                <span>
+                    Biển số, loại xe, hãng xe, năm sản xuất và màu xe là thông tin cố định,
+                    không được phép chỉnh sửa sau khi tạo. Chỉ có thể cập nhật trạng thái,
+                    thông tin tài xế và ghi chú.
+                </span>
+            </div>
+
             <div class="form-card">
                 <div class="form-card-header">
                     <span>🚐 Thông tin cơ bản</span>
-                    <span class="form-card-badge">CHỈNH SỬA</span>
+                    <span class="form-card-badge">THÔNG TIN CỐ ĐỊNH</span>
                 </div>
 
                 <div class="form-card-body">
@@ -239,39 +276,41 @@
                         </div> --}}
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Biển số xe *</label>
-                            <input type="text" name="bien_so_xe" class="input-control"
-                                value="{{ old('bien_so_xe', $phuongTien->bien_so_xe) }}">
+                            <input type="text" name="bien_so_xe" class="input-control is-locked"
+                                value="{{ old('bien_so_xe', $phuongTien->bien_so_xe) }}" readonly>
                         </div>
 
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Loại xe *</label>
-                            <select name="loai_phuong_tien" class="input-control">
-                                <option value="">-- Chọn loại xe --</option>
-
+                            <select class="input-control is-locked" disabled>
                                 @foreach (\App\Models\PhuongTien::loaiPhuongTienList() as $key => $value)
                                     <option value="{{ $key }}" @selected(old('loai_phuong_tien', $phuongTien->loai_phuong_tien) == $key)>
                                         {{ $value }}
                                     </option>
                                 @endforeach
                             </select>
+
+                            <input type="hidden"
+                                   name="loai_phuong_tien"
+                                   value="{{ old('loai_phuong_tien', $phuongTien->loai_phuong_tien) }}">
                         </div>
 
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Hãng xe *</label>
-                            <input type="text" name="hang_xe" class="input-control"
-                                value="{{ old('hang_xe', $phuongTien->hang_xe) }}">
+                            <input type="text" name="hang_xe" class="input-control is-locked"
+                                value="{{ old('hang_xe', $phuongTien->hang_xe) }}" readonly>
                         </div>
 
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Năm sản xuất *</label>
-                            <input type="number" name="nam_san_xuat" class="input-control"
-                                value="{{ old('nam_san_xuat', $phuongTien->nam_san_xuat) }}">
+                            <input type="number" name="nam_san_xuat" class="input-control is-locked"
+                                value="{{ old('nam_san_xuat', $phuongTien->nam_san_xuat) }}" readonly>
                         </div>
 
                         <div class="col-md-4 mb-4">
                             <label class="form-label">Màu xe *</label>
-                            <input type="text" name="mau_xe" class="input-control"
-                                value="{{ old('mau_xe', $phuongTien->mau_xe) }}">
+                            <input type="text" name="mau_xe" class="input-control is-locked"
+                                value="{{ old('mau_xe', $phuongTien->mau_xe) }}" readonly>
                         </div>
 
                         <div class="col-md-4 mb-4">

@@ -674,6 +674,10 @@ class QuanLyDatTourController extends Controller
 
     public function store_dat_tour(Request $request)
     {
+        $request->merge([
+            'phan_tram_thanh_toan' => $request->input('phan_tram_thanh_toan', $request->input('input_phan_tram_thanh_toan', 100)),
+        ]);
+
         $request->validate([
 
 
@@ -687,6 +691,7 @@ class QuanLyDatTourController extends Controller
             'so_tre_em' => 'nullable|integer|min:0',
 
             'phuong_thuc_thanh_toan' => 'required',
+            'phan_tram_thanh_toan'=>'required|in:30,50,100',
 
             'hanh_khach' => 'required|array|min:1',
 
@@ -853,6 +858,11 @@ class QuanLyDatTourController extends Controller
 
             // Tính tổng tiền từ dữ liệu tour
             $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
+            $phanTram = (int)$request->phan_tram_thanh_toan;
+
+            $soTienCanThanhToan = ($tongTien * $phanTram) / 100;
+
+            $soTienConLai = $tongTien - $soTienCanThanhToan;
             // Sinh mã đặt tour
             do {
                 $maDatTour = 'ATU' . strtoupper(Str::random(8));
@@ -868,9 +878,15 @@ class QuanLyDatTourController extends Controller
                 'ma_dat_tour' => $maDatTour,
                 'so_nguoi_lon' => $soNguoiLon,
                 'so_tre_em' => $soTreEm,
-                'tong_tien' => $tongTien,
-                'so_tien_da_thanh_toan' => 0,
-                'trang_thai' => 'cho_xac_nhan',
+                'tong_tien'=>$tongTien,
+
+                'phan_tram_thanh_toan'=>$phanTram,
+
+                'so_tien_da_thanh_toan'=>0,
+
+                'so_tien_con_lai'=>$soTienConLai,
+
+                'trang_thai'=>'cho_xac_nhan',
                 'ghi_chu' => $request->ghi_chu,
                 'ngay_dat' => now(),
             ]);
@@ -904,7 +920,7 @@ class QuanLyDatTourController extends Controller
                 'dat_tour_id' => $booking->id,
                 'nguoi_dung_id' => Auth::id(),
                 'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan,
-                'so_tien' => $tongTien,
+                'so_tien'=>$soTienCanThanhToan,
 
                 // Sẽ cập nhật sau khi tạo URL VNPay
                 'ma_giao_dich' => null,

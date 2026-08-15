@@ -10,6 +10,41 @@
 @endsection
 
 @section('content')
+
+    {{-- Thông báo lưu / lỗi validate --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-1"></i>
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-1"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="fw-bold mb-1">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Không thể lưu thay đổi:
+            </div>
+
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
     <style>
         :root {
             --location-primary: #315be8;
@@ -645,6 +680,51 @@
             box-shadow: 0 7px 16px rgba(25, 135, 84, 0.24);
         }
 
+        .btn-location-change {
+            color: #6b4ca5;
+            background: #f5f0ff;
+            border-color: #ded2f5;
+            box-shadow: none;
+        }
+
+        .btn-location-change:hover {
+            color: #ffffff;
+            background: #6f42c1;
+            border-color: #6f42c1;
+        }
+
+        .location-change-badge {
+            margin-top: 7px;
+            padding: 5px 8px;
+            color: #6b4ca5;
+            background: #f5f0ff;
+            border: 1px solid #ded2f5;
+            border-radius: 7px;
+            font-size: 9px;
+            font-weight: 750;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .location-cancelled-badge {
+            color: #9b2c3f;
+            background: #fff0f3;
+            border-color: #f0c9d1;
+        }
+
+        .schedule-change-modal .modal-content {
+            border: 1px solid var(--location-border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .schedule-change-modal .modal-header {
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--location-primary), var(--location-purple));
+            border-bottom: none;
+        }
+
         /* Empty */
         .location-empty {
             padding: 35px 20px;
@@ -917,23 +997,58 @@
                             @endphp
 
                             @foreach ($ngay->chiTiets as $chiTiet)
+                                @php
+                                    $windowPreview = $activityWindows[$chiTiet->id] ?? [];
+                                    $previewChange = $windowPreview['schedule_change'] ?? null;
+                                    $previewCancelled = $windowPreview['cancelled'] ?? false;
 
-                                <div class="location-place-card">
+                                    $previewTitle = $windowPreview['display_title']
+                                        ?? ($chiTiet->tieu_de ?? 'Địa điểm chưa có tên');
+
+                                    $previewStart = $windowPreview['display_start_time']
+                                        ?? $chiTiet->gio_bat_dau;
+
+                                    $previewEnd = $windowPreview['display_end_time']
+                                        ?? $chiTiet->gio_ket_thuc;
+                                @endphp
+
+                                <div class="location-place-card {{ $previewCancelled ? 'location-place-card-disabled' : '' }}">
                                     <div class="location-place-main">
                                         <span class="location-place-icon">
                                             <i class="fas fa-map-marker-alt"></i>
                                         </span>
 
                                         <div class="location-place-content">
-                                            <h5 class="location-place-title">{{$chiTiet->tieu_de ?? 'Địa điểm chưa có tên'}}</h5>
+                                            <h5 class="location-place-title">
+                                                {{ $previewTitle }}
+                                            </h5>
+
                                             <div class="location-place-time">
                                                 <i class="fas fa-clock"></i>
                                                 <span>
-                                                    {{$chiTiet->gio_bat_dau ?? '--:--'}}
+                                                    {{ $previewStart ?? '--:--' }}
                                                     -
-                                                    {{$chiTiet->gio_ket_thuc ?? '--:--'}}
+                                                    {{ $previewEnd ?? '--:--' }}
                                                 </span>
                                             </div>
+
+                                            @if ($previewChange)
+                                                <div class="location-change-badge {{ $previewCancelled ? 'location-cancelled-badge' : '' }}">
+                                                    <i class="fas {{ $previewCancelled ? 'fa-ban' : 'fa-pen' }}"></i>
+
+                                                    @if ($previewCancelled)
+                                                        Đã hủy hoạt động
+                                                    @elseif ($previewChange->loai_thay_doi === 'doi_gio')
+                                                        Đã đổi giờ
+                                                    @else
+                                                        Lịch đã thay đổi
+                                                    @endif
+                                                </div>
+
+                                                <div class="location-empty-text">
+                                                    Lý do: {{ $previewChange->ly_do }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -952,9 +1067,20 @@
                                             $checkedInCount = $window['checked_in_count'] ?? 0;
                                             $checkedOutCount = $window['checked_out_count'] ?? 0;
                                             $totalGuests = $window['total_guests'] ?? 0;
+
+                                            $scheduleChange = $window['schedule_change'] ?? null;
+                                            $cancelled = $window['cancelled'] ?? false;
                                         @endphp
 
-                                        @if($completed || $activityStatus === 'completed')
+                                        @if($cancelled || $activityStatus === 'cancelled')
+                                            <button type="button"
+                                                class="btn-location-checkin btn-closed"
+                                                disabled>
+                                                <i class="fas fa-ban"></i>
+                                                Đã hủy
+                                            </button>
+
+                                        @elseif($completed || $activityStatus === 'completed')
                                             {{-- Tất cả khách đã Check-out --}}
                                             <a href="{{ route('Guide.checkin.show', [
                                                 'lichKhoiHanh' => $lichKhoiHanh->id,
@@ -1011,6 +1137,180 @@
                                                 Chưa đến giờ
                                             </button>
                                         @endif
+
+                                        <button type="button"
+                                            class="btn-location-checkin btn-location-change mt-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#thayDoiLichModal{{ $chiTiet->id }}">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            {{ $scheduleChange ? 'Sửa thay đổi' : 'Thay đổi lịch' }}
+                                        </button>
+
+                                        @if ($scheduleChange)
+                                            <form action="{{ route('Guide.checkin.khoiPhucLichTrinh', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}" method="POST" class="mt-2"
+                                                onsubmit="return confirm('Khôi phục hoạt động này về lịch tour gốc?');">
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit"
+                                                    class="btn-location-checkin"
+                                                    style="background:#64748b;border-color:#64748b;">
+                                                    <i class="fas fa-rotate-left"></i>
+                                                    Khôi phục lịch gốc
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="modal fade schedule-change-modal"
+                                    id="thayDoiLichModal{{ $chiTiet->id }}"
+                                    tabindex="-1"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <form action="{{ route('Guide.checkin.thayDoiLichTrinh', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}" method="POST">
+                                                @csrf
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        <i class="fas fa-calendar-alt me-2"></i>
+                                                        Thay đổi lịch hoạt động
+                                                    </h5>
+                                                    <button type="button"
+                                                        class="btn-close btn-close-white"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <div class="alert alert-info">
+                                                        Thay đổi này chỉ áp dụng cho chuyến hiện tại.
+                                                        Lịch tour gốc không bị sửa.
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">
+                                                            Hoạt động gốc
+                                                        </label>
+                                                        <div class="form-control bg-light">
+                                                            {{ $chiTiet->tieu_de }}
+                                                            ({{ $chiTiet->gio_bat_dau }} - {{ $chiTiet->gio_ket_thuc }})
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">
+                                                            Loại thay đổi
+                                                        </label>
+
+                                                        <select name="loai_thay_doi"
+                                                            class="form-select schedule-change-type"
+                                                            data-target="{{ $chiTiet->id }}"
+                                                            required>
+                                                            <option value="thay_the"
+                                                                {{ $scheduleChange && $scheduleChange->loai_thay_doi === 'thay_the' ? 'selected' : '' }}>
+                                                                Thay bằng hoạt động khác
+                                                            </option>
+
+                                                            <option value="doi_gio"
+                                                                {{ $scheduleChange && $scheduleChange->loai_thay_doi === 'doi_gio' ? 'selected' : '' }}>
+                                                                Chỉ đổi giờ
+                                                            </option>
+
+                                                            <option value="huy"
+                                                                {{ $scheduleChange && $scheduleChange->loai_thay_doi === 'huy' ? 'selected' : '' }}>
+                                                                Hủy hoạt động
+                                                            </option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="schedule-fields-{{ $chiTiet->id }}">
+                                                        <div class="mb-3">
+                                                            <label class="form-label fw-semibold">
+                                                                Tên hoạt động thực tế
+                                                            </label>
+
+                                                            <input type="text"
+                                                                name="tieu_de_moi"
+                                                                class="form-control"
+                                                                value="{{ old('tieu_de_moi', $scheduleChange?->tieu_de_moi ?? $chiTiet->tieu_de) }}"
+                                                                placeholder="Ví dụ: Nghỉ ngơi tại khách sạn">
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-semibold">
+                                                                    Giờ bắt đầu mới
+                                                                </label>
+
+                                                                <input type="time"
+                                                                    name="gio_bat_dau_moi"
+                                                                    class="form-control"
+                                                                    value="{{ old(
+                                                                        'gio_bat_dau_moi',
+                                                                        !empty($scheduleChange?->gio_bat_dau_moi)
+                                                                            ? \Carbon\Carbon::parse($scheduleChange->gio_bat_dau_moi)->format('H:i')
+                                                                            : (!empty($chiTiet->gio_bat_dau)
+                                                                                ? \Carbon\Carbon::parse($chiTiet->gio_bat_dau)->format('H:i')
+                                                                                : '')
+                                                                    ) }}">
+                                                            </div>
+
+                                                            <div class="col-md-6 mb-3">
+                                                                <label class="form-label fw-semibold">
+                                                                    Giờ kết thúc mới
+                                                                </label>
+
+                                                                <input type="time"
+                                                                    name="gio_ket_thuc_moi"
+                                                                    class="form-control"
+                                                                    value="{{ old(
+                                                                        'gio_ket_thuc_moi',
+                                                                        !empty($scheduleChange?->gio_ket_thuc_moi)
+                                                                            ? \Carbon\Carbon::parse($scheduleChange->gio_ket_thuc_moi)->format('H:i')
+                                                                            : (!empty($chiTiet->gio_ket_thuc)
+                                                                                ? \Carbon\Carbon::parse($chiTiet->gio_ket_thuc)->format('H:i')
+                                                                                : '')
+                                                                    ) }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">
+                                                            Lý do <span class="text-danger">*</span>
+                                                        </label>
+
+                                                        <textarea name="ly_do"
+                                                            class="form-control"
+                                                            rows="4"
+                                                            maxlength="1000"
+                                                            required
+                                                            placeholder="Ví dụ: Cả đoàn quá mệt và thống nhất nghỉ ngơi...">{{ old('ly_do', $scheduleChange?->ly_do ?? '') }}</textarea>
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                        Hủy
+                                                    </button>
+
+                                                    <button type="submit"
+                                                        class="btn btn-primary">
+                                                        <i class="fas fa-save me-1"></i>
+                                                        Lưu thay đổi
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -1133,4 +1433,27 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function syncScheduleFields(select) {
+                const id = select.dataset.target;
+                const fields = document.querySelector('.schedule-fields-' + id);
+
+                if (!fields) {
+                    return;
+                }
+
+                fields.style.display = select.value === 'huy' ? 'none' : '';
+            }
+
+            document.querySelectorAll('.schedule-change-type').forEach(function (select) {
+                syncScheduleFields(select);
+
+                select.addEventListener('change', function () {
+                    syncScheduleFields(this);
+                });
+            });
+        });
+    </script>
 @endsection

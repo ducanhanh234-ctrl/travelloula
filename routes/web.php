@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminCheckInController;
 use App\Http\Controllers\Admin\AdminLienHeController;
 use App\Http\Controllers\Admin\BangGiaTourController;
 use Illuminate\Support\Facades\Route;
@@ -455,6 +456,16 @@ Route::prefix('Admin')
                 Route::delete('/{id}', [AdminBaoCaoSuCoController::class, 'destroy'])
                     ->name('destroy');
             });
+
+        Route::get(
+            '/check-in-hdv',
+            [AdminCheckInController::class, 'index']
+        )->name('checkin-hdv.index');
+
+        Route::get(
+            '/check-in-hdv/{lichKhoiHanh}',
+            [AdminCheckInController::class, 'show']
+        )->name('checkin-hdv.show');
     });
 
 /*
@@ -525,7 +536,7 @@ Route::prefix('Guide')
             '/check-out/{id}/check-out-bu',
             [CheckInController::class, 'checkOutBu']
         )->name('checkout.check-out-bu');
-//thay lịch
+        //thay lịch
         Route::post(
             '/check-in/{lichKhoiHanh}/{chiTiet}/thay-doi-lich',
             [CheckInController::class, 'thayDoiLichTrinh']

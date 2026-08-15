@@ -9,20 +9,29 @@ class CheckInKhachHang extends Model
     protected $table = 'check_in_khach_hangs';
 
     protected $fillable = [
-        'khach_hang_dat_tour_id',
-        'lich_khoi_hanh_id',
-        'chi_tiet_lich_trinh_id',
-        'huong_dan_vien_id',
-        'thoi_gian_check_in',
-        'thoi_gian_check_out',
-        'trang_thai',
-        'ghi_chu',
-    ];
+    'khach_hang_dat_tour_id',
+    'lich_khoi_hanh_id',
+    'chi_tiet_lich_trinh_id',
+    'huong_dan_vien_id',
+    'checkin_context',
+
+    'thoi_gian_check_in',
+    'thoi_gian_check_out',
+
+    'trang_thai',
+    'ghi_chu',
+
+    'is_checkin_bu',
+    'ly_do_checkin_bu',
+    'thoi_gian_ghi_nhan_bu',
+];
 
     protected $casts = [
-        'thoi_gian_check_in' => 'datetime',
-        'thoi_gian_check_out' => 'datetime',
-    ];
+    'is_checkin_bu' => 'boolean',
+    'thoi_gian_check_in' => 'datetime',
+    'thoi_gian_check_out' => 'datetime',
+    'thoi_gian_ghi_nhan_bu' => 'datetime',
+];
 
     public function khachHang()
     {

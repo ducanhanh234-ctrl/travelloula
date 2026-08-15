@@ -510,12 +510,16 @@ Route::prefix('Guide')
         Route::post('/check-in/{lichKhoiHanh}/save', [CheckInController::class, 'saveLock'])
             ->name('checkin.saveLock');
 
-        Route::post('/check-in/{lichKhoiHanh}/finish-tour',[CheckInController::class, 'finishTour'])
+        Route::post('/check-in/{lichKhoiHanh}/finish-tour', [CheckInController::class, 'finishTour'])
             ->name('checkin.finishTour');
 
         Route::get('/nhat-ky', [NhatKyHuongDanVienController::class, 'index'])->name('nhatky.index');
         Route::get('/nhat-ky/{id}', [NhatKyHuongDanVienController::class, 'show'])->name('nhatky.show');
-
+        // Check-in bù
+        Route::post(
+            '/check-in/check-in-bu',
+            [CheckInController::class, 'checkInBu']
+        )->name('checkin.check-in-bu');
         /*
         |--------------------------------------------------------------------------
         | GUIDE - BÁO CÁO SỰ CỐ

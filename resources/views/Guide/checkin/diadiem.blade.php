@@ -617,6 +617,34 @@
             color: #fff;
         }
 
+        .btn-location-checkin-bu {
+            color: #8a5a00;
+            background: var(--location-warning-bg);
+            border-color: #efd79f;
+            box-shadow: 0 5px 13px rgba(174, 108, 13, 0.14);
+        }
+
+        .btn-location-checkin-bu:hover {
+            color: var(--location-white);
+            background: #dc941e;
+            border-color: #dc941e;
+            box-shadow: 0 7px 16px rgba(174, 108, 13, 0.22);
+        }
+
+        .btn-location-checkin.btn-success {
+            color: #ffffff;
+            background: #198754;
+            border-color: #198754;
+            box-shadow: 0 5px 13px rgba(25, 135, 84, 0.18);
+        }
+
+        .btn-location-checkin.btn-success:hover {
+            color: #ffffff;
+            background: #157347;
+            border-color: #146c43;
+            box-shadow: 0 7px 16px rgba(25, 135, 84, 0.24);
+        }
+
         /* Empty */
         .location-empty {
             padding: 35px 20px;
@@ -911,37 +939,77 @@
 
                                     <div class="location-place-action">
                                         @php
-                                            $window = $activityWindows[$chiTiet->id] ?? null;
+                                            $window = $activityWindows[$chiTiet->id] ?? [];
+
                                             $canCheckIn = $window['can_checkin'] ?? false;
+                                            $canCheckInBu = $window['can_checkin_bu'] ?? false;
                                             $expired = $window['expired'] ?? false;
+
+                                            $activityStatus = $window['status'] ?? 'pending';
+                                            $hasCheckedIn = $window['has_checked_in'] ?? false;
+                                            $completed = $window['completed'] ?? false;
+
+                                            $checkedInCount = $window['checked_in_count'] ?? 0;
+                                            $checkedOutCount = $window['checked_out_count'] ?? 0;
+                                            $totalGuests = $window['total_guests'] ?? 0;
                                         @endphp
 
-                                        @php
-                                            $isFirstActivity = $firstDayOneActivity && $firstDayOneActivity->id == $chiTiet->id;
-                                        @endphp
+                                        @if($completed || $activityStatus === 'completed')
+                                            {{-- Tất cả khách đã Check-out --}}
+                                            <a href="{{ route('Guide.checkin.show', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}"
+                                                class="btn-location-checkin btn-success"
+                                                title="Tất cả khách đã Check-out">
+                                                <i class="fas fa-check-double"></i>
+                                                Hoàn thành
+                                            </a>
 
-                                        @if($canCheckIn)
-                                            <a href="{{ route('Guide.checkin.show', ['lichKhoiHanh' => $lichKhoiHanh->id, 'chiTiet' => $chiTiet->id,]) }}"
+                                        @elseif($hasCheckedIn || $activityStatus === 'checked_in')
+                                            {{-- Đã có khách Check-in: không hiện lại nút Check-in --}}
+                                            <a href="{{ route('Guide.checkin.show', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}"
+                                                class="btn-location-checkin btn-success"
+                                                title="Đã Check-in {{ $checkedInCount }}/{{ $totalGuests }} khách">
+                                                <i class="fas fa-user-check"></i>
+                                                Đã Check-in
+                                            </a>
+
+                                        @elseif($canCheckIn)
+                                            {{-- Đang trong khung giờ và chưa có Check-in --}}
+                                            <a href="{{ route('Guide.checkin.show', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}"
                                                 class="btn-location-checkin">
                                                 <i class="fas fa-user-check"></i>
                                                 Check-in
                                             </a>
-                                        @else
 
-                                            @if($expired)
-                                                    <a href="{{ route(
-                                                    'Guide.checkin.show',
-                                                    ['lichKhoiHanh' => $lichKhoiHanh->id, 'chiTiet' => $chiTiet->id,]
-                                                ) }}" class="btn-location-checkin" title="Đã đóng">
-                                                        <i class="fas fa-user-check"></i>
-                                                        Đã đóng
-                                                    </a>
-                                            @else
-                                                <button type="button" class="btn-location-checkin" disabled title="Chưa đến giờ check-in">
-                                                    <i class="fas fa-user-check"></i>
-                                                    Chưa đến giờ
-                                                </button>
-                                            @endif
+                                        @elseif($canCheckInBu || $expired)
+                                            {{-- Hết giờ nhưng chưa hoàn thành: cho phép Check-in bù --}}
+                                            <a href="{{ route('Guide.checkin.show', [
+                                                'lichKhoiHanh' => $lichKhoiHanh->id,
+                                                'chiTiet' => $chiTiet->id,
+                                            ]) }}"
+                                                class="btn-location-checkin btn-location-checkin-bu"
+                                                title="Hoạt động đã kết thúc - mở danh sách để Check-in bù">
+                                                <i class="fas fa-history"></i>
+                                                Check-in bù
+                                            </a>
+
+                                        @else
+                                            {{-- Chưa tới khung giờ --}}
+                                            <button type="button"
+                                                class="btn-location-checkin disabled"
+                                                disabled
+                                                title="Chưa đến giờ check-in">
+                                                <i class="fas fa-clock"></i>
+                                                Chưa đến giờ
+                                            </button>
                                         @endif
                                     </div>
                                 </div>

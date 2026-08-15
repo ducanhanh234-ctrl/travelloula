@@ -374,11 +374,10 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
-                                            <a href="{{ route('Admin.lich-khoi-hanh.edit', $item->id) }}"
-                                                class="btn-table-action btn-edit" title="Chỉnh sửa">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-
+                                            <button type="button" class="btn-table-action"
+                                                title="Lịch khởi hành đã tạo không thể chỉnh sửa" disabled>
+                                                <i class="fas fa-lock"></i>
+                                            </button>
                                             @if ($item->coTheChot() && !$item->daDuocChot())
                                                 <form action="{{ route('Admin.lich-khoi-hanh.chot', $item->id) }}"
                                                     method="POST">

@@ -504,18 +504,44 @@
         }
     });
 
+    function capNhatThongTinDoan() {
+    let nguoiLon = 0;
+    let treEm = 0;
+
+    document.querySelectorAll('.passenger-birth').forEach(input => {
+        if (!input.value) return;
+
+        const tuoi = tinhTuoi(input.value);
+
+        if (tuoi <= 12) {
+            treEm++;
+        } else {
+            nguoiLon++;
+        }
+    });
+
+    document.getElementById('adult_count').value = nguoiLon;
+    document.getElementById('child_count').value = treEm;
+
+    updatePrice();
+}
+
             function removePassenger(button) {
                 button.closest('.card').remove();
                 updatePassengerCount();
             }
 
-            function addPassenger(type) {
+            function addPassenger() {
                 const container = document.getElementById('passenger-container');
-                const html = createPassenger(type, passengerIndex);
-                container.insertAdjacentHTML('beforeend', html);
-                passengerIndex++;
-                updatePassengerCount();
+                const html = createPassenger(passengerIndex);
+                    container.insertAdjacentHTML('beforeend', html);
+                    passengerIndex++;
+                        updatePassengerCount();
             }
+
+            document.getElementById('add-passenger').addEventListener('click', function () {
+                addPassenger();
+            });
 
             function updatePassengerCount() {
                 const adults = document.querySelectorAll(
@@ -946,6 +972,22 @@
                     age--;
                 }
                 return age;
+            }
+
+            function capNhatLoaiHanhKhach(input) {
+                const ngaySinh = input.value;
+                    if (!ngaySinh) return;
+                const tuoi = tinhTuoi(ngaySinh);
+                const index = input.dataset.index;
+                const loaiInput = document.querySelector(
+                    `[name="hanh_khach[${index}][loai_hanh_khach]"]`
+                );
+                    if (tuoi <= 12) {
+                        loaiInput.value = 'child';
+                    } else {
+                        loaiInput.value = 'adult';
+                    }
+                updatePassengerCount();
             }
         </script>
 

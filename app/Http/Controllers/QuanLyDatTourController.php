@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class QuanLyDatTourController extends Controller
 {
@@ -649,6 +651,48 @@ class QuanLyDatTourController extends Controller
                 'success',
                 'Cập nhật booking thành công'
             );
+    }
+
+    public function downloadSampleExcel()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $headers = [
+            'Họ tên',
+            'Giới tính',
+            'Ngày sinh',
+            'Quốc tịch',
+            'Loại giấy tờ',
+            'Số giấy tờ',
+            'SĐT',
+            'Yêu cầu đặc biệt',
+        ];
+
+        $sheet->fromArray($headers, null, 'A1');
+        $sheet->fromArray([
+            ['Nguyễn Văn A', 'Nam', '1/1/2000', 'Việt Nam', 'CCCD', '123456789012', '0901234567', 'Ăn chay'],
+            ['Trần Thị B', 'Nữ', '1/1/2001', 'Việt Nam', 'CCCD', '987654321098', '0907654321', 'Không ăn chay'],
+        ], null, 'A2');
+
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H10')->getAlignment()->setVertical('center');
+
+        foreach (range('A', 'H') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        $fileName = 'mau_import_hanh_khach.xlsx';
+        $tempPath = tempnam(sys_get_temp_dir(), 'sample_passenger_');
+        $tempXlsx = $tempPath . '.xlsx';
+        rename($tempPath, $tempXlsx);
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($tempXlsx);
+
+        return response()->download($tempXlsx, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 
     // Hiển thị form khách hàng đặt tour

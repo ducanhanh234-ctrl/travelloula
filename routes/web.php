@@ -208,6 +208,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'store'])->name('Client.tour_yeu_thich.store');
     Route::delete('/tour_yeu_thich/{tourId}', [TourYeuThichController::class, 'destroy'])->name('Client.tour_yeu_thich.destroy');
     Route::post('/dat_tour/import-hanh-khach', [ImportKhachHangController::class, 'import'])->name('Client.import_hanh_khach');
+    Route::get('/dat_tour/mau-excel', [QuanLyDatTourController::class, 'downloadSampleExcel'])->name('Client.download_sample_excel');
 });
 
 /*

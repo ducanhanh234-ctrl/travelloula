@@ -197,10 +197,15 @@
                     <h5 class="font-weight-bold mb-3 text-dark section-title">Thông tin chi tiết từng hành khách</h5>
                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
                         <small class="text-muted">Bạn có thể import danh sách hành khách từ file Excel để tự động điền thông tin.</small>
-                        <label class="d-flex align-items-center gap-2 mb-0">
-                            <span class="btn btn-outline-primary btn-sm mb-0">Import Excel</span>
-                            <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="d-none">
-                        </label>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ route('Client.download_sample_excel') }}" class="btn btn-outline-success btn-sm" download>
+                                <i class="fa fa-download mr-1"></i> Tải mẫu Excel
+                            </a>
+                            <label class="d-flex align-items-center gap-2 mb-0">
+                                <span class="btn btn-outline-primary btn-sm mb-0">Import Excel</span>
+                                <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="d-none">
+                            </label>
+                        </div>
                     </div>
                     <div id="passengers-accordion" class="mb-5"></div>
 

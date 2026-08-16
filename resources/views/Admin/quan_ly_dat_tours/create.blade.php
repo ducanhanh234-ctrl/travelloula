@@ -173,32 +173,62 @@
                 <div class="card-header fw-bold">
                     Thông tin đoàn
                 </div>
+
                 <div class="card-body">
-                    <div class="row">
+                    <div class="row g-3">
+
+                        <!-- Người lớn -->
                         <div class="col-md-4">
-                            <label>Số người lớn</label>
-                            <input type="number" name="so_nguoi_lon" id="adult_count"
-                                class="form-control @error('so_nguoi_lon') is-invalid @enderror"
-                                value="{{ old('so_nguoi_lon', 1) }}" min="0">
-                            @error('so_nguoi_lon')
-                                <div class="text-danger mt-2 fw-bold">
-                                    {{ $message }}
+                            <div class="border rounded p-3 bg-light">
+                                <div class="text-muted small mb-1">
+                                    Người lớn
                                 </div>
-                            @enderror
+
+                                <div class="fs-4 fw-bold text-primary">
+                                    <span id="adult_count_display">0</span>
+                                    <span class="fs-6 fw-normal text-muted">người</span>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- Trẻ em -->
                         <div class="col-md-4">
-                            <label>Số trẻ em</label>
-                            <input type="number" name="so_tre_em" id="child_count" class="form-control"
-                                value="{{ old('so_tre_em', 0) }}" min="0">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="text-muted small mb-1">
+                                    Trẻ em
+                                </div>
+
+                                <div class="fs-4 fw-bold text-success">
+                                    <span id="child_count_display">0</span>
+                                    <span class="fs-6 fw-normal text-muted">người</span>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Tổng -->
+                        <div class="col-md-4">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="text-muted small mb-1">
+                                    Tổng hành khách
+                                </div>
+
+                                <div class="fs-4 fw-bold text-dark">
+                                    <span id="total_count_display">0</span>
+                                    <span class="fs-6 fw-normal text-muted">người</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <!-- Input ẩn để vẫn gửi dữ liệu lên Controller -->
+                    <input type="hidden" name="so_nguoi_lon" id="adult_count" value="0">
+                    <input type="hidden" name="so_tre_em" id="child_count" value="0">
                 </div>
             </div>
 
             <!-- Hành khách -->
             <div class="card mb-4">
-
                 <!-- Header -->
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span class="fw-bold">
@@ -206,14 +236,22 @@
                     </span>
 
                     <div class="d-flex align-items-center gap-2">
+                       <button type="button" class="btn btn-primary" id="add-passenger">
+                            <i class="fas fa-user-plus me-1"></i>
+                            Thêm hành khách
+                        </button>
+
+                        <!-- Hiện / ẩn -->
                         <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse"
                             data-bs-target="#passengerCollapse">
                             <i class="fas fa-users me-1"></i>
                             Hiện/Ẩn danh sách
                         </button>
 
+                        <!-- Excel -->
                         <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" class="form-control form-control-sm"
                             style="width:250px;">
+
                     </div>
                 </div>
 
@@ -301,6 +339,7 @@
                                 <span class="input-group-text">
                                     VNĐ
                                 </span>
+
                             </div>
                         </div>
                     </div>
@@ -343,168 +382,164 @@
 
     @section('scripts')
         <script>
-            function createPassenger(type, index) {
-                let loai = 'adult';
-                if (type === 'Trẻ em') {
-                    loai = 'child';
-                }
+            let passengerIndex = 0;
+            function createPassenger(index) {
                 return `
+                    <div class="card mb-3 passenger-item">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <b>Hành khách #${index + 1}</b>
 
-                                                                                                                                                                                                                                                        <div class="card mb-3">
-                                                                                                                                                                                                                                                            <div class="card-header">
-                                                                                                                                                                                                                                                                <b>${type} #${index + 1}</b>
-                                                                                                                                                                                                                                                            </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePassenger(this)" title="Xóa hành khách"> <i class="fas fa-trash"></i></button>
+                </div>
 
-                                                                                                                                                                                                                                                            <div class="card-body">
-                                                                                                                                                                                                                                                                <input
-                                                                                                                                                                                                                                                                    type="hidden"
-                                                                                                                                                                                                                                                                    name="hanh_khach[${index}][loai_hanh_khach]"
-                                                                                                                                                                                                                                                                    value="${loai}">
+                <div class="card-body">
+                  <input type="hidden" name="hanh_khach[${index}][loai_hanh_khach]" value="">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Họ tên *</label>
+                        <input type="text" class="form-control" name="hanh_khach[${index}][ho_ten]" required>
+                    </div>
 
-                                                                                                                                                                                                                                                                <div class="row">
-                                                                                                                                                                                                                                                                    <div class="col-md-6">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Họ tên *
-                                                                                                                                                                                                                                                                        </label>
+                                                                                        <div class="col-md-3">
+                                                                                            <label>Giới tính</label>
+                                                                                            <select
+                                                                                                class="form-select"
+                                                                                                name="hanh_khach[${index}][gioi_tinh]"
+                                                                                            >
+                                                                                                <option value="Nam">Nam</option>
+                                                                                                <option value="Nữ">Nữ</option>
+                                                                                            </select>
+                                                                                        </div>
 
-                                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][ho_ten]"
-                                                                                                                                                                                                                                                                            required>
-                                                                                                                                                                                                                                                                    </div>
+                                                                                        <div class="col-md-3">
+                                                                                            <label>Ngày sinh</label>
+                                                                                            <input
+                                                                                                type="date"
+                                                                                                class="form-control passenger-birth"
+                                                                                                name="hanh_khach[${index}][ngay_sinh]"
+                                                                                                data-index="${index}"
+                                                                                            >
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                                                                                                                                                                                                                    <div class="col-md-3">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Giới tính
-                                                                                                                                                                                                                                                                        </label>
+                                                                                    <div class="row mt-3">
+                                                                                        <div class="col-md-4">
+                                                                                            <label>Quốc tịch</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                name="hanh_khach[${index}][quoc_tich]"
+                                                                                                value="Việt Nam"
+                                                                                            >
+                                                                                        </div>
 
-                                                                                                                                                                                                                                                                        <select
-                                                                                                                                                                                                                                                                            class="form-select"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][gioi_tinh]">
+                                                                                        <div class="col-md-3">
+                                                                                            <label>
+                                                                                                Loại giấy tờ <span class="text-danger">*</span>
+                                                                                            </label>
 
-                                                                                                                                                                                                                                                                            <option value="Nam">
-                                                                                                                                                                                                                                                                                Nam
-                                                                                                                                                                                                                                                                            </option>
+                                                                                            <select
+                                                                                                class="form-select"
+                                                                                                name="hanh_khach[${index}][loai_giay_to]"
+                                                                                                required
+                                                                                            >
+                                                                                                <option value="CCCD">CCCD</option>
+                                                                                                <option value="Hộ chiếu">Hộ chiếu</option>
+                                                                                            </select>
+                                                                                        </div>
 
-                                                                                                                                                                                                                                                                            <option value="Nữ">
-                                                                                                                                                                                                                                                                                Nữ
-                                                                                                                                                                                                                                                                            </option>
-                                                                                                                                                                                                                                                                        </select>
-                                                                                                                                                                                                                                                                    </div>
+                                                                                        <div class="col-md-4">
+                                                                                            <label>Số giấy tờ</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                name="hanh_khach[${index}][so_giay_to]"
+                                                                                            >
+                                                                                        </div>
 
-                                                                                                                                                                                                                                                                    <div class="col-md-3">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Ngày sinh
-                                                                                                                                                                                                                                                                        </label>
+                                                                                        <div class="col-md-4">
+                                                                                            <label>Số điện thoại</label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                name="hanh_khach[${index}][so_dien_thoai]"
+                                                                                            >
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                                            type="date"
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][ngay_sinh]">
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                </div>
+                                                                                    <div class="row mt-3">
+                                                                                        <div class="col-md-12">
+                                                                                            <label>Yêu cầu đặc biệt</label>
+                                                                                            <textarea
+                                                                                                class="form-control"
+                                                                                                rows="2"
+                                                                                                name="hanh_khach[${index}][yeu_cau_dac_biet]"
+                                                                                                placeholder="Ăn chay, dị ứng, yêu cầu khác..."
+                                                                                            ></textarea>
+                                                                                        </div>
+                                                                                    </div>
 
-                                                                                                                                                                                                                                                                <div class="row mt-3">
-                                                                                                                                                                                                                                                                    <div class="col-md-4">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Quốc tịch
-                                                                                                                                                                                                                                                                        </label>
-
-                                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][quoc_tich]"
-                                                                                                                                                                                                                                                                            value="Việt Nam">
-                                                                                                                                                                                                                                                                    </div>
-
-                                                                                                                                                                                                                                                                    <div class="col-md-3">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Loại giấy tờ <span class="text-danger">*</span>
-                                                                                                                                                                                                                                                                        </label>
-
-                                                                                                                                                                                                                                                                        <select
-                                                                                                                                                                                                                                                                            class="form-select"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][loai_giay_to]" required>
-                                                                                                                                                                                                                                                                            <option value="CCCD">CCCD</option>
-                                                                                                                                                                                                                                                                            <option value="Hộ chiếu">Hộ chiếu</option>
-                                                                                                                                                                                                                                                                        </select>
-                                                                                                                                                                                                                                                                    </div>
-
-                                                                                                                                                                                                                                                                    <div class="col-md-4">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Số giấy tờ
-                                                                                                                                                                                                                                                                        </label>
-
-                                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][so_giay_to]">
-                                                                                                                                                                                                                                                                    </div>
-
-                                                                                                                                                                                                                                                                    <div class="col-md-4">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Số điện thoại
-                                                                                                                                                                                                                                                                        </label>
-
-                                                                                                                                                                                                                                                                        <input
-                                                                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][so_dien_thoai]">
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                </div>
-
-                                                                                                                                                                                                                                                                <div class="row mt-3">
-                                                                                                                                                                                                                                                                    <div class="col-md-12">
-                                                                                                                                                                                                                                                                        <label>
-                                                                                                                                                                                                                                                                            Yêu cầu đặc biệt
-                                                                                                                                                                                                                                                                        </label>
-
-                                                                                                                                                                                                                                                                        <textarea
-                                                                                                                                                                                                                                                                            class="form-control"
-                                                                                                                                                                                                                                                                            rows="2"
-                                                                                                                                                                                                                                                                            name="hanh_khach[${index}][yeu_cau_dac_biet]"
-                                                                                                                                                                                                                                                                            placeholder="Ăn chay, dị ứng, yêu cầu khác..."></textarea>
-                                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    `;
+                                                                                </div>
+                                                                            </div>
+                                                                        `;
             }
 
-            function generatePassengers() {
-                let adult =
-                    parseInt(document.getElementById('adult_count').value) || 0;
+    function capNhatLoaiHanhKhach(input) {
+        const ngaySinh = input.value;
+            if (!ngaySinh) return;
+        const tuoi = tinhTuoi(ngaySinh);
+        const index = input.dataset.index;
+        const loaiInput = document.querySelector(`[name="hanh_khach[${index}][loai_hanh_khach]"]`);
+            if (tuoi <= 12) {
+                loaiInput.value = 'child';
+            } else {
+                loaiInput.value = 'adult';
+            }
+        updatePassengerCount();
+    }
 
-                let child =
-                    parseInt(document.getElementById('child_count').value) || 0;
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('passenger-birth')) {
+            capNhatLoaiHanhKhach(e.target);
+        }
+    });
 
-                let total = adult + child;
-                document.getElementById('passenger-summary').innerHTML =
-                    `Tổng số hành khách: <b>${total}</b>`;
-                let html = '';
-                let index = 0;
-                for (let i = 0; i < adult; i++) {
-                    html += createPassenger('Người lớn', index++);
-                }
-                for (let i = 0; i < child; i++) {
-                    html += createPassenger('Trẻ em', index++);
-                }
-
-                document.getElementById('passenger-container').innerHTML = html;
-                // document.getElementById('debug').innerText =
-                // document.querySelectorAll('[name^="hanh_khach"]').length;
+            function removePassenger(button) {
+                button.closest('.card').remove();
+                updatePassengerCount();
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
-                generatePassengers();
-                document
-                    .getElementById('adult_count')
-                    .addEventListener('input', generatePassengers);
-                document
-                    .getElementById('child_count')
-                    .addEventListener('input', generatePassengers);
-            });
+            function addPassenger(type) {
+                const container = document.getElementById('passenger-container');
+                const html = createPassenger(type, passengerIndex);
+                container.insertAdjacentHTML('beforeend', html);
+                passengerIndex++;
+                updatePassengerCount();
+            }
+
+            function updatePassengerCount() {
+                const adults = document.querySelectorAll(
+                    '[name$="[loai_hanh_khach]"][value="adult"]'
+                ).length;
+
+                const children = document.querySelectorAll(
+                    '[name$="[loai_hanh_khach]"][value="child"]'
+                ).length;
+
+                const total = adults + children;
+
+                // Cập nhật input hidden
+                document.getElementById('adult_count').value = adults;
+                document.getElementById('child_count').value = children;
+
+                // Cập nhật phần Thông tin đoàn
+                document.getElementById('adult_count_display').textContent = adults;
+                document.getElementById('child_count_display').textContent = children;
+                document.getElementById('total_count_display').textContent = total;
+
+                // Cập nhật tổng tiền
+                updatePrice();
+            }
         </script>
 
         <script>
@@ -605,43 +640,43 @@
                 document.getElementById('tong_tien').value = tongTien;
                 document.getElementById('payment_detail').innerHTML = `
 
-                                                                                                                                                                                                                                        <div class="payment-box">
-                                                                                                                                                                                                                                        <div class="payment-title">
-                                                                                                                                                                                                                                            💳 Chi tiết thanh toán
-                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                <div class="payment-box">
+                                                                                                                                                                                                                                                                                                                                <div class="payment-title">
+                                                                                                                                                                                                                                                                                                                                    💳 Chi tiết thanh toán
+                                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                        <div class="payment-item">
-                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                <b>Người lớn</b>
-                                                                                                                                                                                                                                                <small>${adult} khách × ${formatMoney(giaNguoiLon)} VNĐ</small>
-                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                <div class="payment-item">
+                                                                                                                                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                                                                                                                                        <b>Người lớn</b>
+                                                                                                                                                                                                                                                                                                                                        <small>${adult} khách × ${formatMoney(giaNguoiLon)} VNĐ</small>
+                                                                                                                                                                                                                                                                                                                                    </div>
 
-                                                                                                                                                                                                                                            <strong>
-                                                                                                                                                                                                                                                ${formatMoney(tienNguoiLon)} VNĐ
-                                                                                                                                                                                                                                            </strong>
-                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                    <strong>
+                                                                                                                                                                                                                                                                                                                                        ${formatMoney(tienNguoiLon)} VNĐ
+                                                                                                                                                                                                                                                                                                                                    </strong>
+                                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                        <div class="payment-item">
-                                                                                                                                                                                                                                            <div>
-                                                                                                                                                                                                                                                <b>Trẻ em</b>
-                                                                                                                                                                                                                                                <small>${child} khách × ${formatMoney(giaTreEm)} VNĐ</small>
-                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                <div class="payment-item">
+                                                                                                                                                                                                                                                                                                                                    <div>
+                                                                                                                                                                                                                                                                                                                                        <b>Trẻ em</b>
+                                                                                                                                                                                                                                                                                                                                        <small>${child} khách × ${formatMoney(giaTreEm)} VNĐ</small>
+                                                                                                                                                                                                                                                                                                                                    </div>
 
-                                                                                                                                                                                                                                            <strong>
-                                                                                                                                                                                                                                                ${formatMoney(tienTreEm)} VNĐ
-                                                                                                                                                                                                                                            </strong>
-                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                    <strong>
+                                                                                                                                                                                                                                                                                                                                        ${formatMoney(tienTreEm)} VNĐ
+                                                                                                                                                                                                                                                                                                                                    </strong>
+                                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                     <div class="payment-total">
-                                                                                                                                                                                                                                        <span>
-                                                                                                                                                                                                                                            Tổng thanh toán
-                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                        <b>
-                                                                                                                                                                                                                                            ${formatMoney(tongTien)} VNĐ
-                                                                                                                                                                                                                                                    </b>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                        `;
+                                                                                                                                                                                                                                                                                                                             <div class="payment-total">
+                                                                                                                                                                                                                                                                                                                                <span>
+                                                                                                                                                                                                                                                                                                                                    Tổng thanh toán
+                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                <b>
+                                                                                                                                                                                                                                                                                                                                    ${formatMoney(tongTien)} VNĐ
+                                                                                                                                                                                                                                                                                                                                            </b>
+                                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                `;
             }
 
             document.addEventListener('DOMContentLoaded', function () {

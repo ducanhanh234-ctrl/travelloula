@@ -20,15 +20,6 @@
             </a>
         </div>
         <form id="bookingForm" method="POST" action="{{ route('Admin.dat_tours.store') }}">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
             @csrf
             <!-- Thông tin tour -->
             <div class="card mb-4">
@@ -45,7 +36,9 @@
                                 -- Chọn tour --
                             </option>
                             @foreach($tours as $tour)
-                                <option value="{{ $tour->id }}" data-category="{{ $tour->danh_muc_id }}"
+                                <option value="{{ $tour->id }}"
+                                    data-category="{{ $tour->danh_muc_id }}"
+                                    {{ old('tour_id') == $tour->id ? 'selected' : '' }}
                                     data-destination="{{ $tour->diem_den }}" data-adult="{{ $tour->gia_nguoi_lon }}"
                                     data-child="{{ $tour->gia_tre_em }}" data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
                                     @disabled($tour->trang_thai !== 'active')>
@@ -64,12 +57,12 @@
                         <div class="row mt-3">
                             <div class="col-md-6">
                                 <label>Giá người lớn</label>
-                                <input type="text" id="adult_price" class="form-control" readonly>
+                                <input type="text" id="adult_price" name="adult_price" class="form-control" value="{{ old('adult_price') }}" readonly>
                             </div>
 
                             <div class="col-md-6">
                                 <label>Giá trẻ em</label>
-                                <input type="text" id="child_price" class="form-control" readonly>
+                                <input type="text" id="child_price" name="child_price" class="form-control" value="{{ old('child_price') }}"  readonly>
                             </div>
                         </div>
                     </div>
@@ -111,15 +104,16 @@
                             Loại khách hàng
                         </label>
 
-                        <select class="form-select" id="booking_type" name="booking_type">
-                            <option value="user">
-                                Khách có tài khoản
-                            </option>
-                            <option value="guest">
-                                Khách vãng lai
-                            </option>
-                        </select>
-                    </div>
+                    <select class="form-select" id="booking_type" name="booking_type">
+                        <option value="user" {{ old('booking_type', 'user') == 'user' ? 'selected' : '' }}>
+                            Khách có tài khoản
+                        </option>
+
+                        <option value="guest" {{ old('booking_type') == 'guest' ? 'selected' : '' }}>
+                            Khách vãng lai
+                        </option>
+                    </select>
+                </div>
 
                     <!-- Khách có tài khoản -->
                     <div id="user-section">
@@ -132,10 +126,8 @@
                                     -- Chọn khách hàng --
                                 </option>
                                 @foreach($users as $u)
-                                    <option value="{{ $u->id }}">
-                                        {{ $u->name }}
-                                        -
-                                        {{ $u->email }}
+                                    <option value="{{ $u->id }}" {{ old('nguoi_dung_id') == $u->id ? 'selected' : '' }}>
+                                        {{ $u->name }} - {{ $u->email }}
                                     </option>
                                 @endforeach
                             </select>
@@ -315,6 +307,12 @@
                                     💳 VNPay
                                 </option>
                             </select>
+
+                            @error('phuong_thuc_thanh_toan')
+                                <small class="text-danger">
+                                    {{ $message }}
+                                </small>
+                            @enderror
                         </div>
                         <!-- Tổng tiền -->
                         <div class="col-md-6">
@@ -383,106 +381,164 @@
     @section('scripts')
         <script>
             let passengerIndex = 0;
-            function createPassenger(index) {
-                return `
-                    <div class="card mb-3 passenger-item">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <b>Hành khách #${index + 1}</b>
+            const validationErrors = @json($errors->toArray());
+            const oldPassengers = @json(old('hanh_khach', []));
+        function createPassenger(index) {
+    return `
+        <div class="card mb-3 passenger-item">
 
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removePassenger(this)" title="Xóa hành khách"> <i class="fas fa-trash"></i></button>
-                </div>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <b>Hành khách #${index + 1}</b>
 
-                <div class="card-body">
-                  <input type="hidden" name="hanh_khach[${index}][loai_hanh_khach]" value="">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label>Họ tên *</label>
-                        <input type="text" class="form-control" name="hanh_khach[${index}][ho_ten]" required>
+                <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    onclick="removePassenger(this)"
+                    title="Xóa hành khách">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+
+            <div class="card-body">
+
+                <input
+                    type="hidden"
+                    name="hanh_khach[${index}][loai_hanh_khach]"
+                    value=""
+                >
+
+                <!-- Hàng 1 -->
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <label>Họ tên *</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach[${index}][ho_ten]"
+                            required
+                        >
+
+                        <small
+                            class="text-danger validation-error"
+                            data-error="hanh_khach.${index}.ho_ten">
+                        </small>
                     </div>
 
-                                                                                        <div class="col-md-3">
-                                                                                            <label>Giới tính</label>
-                                                                                            <select
-                                                                                                class="form-select"
-                                                                                                name="hanh_khach[${index}][gioi_tinh]"
-                                                                                            >
-                                                                                                <option value="Nam">Nam</option>
-                                                                                                <option value="Nữ">Nữ</option>
-                                                                                            </select>
-                                                                                        </div>
+                    <div class="col-md-3">
+                        <label>Giới tính</label>
 
-                                                                                        <div class="col-md-3">
-                                                                                            <label>Ngày sinh</label>
-                                                                                            <input
-                                                                                                type="date"
-                                                                                                class="form-control passenger-birth"
-                                                                                                name="hanh_khach[${index}][ngay_sinh]"
-                                                                                                data-index="${index}"
-                                                                                            >
-                                                                                        </div>
-                                                                                    </div>
+                        <select
+                            class="form-select"
+                            name="hanh_khach[${index}][gioi_tinh]"
+                        >
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
 
-                                                                                    <div class="row mt-3">
-                                                                                        <div class="col-md-4">
-                                                                                            <label>Quốc tịch</label>
-                                                                                            <input
-                                                                                                type="text"
-                                                                                                class="form-control"
-                                                                                                name="hanh_khach[${index}][quoc_tich]"
-                                                                                                value="Việt Nam"
-                                                                                            >
-                                                                                        </div>
+                    <div class="col-md-3">
+                        <label>Ngày sinh</label>
 
-                                                                                        <div class="col-md-3">
-                                                                                            <label>
-                                                                                                Loại giấy tờ <span class="text-danger">*</span>
-                                                                                            </label>
+                        <input
+                            type="date"
+                            class="form-control passenger-birth"
+                            name="hanh_khach[${index}][ngay_sinh]"
+                            data-index="${index}"
+                        >
 
-                                                                                            <select
-                                                                                                class="form-select"
-                                                                                                name="hanh_khach[${index}][loai_giay_to]"
-                                                                                                required
-                                                                                            >
-                                                                                                <option value="CCCD">CCCD</option>
-                                                                                                <option value="Hộ chiếu">Hộ chiếu</option>
-                                                                                            </select>
-                                                                                        </div>
+                        <small
+                            class="text-danger validation-error"
+                            data-error="hanh_khach.${index}.ngay_sinh">
+                        </small>
+                    </div>
 
-                                                                                        <div class="col-md-4">
-                                                                                            <label>Số giấy tờ</label>
-                                                                                            <input
-                                                                                                type="text"
-                                                                                                class="form-control"
-                                                                                                name="hanh_khach[${index}][so_giay_to]"
-                                                                                            >
-                                                                                        </div>
+                </div>
 
-                                                                                        <div class="col-md-4">
-                                                                                            <label>Số điện thoại</label>
-                                                                                            <input
-                                                                                                type="text"
-                                                                                                class="form-control"
-                                                                                                name="hanh_khach[${index}][so_dien_thoai]"
-                                                                                            >
-                                                                                        </div>
-                                                                                    </div>
+                <!-- Hàng 2 -->
+                <div class="row mt-3">
 
-                                                                                    <div class="row mt-3">
-                                                                                        <div class="col-md-12">
-                                                                                            <label>Yêu cầu đặc biệt</label>
-                                                                                            <textarea
-                                                                                                class="form-control"
-                                                                                                rows="2"
-                                                                                                name="hanh_khach[${index}][yeu_cau_dac_biet]"
-                                                                                                placeholder="Ăn chay, dị ứng, yêu cầu khác..."
-                                                                                            ></textarea>
-                                                                                        </div>
-                                                                                    </div>
+                    <div class="col-md-4">
+                        <label>Quốc tịch</label>
 
-                                                                                </div>
-                                                                            </div>
-                                                                        `;
-            }
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach[${index}][quoc_tich]"
+                            value="Việt Nam"
+                        >
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>
+                            Loại giấy tờ <span class="text-danger">*</span>
+                        </label>
+
+                        <select
+                            class="form-select"
+                            name="hanh_khach[${index}][loai_giay_to]"
+                            required
+                        >
+                            <option value="CCCD">CCCD</option>
+                            <option value="Hộ chiếu">Hộ chiếu</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Số giấy tờ</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach[${index}][so_giay_to]"
+                        >
+                    </div>
+
+                    <div class="col-md-4">
+                        <label>Số điện thoại</label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="hanh_khach[${index}][so_dien_thoai]"
+                        >
+                    </div>
+
+                </div>
+
+                <!-- Hàng 3 -->
+                <div class="row mt-3">
+
+                    <div class="col-md-12">
+                        <label>Yêu cầu đặc biệt</label>
+
+                        <textarea
+                            class="form-control"
+                            rows="2"
+                            name="hanh_khach[${index}][yeu_cau_dac_biet]"
+                            placeholder="Ăn chay, dị ứng, yêu cầu khác..."
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+    function hienThiLoiValidation() {
+    Object.keys(validationErrors).forEach(key => {
+        const errorElement = document.querySelector(
+            `[data-error="${key}"]`
+        );
+
+        if (errorElement) {
+            errorElement.textContent = validationErrors[key][0];
+        }
+    });
+}
 
     function capNhatLoaiHanhKhach(input) {
         const ngaySinh = input.value;
@@ -566,7 +622,69 @@
                 // Cập nhật tổng tiền
                 updatePrice();
             }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (oldPassengers.length > 0) {
+            const container = document.getElementById('passenger-container');
+
+        oldPassengers.forEach((khach) => {
+            const index = passengerIndex++;
+
+            container.insertAdjacentHTML('beforeend',createPassenger(index));
+            document.querySelector(`[name="hanh_khach[${index}][ho_ten]"]`).value = khach.ho_ten || '';
+            document.querySelector(
+                `[name="hanh_khach[${index}][gioi_tinh]"]`
+            ).value = khach.gioi_tinh || 'Nam';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][ngay_sinh]"]`
+            ).value = khach.ngay_sinh || '';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][quoc_tich]"]`
+            ).value = khach.quoc_tich || 'Việt Nam';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][loai_giay_to]"]`
+            ).value = khach.loai_giay_to || 'CCCD';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][so_giay_to]"]`
+            ).value = khach.so_giay_to || '';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][so_dien_thoai]"]`
+            ).value = khach.so_dien_thoai || '';
+
+            document.querySelector(
+                `[name="hanh_khach[${index}][yeu_cau_dac_biet]"]`
+            ).value = khach.yeu_cau_dac_biet || '';
+
+            capNhatLoaiHanhKhach(
+                document.querySelector(
+                    `[name="hanh_khach[${index}][ngay_sinh]"]`
+                )
+            );
+        });
+
+        updatePassengerCount();
+         hienThiLoiValidation();
+    }
+         // Khôi phục giá sau khi validate lỗi
+    const oldAdultPrice = @json(old('adult_price'));
+const oldChildPrice = @json(old('child_price'));
+
+if (oldAdultPrice) {
+    document.getElementById('adult_price').value = oldAdultPrice;
+}
+
+if (oldChildPrice) {
+    document.getElementById('child_price').value = oldChildPrice;
+}
+});
         </script>
+
+
 
         <script>
             document

@@ -218,20 +218,11 @@
 
                                 <!-- Dropdown Danh sách Checkbox -->
                                 <div class="custom-dropdown-menu" id="vehicle-dropdown">
-                                    @foreach($phuongTiens as $xe)
-                                    <label class="custom-dropdown-item d-flex align-items-center p-2 mb-1 w-100">
-                                        <input type="checkbox" id="vehicle_{{ $xe->id }}" name="phuong_tien_ids[]" value="{{ $xe->id }}" class="form-check-input me-2 vehicle-checkbox" {{ in_array($xe->id, $selectedVehicleIds) ? 'checked' : '' }}>
-                                        <span class="text-dark">🚌 {{ $xe->bien_so_xe }} &nbsp;|&nbsp; <span class="text-muted">{{ match($xe->loai_phuong_tien) {
-            'xe_45_cho' => 'Xe 45 chỗ',
-            'xe_29_cho' => 'Xe 29 chỗ',
-            'xe_16_cho' => 'Xe 16 chỗ',
-            default => 'Không xác định'
-        } }}</span></span>
-                                    </label>
-                                    @endforeach
-                                    @if(count($phuongTiens) == 0)
-                                    <div class="text-muted text-center p-2 small">Không có phương tiện nào</div>
-                                    @endif
+                                    <div class="text-center p-3">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -265,15 +256,11 @@
 
                                 <!-- Dropdown Danh sách Checkbox -->
                                 <div class="custom-dropdown-menu" id="guide-dropdown">
-                                    @foreach($huongDanViens as $hdv)
-                                    <label class="custom-dropdown-item d-flex align-items-center p-2 mb-1 w-100">
-                                        <input type="checkbox" id="guide_{{ $hdv->id }}" name="hdv_ids[]" value="{{ $hdv->id }}" class="form-check-input me-2 guide-checkbox" {{ in_array($hdv->id, $selectedHdvIds) ? 'checked' : '' }} disabled>
-                                        <span class="text-dark">👤 {{ $hdv->ho_ten }}</span>
-                                    </label>
-                                    @endforeach
-                                    @if(count($huongDanViens) == 0)
-                                    <div class="text-muted text-center p-2 small">Không có hướng dẫn viên nào</div>
-                                    @endif
+                                    <div class="text-center p-3">
+                                        <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                            <span class="visually-hidden">Đang tải...</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -322,16 +309,23 @@
     document.addEventListener('DOMContentLoaded', function() {
         const vehicleSearch = document.getElementById('vehicle-search');
         const vehicleDropdown = document.getElementById('vehicle-dropdown');
-        const vehicleCheckboxes = document.querySelectorAll('.vehicle-checkbox');
         const vehicleTags = document.getElementById('vehicle-selected-tags');
 
         const guideSearch = document.getElementById('guide-search');
         const guideDropdown = document.getElementById('guide-dropdown');
-        const guideCheckboxes = document.querySelectorAll('.guide-checkbox');
         const guideTags = document.getElementById('guide-selected-tags');
 
         const guideContainer = document.getElementById('guide-container');
         const guideHelp = document.getElementById('guide-help');
+
+        const phanCongId = {{ $phanCong->id }};
+        const selectedVehicleIdsOld = {!! json_encode($selectedVehicleIds) !!};
+        const selectedGuideIdsOld = {!! json_encode($selectedHdvIds) !!};
+        
+        let availableVehicles = [];
+        let availableGuides = [];
+        let selectedVehicleIds = [...selectedVehicleIdsOld];
+        let selectedGuideIds = [...selectedGuideIdsOld];
 
         // Hàm mở/đóng dropdown
         function toggleDropdown(inputEl, dropdownEl, forceOpen = false) {
@@ -347,6 +341,187 @@
             } else {
                 dropdownEl.classList.toggle('show');
             }
+        }
+
+        // Gọi API lấy danh sách xe không bị trùng lịch (exclude current phan cong)
+        async function loadAvailableVehicles() {
+            try {
+                const response = await fetch(`{{ route('phan-cong.api.available-vehicles') }}?lich_khoi_hanh_id={{ $phanCong->lichKhoiHanh->id }}&exclude_phan_cong_id=${phanCongId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    availableVehicles = data.data;
+                    renderVehicleDropdown();
+                } else {
+                    vehicleDropdown.innerHTML = '<div class="text-muted text-center p-2 small">Không thể tải danh sách phương tiện</div>';
+                }
+            } catch (error) {
+                console.error('Lỗi tải danh sách xe:', error);
+                vehicleDropdown.innerHTML = '<div class="text-danger text-center p-2 small">Lỗi khi tải danh sách</div>';
+            }
+        }
+
+        // Render dropdown phương tiện
+        function renderVehicleDropdown() {
+            vehicleDropdown.innerHTML = '';
+
+            if (availableVehicles.length === 0) {
+                vehicleDropdown.innerHTML = '<div class="text-muted text-center p-2 small">Không có phương tiện khả dụng</div>';
+                return;
+            }
+
+            availableVehicles.forEach(xe => {
+                const label = document.createElement('label');
+                label.className = 'custom-dropdown-item d-flex align-items-center p-2 mb-1 w-100';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `vehicle_${xe.id}`;
+                checkbox.name = 'phuong_tien_ids[]';
+                checkbox.value = xe.id;
+                checkbox.className = 'form-check-input me-2 vehicle-checkbox';
+                checkbox.checked = selectedVehicleIds.includes(xe.id);
+                
+                const span = document.createElement('span');
+                span.className = 'text-dark';
+                span.innerHTML = `🚌 ${xe.bien_so_xe} &nbsp;|&nbsp; <span class="text-muted">${xe.loai_phuong_tien}</span>`;
+                
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                vehicleDropdown.appendChild(label);
+                
+                checkbox.addEventListener('change', updateVehicleState);
+            });
+        }
+
+        // Gọi API lấy danh sách HDV không bị trùng lịch (exclude current phan cong)
+        async function loadAvailableGuides() {
+            try {
+                const response = await fetch(`{{ route('phan-cong.api.available-guides') }}?lich_khoi_hanh_id={{ $phanCong->lichKhoiHanh->id }}&exclude_phan_cong_id=${phanCongId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    availableGuides = data.data;
+                    renderGuideDropdown();
+                } else {
+                    guideDropdown.innerHTML = '<div class="text-muted text-center p-2 small">Không thể tải danh sách hướng dẫn viên</div>';
+                }
+            } catch (error) {
+                console.error('Lỗi tải danh sách HDV:', error);
+                guideDropdown.innerHTML = '<div class="text-danger text-center p-2 small">Lỗi khi tải danh sách</div>';
+            }
+        }
+
+        // Render dropdown HDV
+        function renderGuideDropdown() {
+            guideDropdown.innerHTML = '';
+
+            if (availableGuides.length === 0) {
+                guideDropdown.innerHTML = '<div class="text-muted text-center p-2 small">Không có hướng dẫn viên khả dụng</div>';
+                return;
+            }
+
+            availableGuides.forEach(hdv => {
+                const label = document.createElement('label');
+                label.className = 'custom-dropdown-item d-flex align-items-center p-2 mb-1 w-100';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `guide_${hdv.id}`;
+                checkbox.name = 'hdv_ids[]';
+                checkbox.value = hdv.id;
+                checkbox.className = 'form-check-input me-2 guide-checkbox';
+                checkbox.disabled = true;
+                checkbox.checked = selectedGuideIds.includes(hdv.id);
+                
+                const span = document.createElement('span');
+                span.className = 'text-dark';
+                span.innerHTML = `👤 ${hdv.ho_ten}`;
+                
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                guideDropdown.appendChild(label);
+                checkbox.addEventListener('change', updateGuideState);
+            });
+        }
+
+        // Cập nhật giao diện Phương Tiện
+        function updateVehicleState() {
+            vehicleTags.innerHTML = '';
+            selectedVehicleIds = [];
+
+            const checkboxes = vehicleDropdown.querySelectorAll('.vehicle-checkbox');
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedVehicleIds.push(parseInt(cb.value));
+                    const vehicle = availableVehicles.find(v => v.id == cb.value);
+                    if (vehicle) {
+                        const tag = document.createElement('span');
+                        tag.className = 'badge bg-primary px-3 py-2 shadow-sm fw-normal d-inline-flex align-items-center';
+                        tag.innerHTML = `🚌 ${vehicle.bien_so_xe} <i class="fas fa-times ms-2" style="cursor:pointer" onclick="uncheckById('${cb.id}')"></i>`;
+                        vehicleTags.appendChild(tag);
+                    }
+                }
+            });
+
+            // Kích hoạt/vô hiệu hóa HDV dựa trên số xe
+            const guideCheckboxes = guideDropdown.querySelectorAll('.guide-checkbox');
+            if (selectedVehicleIds.length > 0) {
+                guideSearch.disabled = false;
+                guideCheckboxes.forEach(cb => cb.disabled = false);
+                guideContainer.classList.remove('bg-light', 'opacity-75');
+                guideHelp.classList.remove('text-muted');
+                guideHelp.classList.add('text-success');
+                guideHelp.innerHTML = `<i class="fas fa-check-circle me-1"></i>Đã chọn <b>${selectedVehicleIds.length}</b> xe. Bạn cần chọn tối thiểu <b>${selectedVehicleIds.length}</b> Hướng dẫn viên.`;
+            } else {
+                guideSearch.disabled = true;
+                guideCheckboxes.forEach(cb => {
+                    cb.disabled = true;
+                    cb.checked = false;
+                });
+                selectedGuideIds = [];
+                updateGuideState();
+
+                guideContainer.classList.add('bg-light', 'opacity-75');
+                guideHelp.classList.remove('text-success');
+                guideHelp.classList.add('text-muted');
+                guideHelp.innerHTML = `<i class="fas fa-lock me-1"></i>Vui lòng chọn phương tiện trước.`;
+            }
+        }
+
+        // Cập nhật giao diện HDV
+        function updateGuideState() {
+            guideTags.innerHTML = '';
+            selectedGuideIds = [];
+
+            const checkboxes = guideDropdown.querySelectorAll('.guide-checkbox');
+            checkboxes.forEach(cb => {
+                if (cb.checked && !cb.disabled) {
+                    selectedGuideIds.push(parseInt(cb.value));
+                    const guide = availableGuides.find(g => g.id == cb.value);
+                    if (guide) {
+                        const tag = document.createElement('span');
+                        tag.className = 'badge bg-success px-3 py-2 shadow-sm fw-normal d-inline-flex align-items-center';
+                        tag.innerHTML = `👤 ${guide.ho_ten} <i class="fas fa-times ms-2" style="cursor:pointer" onclick="uncheckById('${cb.id}')"></i>`;
+                        guideTags.appendChild(tag);
+                    }
+                }
+            });
+            const requiredGuides = selectedVehicleIds.length;
+
+const guideCheckboxes = guideDropdown.querySelectorAll('.guide-checkbox');
+
+if (selectedGuideIds.length >= requiredGuides) {
+    guideCheckboxes.forEach(cb => {
+        if (!cb.checked) {
+            cb.disabled = true;
+        }
+    });
+} else {
+    guideCheckboxes.forEach(cb => {
+        cb.disabled = false;
+    });
+}
         }
 
         // Bấm vào ô input để mở danh sách
@@ -375,7 +550,7 @@
         // Chức năng tìm kiếm realtime
         function setupFilter(searchEl, dropdownEl) {
             searchEl.addEventListener('input', function() {
-                toggleDropdown(searchEl, dropdownEl, true); // Chắc chắn mở khi đang gõ
+                toggleDropdown(searchEl, dropdownEl, true);
                 const filter = this.value.toLowerCase();
                 const items = dropdownEl.querySelectorAll('.custom-dropdown-item');
 
@@ -388,7 +563,7 @@
         setupFilter(vehicleSearch, vehicleDropdown);
         setupFilter(guideSearch, guideDropdown);
 
-        // Chức năng bỏ chọn qua Tag
+        // Hàm bỏ chọn qua Tag
         window.uncheckById = function(checkboxId) {
             const cb = document.getElementById(checkboxId);
             if (cb && !cb.disabled) {
@@ -397,71 +572,10 @@
             }
         };
 
-        // Cập nhật giao diện của Phương Tiện
-        function updateVehicleState() {
-            vehicleTags.innerHTML = '';
-            let selectedCount = 0;
-
-            vehicleCheckboxes.forEach(cb => {
-                if (cb.checked) {
-                    selectedCount++;
-                    const labelText = cb.nextElementSibling.textContent.trim();
-                    // Tạo Tag
-                    const tag = document.createElement('span');
-                    tag.className = 'badge bg-primary px-3 py-2 shadow-sm fw-normal d-inline-flex align-items-center';
-                    tag.innerHTML = `${labelText} <i class="fas fa-times ms-2" style="cursor:pointer" onclick="uncheckById('${cb.id}')"></i>`;
-                    vehicleTags.appendChild(tag);
-                }
-            });
-
-            // Logic ràng buộc Hướng Dẫn Viên
-            if (selectedCount > 0) {
-                guideSearch.disabled = false;
-                guideCheckboxes.forEach(cb => cb.disabled = false);
-
-                guideContainer.classList.remove('bg-light', 'opacity-75');
-                guideHelp.classList.remove('text-muted');
-                guideHelp.classList.add('text-success');
-                guideHelp.innerHTML = `<i class="fas fa-check-circle me-1"></i>Đã chọn <b>${selectedCount}</b> xe. Bạn cần chọn tối thiểu <b>${selectedCount}</b> Hướng dẫn viên.`;
-            } else {
-                guideSearch.disabled = true;
-                guideCheckboxes.forEach(cb => {
-                    cb.disabled = true;
-                    cb.checked = false;
-                });
-                updateGuideState();
-
-                guideContainer.classList.add('bg-light', 'opacity-75');
-                guideHelp.classList.remove('text-success');
-                guideHelp.classList.add('text-muted');
-                guideHelp.innerHTML = `<i class="fas fa-lock me-1"></i>Vui lòng chọn phương tiện trước.`;
-            }
-        }
-
-        // Cập nhật giao diện của Hướng Dẫn Viên
-        function updateGuideState() {
-            guideTags.innerHTML = '';
-            guideCheckboxes.forEach(cb => {
-                if (cb.checked && !cb.disabled) {
-                    const labelText = cb.nextElementSibling.textContent.trim();
-                    // Tạo Tag
-                    const tag = document.createElement('span');
-                    tag.className = 'badge bg-success px-3 py-2 shadow-sm fw-normal d-inline-flex align-items-center';
-                    tag.innerHTML = `${labelText} <i class="fas fa-times ms-2" style="cursor:pointer" onclick="uncheckById('${cb.id}')"></i>`;
-                    guideTags.appendChild(tag);
-                }
-            });
-        }
-
-        // Lắng nghe sự kiện
-        vehicleCheckboxes.forEach(cb => cb.addEventListener('change', updateVehicleState));
-        guideCheckboxes.forEach(cb => cb.addEventListener('change', updateGuideState));
-
-        // Khởi chạy khi vào màn hình Edit (Hiển thị Tag của các dữ liệu đã chọn từ DB)
-        updateVehicleState();
-        updateGuideState();
+        // Tải danh sách lúc khởi động
+        loadAvailableVehicles();
+        loadAvailableGuides();
     });
-
 </script>
 @endpush
 @endsection

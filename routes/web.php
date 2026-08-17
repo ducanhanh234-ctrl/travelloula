@@ -216,7 +216,8 @@ Route::middleware('auth')->group(function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-
+Route::get('phan-cong/api/available-vehicles', [PhanCongController::class, 'getAvailableVehicles'])->name('phan-cong.api.available-vehicles');
+        Route::get('phan-cong/api/available-guides', [PhanCongController::class, 'getAvailableGuides'])->name('phan-cong.api.available-guides');
 Route::prefix('Admin')
     ->name('Admin.')
     ->middleware(['auth', 'permission:vao_admin'])

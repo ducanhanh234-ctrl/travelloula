@@ -197,9 +197,7 @@ class QuanLyDatTourController extends Controller
         if ((int) $request->so_nguoi_lon < 1) {
             return back()
                 ->withInput()
-                ->withErrors([
-                    'so_nguoi_lon' => 'Booking phải có ít nhất 1 người lớn.'
-                ]);
+                ->with('error', 'Booking phải có ít nhất 1 người lớn.');
         }
 
         $request->validate([
@@ -213,6 +211,9 @@ class QuanLyDatTourController extends Controller
             'hanh_khach.*.loai_giay_to' => 'required',
             'phuong_thuc_thanh_toan' => 'required',
 
+            'hanh_khach.*.so_dien_thoai' => ['nullable', 'regex:/^0\d{9}$/',],
+            'hanh_khach.*.so_giay_to' => ['nullable', 'regex:/^\d{12}$/',],
+
         ], [
             'tour_id.required' => 'Vui lòng chọn tour.',
             'lich_khoi_hanh_id.required' => 'Vui lòng chọn lịch khởi hành.',
@@ -223,6 +224,8 @@ class QuanLyDatTourController extends Controller
             'hanh_khach.*.ngay_sinh.date' => 'Ngày sinh không hợp lệ.',
             'hanh_khach.*.loai_giay_to.required' => 'Vui lòng chọn loại giấy tờ.',
             'phuong_thuc_thanh_toan.required' => 'Vui lòng chọn phương thức thanh toán.',
+            'hanh_khach.*.so_dien_thoai.regex' => 'Số điện thoại phải gồm đúng 10 số và bắt đầu bằng 0.',
+            'hanh_khach.*.so_giay_to.regex' => 'Số CCCD phải gồm đúng 12 số.',
         ]);
 
         DB::beginTransaction();

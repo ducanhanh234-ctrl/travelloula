@@ -21,6 +21,13 @@
         </div>
         <form id="bookingForm" method="POST" action="{{ route('Admin.dat_tours.store') }}">
             @csrf
+
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    {{ session('error') }}
+                </div>
+            @endif
             <!-- Thông tin tour -->
             <div class="card mb-4">
                 <div class="card-header fw-bold">
@@ -383,6 +390,7 @@
             let passengerIndex = 0;
             const validationErrors = @json($errors->toArray());
             const oldPassengers = @json(old('hanh_khach', []));
+            const oldLichKhoiHanhId = @json(old('lich_khoi_hanh_id'));
         function createPassenger(index) {
     return `
         <div class="card mb-3 passenger-item">
@@ -488,23 +496,15 @@
                     <div class="col-md-4">
                         <label>Số giấy tờ</label>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="hanh_khach[${index}][so_giay_to]"
-                        >
+                        <input type="text" class="form-control" name="hanh_khach[${index}][so_giay_to]">
+                        <small class="text-danger validation-error" data-error="hanh_khach.${index}.so_giay_to"></small>
                     </div>
-
                     <div class="col-md-4">
                         <label>Số điện thoại</label>
 
-                        <input
-                            type="text"
-                            class="form-control"
-                            name="hanh_khach[${index}][so_dien_thoai]"
-                        >
+                        <input type="text" class="form-control" name="hanh_khach[${index}][so_dien_thoai]">
+                        <small class="text-danger validation-error" data-error="hanh_khach.${index}.so_dien_thoai"></small>
                     </div>
-
                 </div>
 
                 <!-- Hàng 3 -->
@@ -905,34 +905,47 @@ if (oldChildPrice) {
                             return;
                         }
 
-                        data.forEach(function (item) {
-                            let option = document.createElement('option');
-                            option.value = item.id;
-                            option.dataset.start = formatDate(item.ngay_khoi_hanh);
-                            option.dataset.end = formatDate(item.ngay_ket_thuc);
+                       data.forEach(function (item) {
+                        let option = document.createElement('option');
 
-                            if (
-                                item.trang_thai !== 'available' &&
-                                item.trang_thai !== 'running'
-                            ) {
-                                option.text =
-                                    `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi})`;
+                        option.value = item.id;
+                        option.dataset.start = formatDate(item.ngay_khoi_hanh);
+                        option.dataset.end = formatDate(item.ngay_ket_thuc);
 
-                                option.disabled = true;
-                                option.style.color = "red";
-                            } else {
-                                option.text =
-                                    `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
-                            }
-                            lichSelect.appendChild(option);
-                        });
+                        if (
+                            item.trang_thai !== 'available' &&
+                            item.trang_thai !== 'running'
+                        ) {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi})`;
+
+                            option.disabled = true;
+                            option.style.color = "red";
+                        } else {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                        }
+
+                        lichSelect.appendChild(option);
+                    });
+
+                    // KHÔI PHỤC LỊCH CŨ
+                    if (oldLichKhoiHanhId) {
+                     lichSelect.value = oldLichKhoiHanhId;
+                     lichSelect.dispatchEvent(new Event('change'));
+                    }
                     })
 
-                    .catch(error => {
-                        console.error(error);
-                        alert("Không lấy được lịch khởi hành.");
-                    });
+                    .catch(error => { console.error(error); alert("Không lấy được lịch khởi hành.");
+                });
             });
+
+            const oldTourId = @json(old('tour_id'));
+
+            if (oldTourId) {
+                tourSelect.value = oldTourId;
+                tourSelect.dispatchEvent(new Event('change'));
+            }
 
             lichSelect.addEventListener('change', function () {
                 let option = this.options[this.selectedIndex];

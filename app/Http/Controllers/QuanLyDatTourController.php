@@ -197,21 +197,39 @@ class QuanLyDatTourController extends Controller
         if ((int) $request->so_nguoi_lon < 1) {
             return back()
                 ->withInput()
-                ->withErrors([
-                    'so_nguoi_lon' => 'Booking phải có ít nhất 1 người lớn.'
-                ]);
+                ->with('error', 'Booking phải có ít nhất 1 người lớn.');
         }
+
+        $request->validate([
+            'tour_id' => 'required|exists:danh_sach_tours,id',
+            'lich_khoi_hanh_id' => 'required|exists:lich_khoi_hanh_tours,id',
+
+            'hanh_khach' => 'required|array|min:1',
+
+            'hanh_khach.*.ho_ten' => 'required|string|max:255',
+            'hanh_khach.*.ngay_sinh' => 'required|date',
+            'hanh_khach.*.loai_giay_to' => 'required',
+            'phuong_thuc_thanh_toan' => 'required',
+
+            'hanh_khach.*.so_dien_thoai' => ['nullable', 'regex:/^0\d{9}$/',],
+            'hanh_khach.*.so_giay_to' => ['nullable', 'regex:/^\d{12}$/',],
+
+        ], [
+            'tour_id.required' => 'Vui lòng chọn tour.',
+            'lich_khoi_hanh_id.required' => 'Vui lòng chọn lịch khởi hành.',
+
+            'hanh_khach.required' => 'Vui lòng thêm hành khách.',
+            'hanh_khach.*.ho_ten.required' => 'Vui lòng nhập họ tên.',
+            'hanh_khach.*.ngay_sinh.required' => 'Vui lòng nhập ngày sinh.',
+            'hanh_khach.*.ngay_sinh.date' => 'Ngày sinh không hợp lệ.',
+            'hanh_khach.*.loai_giay_to.required' => 'Vui lòng chọn loại giấy tờ.',
+            'phuong_thuc_thanh_toan.required' => 'Vui lòng chọn phương thức thanh toán.',
+            'hanh_khach.*.so_dien_thoai.regex' => 'Số điện thoại phải gồm đúng 10 số và bắt đầu bằng 0.',
+            'hanh_khach.*.so_giay_to.regex' => 'Số CCCD phải gồm đúng 12 số.',
+        ]);
 
         DB::beginTransaction();
         try {
-            // $request->validate([
-            //     'tour_id' => 'required|exists:tours,id',
-            //     'lich_khoi_hanh' => [
-            //         'required',
-            //         'date',
-            //         'after_or_equal:today'
-            //     ],
-            // ]);
             $tour = Tour::with('lichTrinh')
                 ->findOrFail($request->tour_id);
             $tongKhach = (int) $request->so_nguoi_lon + (int) $request->so_tre_em;
@@ -735,7 +753,7 @@ class QuanLyDatTourController extends Controller
             'so_tre_em' => 'nullable|integer|min:0',
 
             'phuong_thuc_thanh_toan' => 'required',
-            'phan_tram_thanh_toan'=>'required|in:30,50,100',
+            'phan_tram_thanh_toan' => 'required|in:30,50,100',
 
             'hanh_khach' => 'required|array|min:1',
 
@@ -833,7 +851,7 @@ class QuanLyDatTourController extends Controller
             $soTreEm = (int) ($request->so_tre_em ?? 0);
 
 
-            $tongKhach = $soNguoiLon + $soTreEm ;
+            $tongKhach = $soNguoiLon + $soTreEm;
             // Kiểm tra số lượng hành khách nhập có khớp không
             if (count($request->hanh_khach) != $tongKhach) {
 
@@ -922,15 +940,15 @@ class QuanLyDatTourController extends Controller
                 'ma_dat_tour' => $maDatTour,
                 'so_nguoi_lon' => $soNguoiLon,
                 'so_tre_em' => $soTreEm,
-                'tong_tien'=>$tongTien,
+                'tong_tien' => $tongTien,
 
-                'phan_tram_thanh_toan'=>$phanTram,
+                'phan_tram_thanh_toan' => $phanTram,
 
-                'so_tien_da_thanh_toan'=>0,
+                'so_tien_da_thanh_toan' => 0,
 
-                'so_tien_con_lai'=>$soTienConLai,
+                'so_tien_con_lai' => $soTienConLai,
 
-                'trang_thai'=>'cho_xac_nhan',
+                'trang_thai' => 'cho_xac_nhan',
                 'ghi_chu' => $request->ghi_chu,
                 'ngay_dat' => now(),
             ]);
@@ -964,7 +982,7 @@ class QuanLyDatTourController extends Controller
                 'dat_tour_id' => $booking->id,
                 'nguoi_dung_id' => Auth::id(),
                 'phuong_thuc_thanh_toan' => $request->phuong_thuc_thanh_toan,
-                'so_tien'=>$soTienCanThanhToan,
+                'so_tien' => $soTienCanThanhToan,
 
                 // Sẽ cập nhật sau khi tạo URL VNPay
                 'ma_giao_dich' => null,

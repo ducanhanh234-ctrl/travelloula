@@ -29,7 +29,7 @@
                         @endphp
 
                         @if ($cover)
-                            <img src="{{ asset('storage/' . $cover->duong_dan_anh) }}" class="img-fluid rounded shadow"
+                            <img src="{{ asset($cover->duong_dan_anh) }}" class="img-fluid rounded shadow"
                                 style="width:100%;height:450px;object-fit:cover;">
                         @else
                             <img src="https://via.placeholder.com/600x450" class="img-fluid rounded shadow">
@@ -42,7 +42,7 @@
                             @foreach ($tour->hinhAnhs->where('la_anh_dai_dien', false) as $image)
                                 <div class="col-3 mb-2">
 
-                                    <img src="{{ asset('storage/' . $image->duong_dan_anh) }}"
+                                    <img src="{{ asset($image->duong_dan_anh) }}"
                                         class="img-fluid rounded border" style="height:90px;width:100%;object-fit:cover;">
 
                                 </div>

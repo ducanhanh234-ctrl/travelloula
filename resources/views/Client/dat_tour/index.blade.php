@@ -47,7 +47,11 @@
                                     Thời lượng: <strong>&nbsp;{{ $tour->thoi_luong }}</strong>
                                 </div>
                                 <h4 class="primary-text font-weight-bold mb-0 mt-auto">
-                                    {{ number_format($tour->gia_nguoi_lon) }}đ <small class="text-muted" style="font-size: 0.9rem; font-weight: normal;">/ người lớn</small>
+                                    @if($bangGia)
+                                        {{ number_format($bangGia->gia_nguoi_lon) }}đ <small class="text-muted" style="font-size: 0.9rem; font-weight: normal;">/ người lớn</small>
+                                    @else
+                                        {{ number_format($tour->gia_nguoi_lon) }}đ <small class="text-muted" style="font-size: 0.9rem; font-weight: normal;">/ người lớn</small>
+                                    @endif
                                 </h4>
                             </div>
                         </div>
@@ -130,11 +134,15 @@
                     </small>
 
                     <div class="text-right border-top pt-2 mt-2">
-
+                      @if($bangGia)
                         <span class="primary-text font-weight-bold">
+                            {{ number_format($bangGia->gia_nguoi_lon) }}đ
+                        </span>
+                      @else
+                       <span class="primary-text font-weight-bold">
                             {{ number_format($lich->tour->gia_nguoi_lon) }}đ
                         </span>
-
+                        @endif
                     </div>
 
                 </div>

@@ -718,19 +718,37 @@ class QuanLyDatTourController extends Controller
     {
         $tour = Tour::findOrFail($tourId);
         $tours = Tour::all();
+        $bangGia = BangGiaTour::where('tour_id', $tourId)
+            ->where('trang_thai', 'active')
+            ->whereDate('ngay_bat_dau', '<=', now())
+            ->whereDate('ngay_ket_thuc', '>=', now())
+            ->first();
+        if($bangGia){
+            $tour->gia_nguoi_lon = $bangGia->gia_nguoi_lon;
+            $tour->gia_tre_em = $bangGia->gia_tre_em;
+        }
         $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
             ->whereIn('trang_thai', ['available', 'closed', 'full'])
             ->orderBy('ngay_khoi_hanh')
             ->get();
-        $lichDuocChon = [
+        if ($bangGia) {
+            $lichDuocChon = [
+            'gia_nguoi_lon' => $bangGia->gia_nguoi_lon,
+            'tong_tien' => ($bangGia->gia_nguoi_lon + $bangGia->gia_tre_em),
+        ];
+        }else{
+            $lichDuocChon = [
             'gia_nguoi_lon' => $tour->gia_nguoi_lon,
             'tong_tien' => ($tour->gia_nguoi_lon + $tour->gia_tre_em + $tour->gia_em_be),
         ];
+        }
+        
         return view('client.dat_tour.index', compact(
             'tour',
             'lichKhoiHanhs',
             'lichDuocChon',
-            'tours'
+            'tours',
+            'bangGia'
         ));
     }
 
@@ -846,7 +864,11 @@ class QuanLyDatTourController extends Controller
                     ->with('error', 'Lịch khởi hành này hiện không mở bán.');
             }
             $tour = Tour::findOrFail($request->tour_id);
-
+            $bangGia = BangGiaTour::where('tour_id', $tour->id)
+                ->where('trang_thai', 'active')
+                ->whereDate('ngay_bat_dau', '<=', $lich->ngay_khoi_hanh)
+                ->whereDate('ngay_ket_thuc', '>=', $lich->ngay_khoi_hanh)
+                ->first();
             $soNguoiLon = (int) $request->so_nguoi_lon;
             $soTreEm = (int) ($request->so_tre_em ?? 0);
 
@@ -919,7 +941,11 @@ class QuanLyDatTourController extends Controller
             }
 
             // Tính tổng tiền từ dữ liệu tour
+            if( $bangGia) {
+                $tongTien = ($soNguoiLon * $bangGia->gia_nguoi_lon) + ($soTreEm * $bangGia->gia_tre_em);
+            } else {
             $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
+            }
             $phanTram = (int)$request->phan_tram_thanh_toan;
 
             $soTienCanThanhToan = ($tongTien * $phanTram) / 100;

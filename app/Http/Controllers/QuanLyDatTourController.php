@@ -718,19 +718,30 @@ class QuanLyDatTourController extends Controller
     {
         $tour = Tour::findOrFail($tourId);
         $tours = Tour::all();
-        $bangGia = BangGiaTour::where('tour_id', $tourId)
-            ->where('trang_thai', 'active')
-            ->whereDate('ngay_bat_dau', '<=', now())
-            ->whereDate('ngay_ket_thuc', '>=', now())
-            ->first();
-        if($bangGia){
-            $tour->gia_nguoi_lon = $bangGia->gia_nguoi_lon;
-            $tour->gia_tre_em = $bangGia->gia_tre_em;
-        }
         $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
             ->whereIn('trang_thai', ['available', 'closed', 'full'])
             ->orderBy('ngay_khoi_hanh')
             ->get();
+        // Gán bảng giá tương ứng với ngày khởi hành
+    foreach ($lichKhoiHanhs as $lich) {
+        $bangGia = BangGiaTour::where('tour_id', $tourId)
+            ->where('trang_thai', 'active')
+            ->whereDate('ngay_bat_dau', '<=', $lich->ngay_khoi_hanh)
+            ->whereDate('ngay_ket_thuc', '>=', $lich->ngay_khoi_hanh)
+            ->first();
+
+        if ($bangGia) {
+            $lich->gia_nguoi_lon = $bangGia->gia_nguoi_lon;
+            $lich->gia_tre_em = $bangGia->gia_tre_em;
+            $lich->gia_em_be = $bangGia->gia_em_be;
+            $lich->bang_gia = $bangGia;
+        } else {
+            $lich->gia_nguoi_lon = $tour->gia_nguoi_lon;
+            $lich->gia_tre_em = $tour->gia_tre_em;
+            $lich->gia_em_be = $tour->gia_em_be;
+            $lich->bang_gia = null;
+        }
+    }
         if ($bangGia) {
             $lichDuocChon = [
             'gia_nguoi_lon' => $bangGia->gia_nguoi_lon,

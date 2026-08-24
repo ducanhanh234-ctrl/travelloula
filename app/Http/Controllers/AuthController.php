@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\VaiTro;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +26,7 @@ class AuthController extends Controller
             'address' => 'nullable|max:255',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
@@ -33,6 +34,13 @@ class AuthController extends Controller
             'address' => $data['address'] ?? null,
             'is_active' => true,
         ]);
+
+        $userRole = VaiTro::firstOrCreate(
+            ['ten_vai_tro' => 'User'],
+            ['mo_ta' => 'Khách hàng']
+        );
+
+        $user->vaiTros()->syncWithoutDetaching([$userRole->id]);
 
         return redirect()->route('login')
             ->with('success', 'Đăng ký thành công. Bạn có thể đăng nhập.');

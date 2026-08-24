@@ -227,6 +227,7 @@ class LichKhoiHanhTour extends Model
                 $this->save();
             }
 
+            $this->capNhatTrangThaiTaiNguyen();
             return;
         }
 
@@ -244,6 +245,7 @@ class LichKhoiHanhTour extends Model
                 $this->save();
             }
 
+            $this->capNhatTrangThaiTaiNguyen();
             return;
         }
 
@@ -262,6 +264,7 @@ class LichKhoiHanhTour extends Model
                 true
             )
         ) {
+            $this->capNhatTrangThaiTaiNguyen();
             return;
         }
 
@@ -276,6 +279,7 @@ class LichKhoiHanhTour extends Model
                 $this->save();
             }
 
+            $this->capNhatTrangThaiTaiNguyen();
             return;
         }
 
@@ -290,6 +294,7 @@ class LichKhoiHanhTour extends Model
                 $this->save();
             }
 
+            $this->capNhatTrangThaiTaiNguyen();
             return;
         }
 
@@ -301,6 +306,57 @@ class LichKhoiHanhTour extends Model
         if ($this->trang_thai !== 'available') {
             $this->trang_thai = 'available';
             $this->save();
+        }
+
+        $this->capNhatTrangThaiTaiNguyen();
+    }
+
+    public function capNhatTrangThaiTaiNguyen(): void
+    {
+        $phanCong = $this->phanCong()->first();
+
+        if (! $phanCong) {
+            return;
+        }
+
+        $hdvIds = collect($phanCong->hdv_ids ?? [$phanCong->hdv_id])
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $phuongTienIds = collect($phanCong->phuong_tien_ids ?? [$phanCong->phuong_tien_id])
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        if ($this->trang_thai === 'running') {
+            if ($hdvIds) {
+                HuongDanVien::whereIn('id', $hdvIds)
+                    ->update(['trang_thai' => 'dang_dan_tour']);
+            }
+
+            if ($phuongTienIds) {
+                PhuongTien::whereIn('id', $phuongTienIds)
+                    ->update(['trang_thai' => 2]);
+            }
+
+            return;
+        }
+
+        if ($hdvIds) {
+            HuongDanVien::whereIn('id', $hdvIds)
+                ->where('trang_thai', 'dang_dan_tour')
+                ->update(['trang_thai' => 'san_sang']);
+        }
+
+        if ($phuongTienIds) {
+            PhuongTien::whereIn('id', $phuongTienIds)
+                ->where('trang_thai', 2)
+                ->update(['trang_thai' => 1]);
         }
     }
 

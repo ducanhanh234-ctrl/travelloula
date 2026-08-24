@@ -206,6 +206,44 @@
         </table>
 
         <!-- PHẦN 1: THÔNG TIN TOUR ĐÃ ĐẶT -->
+        @php
+            $tour = $booking?->tour ?? $payment->datTour?->tour;
+            $lichKhoiHanh = $booking?->lichKhoiHanh ?? $payment->datTour?->lichKhoiHanh;
+            $ngayKhoiHanh = $lichKhoiHanh?->ngay_khoi_hanh;
+
+            $giaNguoiLonNiemYet = (float) ($tour->gia_nguoi_lon ?? $tour->gia_tour ?? 0);
+            $giaTreEmNiemYet = (float) ($tour->gia_tre_em ?? 0);
+            $bangGiaApDung = null;
+
+            if ($tour && $ngayKhoiHanh) {
+                $bangGiaApDung = collect($tour->bangGiaTours ?? [])
+                    ->filter(function ($bangGia) use ($ngayKhoiHanh) {
+                        if (
+                            ($bangGia->trang_thai ?? null) !== 'active'
+                            || empty($bangGia->ngay_bat_dau)
+                            || empty($bangGia->ngay_ket_thuc)
+                        ) {
+                            return false;
+                        }
+
+                        $ngayBatDau = \Carbon\Carbon::parse($bangGia->ngay_bat_dau)->startOfDay();
+                        $ngayKetThuc = \Carbon\Carbon::parse($bangGia->ngay_ket_thuc)->endOfDay();
+                        $ngayApDung = \Carbon\Carbon::parse($ngayKhoiHanh)->startOfDay();
+
+                        return $ngayApDung->gte($ngayBatDau) && $ngayApDung->lte($ngayKetThuc);
+                    })
+                    ->sortByDesc(function ($bangGia) {
+                        return sprintf('%s-%020d', (string) $bangGia->ngay_bat_dau, (int) $bangGia->id);
+                    })
+                    ->first();
+            }
+
+            $coGiaCaoDiem = $bangGiaApDung && (float) ($bangGiaApDung->phan_tram_tang ?? 0) > 0;
+            $phanTramTang = $coGiaCaoDiem ? (float) $bangGiaApDung->phan_tram_tang : 0;
+            $giaNguoiLonApDung = $coGiaCaoDiem ? $giaNguoiLonNiemYet * (1 + $phanTramTang / 100) : $giaNguoiLonNiemYet;
+            $giaTreEmApDung = $coGiaCaoDiem && $giaTreEmNiemYet > 0 ? $giaTreEmNiemYet * (1 + $phanTramTang / 100) : $giaTreEmNiemYet;
+        @endphp
+
         <div class="section-title">THÔNG TIN TOUR ĐÃ ĐẶT</div>
 
         <table class="info-table">
@@ -244,17 +282,36 @@
             <tr>
                 <td><b>Giá Người Lớn:</b></td>
                 <td>
-                    {{ number_format(optional($booking?->lichKhoiHanh)->gia_nguoi_lon ?? optional($payment->datTour?->lichKhoiHanh)->gia_nguoi_lon) }} VND
+                    {{ number_format($giaNguoiLonNiemYet) }} VND
+                    @if($coGiaCaoDiem)
+                        <span style="color:#d35400; font-weight:bold;">(Giá cao điểm +{{ number_format($phanTramTang, 0, '', '.') }}%)</span>
+                    @endif
+                </td>
+            </tr>
+
+            <tr>
+                <td><b>Đơn giá áp dụng:</b></td>
+                <td>
+                    {{ number_format($giaNguoiLonApDung) }} VND
                 </td>
             </tr>
 
             <tr>
                 <td><b>Giá Trẻ Em:</b></td>
                 <td>
-                    {{ number_format(optional($booking?->lichKhoiHanh)->gia_tre_em ?? optional($payment->datTour?->lichKhoiHanh)->gia_tre_em) }} VND
+                    {{ number_format($giaTreEmNiemYet) }} VND
+                    @if($coGiaCaoDiem && $giaTreEmNiemYet > 0)
+                        <span style="color:#d35400; font-weight:bold;">(Giá cao điểm +{{ number_format($phanTramTang, 0, '', '.') }}%)</span>
+                    @endif
                 </td>
             </tr>
         </table>
+
+        @if($coGiaCaoDiem)
+            <div style="margin: 8px 0 0 0; padding: 8px 10px; background: #fff4e5; border: 1px solid #f0b35a; color: #8a4b00; font-weight: bold;">
+                Lưu ý: Lịch khởi hành này thuộc thời điểm cao điểm, áp dụng tăng giá {{ number_format($phanTramTang, 0, '', '.') }}%.
+            </div>
+        @endif
 
         <!-- PHẦN 2: THÔNG TIN KHÁCH HÀNG -->
         <div class="section-title">THÔNG TIN KHÁCH HÀNG</div>
@@ -271,6 +328,12 @@
                 <td><b>Email liên hệ:</b></td>
                 <td>
                     {{ optional($booking?->nguoiDung)->email ?? optional($payment->datTour?->nguoiDung)->email }}
+                </td>
+            </tr>
+            <tr>
+                <td><b>Điện thoại:</b></td>
+                <td>
+                    {{ optional($booking?->nguoiDung)->phone ?? optional($payment->datTour?->nguoiDung)->phone }}
                 </td>
             </tr>
         </table>

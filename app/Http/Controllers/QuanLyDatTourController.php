@@ -716,6 +716,13 @@ class QuanLyDatTourController extends Controller
     // Hiển thị form khách hàng đặt tour
     public function create_dat_tour($tourId)
     {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('User')) {
+            return redirect()->route('Client.trang_chu.index')
+            ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
+        }
+
         $tour = Tour::findOrFail($tourId);
         $tours = Tour::all();
         $lichKhoiHanhs = LichKhoiHanhTour::where('tour_id', $tourId)
@@ -765,6 +772,13 @@ class QuanLyDatTourController extends Controller
 
     public function store_dat_tour(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole('User')) {
+            return redirect()->route('Client.trang_chu.index')
+            ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
+        }
+
         $request->merge([
             'phan_tram_thanh_toan' => $request->input('phan_tram_thanh_toan', $request->input('input_phan_tram_thanh_toan', 100)),
         ]);

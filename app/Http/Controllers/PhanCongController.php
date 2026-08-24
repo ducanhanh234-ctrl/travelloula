@@ -136,6 +136,8 @@ class PhanCongController extends Controller
 
         ]);
 
+        $lich->capNhatTrangThaiTaiNguyen();
+
         return redirect()
             ->route('Admin.phan-cong.index')
             ->with('success', 'Phân công thành công.');
@@ -227,6 +229,8 @@ class PhanCongController extends Controller
                 'trang_thai' => 'assigned',
             ]);
 
+            $lich->capNhatTrangThaiTaiNguyen();
+
             return redirect()
                 ->route('Admin.phan-cong.index')
                 ->with('success', 'Cập nhật phân công thành công.');
@@ -270,6 +274,8 @@ class PhanCongController extends Controller
             'phuong_tien_id' => null,
             'trang_thai' => 'finalized',
         ]);
+
+        $lich->capNhatTrangThaiTaiNguyen();
 
         return redirect()
             ->route('Admin.phan-cong.index')

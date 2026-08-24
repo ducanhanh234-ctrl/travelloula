@@ -41,6 +41,11 @@ class DatabaseSeeder extends Seeder
             ['mo_ta' => 'Hướng dẫn viên']
         );
 
+        $userRole = VaiTro::firstOrCreate(
+            ['ten_vai_tro' => 'User'],
+            ['mo_ta' => 'Khách hàng']
+        );
+
         // Admin có toàn bộ quyền
 
         $adminRole->quyenHans()->sync(

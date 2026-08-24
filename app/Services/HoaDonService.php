@@ -14,7 +14,7 @@ class HoaDonService
         $booking = $payment->datTour()->first();
         if ($booking) {
             $booking->refresh();
-            $booking->load(['nguoiDung', 'tour', 'lichKhoiHanh']);
+            $booking->load(['nguoiDung', 'tour.bangGiaTours', 'lichKhoiHanh']);
             $payment->setRelation('datTour', $booking);
         }
 

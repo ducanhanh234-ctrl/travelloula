@@ -152,8 +152,10 @@ Route::get('/dieu_khoan', [TrangDieuKhoanClientController::class, 'index'])->nam
 Route::view('/demo', 'Client.demo')->name('Client.demo');
 
 
-Route::get('/{id}/dat_tour', [QuanLyDatTourController::class, 'create_dat_tour'])->name('create_dat_tour');
-Route::post('/dat_tour', [QuanLyDatTourController::class, 'store_dat_tour'])->name('store_dat_tour');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/{id}/dat_tour', [QuanLyDatTourController::class, 'create_dat_tour'])->name('create_dat_tour');
+    Route::post('/dat_tour', [QuanLyDatTourController::class, 'store_dat_tour'])->name('store_dat_tour');
+});
 
 Route::resource('tour_da_dat', TourDaDatController::class);
 

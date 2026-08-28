@@ -44,22 +44,31 @@
                             </option>
                             @foreach($tours as $tour)
                                 <option value="{{ $tour->id }}"
+                                    {{-- data-status="{{ $tour->trang_thai }}" --}}
                                     data-category="{{ $tour->danh_muc_id }}"
                                     {{ old('tour_id') == $tour->id ? 'selected' : '' }}
-                                    data-destination="{{ $tour->diem_den }}" data-adult="{{ $tour->gia_nguoi_lon }}"
-                                    data-child="{{ $tour->gia_tre_em }}" data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
-                                    @disabled($tour->trang_thai !== 'active')>
+                                    data-destination="{{ $tour->diem_den }}"
+                                    data-adult="{{ $tour->gia_nguoi_lon }}"
+                                    data-child="{{ $tour->gia_tre_em }}"
+                                    data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
+                                    {{-- @disabled($tour->trang_thai !== 'dang_mo_ban') --}}
+                                >
 
                                     {{ $tour->ten_tour }}
-                                    @if($tour->trang_thai !== 'active')
-                                        (Ngừng hoạt động)
-                                    @endif
+{{--
+                                    @if($tour->trang_thai === 'active')
+                                        (Đang hoạt động - Không thể đặt)
+                                    @elseif($tour->trang_thai !== 'dang_mo_ban')
+                                        (Không thể đặt)
+                                    @endif --}}
 
                                     | {{ $tour->lichTrinh->count() }}N{{ max($tour->lichTrinh->count() - 1, 0) }}Đ
                                     | {{ number_format($tour->gia_nguoi_lon, 0, ',', '.') }}đ
+
                                 </option>
                             @endforeach
                         </select>
+                        <small id="tour-status-error" class="text-danger"></small>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
@@ -754,6 +763,13 @@ if (oldChildPrice) {
             document.getElementById('tour_id')
                 .addEventListener('change', function () {
                     let option = this.options[this.selectedIndex];
+                    let tourStatusError = document.getElementById('tour-status-error');
+
+                    if (this.value && option.dataset.status === 'active') {
+                        tourStatusError.textContent = 'Tour đang hoạt động - Không thể đặt tour.';
+                    } else {
+                    tourStatusError.textContent = '';
+                    }
                     soNgayTour = Number(option.dataset.duration);
                     console.log(
                         "Số ngày:",
@@ -912,20 +928,21 @@ if (oldChildPrice) {
                         option.dataset.start = formatDate(item.ngay_khoi_hanh);
                         option.dataset.end = formatDate(item.ngay_ket_thuc);
 
-                        if (
-                            item.trang_thai !== 'available' &&
-                            item.trang_thai !== 'running'
-                        ) {
-                            option.text =
-                                `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi})`;
+                    if (item.trang_thai !== 'available') {
+                        option.disabled = true;
+                        option.style.color = "red";
 
-                            option.disabled = true;
-                            option.style.color = "red";
+                        if (item.trang_thai === 'running') {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (Đang hoạt động - Không thể đặt)`;
                         } else {
-                            option.text =
-                                `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                         option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi || 'Không thể đặt'})`;
                         }
-
+                    } else {
+                     option.text =
+                            `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                    }
                         lichSelect.appendChild(option);
                     });
 

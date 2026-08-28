@@ -608,27 +608,55 @@
                 addPassenger();
             });
 
-            function updatePassengerCount() {
-                const adults = document.querySelectorAll(
-                    '[name$="[loai_hanh_khach]"][value="adult"]'
-                ).length;
+            // function updatePassengerCount() {
+            //     const adults = document.querySelectorAll(
+            //         '[name$="[loai_hanh_khach]"][value="adult"]'
+            //     ).length;
 
-                const children = document.querySelectorAll(
-                    '[name$="[loai_hanh_khach]"][value="child"]'
-                ).length;
+            //     const children = document.querySelectorAll(
+            //         '[name$="[loai_hanh_khach]"][value="child"]'
+            //     ).length;
+
+            //     const total = adults + children;
+
+            //     // Cập nhật input hidden
+            //     document.getElementById('adult_count').value = adults;
+            //     document.getElementById('child_count').value = children;
+
+            //     // Cập nhật phần Thông tin đoàn
+            //     document.getElementById('adult_count_display').textContent = adults;
+            //     document.getElementById('child_count_display').textContent = children;
+            //     document.getElementById('total_count_display').textContent = total;
+
+            //     // Cập nhật tổng tiền
+            //     updatePrice();
+            // }
+
+            function updatePassengerCount() {
+                let adults = 0;
+                let children = 0;
+
+                document.querySelectorAll('.passenger-birth').forEach(input => {
+                    if (!input.value) return;
+
+                    const tuoi = tinhTuoi(input.value);
+
+                 if (tuoi <= 12) {
+                        children++;
+                    } else {
+                        adults++;
+                    }
+             });
 
                 const total = adults + children;
 
-                // Cập nhật input hidden
                 document.getElementById('adult_count').value = adults;
                 document.getElementById('child_count').value = children;
 
-                // Cập nhật phần Thông tin đoàn
                 document.getElementById('adult_count_display').textContent = adults;
                 document.getElementById('child_count_display').textContent = children;
                 document.getElementById('total_count_display').textContent = total;
 
-                // Cập nhật tổng tiền
                 updatePrice();
             }
 
@@ -1037,7 +1065,19 @@ if (oldChildPrice) {
                     },
                     body: formData
                 })
-                    .then(res => res.json())
+                    // .then(res => res.json())
+                    .then(async res => {
+                        const text = await res.text();
+
+                        console.log("HTTP status:", res.status);
+                        console.log("Response từ Laravel:", text);
+
+                        if (!res.ok) {
+                            throw new Error(text);
+                        }
+
+                        return JSON.parse(text);
+                    })
                     .then(data => {
                         console.log(data);
                         let adult = 0;
@@ -1057,8 +1097,23 @@ if (oldChildPrice) {
                         document.getElementById('adult_count').value = adult;
                         document.getElementById('child_count').value = child;
 
+                        document.getElementById('adult_count_display').textContent = adult;
+                        document.getElementById('child_count_display').textContent = child;
+                        document.getElementById('total_count_display').textContent = adult + child;
+
                         // Tạo lại form theo đúng số lượng
-                        generatePassengers();
+                        // generatePassengers();
+                        console.log('Số form trước khi import:', document.querySelectorAll('.passenger-item').length);
+                        console.log('Số người trong Excel:', data.length);
+                        passengerIndex = 0;
+                        document.getElementById('passenger-container').innerHTML = '';
+                        data.forEach(() => {
+                            const index = passengerIndex++;
+
+                            document.getElementById('passenger-container')
+                                .insertAdjacentHTML('beforeend', createPassenger(index));
+                        });
+                        console.log('Số form sau khi tạo:', document.querySelectorAll('.passenger-item').length);
                         updatePrice();
                         // Đổ dữ liệu từ Excel vào từng form hành khách
                         let adultIndex = 0;

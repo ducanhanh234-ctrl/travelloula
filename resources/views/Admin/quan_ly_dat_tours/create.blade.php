@@ -721,9 +721,7 @@ if (oldChildPrice) {
 });
         </script>
 
-
-
-        <script>
+        {{-- <script>
             document
                 .getElementById('booking_type')
                 .addEventListener('change', function () {
@@ -739,6 +737,30 @@ if (oldChildPrice) {
                             ? 'block'
                             : 'none';
                 });
+        </script> --}}
+
+        <script>
+            function updateBookingType() {
+                let type = document.getElementById('booking_type').value;
+
+                document.getElementById('user-section').style.display =
+                    type === 'user' ? 'block' : 'none';
+
+                document.getElementById('guest-section').style.display =
+                    type === 'guest' ? 'block' : 'none';
+            }
+
+            // Khi người dùng thay đổi loại khách
+            document
+                .getElementById('booking_type')
+                .addEventListener('change', function () {
+                    updateBookingType();
+                });
+
+            // Khi trang load lại sau validate
+            document.addEventListener('DOMContentLoaded', function () {
+                updateBookingType();
+            });
         </script>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

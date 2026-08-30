@@ -237,11 +237,28 @@ class QuanLyDatTourController extends Controller
             $soNguoiLon = (int) $request->so_nguoi_lon;
             $soTreEm = (int) $request->so_tre_em;
 
-            $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
+            // $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
 
             $lichKhoiHanh = LichKhoiHanhTour::where('id', $request->lich_khoi_hanh_id)
                 ->where('tour_id', $request->tour_id)
                 ->firstOrFail();
+
+            $bangGia = BangGiaTour::where('tour_id', $lichKhoiHanh->tour_id)
+                ->where('trang_thai', 'active')
+                ->whereDate('ngay_bat_dau', '<=', $lichKhoiHanh->ngay_khoi_hanh)
+                ->whereDate('ngay_ket_thuc', '>=', $lichKhoiHanh->ngay_khoi_hanh)
+                ->first();
+
+            $giaNguoiLon = $bangGia
+                ? $bangGia->gia_nguoi_lon
+                : $tour->gia_nguoi_lon;
+
+            $giaTreEm = $bangGia
+                ? $bangGia->gia_tre_em
+                : $tour->gia_tre_em;
+
+            $tongTien = ($soNguoiLon * $giaNguoiLon)
+                + ($soTreEm * $giaTreEm);
 
             // Kiểm tra số chỗ còn lại
             if ($lichKhoiHanh->so_cho_con_lai < $tongKhach) {
@@ -583,9 +600,29 @@ class QuanLyDatTourController extends Controller
                 ->with('error', 'Lịch khởi hành không đủ chỗ trống.');
         }
 
+        // $tongTien =
+        //     ($request->so_nguoi_lon * $tour->gia_nguoi_lon) +
+        //     ($request->so_tre_em * $tour->gia_tre_em);
+
+        $lichKhoiHanh = $booking->lichKhoiHanh;
+
+        $bangGia = BangGiaTour::where('tour_id', $tour->id)
+            ->where('trang_thai', 'active')
+            ->whereDate('ngay_bat_dau', '<=', $lichKhoiHanh->ngay_khoi_hanh)
+            ->whereDate('ngay_ket_thuc', '>=', $lichKhoiHanh->ngay_khoi_hanh)
+            ->first();
+
+        $giaNguoiLon = $bangGia
+            ? $bangGia->gia_nguoi_lon
+            : $tour->gia_nguoi_lon;
+
+        $giaTreEm = $bangGia
+            ? $bangGia->gia_tre_em
+            : $tour->gia_tre_em;
+
         $tongTien =
-            ($request->so_nguoi_lon * $tour->gia_nguoi_lon) +
-            ($request->so_tre_em * $tour->gia_tre_em);
+            ($request->so_nguoi_lon * $giaNguoiLon) +
+            ($request->so_tre_em * $giaTreEm);
 
         $booking->update([
             'tour_id' => $request->tour_id,
@@ -720,7 +757,7 @@ class QuanLyDatTourController extends Controller
 
         if (!$user || !$user->hasRole('User')) {
             return redirect()->route('Client.trang_chu.index')
-            ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
+                ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
         }
 
         $tour = Tour::findOrFail($tourId);
@@ -730,37 +767,37 @@ class QuanLyDatTourController extends Controller
             ->orderBy('ngay_khoi_hanh')
             ->get();
         // Gán bảng giá tương ứng với ngày khởi hành
-    foreach ($lichKhoiHanhs as $lich) {
-        $bangGia = BangGiaTour::where('tour_id', $tourId)
-            ->where('trang_thai', 'active')
-            ->whereDate('ngay_bat_dau', '<=', $lich->ngay_khoi_hanh)
-            ->whereDate('ngay_ket_thuc', '>=', $lich->ngay_khoi_hanh)
-            ->first();
+        foreach ($lichKhoiHanhs as $lich) {
+            $bangGia = BangGiaTour::where('tour_id', $tourId)
+                ->where('trang_thai', 'active')
+                ->whereDate('ngay_bat_dau', '<=', $lich->ngay_khoi_hanh)
+                ->whereDate('ngay_ket_thuc', '>=', $lich->ngay_khoi_hanh)
+                ->first();
 
+            if ($bangGia) {
+                $lich->gia_nguoi_lon = $bangGia->gia_nguoi_lon;
+                $lich->gia_tre_em = $bangGia->gia_tre_em;
+                $lich->gia_em_be = $bangGia->gia_em_be;
+                $lich->bang_gia = $bangGia;
+            } else {
+                $lich->gia_nguoi_lon = $tour->gia_nguoi_lon;
+                $lich->gia_tre_em = $tour->gia_tre_em;
+                $lich->gia_em_be = $tour->gia_em_be;
+                $lich->bang_gia = null;
+            }
+        }
         if ($bangGia) {
-            $lich->gia_nguoi_lon = $bangGia->gia_nguoi_lon;
-            $lich->gia_tre_em = $bangGia->gia_tre_em;
-            $lich->gia_em_be = $bangGia->gia_em_be;
-            $lich->bang_gia = $bangGia;
+            $lichDuocChon = [
+                'gia_nguoi_lon' => $bangGia->gia_nguoi_lon,
+                'tong_tien' => ($bangGia->gia_nguoi_lon + $bangGia->gia_tre_em),
+            ];
         } else {
-            $lich->gia_nguoi_lon = $tour->gia_nguoi_lon;
-            $lich->gia_tre_em = $tour->gia_tre_em;
-            $lich->gia_em_be = $tour->gia_em_be;
-            $lich->bang_gia = null;
-        }
-    }
-        if ($bangGia) {
             $lichDuocChon = [
-            'gia_nguoi_lon' => $bangGia->gia_nguoi_lon,
-            'tong_tien' => ($bangGia->gia_nguoi_lon + $bangGia->gia_tre_em),
-        ];
-        }else{
-            $lichDuocChon = [
-            'gia_nguoi_lon' => $tour->gia_nguoi_lon,
-            'tong_tien' => ($tour->gia_nguoi_lon + $tour->gia_tre_em + $tour->gia_em_be),
-        ];
+                'gia_nguoi_lon' => $tour->gia_nguoi_lon,
+                'tong_tien' => ($tour->gia_nguoi_lon + $tour->gia_tre_em + $tour->gia_em_be),
+            ];
         }
-        
+
         return view('client.dat_tour.index', compact(
             'tour',
             'lichKhoiHanhs',
@@ -776,7 +813,7 @@ class QuanLyDatTourController extends Controller
 
         if (!$user || !$user->hasRole('User')) {
             return redirect()->route('Client.trang_chu.index')
-            ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
+                ->with('error', 'Chỉ tài khoản có vai trò User mới được đặt tour.');
         }
 
         $request->merge([
@@ -966,10 +1003,26 @@ class QuanLyDatTourController extends Controller
             }
 
             // Tính tổng tiền từ dữ liệu tour
-            if( $bangGia) {
+            if ($bangGia) {
                 $tongTien = ($soNguoiLon * $bangGia->gia_nguoi_lon) + ($soTreEm * $bangGia->gia_tre_em);
             } else {
-            $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
+                // $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
+                $bangGia = BangGiaTour::where('tour_id', $lichKhoiHanh->tour_id)
+                    ->where('trang_thai', 'active')
+                    ->whereDate('ngay_bat_dau', '<=', $lichKhoiHanh->ngay_khoi_hanh)
+                    ->whereDate('ngay_ket_thuc', '>=', $lichKhoiHanh->ngay_khoi_hanh)
+                    ->first();
+
+                $giaNguoiLon = $bangGia
+                    ? $bangGia->gia_nguoi_lon
+                    : $tour->gia_nguoi_lon;
+
+                $giaTreEm = $bangGia
+                    ? $bangGia->gia_tre_em
+                    : $tour->gia_tre_em;
+
+                $tongTien = ($soNguoiLon * $giaNguoiLon)
+                    + ($soTreEm * $giaTreEm);
             }
             $phanTram = (int)$request->phan_tram_thanh_toan;
 

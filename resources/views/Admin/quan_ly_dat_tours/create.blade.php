@@ -44,22 +44,31 @@
                             </option>
                             @foreach($tours as $tour)
                                 <option value="{{ $tour->id }}"
+                                    {{-- data-status="{{ $tour->trang_thai }}" --}}
                                     data-category="{{ $tour->danh_muc_id }}"
                                     {{ old('tour_id') == $tour->id ? 'selected' : '' }}
-                                    data-destination="{{ $tour->diem_den }}" data-adult="{{ $tour->gia_nguoi_lon }}"
-                                    data-child="{{ $tour->gia_tre_em }}" data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
-                                    @disabled($tour->trang_thai !== 'active')>
+                                    data-destination="{{ $tour->diem_den }}"
+                                    data-adult="{{ $tour->gia_nguoi_lon }}"
+                                    data-child="{{ $tour->gia_tre_em }}"
+                                    data-duration="{{ $tour->lichTrinh->count() ?: 1 }}"
+                                    {{-- @disabled($tour->trang_thai !== 'dang_mo_ban') --}}
+                                >
 
                                     {{ $tour->ten_tour }}
-                                    @if($tour->trang_thai !== 'active')
-                                        (Ngừng hoạt động)
-                                    @endif
+{{--
+                                    @if($tour->trang_thai === 'active')
+                                        (Đang hoạt động - Không thể đặt)
+                                    @elseif($tour->trang_thai !== 'dang_mo_ban')
+                                        (Không thể đặt)
+                                    @endif --}}
 
                                     | {{ $tour->lichTrinh->count() }}N{{ max($tour->lichTrinh->count() - 1, 0) }}Đ
                                     | {{ number_format($tour->gia_nguoi_lon, 0, ',', '.') }}đ
+
                                 </option>
                             @endforeach
                         </select>
+                        <small id="tour-status-error" class="text-danger"></small>
 
                         <div class="row mt-3">
                             <div class="col-md-6">
@@ -599,27 +608,55 @@
                 addPassenger();
             });
 
-            function updatePassengerCount() {
-                const adults = document.querySelectorAll(
-                    '[name$="[loai_hanh_khach]"][value="adult"]'
-                ).length;
+            // function updatePassengerCount() {
+            //     const adults = document.querySelectorAll(
+            //         '[name$="[loai_hanh_khach]"][value="adult"]'
+            //     ).length;
 
-                const children = document.querySelectorAll(
-                    '[name$="[loai_hanh_khach]"][value="child"]'
-                ).length;
+            //     const children = document.querySelectorAll(
+            //         '[name$="[loai_hanh_khach]"][value="child"]'
+            //     ).length;
+
+            //     const total = adults + children;
+
+            //     // Cập nhật input hidden
+            //     document.getElementById('adult_count').value = adults;
+            //     document.getElementById('child_count').value = children;
+
+            //     // Cập nhật phần Thông tin đoàn
+            //     document.getElementById('adult_count_display').textContent = adults;
+            //     document.getElementById('child_count_display').textContent = children;
+            //     document.getElementById('total_count_display').textContent = total;
+
+            //     // Cập nhật tổng tiền
+            //     updatePrice();
+            // }
+
+            function updatePassengerCount() {
+                let adults = 0;
+                let children = 0;
+
+                document.querySelectorAll('.passenger-birth').forEach(input => {
+                    if (!input.value) return;
+
+                    const tuoi = tinhTuoi(input.value);
+
+                 if (tuoi <= 12) {
+                        children++;
+                    } else {
+                        adults++;
+                    }
+             });
 
                 const total = adults + children;
 
-                // Cập nhật input hidden
                 document.getElementById('adult_count').value = adults;
                 document.getElementById('child_count').value = children;
 
-                // Cập nhật phần Thông tin đoàn
                 document.getElementById('adult_count_display').textContent = adults;
                 document.getElementById('child_count_display').textContent = children;
                 document.getElementById('total_count_display').textContent = total;
 
-                // Cập nhật tổng tiền
                 updatePrice();
             }
 
@@ -684,9 +721,7 @@ if (oldChildPrice) {
 });
         </script>
 
-
-
-        <script>
+        {{-- <script>
             document
                 .getElementById('booking_type')
                 .addEventListener('change', function () {
@@ -702,6 +737,30 @@ if (oldChildPrice) {
                             ? 'block'
                             : 'none';
                 });
+        </script> --}}
+
+        <script>
+            function updateBookingType() {
+                let type = document.getElementById('booking_type').value;
+
+                document.getElementById('user-section').style.display =
+                    type === 'user' ? 'block' : 'none';
+
+                document.getElementById('guest-section').style.display =
+                    type === 'guest' ? 'block' : 'none';
+            }
+
+            // Khi người dùng thay đổi loại khách
+            document
+                .getElementById('booking_type')
+                .addEventListener('change', function () {
+                    updateBookingType();
+                });
+
+            // Khi trang load lại sau validate
+            document.addEventListener('DOMContentLoaded', function () {
+                updateBookingType();
+            });
         </script>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -754,6 +813,13 @@ if (oldChildPrice) {
             document.getElementById('tour_id')
                 .addEventListener('change', function () {
                     let option = this.options[this.selectedIndex];
+                    let tourStatusError = document.getElementById('tour-status-error');
+
+                    if (this.value && option.dataset.status === 'active') {
+                        tourStatusError.textContent = 'Tour đang hoạt động - Không thể đặt tour.';
+                    } else {
+                    tourStatusError.textContent = '';
+                    }
                     soNgayTour = Number(option.dataset.duration);
                     console.log(
                         "Số ngày:",
@@ -912,20 +978,21 @@ if (oldChildPrice) {
                         option.dataset.start = formatDate(item.ngay_khoi_hanh);
                         option.dataset.end = formatDate(item.ngay_ket_thuc);
 
-                        if (
-                            item.trang_thai !== 'available' &&
-                            item.trang_thai !== 'running'
-                        ) {
-                            option.text =
-                                `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi})`;
+                    if (item.trang_thai !== 'available') {
+                        option.disabled = true;
+                        option.style.color = "red";
 
-                            option.disabled = true;
-                            option.style.color = "red";
+                        if (item.trang_thai === 'running') {
+                            option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (Đang hoạt động - Không thể đặt)`;
                         } else {
-                            option.text =
-                                `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                         option.text =
+                                `${formatDate(item.ngay_khoi_hanh)} (${item.trang_thai_hien_thi || 'Không thể đặt'})`;
                         }
-
+                    } else {
+                     option.text =
+                            `${formatDate(item.ngay_khoi_hanh)} (Đã đặt: ${item.so_cho_da_dat} | Còn: ${item.so_cho_con_lai})`;
+                    }
                         lichSelect.appendChild(option);
                     });
 
@@ -1020,7 +1087,19 @@ if (oldChildPrice) {
                     },
                     body: formData
                 })
-                    .then(res => res.json())
+                    // .then(res => res.json())
+                    .then(async res => {
+                        const text = await res.text();
+
+                        console.log("HTTP status:", res.status);
+                        console.log("Response từ Laravel:", text);
+
+                        if (!res.ok) {
+                            throw new Error(text);
+                        }
+
+                        return JSON.parse(text);
+                    })
                     .then(data => {
                         console.log(data);
                         let adult = 0;
@@ -1040,8 +1119,23 @@ if (oldChildPrice) {
                         document.getElementById('adult_count').value = adult;
                         document.getElementById('child_count').value = child;
 
+                        document.getElementById('adult_count_display').textContent = adult;
+                        document.getElementById('child_count_display').textContent = child;
+                        document.getElementById('total_count_display').textContent = adult + child;
+
                         // Tạo lại form theo đúng số lượng
-                        generatePassengers();
+                        // generatePassengers();
+                        console.log('Số form trước khi import:', document.querySelectorAll('.passenger-item').length);
+                        console.log('Số người trong Excel:', data.length);
+                        passengerIndex = 0;
+                        document.getElementById('passenger-container').innerHTML = '';
+                        data.forEach(() => {
+                            const index = passengerIndex++;
+
+                            document.getElementById('passenger-container')
+                                .insertAdjacentHTML('beforeend', createPassenger(index));
+                        });
+                        console.log('Số form sau khi tạo:', document.querySelectorAll('.passenger-item').length);
                         updatePrice();
                         // Đổ dữ liệu từ Excel vào từng form hành khách
                         let adultIndex = 0;

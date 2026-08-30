@@ -115,9 +115,6 @@
     logo-glow
     hover:scale-105 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.9)]
     transition duration-300">
-            logo-glow
-            hover:scale-105 hover:drop-shadow-[0_0_25px_rgba(34,211,238,0.9)]
-            transition duration-300">
         </a>
     </div>
 

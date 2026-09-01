@@ -62,24 +62,7 @@
     <div class="show-layout">
 
         <div class="main-show-card">
-            @if($baiViet->anh_dai_dien)
-                <div class="image-wrap">
-                    <img class="show-image"
-                         src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}"
-                         alt="{{ $baiViet->tieu_de }}">
-
-                    <div class="image-label">
-                        <i class="fa-regular fa-image"></i>
-                        Ảnh đại diện
-                    </div>
-                </div>
-            @else
-                <div class="no-image-box">
-                    <i class="fa-regular fa-image"></i>
-                    <strong>Chưa có ảnh đại diện</strong>
-                    <span>Bài viết này chưa được thêm ảnh đại diện.</span>
-                </div>
-            @endif
+            @if($baiViet->anh_dai_dien) <div class="image-wrap"> @if(Str::startsWith($baiViet->anh_dai_dien, ['http://', 'https://'])) {{-- Nếu là link online --}} <img class="show-image" src="{{ $baiViet->anh_dai_dien }}" alt="{{ $baiViet->tieu_de }}" > @else {{-- Nếu là file trong storage --}} <img class="show-image" src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}" alt="{{ $baiViet->tieu_de }}" > @endif <div class="image-label"> <i class="fa-regular fa-image"></i> Ảnh đại diện </div> </div> @else <div class="no-image-box"> <i class="fa-regular fa-image"></i> <strong>Chưa có ảnh đại diện</strong> <span>Bài viết này chưa được thêm ảnh đại diện.</span> </div> @endif
 
             <div class="article-body">
                 @if($baiViet->mo_ta_ngan)

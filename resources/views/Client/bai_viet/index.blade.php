@@ -38,13 +38,22 @@
         <div class="featured-row">
             <a href="{{ route('Client.bai_viet.detail', $featured->duong_dan) }}" class="featured-visual">
                 @if($featured->anh_dai_dien)
-                <img src="{{ asset('storage/' . $featured->anh_dai_dien) }}" alt="{{ $featured->tieu_de }}">
+                   @if(Str::startsWith($featured->anh_dai_dien, ['http://', 'https://']))
+                    {{-- Nếu là link --}}
+                   <img src="{{ $featured->anh_dai_dien }}" alt="{{ $featured->tieu_de }}">
+                     @else
+                     {{-- Nếu là file trong storage --}}
+                    <img src="{{ asset('storage/' . $featured->anh_dai_dien) }}" alt="{{ $featured->tieu_de }}">
+                    @endif
                 @else
+                    {{-- Không có ảnh --}}
+                   <img src="{{ asset('images/default.jpg') }}" alt="{{ $featured->tieu_de }}">
+                 @endif
                 <div class="visual-fallback">
                     <i class="fa-solid fa-earth-asia"></i>
                     <span>Travelloula Blog</span>
                 </div>
-                @endif
+                
             </a>
 
             <div class="featured-info">
@@ -94,12 +103,29 @@
             <article class="post-card">
                 <a href="{{ route('Client.bai_viet.detail', $baiViet->duong_dan) }}" class="post-visual">
                     @if($baiViet->anh_dai_dien)
-                    <img src="images/tours/gallery/ha-long-yen-tu-3n2d/ha-long-yen-tu-3n2d-1.jpg" alt="{{ $baiViet->tieu_de }}">
-                    @else
-                    <div class="post-fallback">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    </div>
-                    @endif
+
+    @if(Str::startsWith($baiViet->anh_dai_dien, ['http://', 'https://']))
+        {{-- Nếu là link --}}
+        <img
+            src="{{ $baiViet->anh_dai_dien }}"
+            alt="{{ $baiViet->tieu_de }}"
+        >
+    @else
+        {{-- Nếu là file trong storage --}}
+        <img
+            src="{{ asset('storage/' . $baiViet->anh_dai_dien) }}"
+            alt="{{ $baiViet->tieu_de }}"
+        >
+    @endif
+
+@else
+
+    <div class="post-fallback">
+        <i class="fa-solid fa-map-location-dot"></i>
+    </div>
+
+@endif
+                    
                 </a>
 
                 <div class="post-content">

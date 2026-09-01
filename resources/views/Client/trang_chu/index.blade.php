@@ -1691,7 +1691,7 @@
                         <input
                             type="text"
                             name="phuong_tien"
-                            placeholder="Máy bay, ô tô..."
+                            placeholder="Ô tô..."
                         >
                     </div>
                 </div>
@@ -1747,7 +1747,7 @@
                             ) }}
                         </h3>
 
-                        <p>Tour hấp dẫn</p>
+                        <p>Tour</p>
                     </div>
                 </div>
 
@@ -1767,7 +1767,7 @@
                             ) }}
                         </h3>
 
-                        <p>Điểm đến nổi bật</p>
+                        <p>Điểm đến</p>
                     </div>
                 </div>
 
@@ -1787,7 +1787,7 @@
                             ) }}
                         </h3>
 
-                        <p>Khách hàng đã đặt tour</p>
+                        <p>Khách hàng đã trải nghiệm</p>
                     </div>
                 </div>
 
@@ -1822,7 +1822,7 @@
 
             <div class="section-head">
 
-                <h2>Tour nổi bật</h2>
+                <h2>Tour</h2>
 
                 <a href="{{ route('Client.danh_sach_tour.index') }}">
                     Xem tất cả
@@ -2406,7 +2406,7 @@
 
             <div class="section-head">
 
-                <h2>Điểm đến nổi bật</h2>
+                <h2>Điểm đến</h2>
 
                 <a href="{{ route('Client.danh_sach_tour.index') }}">
                     Xem tất cả

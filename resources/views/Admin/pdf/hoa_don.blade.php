@@ -242,6 +242,8 @@
             $phanTramTang = $coGiaCaoDiem ? (float) $bangGiaApDung->phan_tram_tang : 0;
             $giaNguoiLonApDung = $coGiaCaoDiem ? $giaNguoiLonNiemYet * (1 + $phanTramTang / 100) : $giaNguoiLonNiemYet;
             $giaTreEmApDung = $coGiaCaoDiem && $giaTreEmNiemYet > 0 ? $giaTreEmNiemYet * (1 + $phanTramTang / 100) : $giaTreEmNiemYet;
+            $ngayKhoiHanh = $booking?->lichKhoiHanh?->ngay_khoi_hanh ?? $payment->datTour?->lichKhoiHanh?->ngay_khoi_hanh;
+            $ngayKetThuc = $booking?->lichKhoiHanh?->ngay_ket_thuc ?? $payment->datTour?->lichKhoiHanh?->ngay_ket_thuc;
         @endphp
 
         <div class="section-title">THÔNG TIN TOUR ĐÃ ĐẶT</div>
@@ -257,14 +259,18 @@
             <tr>
                 <td><b>Ngày khởi hành:</b></td>
                 <td>
-                    {{ optional($booking?->lichKhoiHanh)->ngay_khoi_hanh ?? optional($payment->datTour?->lichKhoiHanh)->ngay_khoi_hanh }}
+                    {{ $ngayKhoiHanh
+            ? \Carbon\Carbon::parse($ngayKhoiHanh)->format('d/m/Y')
+            : 'N/A' }}
                 </td>
             </tr>
 
             <tr>
                 <td><b>Ngày kết thúc:</b></td>
                 <td>
-                    {{ optional($booking?->lichKhoiHanh)->ngay_ket_thuc ?? optional($payment->datTour?->lichKhoiHanh)->ngay_ket_thuc }}
+                    {{ $ngayKetThuc
+            ? \Carbon\Carbon::parse($ngayKetThuc)->format('d/m/Y')
+            : 'N/A' }}
                 </td>
             </tr>
 

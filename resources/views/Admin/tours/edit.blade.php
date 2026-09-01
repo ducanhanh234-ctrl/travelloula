@@ -1,6 +1,9 @@
 @extends('Layouts.admin')
 
 @section('content')
+@php
+    use Illuminate\Support\Str;
+@endphp
     <div class="container-fluid">
 
         <div class="card">
@@ -63,11 +66,24 @@
                         @endphp
 
                         @if ($cover)
-                            <div class="mb-2">
-                                <img src="{{ asset('storage/' . $cover->duong_dan_anh) }}" class="img-thumbnail"
-                                    style="width:220px;height:150px;object-fit:cover;">
-                            </div>
-                        @endif
+    <div class="mb-2">
+        @if(Str::startsWith($cover->duong_dan_anh, ['http://', 'https://']))
+            {{-- Ảnh là link online --}}
+            <img
+                src="{{ $cover->duong_dan_anh }}"
+                class="img-thumbnail"
+                style="width:220px;height:150px;object-fit:cover;"
+            >
+        @else
+            {{-- Ảnh là file trong storage --}}
+            <img
+                src="{{ asset('storage/' . $cover->duong_dan_anh) }}"
+                class="img-thumbnail"
+                style="width:220px;height:150px;object-fit:cover;"
+            >
+        @endif
+    </div>
+@endif
 
                         <input type="file" name="anh_dai_dien" id="anh_dai_dien" class="form-control">
 
@@ -83,8 +99,21 @@
                         @foreach ($tour->hinhAnhs as $image)
                             <div class="col-md-3 mb-3">
 
-                                <img src="{{ asset('storage/' . $image->duong_dan_anh) }}" class="img-thumbnail"
-                                    style="width:100%;height:170px;object-fit:cover;">
+                                @if(Str::startsWith($image->duong_dan_anh, ['http://', 'https://']))
+    {{-- Ảnh là link online --}}
+    <img
+        src="{{ $image->duong_dan_anh }}"
+        class="img-thumbnail"
+        style="width:100%;height:170px;object-fit:cover;"
+    >
+@else
+    {{-- Ảnh là file trong storage --}}
+    <img
+        src="{{ asset('storage/' . $image->duong_dan_anh) }}"
+        class="img-thumbnail"
+        style="width:100%;height:170px;object-fit:cover;"
+    >
+@endif
 
                                 @if (!$image->la_anh_dai_dien)
                                     

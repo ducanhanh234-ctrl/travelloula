@@ -414,7 +414,9 @@
                                     </td>
 
                                     <td>
-                                        {{ $khach->ngay_sinh }}
+                                        {{ $khach->ngay_sinh
+                                            ? \Carbon\Carbon::parse($khach->ngay_sinh)->format('d/m/Y')
+                                            : 'Chưa cập nhật' }}
                                     </td>
 
                                     <td>

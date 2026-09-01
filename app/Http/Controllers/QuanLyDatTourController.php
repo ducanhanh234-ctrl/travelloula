@@ -1007,11 +1007,11 @@ class QuanLyDatTourController extends Controller
                 $tongTien = ($soNguoiLon * $bangGia->gia_nguoi_lon) + ($soTreEm * $bangGia->gia_tre_em);
             } else {
                 // $tongTien = ($soNguoiLon * $tour->gia_nguoi_lon) + ($soTreEm * $tour->gia_tre_em);
-                $bangGia = BangGiaTour::where('tour_id', $lichKhoiHanh->tour_id)
-                    ->where('trang_thai', 'active')
-                    ->whereDate('ngay_bat_dau', '<=', $lichKhoiHanh->ngay_khoi_hanh)
-                    ->whereDate('ngay_ket_thuc', '>=', $lichKhoiHanh->ngay_khoi_hanh)
-                    ->first();
+                // $bangGia = BangGiaTour::where('tour_id', $lichKhoiHanh->tour_id)
+                //     ->where('trang_thai', 'active')
+                //     ->whereDate('ngay_bat_dau', '<=', $lichKhoiHanh->ngay_khoi_hanh)
+                //     ->whereDate('ngay_ket_thuc', '>=', $lichKhoiHanh->ngay_khoi_hanh)
+                //     ->first();
 
                 $giaNguoiLon = $bangGia
                     ? $bangGia->gia_nguoi_lon

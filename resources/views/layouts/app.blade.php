@@ -305,12 +305,15 @@ Nam Từ Liêm - Hà Nội</p>
         }
 
         .client-header {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            min-height: 88px;
-            background: #fff;
-            box-shadow: 0 6px 24px rgba(15, 23, 42, .06);
+            position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    width: 100%;
+    min-height: 88px;
+    background: #fff;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, .06);
         }
 
         .header-inner {

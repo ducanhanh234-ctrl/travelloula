@@ -13,40 +13,44 @@ use Illuminate\Http\Request;
 class GuideController extends Controller
 {
     public function index()
-    {
-        $hdvId = HuongDanVien::where('email', auth()->user()->email)
-            ->value('id');
+{
+    $hdvId = HuongDanVien::where('email', auth()->user()->email)
+        ->value('id');
 
-        $today = Carbon::today();
-        $twoWeeksLater = Carbon::today()->addDays(14);
+    // Từ 14 ngày trước đến 14 ngày sau
+    $fourteenDaysAgo = Carbon::today()->subDays(14);
+    $fourteenDaysLater = Carbon::today()->addDays(14);
 
-        $tours = PhanCong::with([
-            'lichKhoiHanh.tour',
-            'hdv',
-        ])
-            ->whereJsonContains('hdv_ids', (string)$hdvId)
-            ->whereBetween('ngay_phan_cong', [$today, $twoWeeksLater])
-            ->get()
-            ->sortBy(function ($tour) {
-                return [
-                    $tour->trang_thai === 'running' ? 0 : 1,
-                    $tour->lichKhoiHanh->ngay_khoi_hanh?->timestamp ?? PHP_INT_MAX,
-                ];
-            })
-            ->values();
+    $tours = PhanCong::with([
+        'lichKhoiHanh.tour',
+        'hdv',
+    ])
+        ->whereJsonContains('hdv_ids', (string)$hdvId)
+        ->whereBetween(
+            'ngay_phan_cong',
+            [$fourteenDaysAgo, $fourteenDaysLater]
+        )
+        ->get()
+        ->sortBy(function ($tour) {
+            return [
+                $tour->trang_thai === 'running' ? 0 : 1,
+                $tour->lichKhoiHanh->ngay_khoi_hanh?->timestamp ?? PHP_INT_MAX,
+            ];
+        })
+        ->values();
 
-        foreach ($tours as $tour) {
-            $ids = $tour->phuong_tien_ids ?? [];
+    foreach ($tours as $tour) {
+        $ids = $tour->phuong_tien_ids ?? [];
 
-            if (!is_array($ids)) {
-                $ids = json_decode($ids, true) ?? [];
-            }
-
-            $tour->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
+        if (!is_array($ids)) {
+            $ids = json_decode($ids, true) ?? [];
         }
 
-        return view('Guide.tour_dc_phan_cong', compact('tours'));
+        $tour->dsPhuongTien = PhuongTien::whereIn('id', $ids)->get();
     }
+
+    return view('Guide.tour_dc_phan_cong', compact('tours'));
+}
     public function show($id)
     {
         $hdvId = HuongDanVien::where('email', auth()->user()->email)

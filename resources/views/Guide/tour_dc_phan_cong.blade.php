@@ -879,6 +879,12 @@ $hoanThanh = $tourCollection
                             <span class="assigned-status-dot"></span>
                             Đang diễn ra
                         </span>
+                        @elseif ($lichKhoiHanh->trang_thai === 'ended')
+
+    <span class="assigned-status assigned-status-completed">
+        <span class="assigned-status-dot"></span>
+        Đã kết thúc
+    </span>
                         @else
                         <span class="assigned-status assigned-status-upcoming">
                             <span class="assigned-status-dot"></span>

@@ -38,11 +38,7 @@ class ThanhToanController extends Controller
             'datTour.khachHangs',
             'nguoiDung'
         ])->whereHas('datTour');
-        $tongDoanhThu = ThanhToan::where(
-            'trang_thai',
-            'da_thanh_toan'
-        )
-            ->sum('so_tien');
+        $tongDoanhThu = DatTour::sum('so_tien_da_thanh_toan');
         $daThanhToan = ThanhToan::where(
             'trang_thai',
             'da_thanh_toan'

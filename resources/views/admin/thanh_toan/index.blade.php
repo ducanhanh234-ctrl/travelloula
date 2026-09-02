@@ -1041,7 +1041,7 @@
                     ? $datTour->khachHangs->first()
                     : null;
 
-                    $tenKhachHang = $khachHang->ho_ten
+                    $tenKhachHang = $datTour->nguoiDung->name
                     ?? 'Không xác định';
 
                     $tenTour = $datTour->tour->ten_tour

@@ -62,7 +62,7 @@ class QuanLyDatTourController extends Controller
         $websiteBookings = 0;
         $saleBookings = 0;
         $revenue = number_format(
-            DatTour::sum('tong_tien'),
+            DatTour::sum('so_tien_da_thanh_toan') ?? 0,
             0,
             ',',
             '.'
